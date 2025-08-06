@@ -39,12 +39,12 @@
                             VerticalAlignment="Top"
                             x:Uid="SettingsPage_Scan_Local"
                             HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
-                <ToggleSwitch IsOn="True" />
+                <ToggleSwitch IsOn="True" IsEnabled="False" />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                             x:Uid="SettingsPage_Scan_Local_DeepScan"
                             HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
-                        <ToggleSwitch />
+                        <ToggleSwitch x:Name="DeepScanToggle" Toggled="DeepScanToggle_Toggled"  />
                     </controls:SettingsCard>
                 </controls:SettingsExpander.Items>
             </controls:SettingsExpander>
@@ -52,10 +52,11 @@
                             VerticalAlignment="Top"
                             x:Uid="SettingsPage_Scan_Cloud"
                             HeaderIcon="{ui:FontIcon Glyph=&#xE753;}">
-                <ToggleSwitch />
+                <ToggleSwitch IsEnabled="False"  />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                             x:Uid="SettingsPage_Scan_Cloud_AutoReport"
+                            IsEnabled="False" 
                             HeaderIcon="{ui:FontIcon Glyph=&#xE9F9;}">
                         <ToggleSwitch IsOn="True" />
                     </controls:SettingsCard>
@@ -66,10 +67,11 @@
                 VerticalAlignment="Top"
                 x:Uid="SettingsPage_Protection_Process"
                 HeaderIcon="{ui:FontIcon Glyph=&#xE9D5;}">
-                <ToggleSwitch />
+                <ToggleSwitch IsEnabled="False"  />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                         x:Uid="SettingsPage_Protection_Process_DeepScan"
+                        IsEnabled="False" 
                         HeaderIcon="{ui:FontIcon Glyph=&#xEC4A;}">
                         <ToggleSwitch />
                     </controls:SettingsCard>
@@ -79,11 +81,12 @@
                 VerticalAlignment="Top"
                 x:Uid="SettingsPage_Protection_Files"
                 HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
-                <ToggleSwitch />
+                <ToggleSwitch IsEnabled="False"  />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                         x:Uid="SettingsPage_Protection_Files_AllFiles"
-                        HeaderIcon="{ui:FontIcon Glyph=&#xE71D;}">
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE71D;}"
+                        IsEnabled="False" >
                         <ToggleSwitch />
                     </controls:SettingsCard>
                 </controls:SettingsExpander.Items>
@@ -92,16 +95,18 @@
                 VerticalAlignment="Top"
                 x:Uid="SettingsPage_Protection_Behavior"
                 HeaderIcon="{ui:FontIcon Glyph=&#xE8FC;}">
-                <ToggleSwitch />
+                <ToggleSwitch  IsEnabled="False" />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                         x:Uid="SettingsPage_Protection_Behavior_Remote"
-                        HeaderIcon="{ui:FontIcon Glyph=&#xE756;}">
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE756;}"
+                        IsEnabled="False">
                         <ToggleSwitch />
                     </controls:SettingsCard>
                     <controls:SettingsCard
                         x:Uid="SettingsPage_Protection_Behavior_URL"
-                        HeaderIcon="{ui:FontIcon Glyph=&#xE774;}">
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE774;}"
+                        IsEnabled="False">
                         <ToggleSwitch />
                     </controls:SettingsCard>
                 </controls:SettingsExpander.Items>
@@ -110,16 +115,18 @@
                 VerticalAlignment="Top"
                 x:Uid="SettingsPage_Protection_Boot"
                 HeaderIcon="{ui:FontIcon Glyph=&#xEDA2;}">
-                <ToggleSwitch />
+                <ToggleSwitch IsEnabled="False"  />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                         x:Uid="SettingsPage_Protection_Boot_Save"
-                        HeaderIcon="{ui:FontIcon Glyph=&#xECF0;}">
+                        HeaderIcon="{ui:FontIcon Glyph=&#xECF0;}"
+                        IsEnabled="False">
                         <Button x:Uid="SettingsPage_Protection_Boot_Save_Button" />
                     </controls:SettingsCard>
                     <controls:SettingsCard
                         x:Uid="SettingsPage_Protection_Boot_Open"
-                        HeaderIcon="{ui:FontIcon Glyph=&#xEBC4;}">
+                        HeaderIcon="{ui:FontIcon Glyph=&#xEBC4;}"
+                        IsEnabled="False">
                         <Button x:Uid="SettingsPage_Protection_Boot_Open_Button" />
                     </controls:SettingsCard>
                 </controls:SettingsExpander.Items>
@@ -128,15 +135,17 @@
                 VerticalAlignment="Top"
                 x:Uid="SettingsPage_Protection_Register"
                 HeaderIcon="{ui:FontIcon Glyph=&#xEA37;}">
-                <ToggleSwitch />
+                <ToggleSwitch  IsEnabled="False" />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                          x:Uid="SettingsPage_Protection_Register_Secondary"
+                        IsEnabled="False"
                          HeaderIcon="{ui:FontIcon Glyph=&#xED4D;}">
                         <ToggleSwitch />
                     </controls:SettingsCard>
                     <controls:SettingsCard
                          x:Uid="SettingsPage_Protection_Register_Others"
+                        IsEnabled="False"
                          HeaderIcon="{ui:FontIcon Glyph=&#xEA8F;}">
                         <ToggleSwitch />
                     </controls:SettingsCard>

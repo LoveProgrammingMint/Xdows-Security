@@ -19,7 +19,7 @@ namespace Xdows_Security
             LoadLanguageSetting();
             LoadThemeSetting();
             LoadBackdropSetting();
-            LoadScanProgressSetting();
+            LoadScanSetting();
             Settings_About_Version.Text = _resourceLoader.GetString("APP_Version");
         }
         private void ScanProgressToggle_Toggled(object sender, RoutedEventArgs e)
@@ -27,14 +27,23 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             settings.Values["ShowScanProgress"] = ScanProgressToggle.IsOn;
         }
-
-        private void LoadScanProgressSetting()
+        private void DeepScanToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            var settings = ApplicationData.Current.LocalSettings;
+            settings.Values["DeepScan"] = DeepScanToggle.IsOn;
+        }
+        private void LoadScanSetting()
         {
             var settings = ApplicationData.Current.LocalSettings;
             if (settings.Values.TryGetValue("ShowScanProgress", out object value))
             {
                 bool showScanProgress = value is bool && (bool)value;
                 ScanProgressToggle.IsOn = showScanProgress;
+            }
+            if (settings.Values.TryGetValue("DeepScan", out value))
+            {
+                bool DeepScan = value is bool && (bool)value;
+                DeepScanToggle.IsOn = DeepScan;
             }
         }
         private void LoadLanguageSetting()

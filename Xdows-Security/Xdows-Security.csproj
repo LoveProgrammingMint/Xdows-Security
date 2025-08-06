@@ -63,5 +63,7 @@
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
     <ApplicationIcon>logo.ico</ApplicationIcon>
+    <PackageCertificateThumbprint>A09ADEE5F963CBFB5210CBA7A71EEEE8203CDB2B</PackageCertificateThumbprint>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
   </PropertyGroup>
 </Project>

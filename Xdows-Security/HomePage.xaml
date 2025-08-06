@@ -1,0 +1,25 @@
+<Page
+    x:Class="Xdows_Security.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <StackPanel>
+            <FontIcon Margin="0,12,0,0" Glyph="&#xE73E;" FontSize="124" FontWeight="Bold"/>
+            <Border Width="240" MinHeight="48">
+                <TextBlock Margin="0,0,-24,0" x:Uid="HomePage_TextBlock" FontSize="24" FontWeight="Bold"/>
+            </Border>
+
+            <TextBox
+                x:Name="LogTextBox"
+                IsReadOnly="True"
+                AcceptsReturn="True"
+                TextWrapping="Wrap"
+                Margin="96,24,96,0"
+                MinHeight="200"/>
+        </StackPanel>
+    </Grid>
+</Page>

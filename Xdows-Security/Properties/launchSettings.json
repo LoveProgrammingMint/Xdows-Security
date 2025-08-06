@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Xdows-Security (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Xdows-Security (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page x:Class="Xdows_Security.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:ui="using:CommunityToolkit.WinUI"
+      mc:Ignorable="d">
+    <ScrollViewer>
+        <StackPanel Spacing="4" Margin="80,24,80,0">
+            <TextBlock Margin="0,8,0,8" x:Uid="SettingsPage_Appearance" />
+            <controls:SettingsCard x:Name="settingsCard"
+                               x:Uid="SettingsPage_Appearance_Theme"
+                               HeaderIcon="{ui:FontIcon Glyph=&#xE790;}">
+                <ComboBox x:Name="ThemeComboBox" SelectionChanged="ThemeComboBox_SelectionChanged">
+                    <ComboBoxItem x:Uid="SettingsPage_Appearance_Theme_ComboBox_System" />
+                    <ComboBoxItem x:Uid="SettingsPage_Appearance_Theme_ComboBox_Light" />
+                    <ComboBoxItem x:Uid="SettingsPage_Appearance_Theme_ComboBox_Dark" />
+                </ComboBox>
+            </controls:SettingsCard>
+            <controls:SettingsCard
+                    x:Uid="SettingsPage_Appearance_Backdrop"
+                    HeaderIcon="{ui:FontIcon Glyph=&#xEF1F;}">
+                <ComboBox x:Name="BackdropComboBox" SelectionChanged="BackdropComboBox_SelectionChanged">
+                    <ComboBoxItem x:Uid="SettingsPage_Appearance_Backdrop_Solid" Tag="Solid"/>
+                    <ComboBoxItem x:Uid="SettingsPage_Appearance_Backdrop_Mica" Tag="Mica" x:Name="MicaOption"/>
+                    <ComboBoxItem x:Uid="SettingsPage_Appearance_Backdrop_MicaAlt" Tag="MicaAlt" x:Name="MicaAltOption"/>
+                    <ComboBoxItem x:Uid="SettingsPage_Appearance_Backdrop_Acrylic" Tag="Acrylic"/>
+                </ComboBox>
+            </controls:SettingsCard>
+            <TextBlock Margin="0,8,0,8" x:Uid="SettingsPage_Scan"/>
+            <controls:SettingsCard
+                            x:Uid="SettingsPage_Scan_ScanProgress"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xF0B5;}">
+                <ToggleSwitch x:Name="ScanProgressToggle" Toggled="ScanProgressToggle_Toggled" />
+            </controls:SettingsCard>
+            <controls:SettingsExpander
+                            VerticalAlignment="Top"
+                            x:Uid="SettingsPage_Scan_Local"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
+                <ToggleSwitch IsOn="True" />
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard
+                            x:Uid="SettingsPage_Scan_Local_DeepScan"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
+                        <ToggleSwitch />
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
+            <controls:SettingsExpander
+                            VerticalAlignment="Top"
+                            x:Uid="SettingsPage_Scan_Cloud"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xE753;}">
+                <ToggleSwitch />
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard
+                            x:Uid="SettingsPage_Scan_Cloud_AutoReport"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xE9F9;}">
+                        <ToggleSwitch IsOn="True" />
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
+            <TextBlock Margin="0,8,0,8" x:Uid="SettingsPage_Protection" />
+            <controls:SettingsExpander
+                VerticalAlignment="Top"
+                x:Uid="SettingsPage_Protection_Process"
+                HeaderIcon="{ui:FontIcon Glyph=&#xE9D5;}">
+                <ToggleSwitch />
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard
+                        x:Uid="SettingsPage_Protection_Process_DeepScan"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xEC4A;}">
+                        <ToggleSwitch />
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
+            <controls:SettingsExpander
+                VerticalAlignment="Top"
+                x:Uid="SettingsPage_Protection_Files"
+                HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
+                <ToggleSwitch />
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard
+                        x:Uid="SettingsPage_Protection_Files_AllFiles"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE71D;}">
+                        <ToggleSwitch />
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
+            <controls:SettingsExpander
+                VerticalAlignment="Top"
+                x:Uid="SettingsPage_Protection_Behavior"
+                HeaderIcon="{ui:FontIcon Glyph=&#xE8FC;}">
+                <ToggleSwitch />
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard
+                        x:Uid="SettingsPage_Protection_Behavior_Remote"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE756;}">
+                        <ToggleSwitch />
+                    </controls:SettingsCard>
+                    <controls:SettingsCard
+                        x:Uid="SettingsPage_Protection_Behavior_URL"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE774;}">
+                        <ToggleSwitch />
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
+            <controls:SettingsExpander
+                VerticalAlignment="Top"
+                x:Uid="SettingsPage_Protection_Boot"
+                HeaderIcon="{ui:FontIcon Glyph=&#xEDA2;}">
+                <ToggleSwitch />
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard
+                        x:Uid="SettingsPage_Protection_Boot_Save"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xECF0;}">
+                        <Button x:Uid="SettingsPage_Protection_Boot_Save_Button" />
+                    </controls:SettingsCard>
+                    <controls:SettingsCard
+                        x:Uid="SettingsPage_Protection_Boot_Open"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xEBC4;}">
+                        <Button x:Uid="SettingsPage_Protection_Boot_Open_Button" />
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
+            <controls:SettingsExpander
+                VerticalAlignment="Top"
+                x:Uid="SettingsPage_Protection_Register"
+                HeaderIcon="{ui:FontIcon Glyph=&#xEA37;}">
+                <ToggleSwitch />
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard
+                         x:Uid="SettingsPage_Protection_Register_Secondary"
+                         HeaderIcon="{ui:FontIcon Glyph=&#xED4D;}">
+                        <ToggleSwitch />
+                    </controls:SettingsCard>
+                    <controls:SettingsCard
+                         x:Uid="SettingsPage_Protection_Register_Others"
+                         HeaderIcon="{ui:FontIcon Glyph=&#xEA8F;}">
+                        <ToggleSwitch />
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
+            <TextBlock Margin="0,8,0,8" x:Uid="SettingsPage_Other"/>
+            <controls:SettingsCard 
+                     x:Uid="SettingsPage_Other_Language"
+                     HeaderIcon="{ui:FontIcon Glyph=&#xF2B7;}">
+                <ComboBox x:Name="LanguageComboBox" 
+                    SelectionChanged="LanguageComboBox_SelectionChanged">
+                    <ComboBoxItem Tag="en-US">English</ComboBoxItem>
+                    <ComboBoxItem Tag="zh-HANS">简体中文</ComboBoxItem>
+                </ComboBox>
+            </controls:SettingsCard>
+            <controls:SettingsCard 
+                    x:Uid="SettingsPage_Other_CheckUpdate"
+                    HeaderIcon="{ui:FontIcon Glyph=&#xE895;}">
+                <Button x:Uid="SettingsPage_Other_CheckUpdate_Button" x:Name="UpdateButton" Click="UpdateButtonClick" Style="{ThemeResource AccentButtonStyle}" />
+            </controls:SettingsCard>
+            <controls:SettingsExpander
+                            VerticalAlignment="Top"
+                            x:Uid="SettingsPage_Other_About"
+                            IsExpanded="True"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xE946;}">
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard x:Uid="SettingsPage_Other_About_Name" HeaderIcon="{ui:FontIcon Glyph=&#xE8AC;}">
+                        <TextBlock Text="Xdows Security" />
+                    </controls:SettingsCard>
+                    <controls:SettingsCard x:Uid="SettingsPage_Other_About_Version" HeaderIcon="{ui:FontIcon Glyph=&#xE7B8;}">
+                        <TextBlock x:Name="Settings_About_Version" />
+                    </controls:SettingsCard>
+                    <controls:SettingsCard x:Uid="SettingsPage_Other_About_Feedback" HeaderIcon="{ui:FontIcon Glyph=&#xED15;}">
+                        <HyperlinkButton x:Uid="AllPage_OpenLink" NavigateUri="https://github.com/XTY64XTY12345/Xdows-Security-4/issues/" />
+                    </controls:SettingsCard>
+                    <controls:SettingsCard x:Uid="SettingsPage_Other_About_Website" HeaderIcon="{ui:FontIcon Glyph=&#xE774;}">
+                        <HyperlinkButton x:Uid="AllPage_OpenLink" NavigateUri="https://xty64xty.netlify.app/" />
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
+            <TeachingTip
+                x:Name="UpdateTeachingTip"
+                x:Uid="SettingsPage_Other_CheckUpdate_UpdateTeachingTip"
+                ActionButtonClick="UpdateTeachingTipClose"
+                Target="{x:Bind UpdateButton}"/>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

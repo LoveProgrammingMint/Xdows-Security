@@ -11,6 +11,8 @@ namespace Xdows_Security
 {
     public sealed partial class XdowsToolsPage : Page
     {
+        private List<ProcessInfo> _allProcesses = new();
+
         public XdowsToolsPage()
         {
             InitializeComponent();
@@ -22,10 +24,11 @@ namespace Xdows_Security
         {
             try
             {
-                ProcessList.ItemsSource = Process.GetProcesses()
-                                                 .Select(p => new ProcessInfo(p))
-                                                 .OrderBy(p => p.Name)
-                                                 .ToList();
+                _allProcesses = Process.GetProcesses()
+                                       .Select(p => new ProcessInfo(p))
+                                       .OrderBy(p => p.Name)
+                                       .ToList();
+                ApplyFilterAndSort();
             }
             catch (Exception ex)
             {
@@ -42,9 +45,31 @@ namespace Xdows_Security
         private void Refresh_Click(object sender, RoutedEventArgs e) => RefreshProcesses();
 
         private void SortCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            => ApplyFilterAndSort();
+
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+            => ApplyFilterAndSort();
+
+        private void ApplyFilterAndSort()
         {
-            if (ProcessList.ItemsSource is IEnumerable<ProcessInfo> src)
-                ProcessList.ItemsSource = ApplySort(src).ToList();
+            var keyword = SearchBox.Text?.Trim() ?? "";
+            IEnumerable<ProcessInfo> filtered = _allProcesses;
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                // 全数字 → PID 精确匹配；否则 → 进程名模糊匹配
+                if (int.TryParse(keyword, out var pid))
+                {
+                    filtered = _allProcesses.Where(p => p.Id == pid);
+                }
+                else
+                {
+                    filtered = _allProcesses
+                        .Where(p => p.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+                }
+            }
+
+            ProcessList.ItemsSource = ApplySort(filtered).ToList();
         }
 
         private IEnumerable<ProcessInfo> ApplySort(IEnumerable<ProcessInfo> src)
@@ -77,17 +102,24 @@ namespace Xdows_Security
                 PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
             };
             if (await confirm.ShowAsync() != ContentDialogResult.Primary) return;
+            LogText.AddNewLog(1, "Xdows Tools - KillProgress", $"{info.Name}({info.Id})", false);
 
             var result = TryKill(info.Id);
-            if (!result.Success)
+            if (result.Success)
+            {
+                LogText.AddNewLog(1, "Xdows Tools - KillProgress - Result", "Termination Successful", false);
+            }
+            else
             {
                 await new ContentDialog
                 {
                     Title = "结束失败",
-                    Content = result.Error,
+                    Content = $"不能结束这个进程，因为 {result.Error}。",
                     CloseButtonText = "确定",
-                    XamlRoot = XamlRoot
+                    XamlRoot = XamlRoot,
+                    CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 }.ShowAsync();
+                LogText.AddNewLog(2, "Xdows Tools - KillProgress - Result", $"Cannot terminate this process because {result.Error}", false);
             }
             RefreshProcesses();
         }
@@ -103,15 +135,15 @@ namespace Xdows_Security
             }
             catch (Win32Exception)
             {
-                return new KillResult { Success = false, Error = "拒绝访问：无法结束此进程。" };
+                return new KillResult { Success = false, Error = "拒绝访问" };
             }
             catch (UnauthorizedAccessException)
             {
-                return new KillResult { Success = false, Error = "没有足够权限结束该进程。" };
+                return new KillResult { Success = false, Error = "没有足够权限结束该进程" };
             }
             catch (InvalidOperationException)
             {
-                return new KillResult { Success = false, Error = "进程已退出。" };
+                return new KillResult { Success = false, Error = "进程已退出" };
             }
             catch (Exception ex)
             {

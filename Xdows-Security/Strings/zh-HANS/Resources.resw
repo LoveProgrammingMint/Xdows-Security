@@ -196,7 +196,7 @@
     <value>自动上报</value>
   </data>
   <data name="SettingsPage_Scan_Cloud_AutoReport.Description" xml:space="preserve">
-    <value>更深度的分析文件，误报可能较高</value>
+    <value>有利于应对未知病毒，但耗时较长</value>
   </data>
   <data name="SettingsPage_Protection.Text" xml:space="preserve">
     <value>防护</value>

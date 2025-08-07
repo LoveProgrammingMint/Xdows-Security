@@ -196,7 +196,7 @@
     <value>Auto Report</value>
   </data>
   <data name="SettingsPage_Scan_Cloud_AutoReport.Description" xml:space="preserve">
-    <value>More thorough file scanning may raise false alarm risks.</value>
+    <value>It is beneficial in addressing rare viruses, but it takes a longer time.</value>
   </data>
   <data name="SettingsPage_Protection.Text" xml:space="preserve">
     <value>Protection</value>

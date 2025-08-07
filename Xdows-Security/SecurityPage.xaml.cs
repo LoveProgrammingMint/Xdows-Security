@@ -163,6 +163,7 @@ namespace Xdows_Security
                 {
                     _dispatcherQueue.TryEnqueue(() =>
                     {
+                        LogText.AddNewLog(1, "Security - Failed", ex.Message, false);
                         StatusText.Text = $"…®√Ë ß∞‹£∫{ex.Message}";
                         ScanProgress.Visibility = Visibility.Collapsed;
                     });

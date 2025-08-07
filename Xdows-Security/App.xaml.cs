@@ -44,10 +44,8 @@ namespace Xdows_Security
 
             string logEntry = $"[{currentTime}][{LevelText}][{Source}]: {Info}{Environment.NewLine}";
             Text += logEntry;
-
             if (Update) {
                 TextChanged?.Invoke(null, EventArgs.Empty);
-
             }
         }
     }

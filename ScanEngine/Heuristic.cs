@@ -99,6 +99,9 @@ namespace Xdows.ScanEngine
 
         private static bool ContainsSuspiciousApi(string[] apis, string[] keywords)
         {
+            if (apis == null) {
+                return false;
+            }
             return keywords.Any(keyword => apis.Any(api => api.Contains(keyword)));
         }
 

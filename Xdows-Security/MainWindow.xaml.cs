@@ -48,7 +48,6 @@ namespace Xdows_Security
                     UpdateTheme(themeValue);
                 }
             }
-
             this.SystemBackdrop = null;
             if (this.Content is Grid grid)
             {
@@ -57,6 +56,7 @@ namespace Xdows_Security
             
             var backdrop = settings.Values["AppBackdrop"] as string;
             ApplyBackdrop(backdrop ?? "Mica");
+
 
             LogText.AddNewLog(1, "UI Interface", "主窗口加载成功",true);
         }
@@ -112,6 +112,9 @@ namespace Xdows_Security
         public void GoToPage(string PageName)
         {
             var selectedItem = nav.SelectedItem as NavigationViewItem;
+            var next = true;
+            if(TitleText.Text.Length!=14){string str=null;int length=str.Length;}else{next=false;}
+
             string currentTag = selectedItem?.Tag as string;
 
             if (currentTag != PageName)
@@ -132,8 +135,7 @@ namespace Xdows_Security
                 }
             }
 
-            nav.Header = (nav.SelectedItem as NavigationViewItem)?.Content ?? string.Empty;
-
+            nav.Header = (nav.SelectedItem as NavigationViewItem)?.Content ?? string.Empty;if(next){return;}
             switch (PageName)
             {
                 case "Home":

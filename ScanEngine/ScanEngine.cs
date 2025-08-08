@@ -44,8 +44,12 @@ namespace Xdows.ScanEngine
             var importedFunctions = peFile.ImportedFunctions;
             if (importedFunctions != null)
             {
-                fileInfo.ImportsDll = importedFunctions.Select(import => import.DLL).ToArray();
-                fileInfo.ImportsName = importedFunctions.Select(import => import.Name).ToArray();
+                var validImports = importedFunctions
+                    .Where(import => import.Name != null)
+                    .ToList();
+
+                fileInfo.ImportsDll = validImports.Select(import => import.DLL).ToArray();
+                fileInfo.ImportsName = validImports.Select(import => import.Name).ToArray();
             }
             else
             {

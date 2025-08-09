@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Windows.ApplicationModel.Resources;
+// using Windows.ApplicationModel.Resources;//多语言调用
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.ViewManagement;
@@ -17,7 +17,7 @@ namespace Xdows_Security
 {
     public sealed partial class MainWindow : Window
     {
-        // private readonly ResourceLoader _resourceLoader = ResourceLoader.GetForViewIndependentUse(); //多语言调用
+        //private readonly ResourceLoader _resourceLoader = ResourceLoader.GetForViewIndependentUse(); //多语言调用
         public string NowPage;
         public MainWindow()
         {

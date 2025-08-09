@@ -138,7 +138,7 @@
   <data name="MainWindow_Nav_Xdows-Tools.Content" xml:space="preserve">
     <value>Xdows Tools</value>
   </data>
-  <data name="HomePage_TextBlock.Text" xml:space="preserve">
+  <data name="HomePage_TextBlock_Open" xml:space="preserve">
     <value>You are protection.</value>
   </data>
   <data name="AllPage_Not_Open_Yet.Text" xml:space="preserve">
@@ -350,5 +350,8 @@
   </data>
   <data name="SettingsPage_Scan_ScanProgress.Description" xml:space="preserve">
     <value>Disabling this option will increase the scanning speed, especially when scanning a large number of files.</value>
+  </data>
+  <data name="HomePage_TextBlock_Close" xml:space="preserve">
+    <value>Protection is not enabled.</value>
   </data>
 </root>

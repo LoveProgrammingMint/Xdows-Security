@@ -138,7 +138,7 @@
   <data name="MainWindow_Nav_Xdows-Tools.Content" xml:space="preserve">
     <value>Xdows Tools</value>
   </data>
-  <data name="HomePage_TextBlock.Text" xml:space="preserve">
+  <data name="HomePage_TextBlock_Open" xml:space="preserve">
     <value>您已受到我们的保护</value>
   </data>
   <data name="AllPage_Not_Open_Yet.Text" xml:space="preserve">
@@ -350,5 +350,8 @@
   </data>
   <data name="SettingsPage_Scan_ScanProgress.Description" xml:space="preserve">
     <value>关闭此项会加快扫描速度，在扫描很多文件时这将会很有用</value>
+  </data>
+  <data name="HomePage_TextBlock_Close" xml:space="preserve">
+    <value>当前系统防护未启用</value>
   </data>
 </root>

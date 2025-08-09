@@ -49,6 +49,14 @@ namespace Xdows_Security
             }
         }
     }
+
+    public static class Protection
+    {
+        public static bool IsOpen() {
+            return false;
+        }
+    }
+
     public partial class App : Application
     {
         public static MainWindow? MainWindow { get; private set; }

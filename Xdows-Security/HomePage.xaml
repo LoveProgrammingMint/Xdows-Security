@@ -6,20 +6,16 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid>
-        <StackPanel>
-            <FontIcon Margin="0,12,0,0" Glyph="&#xE73E;" FontSize="124" FontWeight="Bold"/>
-            <Border Width="240" MinHeight="48">
-                <TextBlock Margin="0,0,-24,0" x:Uid="HomePage_TextBlock" FontSize="24" FontWeight="Bold"/>
-            </Border>
+    <StackPanel>
+        <FontIcon x:Name="Icon" Margin="0,12,0,0" Glyph="&#xE73E;" FontSize="124" FontWeight="Bold"/>
+        <TextBlock Margin="0,12,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="HomePage_TextBlock" FontSize="24" FontWeight="Bold"/>
 
-            <TextBox
+        <TextBox
                 x:Name="LogTextBox"
                 IsReadOnly="True"
                 AcceptsReturn="True"
                 TextWrapping="Wrap"
                 Margin="96,24,96,0"
                 MinHeight="200"/>
-        </StackPanel>
-    </Grid>
+    </StackPanel>
 </Page>

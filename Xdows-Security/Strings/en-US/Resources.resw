@@ -354,4 +354,10 @@
   <data name="HomePage_TextBlock_Close" xml:space="preserve">
     <value>Protection is not enabled.</value>
   </data>
+  <data name="SettingsPage_Scan_Local_ExtraData.Header" xml:space="preserve">
+    <value>Extra Data</value>
+  </data>
+  <data name="SettingsPage_Scan_Local_ExtraData.Description" xml:space="preserve">
+    <value>The selection competition for the addition of extra data in the virus name.</value>
+  </data>
 </root>

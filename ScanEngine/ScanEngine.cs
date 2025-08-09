@@ -18,7 +18,7 @@ namespace Xdows.ScanEngine
             public string[] ExportsName;
         }
 
-        public static async Task<string> ScanAsync(string path, bool deep)
+        public static async Task<string> ScanAsync(string path, bool deep, bool ExtraData)
         {
             if (!File.Exists(path)) return string.Empty;
 
@@ -58,7 +58,11 @@ namespace Xdows.ScanEngine
             }
 
             var score = Heuristic.Evaluate(path, fileInfo, deep, out var extra);
-            return score >= 50 ? $"Xdows.local.code{score}{extra}" : string.Empty;
+            if (score >= 50)
+            {
+                return ExtraData ? $"Xdows.local.code{score} {extra}" : $"Xdows.local.code{score}";
+            }
+            return string.Empty;
         }
 
         private static async Task<string> GetFileMD5Async(string path)

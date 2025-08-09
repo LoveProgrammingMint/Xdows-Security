@@ -19,53 +19,214 @@ namespace Xdows.ScanEngine
 
             // 文件扩展名检查
             var fileExtension = Path.GetExtension(path).ToLower();
+
+            // 附加数据初始化
+            var suspiciousData = new List<string>();
+
+            // 文件扩展名检查
             if (fileExtension == ".bat" || fileExtension == ".cmd")
             {
-                score += IsSuspiciousBat(fileContent) ? 10 : 0;
-                extra += " CamouflageBat";
+                if (IsSuspiciousBat(fileContent))
+                {
+                    score += 10;
+                    suspiciousData.Add("CamouflageBat");
+                }
             }
             else if (fileExtension == ".doc" || fileExtension == ".docx")
             {
-                score += IsSuspiciousDoc(fileContent) ? 10 : 0;
-                extra += " DocVirus";
+                if (IsSuspiciousDoc(fileContent))
+                {
+                    score += 10;
+                    suspiciousData.Add("DocVirus");
+                }
             }
+
             // PE 文件特征检查
             if (fileExtension == ".exe" || fileExtension == ".dll")
             {
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "LoadLibrary", "GetProcAddress" }) ? 15 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "SetFileAttributes", "FILE_ATTRIBUTE_HIDDEN" }) ? 20 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "SHFormatDrive" }) ? 20 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "RtlAdjustPrivilege" }) ? 20 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "HideCurrentProcess" }) ? 20 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "SetFilePointer", "WriteFile" }) ? 15 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "CreateService", "StartService" }) ? 15 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "CopyFile", "CreateDirectory", "DeleteFile", "GetFullPathName" }) ? 5 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "CreateObject", "Scriptlet.TypeLib", "Shell.Application", "Scripting.FileSystemObject" }) ? 15 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "GetDlgItemInt", "GetDlgItemText", "GetDlgItemTextA" }) ? 15 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "InternetReadFile", "FtpGetFile", "URLDownloadToFile", "WinExec", "RegCreateKey" }) ? 20 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "CallNextHookEx", "SetWindowsHook" }) ? 20 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "WriteConsole" }) ? 5 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "GetModuleFileName", "GetModuleHandle" }) ? 20 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "WNetAddConnection" }) ? 15 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "CopyScreen" }) ? 15 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "ExitWindows" }) ? 5 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "URLDownloadToFile" }) ? 15 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "URLDownloadToCacheFile" }) ? -15 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "mouse_event", "keydb_event" }) ? 15 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "SetPriorityClass" }) ? 15 : 0;
-                score += ContainsSuspiciousApi(peInfo.ImportsName, new[] { "EnumAudioEndpoints" }) ? 15 : 0;
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "LoadLibrary" }))
+                {
+                    if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "GetProcAddress" }))
+                    {
+                        score += 15;
+                    }
+                    else
+                    {
+                        score += 10;
+                    }
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "SetFileAttributes" }) && ContainsSuspiciousApi(peInfo.ImportsName, new[] { "FILE_ATTRIBUTE_HIDDEN" }))
+                {
+                    score += 20;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "SHFormatDrive" }))
+                {
+                    score += 20;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "RtlAdjustPrivilege" }))
+                {
+                    score += 20;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "HideCurrentProcess" }))
+                {
+                    score += 20;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "SetFilePointer" }))
+                {
+                    score += 15;
+                    if (deepScan && ContainsSuspiciousApi(peInfo.ImportsName, new[] { "WriteFile" }) && ContainsSuspiciousContent(fileContent, new[] { "physicaldrive0" }))
+                    {
+                        score += 5;
+                        suspiciousData.Add("ChangeMBR");
+                    }
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "CreateService" }) && ContainsSuspiciousApi(peInfo.ImportsName, new[] { "StartService" }))
+                {
+                    suspiciousData.Add("UseService");
+                    score += 15;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "CopyFile" }) && ContainsSuspiciousApi(peInfo.ImportsName, new[] { "CreateDirectory" }) && ContainsSuspiciousApi(peInfo.ImportsName, new[] { "DeleteFile" }) && ContainsSuspiciousApi(peInfo.ImportsName, new[] { "GetFullPathName" }))
+                {
+                    score += 5;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "CreateObject" }))
+                {
+                    if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "Scriptlet.TypeLib", "Shell.Application", "Scripting.FileSystemObject" }))
+                    {
+                        score += 15;
+                    }
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "GetDlgItemInt", "GetDlgItemText", "GetDlgItemTextA" }))
+                {
+                    score += 15;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "InternetReadFile", "FtpGetFile", "URLDownloadToFile" }))
+                {
+                    if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "WinExec" }) && ContainsSuspiciousApi(peInfo.ImportsName, new[] { "RegCreateKey" }))
+                    {
+                        score += 20;
+
+                        if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "MoveFile", "CopyFile" }))
+                        {
+                            score += 10;
+                        }
+                    }
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "CallNextHookEx", "SetWindowsHook" }))
+                {
+                    suspiciousData.Add("AddHook");
+                    score += 20;
+                }
+                else if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "Hook" }))
+                {
+                    suspiciousData.Add("LikeAddHook");
+                    score += 15;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "WriteConsole" }))
+                {
+                    score += 5;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "GetModuleFileName", "GetModuleHandle" }))
+                {
+                    score += 20;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "WNetAddConnection" }))
+                {
+                    score += 15;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "CopyScreen" }))
+                {
+                    score += 15;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "ExitWindows" }))
+                {
+                    score += 5;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "URLDownloadToFile" }))
+                {
+                    score += 15;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "URLDownloadToCacheFile" }))
+                {
+                    score -= 15;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "mouse_event", "keydb_event" }))
+                {
+                    score += 15;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "SetPriorityClass" }))
+                {
+                    score += 15;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "EnumAudioEndpoints" }))
+                {
+                    suspiciousData.Add("LikeSandboxBypass");
+                    score += 15;
+                }
             }
 
             // 深度扫描
             if (deepScan)
             {
-                score += ContainsSuspiciousContent(fileContent, new[] { ".sys" }) ? 10 : 0;
-                score += ContainsSuspiciousContent(fileContent, new[] { "Virtual" }) ? 20 : 0;
-                score += ContainsSuspiciousContent(fileContent, new[] { "BlackMoon" }) ? 15 : 0;
-                score += ContainsSuspiciousContent(fileContent, new[] { "PYAS", "wsctrlsvc", "ESET", "zhudongfangyu", "avp", "avconsol", "ASWSCAN", "KWatch", "QQPCTray" }) ? 20 : 0;
-                score += ContainsSuspiciousContent(fileContent, new[] { "DelegateExecute", "fodhelper.exe" }) ? 20 : 0;
-                score += ContainsSuspiciousContent(fileContent, new[] { "sandboxie", "vmware - tray", "Detonate", "Vmware", "VMWARE", "Sandbox", "SANDBOX" }) ? 20 : 0;
+                if (ContainsSuspiciousContent(fileContent, new[] { ".sys" }))
+                {
+                    suspiciousData.Add("UseDriver");
+                    score += 10;
+                }
+
+                if (ContainsSuspiciousContent(fileContent, new[] { "Virtual" }))
+                {
+                    score += 20;
+                }
+
+                if (ContainsSuspiciousContent(fileContent, new[] { "BlackMoon" }))
+                {
+                    suspiciousData.Add("BlackMoon");
+                    score += 15;
+                }
+
+                if (ContainsSuspiciousContent(fileContent, new[] { "PYAS", "wsctrlsvc", "ESET", "zhudongfangyu", "avp", "avconsol", "ASWSCAN", "KWatch", "QQPCTray" }))
+                {
+                    suspiciousData.Add("AVKiller");
+                    score += 20;
+                }
+
+                if (ContainsSuspiciousContent(fileContent, new[] { "DelegateExecute", "fodhelper.exe" }))
+                {
+                    suspiciousData.Add("UACBypass");
+                    score += 20;
+                }
+
+                if (ContainsSuspiciousContent(fileContent, new[] { "sandboxie", "vmware - tray", "Detonate", "Vmware", "VMWARE", "Sandbox", "SANDBOX" }))
+                {
+                    suspiciousData.Add("SandboxBypass");
+                    score += 20;
+                }
             }
+
+            // 将附加数据拼接到extra变量
+            extra = string.Join(" ", suspiciousData);
 
             return score >= 50 ? score : 0;
         }
@@ -99,7 +260,8 @@ namespace Xdows.ScanEngine
 
         private static bool ContainsSuspiciousApi(string[] apis, string[] keywords)
         {
-            if (apis == null) {
+            if (apis == null)
+            {
                 return false;
             }
             return keywords.Any(keyword => apis.Any(api => api.Contains(keyword)));

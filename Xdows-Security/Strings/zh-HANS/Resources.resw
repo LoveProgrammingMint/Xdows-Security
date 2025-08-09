@@ -354,4 +354,10 @@
   <data name="HomePage_TextBlock_Close" xml:space="preserve">
     <value>当前系统防护未启用</value>
   </data>
+  <data name="SettingsPage_Scan_Local_ExtraData.Header" xml:space="preserve">
+    <value>额外数据</value>
+  </data>
+  <data name="SettingsPage_Scan_Local_ExtraData.Description" xml:space="preserve">
+    <value>病毒名称中增加额外数据的选拔赛</value>
+  </data>
 </root>

@@ -46,6 +46,11 @@
                             HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
                         <ToggleSwitch x:Name="DeepScanToggle" Toggled="DeepScanToggle_Toggled"  />
                     </controls:SettingsCard>
+                    <controls:SettingsCard
+                            x:Uid="SettingsPage_Scan_Local_ExtraData"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xF211;}">
+                        <ToggleSwitch x:Name="ExtraDataToggle" Toggled="ExtraDataToggle_Toggled"  />
+                    </controls:SettingsCard>
                 </controls:SettingsExpander.Items>
             </controls:SettingsExpander>
             <controls:SettingsExpander

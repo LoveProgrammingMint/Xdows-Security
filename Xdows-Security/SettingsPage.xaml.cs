@@ -32,6 +32,11 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             settings.Values["DeepScan"] = DeepScanToggle.IsOn;
         }
+        private void ExtraDataToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            var settings = ApplicationData.Current.LocalSettings;
+            settings.Values["ExtraData"] = ExtraDataToggle.IsOn;
+        }
         private void LoadScanSetting()
         {
             var settings = ApplicationData.Current.LocalSettings;
@@ -44,6 +49,11 @@ namespace Xdows_Security
             {
                 bool DeepScan = value is bool && (bool)value;
                 DeepScanToggle.IsOn = DeepScan;
+            }
+            if (settings.Values.TryGetValue("ExtraData", out value))
+            {
+                bool ExtraData = value is bool && (bool)value;
+                ExtraDataToggle.IsOn = ExtraData;
             }
         }
         private void LoadLanguageSetting()

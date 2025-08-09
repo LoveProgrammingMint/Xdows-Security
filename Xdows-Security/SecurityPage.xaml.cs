@@ -55,6 +55,7 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             bool showScanProgress = settings.Values["ShowScanProgress"] is bool && (bool)settings.Values["ShowScanProgress"];
             bool DeepScan = settings.Values["DeepScan"] is bool && (bool)settings.Values["DeepScan"];
+            bool ExtraData = settings.Values["ExtraData"] is bool && (bool)settings.Values["ExtraData"];
 
             _currentResults = new ObservableCollection<VirusRow>();
             _dispatcherQueue.TryEnqueue(() =>
@@ -120,7 +121,7 @@ namespace Xdows_Security
                         });
                         try
                         {
-                            var result = await Xdows.ScanEngine.ScanEngine.ScanAsync(file, DeepScan);
+                            var result = await Xdows.ScanEngine.ScanEngine.ScanAsync(file, DeepScan, ExtraData);
                             if (result != "")
                             {
                                 LogText.AddNewLog(1, "Security - Find", result, false);

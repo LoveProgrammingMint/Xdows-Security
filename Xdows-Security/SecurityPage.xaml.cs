@@ -111,7 +111,7 @@ namespace Xdows_Security
                         {
                             if (DeepScan)
                             {
-                                LogText.AddNewLog(1, "Security - BasicScan", file, false);
+                                LogText.AddNewLog(1, "Security - ScanFile", file, false);
                             }
                             else
                             {
@@ -121,15 +121,31 @@ namespace Xdows_Security
                         });
                         try
                         {
-                            var result = await Xdows.ScanEngine.ScanEngine.ScanAsync(file, DeepScan, ExtraData);
-                            if (result != "")
+                            var Result = string.Empty;
+                            var LocalResult = await Xdows.ScanEngine.ScanEngine.LocalScanAsync(file, DeepScan, ExtraData);
+                            if (LocalResult != string.Empty)
                             {
-                                LogText.AddNewLog(1, "Security - Find", result, false);
-                                _dispatcherQueue.TryEnqueue(() => _currentResults!.Add(new VirusRow(file, result)));
+                                if (DeepScan) { Result = $"{LocalResult} with DeepScan"; } else { Result = LocalResult; }
+                                
                             }
-                            else {
+                            if (Result == string.Empty) {
+                                //想盗用 ApiKey ？没门
+                                var CloudResult = await Xdows.ScanEngine.ScanEngine.CloudScanAsync(file, "");
+                                if (CloudResult.result != "safe")
+                                {
+                                    Result = CloudResult.result;
+                                }
+                            }
+                            if (Result != string.Empty)
+                            {
+                                LogText.AddNewLog(1, "Security - Find", Result, false);
+                                _dispatcherQueue.TryEnqueue(() => _currentResults!.Add(new VirusRow(file, Result)));
+                            }
+                            else
+                            {
                                 LogText.AddNewLog(1, "Security - Find", "Is Safe", false);
                             }
+
                         }
                         catch
                         {

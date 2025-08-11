@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Text.Json;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -18,7 +20,7 @@ namespace Xdows.ScanEngine
             public string[] ExportsName;
         }
 
-        public static async Task<string> ScanAsync(string path, bool deep, bool ExtraData)
+        public static async Task<string> LocalScanAsync(string path, bool deep, bool ExtraData)
         {
             if (!File.Exists(path)) return string.Empty;
 
@@ -64,7 +66,25 @@ namespace Xdows.ScanEngine
             }
             return string.Empty;
         }
+        public static async Task<(int statusCode, string result)> CloudScanAsync(string path, string apiKey)
+        {
+            using var client = new HttpClient();
+            var hash = await GetFileMD5Async(path);
+            var url = $"https://cv.szczk.top/scan/{apiKey}/{hash}";
+            try
+            {
+                var json = await client.GetStringAsync(url);
+                using var doc = JsonDocument.Parse(json);
+                if (doc.RootElement.TryGetProperty("result", out var prop))
+                    return (200, prop.GetString());
+            }
+            catch (HttpRequestException ex)
+            {
+                return ((int?)ex.StatusCode ?? -1, string.Empty);
+            }
 
+            return (-1, string.Empty);
+        }
         private static async Task<string> GetFileMD5Async(string path)
         {
             using var md5 = MD5.Create();

@@ -181,7 +181,7 @@
     <value>The local integrated engine is relatively fast but may not promptly detect new threats.</value>
   </data>
   <data name="SettingsPage_Scan_Cloud.Header" xml:space="preserve">
-    <value>Xdows Cloud Engine</value>
+    <value>CzkCloud Engine</value>
   </data>
   <data name="SettingsPage_Scan_Cloud.Description" xml:space="preserve">
     <value>Connecting to the cloud engine improves detection and accuracy but requires internet access.</value>

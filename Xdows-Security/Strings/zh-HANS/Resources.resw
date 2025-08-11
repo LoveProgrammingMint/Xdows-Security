@@ -181,10 +181,10 @@
     <value>本地综合引擎速度相对较快，但是可能无法及时发现新的威胁</value>
   </data>
   <data name="SettingsPage_Scan_Cloud.Header" xml:space="preserve">
-    <value>Xdows Cloud 云端引擎</value>
+    <value>CzkCloud 云端引擎</value>
   </data>
   <data name="SettingsPage_Scan_Cloud.Description" xml:space="preserve">
-    <value>连接至云端引擎可以提升查杀率和准确性，但是需要连接互联网</value>
+    <value>云端引擎来自第三方且需要连接至互联网，但是能提高查杀率</value>
   </data>
   <data name="SettingsPage_Scan_Local_DeepScan.Header" xml:space="preserve">
     <value>深度扫描</value>

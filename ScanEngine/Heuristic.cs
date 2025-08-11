@@ -206,7 +206,11 @@ namespace Xdows.ScanEngine
                     score += 15;
                 }
 
-                if (ContainsSuspiciousContent(fileContent, new[] { "PYAS", "wsctrlsvc", "ESET", "zhudongfangyu", "avp", "avconsol", "ASWSCAN", "KWatch", "QQPCTray" }))
+                if (ContainsSuspiciousContent(fileContent, new[] {
+                    "PYAS", "wsctrlsvc", "ESET", "zhudongfangyu", "avp", "avconsol",
+                    "ASWSCAN", "KWatch", "QQPCTray", "360tray", "360sd", "ccSvcHst",
+                    "f-secure", "KvMonXP", "RavMonD", "Mcshield", "ekrn", "kxetray",
+                    "avcenter", "avguard", "Sophos", "safedog"}))
                 {
                     suspiciousData.Add("AVKiller");
                     score += 20;

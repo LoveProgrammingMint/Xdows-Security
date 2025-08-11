@@ -1,9 +1,11 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
 using Windows.Storage;
@@ -11,40 +13,30 @@ using Windows.System.UserProfile;
 
 namespace Xdows_Security
 {
-    public static class LogText
+    public static class LogText 
     {
-        public static string Text { get; set; } = string.Empty;
+        private static string? _Text;
+        public static string Text { get => _Text ??= String.Empty; set => _Text = value; }
+
         public static event EventHandler? TextChanged;
+
 
         public static void AddNewLog(int Level, string Source, string Info, bool Update)
         {
             string currentTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"); // 获取当前本地时间
-            string LevelText = "UNKNOWN"; 
-            switch (Level)
+            string LevelText = Level switch
             {
-                case 0:
-                    LevelText = "DEBUG";
-                    break;
-                case 1:
-                    LevelText = "INFO";
-                    break;
-                case 2:
-                    LevelText = "WARN";
-                    break;
-                case 3:
-                    LevelText = "ERROR";
-                    break;
-                case 4:
-                    LevelText = "FATAL";
-                    break;
-                default:
-                    LevelText = "UNKNOWN";
-                    break;
-            }
-
+                0 => "DEBUG",
+                1 => "INFO",
+                2 => "WARN",
+                3 => "ERROR",
+                4 => "FATAL",
+                _ => "UNKNOWN",
+            };
             string logEntry = $"[{currentTime}][{LevelText}][{Source}]: {Info}{Environment.NewLine}";
             Text += logEntry;
-            if (Update) {
+            if (Update)
+            {
                 TextChanged?.Invoke(null, EventArgs.Empty);
             }
         }
@@ -61,6 +53,7 @@ namespace Xdows_Security
     {
         public static MainWindow? MainWindow { get; private set; }
         public static string GetCloudApiKey() {return ""; }//想盗用 ApiKey ? 没门
+
         public App()
         {
             LogText.AddNewLog(1, "UI Interface", "尝试加载主窗口",false);
@@ -88,7 +81,7 @@ namespace Xdows_Security
         private void InitializeLanguage()
         {
             var settings = ApplicationData.Current.LocalSettings;
-            if (settings.Values.TryGetValue("AppLanguage", out object language))
+            if (settings.Values.TryGetValue("AppLanguage", out object? language))
             {
                 ApplicationLanguages.PrimaryLanguageOverride = language as string;
             }
@@ -105,7 +98,7 @@ namespace Xdows_Security
         {
             try
             {
-                var appPath = Process.GetCurrentProcess().MainModule.FileName;
+                var appPath = Environment.ProcessPath;
                 Process.Start(new ProcessStartInfo
                 {
                     FileName = appPath,
@@ -136,12 +129,12 @@ namespace Xdows_Security
         }
         public static ElementTheme Theme { get; set; } = ElementTheme.Default;
 
-        private void InitializeTheme()
+        private static void InitializeTheme()
         {
             var settings = ApplicationData.Current.LocalSettings;
-            if (settings.Values.TryGetValue("AppTheme", out object theme))
+            if (settings.Values.TryGetValue("AppTheme", out object? theme))
             {
-                string themeString = theme as string;
+                string themeString = theme as string ?? ElementTheme.Default.ToString();
                 if (Enum.TryParse(themeString, out ElementTheme themeValue))
                 {
                     Theme = themeValue;
@@ -159,7 +152,7 @@ namespace Xdows_Security
         public static bool IsWindows11OrGreater { get; private set; }
         private const string DefaultBackdrop = "Mica";
 
-        private void CheckWindowsVersion()
+        private static void CheckWindowsVersion()
         {
             try
             {
@@ -173,7 +166,7 @@ namespace Xdows_Security
             }
         }
 
-        private void InitializeBackdrop()
+        private static void InitializeBackdrop()
         {
             var settings = ApplicationData.Current.LocalSettings;
             if (!settings.Values.ContainsKey("AppBackdrop"))

@@ -60,7 +60,7 @@ namespace Xdows_Security
     public partial class App : Application
     {
         public static MainWindow? MainWindow { get; private set; }
-
+        public static string GetCloudApiKey() {return ""; }//想盗用 ApiKey ? 没门
         public App()
         {
             LogText.AddNewLog(1, "UI Interface", "尝试加载主窗口",false);

@@ -129,8 +129,7 @@ namespace Xdows_Security
                                 
                             }
                             if (Result == string.Empty) {
-                                //想盗用 ApiKey ？没门
-                                var CloudResult = await Xdows.ScanEngine.ScanEngine.CloudScanAsync(file, "");
+                                var CloudResult = await Xdows.ScanEngine.ScanEngine.CloudScanAsync(file, App.GetCloudApiKey());
                                 if (CloudResult.result != "safe")
                                 {
                                     Result = CloudResult.result;

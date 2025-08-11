@@ -37,6 +37,16 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             settings.Values["ExtraData"] = ExtraDataToggle.IsOn;
         }
+        private void LocalScanToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            var settings = ApplicationData.Current.LocalSettings;
+            settings.Values["LocalScan"] = LocalScanToggle.IsOn;
+        }
+        private void CloudScanToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            var settings = ApplicationData.Current.LocalSettings;
+            settings.Values["CloudScan"] = CloudScanToggle.IsOn;
+        }
         private void LoadScanSetting()
         {
             var settings = ApplicationData.Current.LocalSettings;
@@ -54,6 +64,16 @@ namespace Xdows_Security
             {
                 bool ExtraData = value is bool && (bool)value;
                 ExtraDataToggle.IsOn = ExtraData;
+            }
+            if (settings.Values.TryGetValue("LocalScan", out value))
+            {
+                bool LocalScan = value is bool && (bool)value;
+                LocalScanToggle.IsOn = LocalScan;
+            }
+            if (settings.Values.TryGetValue("CloudScan", out value))
+            {
+                bool CloudScan = value is bool && (bool)value;
+                CloudScanToggle.IsOn = CloudScan;
             }
         }
         private void LoadLanguageSetting()
@@ -163,6 +183,7 @@ namespace Xdows_Security
 
             var settings = ApplicationData.Current.LocalSettings;
             settings.Values["AppTheme"] = selectedTheme.ToString();
+            MainWindow MainWindow = new MainWindow();
 
             if (App.MainWindow.Content is FrameworkElement rootElement)
             {

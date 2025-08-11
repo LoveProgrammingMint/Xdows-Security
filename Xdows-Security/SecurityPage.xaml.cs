@@ -34,6 +34,22 @@ namespace Xdows_Security
         }
         private void OnScanMenuClick(object sender, RoutedEventArgs e)
         {
+            var settings = ApplicationData.Current.LocalSettings;
+            bool UseLocalScan = settings.Values["LocalScan"] is bool && (bool)settings.Values["LocalScan"];
+            bool UseCloudScan = settings.Values["CloudScan"] is bool && (bool)settings.Values["CloudScan"];
+            if (!UseLocalScan && !UseCloudScan) {
+                var dialog = new ContentDialog
+                {
+                    Title = "当前没有选择扫描引擎",
+                    Content = "请转到 设置 - 引擎 来启用至少一个引擎。",
+                    PrimaryButtonText = "确定",
+                    XamlRoot = this.XamlRoot,
+                    PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                };
+                dialog.ShowAsync();
+                return;
+            }
+
             if (sender is not MenuFlyoutItem { Tag: string tag }) return;
             var mode = tag switch
             {
@@ -56,6 +72,8 @@ namespace Xdows_Security
             bool showScanProgress = settings.Values["ShowScanProgress"] is bool && (bool)settings.Values["ShowScanProgress"];
             bool DeepScan = settings.Values["DeepScan"] is bool && (bool)settings.Values["DeepScan"];
             bool ExtraData = settings.Values["ExtraData"] is bool && (bool)settings.Values["ExtraData"];
+            bool UseLocalScan = settings.Values["LocalScan"] is bool && (bool)settings.Values["LocalScan"];
+            bool UseCloudScan = settings.Values["CloudScan"] is bool && (bool)settings.Values["CloudScan"];
 
             _currentResults = new ObservableCollection<VirusRow>();
             _dispatcherQueue.TryEnqueue(() =>
@@ -122,17 +140,23 @@ namespace Xdows_Security
                         try
                         {
                             var Result = string.Empty;
-                            var LocalResult = await Xdows.ScanEngine.ScanEngine.LocalScanAsync(file, DeepScan, ExtraData);
-                            if (LocalResult != string.Empty)
-                            {
-                                if (DeepScan) { Result = $"{LocalResult} with DeepScan"; } else { Result = LocalResult; }
-                                
-                            }
-                            if (Result == string.Empty) {
-                                var CloudResult = await Xdows.ScanEngine.ScanEngine.CloudScanAsync(file, App.GetCloudApiKey());
-                                if (CloudResult.result != "safe")
+                            if (UseLocalScan) {
+                                var LocalResult = await Xdows.ScanEngine.ScanEngine.LocalScanAsync(file, DeepScan, ExtraData);
+                                if (LocalResult != string.Empty)
                                 {
-                                    Result = CloudResult.result;
+                                    if (DeepScan) { Result = $"{LocalResult} with DeepScan"; } else { Result = LocalResult; }
+
+                                }
+                            }
+                            if (UseCloudScan)
+                            {
+                                if (Result == string.Empty)
+                                {
+                                    var CloudResult = await Xdows.ScanEngine.ScanEngine.CloudScanAsync(file, App.GetCloudApiKey());
+                                    if (CloudResult.result != "safe")
+                                    {
+                                        Result = CloudResult.result;
+                                    }
                                 }
                             }
                             if (Result != string.Empty)

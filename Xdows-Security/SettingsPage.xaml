@@ -39,7 +39,7 @@
                             VerticalAlignment="Top"
                             x:Uid="SettingsPage_Scan_Local"
                             HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
-                <ToggleSwitch IsOn="True" IsEnabled="False" />
+                <ToggleSwitch x:Name="LocalScanToggle" Toggled="LocalScanToggle_Toggled" />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                             x:Uid="SettingsPage_Scan_Local_DeepScan"
@@ -57,7 +57,7 @@
                             VerticalAlignment="Top"
                             x:Uid="SettingsPage_Scan_Cloud"
                             HeaderIcon="{ui:FontIcon Glyph=&#xE753;}">
-                <ToggleSwitch IsEnabled="False"  />
+                <ToggleSwitch x:Name="CloudScanToggle" Toggled="CloudScanToggle_Toggled"  />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                             x:Uid="SettingsPage_Scan_Cloud_AutoReport"

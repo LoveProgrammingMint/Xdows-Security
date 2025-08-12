@@ -54,7 +54,7 @@ namespace Xdows_Security
     public static class Protection
     {
         public static bool IsOpen() {
-            return false;
+            return true;
         }
         public static bool Run(int RunID)
         {

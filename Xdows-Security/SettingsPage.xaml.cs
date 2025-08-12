@@ -283,7 +283,6 @@ namespace Xdows_Security
 
             var settings = ApplicationData.Current.LocalSettings;
             settings.Values["AppTheme"] = selectedTheme.ToString();
-            MainWindow MainWindow = new MainWindow();
 
             if (App.MainWindow.Content is FrameworkElement rootElement)
             {
@@ -298,9 +297,6 @@ namespace Xdows_Security
                 App.MainWindow.ApplyBackdrop(backdrop);
             }
         }
-
-        // ±³¾°²ÄÖÊ
-        private const string DefaultBackdrop = "Mica";
 
         private void LoadBackdropSetting()
         {

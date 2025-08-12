@@ -7,8 +7,9 @@
     mc:Ignorable="d">
 
     <StackPanel>
-        <FontIcon x:Name="Icon" Margin="0,12,0,0" Glyph="&#xE73E;" FontSize="124" FontWeight="Bold"/>
+        <FontIcon x:Name="Icon" Margin="0,-25,0,0" Glyph="&#xE73E;" FontSize="124" FontWeight="Bold"/>
         <TextBlock Margin="0,12,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="HomePage_TextBlock" FontSize="24" FontWeight="Bold"/>
+        <TextBlock Margin="0,20,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="HomePage_TextBlock1" FontSize="15" FontWeight="Bold"/>
 
         <TextBox
                 x:Name="LogTextBox"

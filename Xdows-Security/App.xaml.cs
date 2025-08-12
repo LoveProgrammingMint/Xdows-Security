@@ -20,6 +20,7 @@ namespace Xdows_Security
 
         public static event EventHandler? TextChanged;
 
+        private static readonly int MAXLONG = 8000;
 
         public static void AddNewLog(int Level, string Source, string Info, bool Update)
         {
@@ -34,7 +35,15 @@ namespace Xdows_Security
                 _ => "UNKNOWN",
             };
             string logEntry = $"[{currentTime}][{LevelText}][{Source}]: {Info}{Environment.NewLine}";
-            Text += logEntry;
+            if ((Text + logEntry).Length > MAXLONG)
+            {
+                Text = logEntry;
+            }
+            else
+            {
+                Text += logEntry;
+            }
+
             if (Update)
             {
                 TextChanged?.Invoke(null, EventArgs.Empty);
@@ -47,7 +56,8 @@ namespace Xdows_Security
         public static bool IsOpen() {
             return false;
         }
-        public static bool Run(int RunID) {
+        public static bool Run(int RunID)
+        {
             string RunFileName = RunID switch
             {
                 0 => "XIGUASecurityProgress.exe",

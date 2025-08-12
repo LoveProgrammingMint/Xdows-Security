@@ -74,7 +74,16 @@ namespace Xdows_Security
             bool ExtraData = settings.Values["ExtraData"] is bool && (bool)settings.Values["ExtraData"];
             bool UseLocalScan = settings.Values["LocalScan"] is bool && (bool)settings.Values["LocalScan"];
             bool UseCloudScan = settings.Values["CloudScan"] is bool && (bool)settings.Values["CloudScan"];
-
+            string Log = "Use";
+            if (UseLocalScan) {
+                Log += " LocalScan";
+                if (DeepScan) { Log += "-DeepScan"; }
+            }
+            if (UseCloudScan)
+            {
+                Log += " CloudScan";
+            }
+            LogText.AddNewLog(1, "Security - StartScan", Log, false);
             _currentResults = new ObservableCollection<VirusRow>();
             _dispatcherQueue.TryEnqueue(() =>
             {
@@ -127,14 +136,7 @@ namespace Xdows_Security
 
                         _dispatcherQueue.TryEnqueue(() =>
                         {
-                            if (DeepScan)
-                            {
-                                LogText.AddNewLog(1, "Security - ScanFile", file, false);
-                            }
-                            else
-                            {
-                                LogText.AddNewLog(1, "Security - DeepScan", file, false);
-                            }
+                            LogText.AddNewLog(1, "Security - ScanFile", file, false);
                             StatusText.Text = $"ÕýÔÚÉ¨Ãè£º{file}";
                         });
                         try

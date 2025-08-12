@@ -24,7 +24,7 @@ namespace Xdows_Security
             Window window = this;
             window.ExtendsContentIntoTitleBar = true;
             AppWindow.SetIcon("logo.ico");
-
+            this.AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
             if (ExtendsContentIntoTitleBar == true)
             {
                 this.SetTitleBar(CustomTitleBar);

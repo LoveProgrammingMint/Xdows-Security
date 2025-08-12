@@ -27,7 +27,7 @@ namespace Xdows_Security
 
             if (ExtendsContentIntoTitleBar == true)
             {
-                this.AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
+                this.SetTitleBar(CustomTitleBar);
             }
 
             nav.SelectedItem = nav.MenuItems.OfType<NavigationViewItem>().First();

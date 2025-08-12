@@ -47,6 +47,26 @@ namespace Xdows_Security
         public static bool IsOpen() {
             return false;
         }
+        public static bool Run(int RunID) {
+            string RunFileName = RunID switch
+            {
+                0 => "XIGUASecurityProgress.exe",
+                2 => "XIGUASecurityBoot.exe",
+                1 => "XIGUASecurityRegister.exe",
+                _ => "XIGUASecurityProgress.exe",
+            };
+            try
+            {
+                LogText.AddNewLog(1, "Protection", $"Try Running {RunFileName}...", false);
+                Process.Start(RunFileName);
+            }
+            catch (Exception ex)
+            {
+                LogText.AddNewLog(3, "Protection", ex.Message, false);
+                return false;
+            }
+            return true;
+        }
     }
 
     public partial class App : Application

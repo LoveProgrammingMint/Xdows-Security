@@ -51,8 +51,8 @@ namespace Xdows_Security
             string RunFileName = RunID switch
             {
                 0 => "XIGUASecurityProgress.exe",
-                2 => "XIGUASecurityBoot.exe",
-                1 => "XIGUASecurityRegister.exe",
+                1 => "XIGUASecurityBoot.exe",
+                2 => "XIGUASecurityRegister.exe",
                 _ => "XIGUASecurityProgress.exe",
             };
             try

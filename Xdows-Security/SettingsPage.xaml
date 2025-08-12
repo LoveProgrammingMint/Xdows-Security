@@ -184,7 +184,7 @@
                         <TextBlock x:Name="Settings_About_Version" />
                     </controls:SettingsCard>
                     <controls:SettingsCard x:Uid="SettingsPage_Other_About_Feedback" HeaderIcon="{ui:FontIcon Glyph=&#xED15;}">
-                        <HyperlinkButton x:Uid="AllPage_OpenLink" NavigateUri="https://github.com/XTY64XTY12345/Xdows-Security-4/issues/" />
+                        <HyperlinkButton x:Uid="AllPage_OpenLink" NavigateUri="https://xiguasystem.top/" />
                     </controls:SettingsCard>
                     <controls:SettingsCard x:Uid="SettingsPage_Other_About_Website" HeaderIcon="{ui:FontIcon Glyph=&#xE774;}">
                         <HyperlinkButton x:Uid="AllPage_OpenLink" NavigateUri="https://xty64xty.netlify.app/" />

@@ -46,7 +46,7 @@ namespace Xdows_Security
                     XamlRoot = this.XamlRoot,
                     PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 };
-                dialog.ShowAsync();
+                _ = dialog.ShowAsync();
                 return;
             }
 

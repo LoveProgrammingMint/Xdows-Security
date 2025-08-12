@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
+using System.Diagnostics;
 using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
 using Windows.Storage;
@@ -21,6 +22,105 @@ namespace Xdows_Security
             LoadBackdropSetting();
             LoadScanSetting();
             Settings_About_Version.Text = _resourceLoader.GetString("APP_Version");
+        }
+        private void Reg(object sender, RoutedEventArgs e)
+        {
+            // 获取 ToggleSwitch 实例
+            var reg = sender as ToggleSwitch;
+
+            if (reg?.IsOn == true)
+            {
+                // 开关开启时，运行程序
+                Runreg();
+            }
+            else
+            {
+                // 可选：开关关闭时的逻辑（如关闭程序）
+                // CloseProgram(); 
+            }
+        }
+        private void Kill(object sender, RoutedEventArgs e)
+        {
+            // 获取 ToggleSwitch 实例
+            var kill = sender as ToggleSwitch;
+
+            if (kill?.IsOn == true)
+            {
+                // 开关开启时，运行程序
+                RunProgram();
+            }
+            else
+            {
+                // 可选：开关关闭时的逻辑（如关闭程序）
+                //CloseProgram(); 
+            }
+        }
+        private void mbr_Toggled(object sender, RoutedEventArgs e)
+        {
+            var mbr = sender as ToggleSwitch;
+
+            if (mbr?.IsOn == true)
+            {
+                // 开关开启时，运行程序
+                Runmbr();
+            }
+            else
+            {
+                // 可选：开关关闭时的逻辑（如关闭程序）
+                // CloseProgram(); 
+            }
+        }
+        private void Runreg()
+        {
+            try
+            {
+                // 替换为你的程序路径（例如："C:\\Program Files\\YourApp\\app.exe"）
+                string programPath = @"\XIGUASecurityReg.exe";
+                LogText.AddNewLog(1,"[INFO]", "XIGUASecurityReg is Start",false);
+                // 启动进程
+                Process.Start("XIGUASecurityReg.exe");
+            }
+            catch (Exception ex)
+            {
+                // 处理异常（如路径错误、权限不足等）
+                System.Diagnostics.Debug.WriteLine($"启动程序失败：{ex.Message}");
+                LogText.AddNewLog(1,"[ERROR]", ex.Message,false);
+            }
+        }
+        private void RunProgram()
+        {
+            try
+            {
+                // 替换为你的程序路径（例如："C:\\Program Files\\YourApp\\app.exe"）
+                string programPath = @"\\XIGUASecurityTskEye.exe";
+                LogText.AddNewLog(1,"[INFO]", "XIGUASecurityTskEye is Start",false);
+                // 启动进程
+                Process.Start("XIGUASecurityTskEye.exe");
+
+            }
+            catch (Exception ex)
+            {
+                // 处理异常（如路径错误、权限不足等）
+                System.Diagnostics.Debug.WriteLine($"启动程序失败：{ex.Message}");
+                LogText.AddNewLog(1,"[ERROR]",ex.Message,false);
+            }
+        }
+        private void Runmbr()
+        {
+            try
+            {
+                // 替换为你的程序路径（例如："C:\\Program Files\\YourApp\\app.exe"）
+                string programPath = @"\\XIGUASecurityTskHips";
+                LogText.AddNewLog(1,"[INFO]", "MBR Lock is Start",false);
+                // 启动进程
+                Process.Start("XIGUASecurityTskHips.exe");
+            }
+            catch (Exception ex)
+            {
+                // 处理异常（如路径错误、权限不足等）
+                System.Diagnostics.Debug.WriteLine($"启动程序失败：{ex.Message}");
+                LogText.AddNewLog(1,"[ERROR]", ex.Message, false);
+            }
         }
         private void ScanProgressToggle_Toggled(object sender, RoutedEventArgs e)
         {

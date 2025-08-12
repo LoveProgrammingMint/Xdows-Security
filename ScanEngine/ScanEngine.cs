@@ -60,7 +60,7 @@ namespace Xdows.ScanEngine
             }
 
             var score = Heuristic.Evaluate(path, fileInfo, deep, out var extra);
-            if (score >= 50)
+            if (score >= 75)
             {
                 return ExtraData ? $"Xdows.local.code{score} {extra}" : $"Xdows.local.code{score}";
             }

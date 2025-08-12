@@ -72,7 +72,7 @@
                 VerticalAlignment="Top"
                 x:Uid="SettingsPage_Protection_Process"
                 HeaderIcon="{ui:FontIcon Glyph=&#xE9D5;}">
-                <ToggleSwitch IsEnabled="False"  />
+                <ToggleSwitch IsEnabled="True" Toggled="Kill" />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                         x:Uid="SettingsPage_Protection_Process_DeepScan"
@@ -120,7 +120,7 @@
                 VerticalAlignment="Top"
                 x:Uid="SettingsPage_Protection_Boot"
                 HeaderIcon="{ui:FontIcon Glyph=&#xEDA2;}">
-                <ToggleSwitch IsEnabled="False"  />
+                <ToggleSwitch IsEnabled="true" Toggled="mbr_Toggled"  />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                         x:Uid="SettingsPage_Protection_Boot_Save"
@@ -140,7 +140,7 @@
                 VerticalAlignment="Top"
                 x:Uid="SettingsPage_Protection_Register"
                 HeaderIcon="{ui:FontIcon Glyph=&#xEA37;}">
-                <ToggleSwitch  IsEnabled="False" />
+                <ToggleSwitch  IsEnabled="true" Toggled="Reg"/>
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                          x:Uid="SettingsPage_Protection_Register_Secondary"
@@ -178,7 +178,7 @@
                             HeaderIcon="{ui:FontIcon Glyph=&#xE946;}">
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard x:Uid="SettingsPage_Other_About_Name" HeaderIcon="{ui:FontIcon Glyph=&#xE8AC;}">
-                        <TextBlock Text="Xdows Security" />
+                        <TextBlock Text="Xdows-Security @ XIGUASecurity" />
                     </controls:SettingsCard>
                     <controls:SettingsCard x:Uid="SettingsPage_Other_About_Version" HeaderIcon="{ui:FontIcon Glyph=&#xE7B8;}">
                         <TextBlock x:Name="Settings_About_Version" />

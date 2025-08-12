@@ -18,7 +18,6 @@ namespace Xdows_Security
     public sealed partial class MainWindow : Window
     {
         //private readonly ResourceLoader _resourceLoader = ResourceLoader.GetForViewIndependentUse(); //多语言调用
-        public string NowPage;
         public MainWindow()
         {
             InitializeComponent();
@@ -60,7 +59,6 @@ namespace Xdows_Security
 
             LogText.AddNewLog(1, "UI Interface", "主窗口加载成功",true);
         }
-
         public void UpdateTheme(ElementTheme selectedTheme)
         {
             App.Theme = selectedTheme;
@@ -175,7 +173,6 @@ namespace Xdows_Security
             if (nav.SelectedItem is NavigationViewItem item)
             {
                 string pageName = item.Tag as string ?? string.Empty;
-                NowPage = pageName;
                 GoToPage(pageName);
             }
         }

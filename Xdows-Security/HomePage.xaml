@@ -19,7 +19,7 @@
         </StackPanel>
 
         <!-- 选项卡内容 -->
-        <TabView Grid.Row="1" IsAddTabButtonVisible="False" SelectionChanged="TabView_SelectionChanged">
+        <TabView Grid.Row="1" IsAddTabButtonVisible="False" SelectionChanged="TabView_SelectionChanged" TabWidthMode="Equal">
             <TabViewItem Header="系统状态" IsClosable="False">
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>

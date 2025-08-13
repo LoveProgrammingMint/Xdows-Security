@@ -194,7 +194,7 @@ namespace Xdows_Security
             {
                 Icon = "\uE73E",
                 Color = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green),
-                Message = "实时防护已启动，你的设备很安全",
+                Message = "实时防护已启动",
                 Time = DateTime.Now.ToString("HH:mm:ss")
             });
         }
@@ -208,21 +208,21 @@ namespace Xdows_Security
         private void ProtectionTimer_Tick(object sender, object e)
         {
             // 模拟防护日志更新
-            //if (new Random().Next(100) < 10) // 10% 概率添加新日志
-            //{
-                //_protectionLogs.Insert(0, new ProtectionLogItem
-                //{
-                    //Icon = "\uE8A5",
-                    //Color = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Blue),
-                    //Message = "文件扫描完成",
-                    //Time = DateTime.Now.ToString("HH:mm:ss")
-                //});
+            if (new Random().Next(100) < 10) // 10% 概率添加新日志
+            {
+                _protectionLogs.Insert(0, new ProtectionLogItem
+                {
+                    Icon = "\uE8A5",
+                    Color = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Blue),
+                    Message = "文件扫描完成",
+                    Time = DateTime.Now.ToString("HH:mm:ss")
+                });
                 
-                //if (_protectionLogs.Count > 50)
-                //{
-                   // _protectionLogs.RemoveAt(_protectionLogs.Count - 1);
-                //}
-            //}
+                if (_protectionLogs.Count > 50)
+                {
+                    _protectionLogs.RemoveAt(_protectionLogs.Count - 1);
+                }
+            }
         }
         
         private void RefreshSystemInfo_Click(object sender, RoutedEventArgs e)
@@ -315,12 +315,12 @@ namespace Xdows_Security
                 }
                 catch (Exception ex)
                 {
-                    //await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                    //{
-                        //QuickScanStatusText.Text = $"扫描失败: {ex.Message}";
-                        //QuickScanProgress.Visibility = Visibility.Collapsed;
-                       // _scanCancellationTokenSource = null;
-                    //});
+                    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                    {
+                        QuickScanStatusText.Text = $"扫描失败: {ex.Message}";
+                        QuickScanProgress.Visibility = Visibility.Collapsed;
+                        _scanCancellationTokenSource = null;
+                    });
                 }
             });
         }
@@ -464,10 +464,7 @@ namespace Xdows_Security
             
             if (filter == "所有级别")
             {
-                if (LogTextBox != null)
-                {
-                    LogTextBox.Text = LogText.Text;
-                }
+                LogTextBox.Text = LogText.Text;
             }
             else
             {

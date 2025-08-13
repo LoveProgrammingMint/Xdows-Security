@@ -11,15 +11,16 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <!-- 欢迎信息 -->
+        
+        <!-- 欢迎区域 -->
         <StackPanel Grid.Row="0" Margin="0,0,0,20">
             <FontIcon x:Name="Icon" Margin="0,-25,0,0" Glyph="&#xE73E;" FontSize="124" FontWeight="Bold"/>
             <TextBlock Margin="0,12,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="HomePage_TextBlock" FontSize="24" FontWeight="Bold"/>
+            <TextBlock Margin="0,20,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="HomePage_TextBlock1" FontSize="10" FontWeight="Bold"/>
         </StackPanel>
-
-        <!-- 选项卡内容 -->
-        <TabView Grid.Row="1" IsAddTabButtonVisible="False" SelectionChanged="TabView_SelectionChanged" TabWidthMode="SizeToContent">
+        
+        <!-- 选项卡区域 -->
+        <TabView Grid.Row="1" IsAddTabButtonVisible="False" SelectionChanged="TabView_SelectionChanged">
             <TabViewItem Header="系统状态" IsClosable="False">
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
@@ -31,7 +32,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Button Grid.Row="0" Content="刷新系统信息" Click="RefreshSystemInfo_Click" Margin="5,5,0,5" HorizontalAlignment="Left"/>
+                    <Button Grid.Row="0" Content="刷新系统信息" Click="RefreshSystemInfo_Click" Margin="0,0,0,10" HorizontalAlignment="Left"/>
                     <ScrollViewer Grid.Row="1">
                         <StackPanel Spacing="10">
                             <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
@@ -63,7 +64,7 @@
                                     </Grid>
                                 </StackPanel>
                             </Border>
-
+                            
                             <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
                                 <StackPanel>
                                     <TextBlock Text="防护状态" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
@@ -73,14 +74,14 @@
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Text="实时防护：" Grid.Column="0" Margin="0,0,10,0"/>
-                                        <TextBlock x:Name="ProtectionStatusText" Grid.Column="1" Text="正在加载..."/>
+                                        <TextBlock x:Name="ProtectionStatusText" Grid.Column="1" Text="正在检查..."/>
                                     </Grid>
                                     <Grid Margin="0,5,0,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="上次扫描：" Grid.Column="0" Margin="0,0,10,0"/>
+                                        <TextBlock Text="最后扫描：" Grid.Column="0" Margin="0,0,10,0"/>
                                         <TextBlock x:Name="LastScanText" Grid.Column="1" Text="暂无扫描记录"/>
                                     </Grid>
                                     <Grid Margin="0,5,0,0">
@@ -88,7 +89,7 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="检测到威胁：" Grid.Column="0" Margin="0,0,10,0"/>
+                                        <TextBlock Text="威胁数量：" Grid.Column="0" Margin="0,0,10,0"/>
                                         <TextBlock x:Name="ThreatCountText" Grid.Column="1" Text="0"/>
                                     </Grid>
                                 </StackPanel>
@@ -97,11 +98,11 @@
                     </ScrollViewer>
                 </Grid>
             </TabViewItem>
-
+            
             <TabViewItem Header="快速扫描" IsClosable="False">
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="14" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding}" FontSize="14" FontWeight="SemiBold"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>
@@ -110,9 +111,9 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
-                    <StackPanel Grid.Row="0" Spacing="10" Margin="0,10,0,10">
-                        <Button Content="开始快速扫描" Click="StartQuickScan_Click" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Left" IsEnabled="True"/>
+                    
+                    <StackPanel Grid.Row="0" Spacing="10" Margin="0,0,0,10">
+                        <Button Content="开始快速扫描" Click="StartQuickScan_Click" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Left"/>
                         <TextBlock Text="选择扫描类型：" FontSize="14" FontWeight="SemiBold"/>
                         <ComboBox x:Name="QuickScanTypeCombo" SelectedIndex="0">
                             <ComboBoxItem Content="系统关键目录"/>
@@ -121,10 +122,10 @@
                             <ComboBoxItem Content="用户文档"/>
                         </ComboBox>
                     </StackPanel>
-
-                    <ProgressBar x:Name="QuickScanProgress" Grid.Row="1" IsIndeterminate="False" Visibility="Collapsed" Margin="0,-15,0,10"/>
-                    <TextBlock x:Name="QuickScanStatusText" Grid.Row="1" Text="准备扫描" Margin="0,10,0,10"/>
-
+                    
+                    <ProgressBar x:Name="QuickScanProgress" Grid.Row="1" IsIndeterminate="False" Visibility="Collapsed" Margin="0,0,0,10"/>
+                    <TextBlock x:Name="QuickScanStatusText" Grid.Row="1" Text="准备就绪" Margin="0,0,0,10"/>
+                    
                     <ListView x:Name="QuickScanResults" Grid.Row="2" Visibility="Collapsed">
                         <ListView.ItemTemplate>
                             <DataTemplate>
@@ -141,7 +142,7 @@
                     </ListView>
                 </Grid>
             </TabViewItem>
-
+            
             <TabViewItem Header="安全统计" IsClosable="False">
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
@@ -153,9 +154,9 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
-                    <Button Grid.Row="0" Content="刷新统计" Click="RefreshStatistics_Click" Margin="0,5,0,10" HorizontalAlignment="Left"/>
-
+                    
+                    <Button Grid.Row="0" Content="刷新统计" Click="RefreshStatistics_Click" Margin="0,0,0,10" HorizontalAlignment="Left"/>
+                    
                     <ScrollViewer Grid.Row="1">
                         <StackPanel Spacing="10">
                             <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
@@ -167,17 +168,17 @@
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         <Grid Grid.Column="0">
-                                            <TextBlock Text="总扫描数" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                                            <TextBlock x:Name="TotalScansText" Text="0" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,20,0,0"/>
+                                            <TextBlock Text="总扫描次数" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="TotalScansText" Text="0" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,5,0,0"/>
                                         </Grid>
                                         <Grid Grid.Column="1">
-                                            <TextBlock Text="发现威胁" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                                            <TextBlock x:Name="TotalThreatsText" Text="0" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,20,0,0"/>
+                                            <TextBlock Text="发现威胁" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="TotalThreatsText" Text="0" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,5,0,0"/>
                                         </Grid>
                                     </Grid>
                                 </StackPanel>
                             </Border>
-
+                            
                             <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
                                 <StackPanel>
                                     <TextBlock Text="最近活动" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
@@ -203,7 +204,7 @@
                     </ScrollViewer>
                 </Grid>
             </TabViewItem>
-
+            
             <TabViewItem Header="实时防护" IsClosable="False">
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
@@ -215,9 +216,9 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
-                    <StackPanel Grid.Row="0" Spacing="10" Margin="15,5,0,10">
-                        <TextBlock Text="多重防护 - 防护中心" FontSize="16" FontWeight="Bold"/>
+                    
+                    <StackPanel Grid.Row="0" Spacing="10" Margin="0,0,0,10">
+                        <TextBlock Text="防护模块" FontSize="16" FontWeight="Bold"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -247,7 +248,7 @@
                     <Border Grid.Row="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
                         <StackPanel>
                             <TextBlock Text="防护日志" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
-                            <ListView x:Name="ProtectionLogList" Height="250" Margin="-15,0,0,0">
+                            <ListView x:Name="ProtectionLogList" Height="250">
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
                                         <Grid Padding="8,4">
@@ -267,7 +268,7 @@
                     </Border>
                 </Grid>
             </TabViewItem>
-
+            
             <TabViewItem Header="系统日志" IsClosable="False">
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
@@ -279,9 +280,9 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,5,0,10">
-                        <Button Content="清空日志" Click="ClearLog_Click" IsEnabled="False"/>
+                    
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,10">
+                        <Button Content="清空日志" Click="ClearLog_Click"/>
                         <Button Content="导出日志" Click="ExportLog_Click"/>
                         <ComboBox x:Name="LogLevelFilter" SelectedIndex="0" SelectionChanged="LogLevelFilter_SelectionChanged">
                             <ComboBoxItem Content="所有级别"/>
@@ -290,7 +291,7 @@
                             <ComboBoxItem Content="仅信息"/>
                         </ComboBox>
                     </StackPanel>
-
+                    
                     <TextBox Grid.Row="1"
                             x:Name="LogTextBox"
                             IsReadOnly="True"
@@ -298,8 +299,8 @@
                             TextWrapping="Wrap"
                             Margin="0,0,0,0"
                             MinHeight="300"
-                            
-                            FontSize="13"/>
+                            FontFamily="Consolas"
+                            FontSize="12"/>
                 </Grid>
             </TabViewItem>
         </TabView>

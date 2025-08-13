@@ -5,7 +5,8 @@
     xmlns:local="using:Xdows_Security"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Loaded="Page_Loaded">
     <Grid Margin="64,16,64,0" VerticalAlignment="Top">
         <TabView IsAddTabButtonVisible="False" SelectionChanged="TabView_SelectionChanged">
             <TabViewItem Header="进程管理" IsClosable="False">
@@ -21,7 +22,6 @@
                     </Grid.RowDefinitions>
                     <CommandBar Grid.Row="0">
                         <CommandBar.Content>
-
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
@@ -85,6 +85,293 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
+                </Grid>
+            </TabViewItem>
+
+            <TabViewItem Header="命令行" IsClosable="False">
+                <TabViewItem.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontSize="14" FontWeight="SemiBold"/>
+                    </DataTemplate>
+                </TabViewItem.HeaderTemplate>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="300"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <CommandBar Grid.Row="0" Background="Transparent" DefaultLabelPosition="Right">
+                        <CommandBar.Content>
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="CmdTabTitle"
+                                           Style="{StaticResource CaptionTextBlockStyle}"
+                                           Margin="12,16,0,0"
+                                           FontSize="16"
+                                           Text="XIGUASecurityCMD1.0"/>
+                            </Grid>
+                        </CommandBar.Content>
+                        <AppBarButton Icon="Clear" Label="清空输出" Click="ClearOutput_Click"/>
+                        <AppBarButton Icon="Copy" Label="复制输出" Click="CopyOutput_Click"/>
+                    </CommandBar>
+                    <Border Grid.Row="1" 
+                            Margin="16,8,16,0" 
+                            CornerRadius="8" 
+                            Background="#F5F5F5" 
+                            BorderBrush="#E0E0E0" 
+                            BorderThickness="1">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                      HorizontalScrollBarVisibility="Auto"
+                                      VerticalAlignment="Stretch"
+                                      HorizontalAlignment="Stretch">
+                            <TextBox x:Name="CmdOutput"
+                                     IsReadOnly="True"
+                                     TextWrapping="Wrap"
+                                     FontFamily="Consolas"
+                                     FontSize="12"
+                                     AcceptsReturn="True"
+                                     VerticalAlignment="Stretch"
+                                     HorizontalAlignment="Stretch"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     Padding="12"
+                                     Margin="0"/>
+                        </ScrollViewer>
+                    </Border>
+                    <Grid Grid.Row="2" Margin="16,5,16,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" 
+                                CornerRadius="6" 
+                                Background="White" 
+                                BorderBrush="#E0E0E0" 
+                                BorderThickness="1"
+                                Margin="0,0,8,0">
+                            <TextBox x:Name="CmdInput"
+                                     PlaceholderText="输入命令..."
+                                     KeyDown="CmdInput_KeyDown"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     Padding="12,8"
+                                     FontFamily="Segoe UI"
+                                     FontSize="12"
+                                     VerticalAlignment="Center"
+                                     Height="30"/>
+                        </Border>
+                        <Button x:Name="ExecuteButton"
+                                Grid.Column="1"
+                                Content="执行"
+                                Click="ExecuteButton_Click"
+                                MinWidth="80"
+                                Height="35"
+                                CornerRadius="6"
+                                Background="#0078D4"
+                                Foreground="White"
+                                Margin="0"
+                                FontSize="12">
+                            <Button.Flyout>
+                                <Flyout>
+                                    <TextBlock Text="按Enter键也可执行命令" FontSize="12" Foreground="Gray"/>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                    </Grid>
+                </Grid>
+            </TabViewItem>
+
+            <TabViewItem Header="系统修复" IsClosable="False">
+                <TabViewItem.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontSize="14" FontWeight="SemiBold"/>
+                    </DataTemplate>
+                </TabViewItem.HeaderTemplate>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <CommandBar Grid.Row="0" Background="Transparent" DefaultLabelPosition="Right">
+                        <CommandBar.Content>
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="RepairTabTitle"
+                                           Style="{StaticResource CaptionTextBlockStyle}"
+                                           Margin="12,16,0,0"
+                                           FontSize="16"
+                                           Text="系统修复工具"/>
+                            </Grid>
+                        </CommandBar.Content>
+                        <AppBarButton Icon="Refresh" Label="开始扫描" Click="StartRepairScan_Click"/>
+                        <AppBarButton Icon="Stop" Label="停止扫描" Click="StopRepairScan_Click"/>
+                    </CommandBar>
+
+                    <Grid Grid.Row="1" Margin="16,8,16,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- 扫描进度区域 -->
+                        <Border Grid.Row="0" 
+                                CornerRadius="8" 
+                                Background="#F0F8FF" 
+                                BorderBrush="#0078D4" 
+                                BorderThickness="1"
+                                Margin="0,0,0,8">
+                            <Grid Padding="16">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- 扫描状态 -->
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                                    <TextBlock x:Name="ScanStatus" Text="准备就绪" FontSize="14" FontWeight="SemiBold" Foreground="#0078D4"/>
+                                    <TextBlock x:Name="ScanProgressText" Text="" FontSize="12" Margin="8,0,0,0" Foreground="Gray"/>
+                                </StackPanel>
+
+                                <!-- 进度条 -->
+                                <ProgressBar x:Name="ScanProgressBar" 
+                                           Grid.Row="1" 
+                                           Height="20" 
+                                           Minimum="0" 
+                                           Maximum="100" 
+                                           Value="0" 
+                                           Margin="0,0,0,8"
+                                           Foreground="#0078D4"/>
+
+                                <!-- 当前扫描项 -->
+                                <TextBlock x:Name="CurrentScanItem" 
+                                         Grid.Row="2" 
+                                         Text="等待开始扫描..." 
+                                         FontSize="12" 
+                                         Foreground="#333"
+                                         TextWrapping="Wrap"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- 扫描结果列表 -->
+                        <Border Grid.Row="1" 
+                                CornerRadius="8" 
+                                Background="#FFFFFF" 
+                                BorderBrush="#E0E0E0" 
+                                BorderThickness="1">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- 结果标题 -->
+                                <TextBlock Grid.Row="0" 
+                                           Text="检测到的风险项" 
+                                           FontSize="14" 
+                                           FontWeight="SemiBold" 
+                                           Margin="12,8,12,4"/>
+
+                                <!-- 风险项列表 -->
+                                <ListView x:Name="RiskItemsList" 
+                                         Grid.Row="1" 
+                                         SelectionMode="Multiple"
+                                         Margin="8,0,8,8">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- 严重程度图标 -->
+                                                <FontIcon Grid.Column="0" 
+                                                         Glyph="{Binding RiskIcon}" 
+                                                         Foreground="{Binding RiskColor}" 
+                                                         FontSize="16" 
+                                                         Margin="0,0,8,0"/>
+
+                                                <!-- 风险项信息 -->
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{Binding Description}" FontSize="12" Foreground="Gray" TextWrapping="Wrap"/>
+                                                    <TextBlock Text="{Binding Location}" FontSize="11" Foreground="#666" TextWrapping="Wrap"/>
+                                                </StackPanel>
+
+                                                <!-- 严重程度标签 -->
+                                                <Border Grid.Column="2" 
+                                                        Background="{Binding RiskColor}" 
+                                                        CornerRadius="4" 
+                                                        Padding="8,4">
+                                                    <TextBlock Text="{Binding RiskLevel}" FontSize="11" Foreground="White" FontWeight="SemiBold"/>
+                                                </Border>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <!-- 操作按钮区域 -->
+                    <Grid Grid.Row="2" Margin="16,8,16,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" 
+                                   x:Name="RepairSummary" 
+                                   Text="准备开始系统扫描..." 
+                                   FontSize="12" 
+                                   VerticalAlignment="Center" 
+                                   Foreground="#666"/>
+
+                        <Button x:Name="SelectAllButton"
+                                Grid.Column="1" 
+                                Content="全选" 
+                                Click="SelectAll_Click" 
+                                MinWidth="80" 
+                                Height="35" 
+                                CornerRadius="6" 
+                                Background="#F0F0F0" 
+                                Foreground="#333" 
+                                Margin="0,0,8,0"/>
+
+                        <Button x:Name="RepairSelectedButton"
+                                Grid.Column="2" 
+                                Content="修复选中项" 
+                                Click="RepairSelected_Click" 
+                                MinWidth="100" 
+                                Height="35" 
+                                CornerRadius="6" 
+                                Background="#FF6B35" 
+                                Foreground="White" 
+                                Margin="0,0,8,0"/>
+
+                        <Button x:Name="RepairAllButton"
+                                Grid.Column="3" 
+                                Content="修复全部" 
+                                Click="RepairAll_Click" 
+                                MinWidth="80" 
+                                Height="35" 
+                                CornerRadius="6" 
+                                Background="#D32F2F" 
+                                Foreground="White"/>
+                    </Grid>
                 </Grid>
             </TabViewItem>
         </TabView>

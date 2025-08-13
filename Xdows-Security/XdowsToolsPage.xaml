@@ -12,7 +12,7 @@
             <TabViewItem Header="进程管理" IsClosable="False">
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>
@@ -88,10 +88,10 @@
                 </Grid>
             </TabViewItem>
 
-            <TabViewItem Header="命令行" IsClosable="False">
+            <TabViewItem Header="命令提示符" IsClosable="False">
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>
@@ -100,7 +100,7 @@
                         <RowDefinition Height="300"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <CommandBar Grid.Row="0" Background="Transparent" DefaultLabelPosition="Right">
+                    <CommandBar Grid.Row="0" DefaultLabelPosition="Right">
                         <CommandBar.Content>
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
                                 <Grid.ColumnDefinitions>
@@ -108,10 +108,9 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock x:Name="CmdTabTitle"
-                                           Style="{StaticResource CaptionTextBlockStyle}"
                                            Margin="12,16,0,0"
                                            FontSize="16"
-                                           Text="XIGUASecurityCMD1.0"/>
+                                           Text="命令提示符"/>
                             </Grid>
                         </CommandBar.Content>
                         <AppBarButton Icon="Clear" Label="清空输出" Click="ClearOutput_Click"/>
@@ -119,9 +118,6 @@
                     </CommandBar>
                     <Border Grid.Row="1" 
                             Margin="16,8,16,0" 
-                            CornerRadius="8" 
-                            Background="#F5F5F5" 
-                            BorderBrush="#E0E0E0" 
                             BorderThickness="1">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" 
                                       HorizontalScrollBarVisibility="Auto"
@@ -130,13 +126,11 @@
                             <TextBox x:Name="CmdOutput"
                                      IsReadOnly="True"
                                      TextWrapping="Wrap"
-                                     FontFamily="Consolas"
                                      FontSize="12"
+                                     Text="命令提示符启动成功，请输入相关命令。"
                                      AcceptsReturn="True"
                                      VerticalAlignment="Stretch"
                                      HorizontalAlignment="Stretch"
-                                     Background="Transparent"
-                                     BorderThickness="0"
                                      Padding="12"
                                      Margin="0"/>
                         </ScrollViewer>
@@ -146,37 +140,22 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" 
-                                CornerRadius="6" 
-                                Background="White" 
-                                BorderBrush="#E0E0E0" 
-                                BorderThickness="1"
-                                Margin="0,0,8,0">
-                            <TextBox x:Name="CmdInput"
+                        <TextBox x:Name="CmdInput"
                                      PlaceholderText="输入命令..."
                                      KeyDown="CmdInput_KeyDown"
-                                     Background="Transparent"
-                                     BorderThickness="0"
-                                     Padding="12,8"
-                                     FontFamily="Segoe UI"
-                                     FontSize="12"
                                      VerticalAlignment="Center"
                                      Height="30"/>
-                        </Border>
                         <Button x:Name="ExecuteButton"
                                 Grid.Column="1"
                                 Content="执行"
                                 Click="ExecuteButton_Click"
                                 MinWidth="80"
-                                Height="35"
-                                CornerRadius="6"
-                                Background="#0078D4"
-                                Foreground="White"
-                                Margin="0"
-                                FontSize="12">
+                                Height="30"
+                                Style="{StaticResource AccentButtonStyle}"
+                                Margin="8,0,0,0">
                             <Button.Flyout>
                                 <Flyout>
-                                    <TextBlock Text="按Enter键也可执行命令" FontSize="12" Foreground="Gray"/>
+                                    <TextBlock Text="按 Enter 键也可执行命令" FontSize="12"/>
                                 </Flyout>
                             </Button.Flyout>
                         </Button>
@@ -187,7 +166,7 @@
             <TabViewItem Header="系统修复" IsClosable="False">
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>
@@ -197,7 +176,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <CommandBar Grid.Row="0" Background="Transparent" DefaultLabelPosition="Right">
+                    <CommandBar Grid.Row="0" DefaultLabelPosition="Right">
                         <CommandBar.Content>
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
                                 <Grid.ColumnDefinitions>

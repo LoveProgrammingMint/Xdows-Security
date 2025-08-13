@@ -19,11 +19,11 @@
         </StackPanel>
 
         <!-- 选项卡内容 -->
-        <TabView Grid.Row="1" IsAddTabButtonVisible="False" SelectionChanged="TabView_SelectionChanged" TabWidthMode="SizeToContent">
+        <TabView Grid.Row="1" IsAddTabButtonVisible="False" SelectionChanged="TabView_SelectionChanged">
             <TabViewItem Header="系统状态" IsClosable="False">
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>
@@ -101,7 +101,7 @@
             <TabViewItem Header="快速扫描" IsClosable="False">
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="14" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>
@@ -145,7 +145,7 @@
             <TabViewItem Header="安全统计" IsClosable="False">
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>
@@ -207,7 +207,7 @@
             <TabViewItem Header="实时防护" IsClosable="False">
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>
@@ -271,7 +271,7 @@
             <TabViewItem Header="系统日志" IsClosable="False">
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>
@@ -280,7 +280,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,5,0,10">
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,8,0,8">
                         <Button Content="清空日志" Click="ClearLog_Click" IsEnabled="False"/>
                         <Button Content="导出日志" Click="ExportLog_Click"/>
                         <ComboBox x:Name="LogLevelFilter" SelectedIndex="0" SelectionChanged="LogLevelFilter_SelectionChanged">

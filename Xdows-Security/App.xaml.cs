@@ -67,7 +67,7 @@ namespace Xdows_Security
             };
             try
             {
-                LogText.AddNewLog(1, "Protection", $"Try Running {RunFileName}...", false);
+                LogText.AddNewLog(1, "Protection", $"Try to Run {RunFileName}...", false);
                 Process.Start(RunFileName);
             }
             catch (Exception ex)

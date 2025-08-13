@@ -339,7 +339,7 @@ namespace Xdows_Security
 
         private void ClearOutput_Click(object sender, RoutedEventArgs e)
         {
-            CmdOutput.Text = "";
+            CmdOutput.Text = "命令提示符启动成功，请输入相关命令。";
         }
 
         private async void CopyOutput_Click(object sender, RoutedEventArgs e)

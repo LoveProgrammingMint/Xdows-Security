@@ -41,6 +41,7 @@ namespace Xdows_Security
                 .OrderBy(_ => Guid.NewGuid())
                 .FirstOrDefault();
             HomePage_Pomes.Text = randomLine;
+            UpdateData();
         }
         
         private void InitializeTimers()
@@ -86,7 +87,8 @@ namespace Xdows_Security
             catch (Exception ex)
             {
                 OSNameText.Text = "获取失败";
-                OSVersionText.Text = ex.Message;
+                OSVersionText.Text = "获取失败";
+                LogText.AddNewLog(3, "HomePage - LoadSystemInfo", $"Cannot get SystemInfo,because: {ex.Message}", true);
             }
         }
 
@@ -140,12 +142,14 @@ namespace Xdows_Security
                 else
                 {
                     var error = Marshal.GetLastWin32Error();
-                    MemoryUsageText.Text = $"获取失败 (错误码: {error})";
+                    MemoryUsageText.Text = "获取失败";
+                    LogText.AddNewLog(3, "HomePage - UpdateMemoryUsage", $"Cannot get MemoryStatus,because: {error}", true);
                 }
             }
             catch (Exception ex)
             {
-                MemoryUsageText.Text = $"获取失败: {ex.Message}";
+                MemoryUsageText.Text = "获取失败";
+                LogText.AddNewLog(3, "HomePage - UpdateMemoryUsage", $"Cannot get MemoryStatus,because: {ex.Message}", true);
             }
         }
 
@@ -475,9 +479,9 @@ namespace Xdows_Security
         
         private void LogLevelFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var filter = (LogLevelFilter.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "所有级别";
+            string filter = (LogLevelFilter.SelectedItem as ComboBoxItem)?.Tag.ToString() ?? "All";
             
-            if (filter == "所有级别")
+            if (filter == "All")
             {
                 if (LogTextBox != null)
                 {
@@ -489,9 +493,12 @@ namespace Xdows_Security
                 var lines = LogText.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
                 var filteredLines = lines.Where(line => 
                 {
-                    if (filter == "仅错误") return line.Contains("[ERROR]");
-                    if (filter == "仅警告") return line.Contains("[WARN]");
-                    if (filter == "仅信息") return line.Contains("[INFO]");
+                    if (filter == "UNKNOWN") return line.Contains("[UNKNOWN]");
+                    if (filter == "DEBUG") return line.Contains("[DEBUG]");
+                    if (filter == "INFO") return line.Contains("[INFO]");
+                    if (filter == "WARN") return line.Contains("[WARN]");
+                    if (filter == "ERROR") return line.Contains("[ERROR]");
+                    if (filter == "FATAL") return line.Contains("[FATAL]");
                     return true;
                 });
                 LogTextBox.Text = string.Join(Environment.NewLine, filteredLines);

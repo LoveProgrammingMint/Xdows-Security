@@ -299,10 +299,13 @@
                         <Button Content="清空日志" Click="ClearLog_Click" IsEnabled="False"/>
                         <Button Content="导出日志" Click="ExportLog_Click"/>
                         <ComboBox x:Name="LogLevelFilter" SelectedIndex="0" SelectionChanged="LogLevelFilter_SelectionChanged">
-                            <ComboBoxItem Content="所有级别"/>
-                            <ComboBoxItem Content="仅信息"/>
-                            <ComboBoxItem Content="仅警告"/>
-                            <ComboBoxItem Content="仅错误"/>
+                            <ComboBoxItem Tag ="All" Content="所有级别"/>
+                            <ComboBoxItem Tag ="UNKNOWN" Content="仅未定义"/>
+                            <ComboBoxItem Tag ="DEBUG" Content="仅调试"/>
+                            <ComboBoxItem Tag ="INFO" Content="仅信息"/>
+                            <ComboBoxItem Tag ="WARN" Content="仅警告"/>
+                            <ComboBoxItem Tag ="ERROR" Content="仅错误"/>
+                            <ComboBoxItem Tag ="FATAL" Content="仅失败"/>
                         </ComboBox>
                     </StackPanel>
 

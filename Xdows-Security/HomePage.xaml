@@ -15,7 +15,7 @@
                 <TextBlock
                    x:Name="HomePage_Pomes"
                    Style="{StaticResource BodyTextBlockStyle}"
-                   Margin="0,4,0,0" />
+                   Margin="0,8,0,0" />
             </StackPanel>
         </StackPanel>
         <TabView Grid.Row="1" IsAddTabButtonVisible="False" SelectionChanged="TabView_SelectionChanged" TabWidthMode="Equal">

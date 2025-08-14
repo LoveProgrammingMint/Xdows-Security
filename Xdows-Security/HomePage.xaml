@@ -20,6 +20,10 @@
         </StackPanel>
         <TabView Grid.Row="1" IsAddTabButtonVisible="False" SelectionChanged="TabView_SelectionChanged" TabWidthMode="Equal">
             <TabViewItem Header="系统状态" IsClosable="False">
+                <TabViewItem.IconSource>
+                    <FontIconSource Glyph="&#xE770;"/>
+                </TabViewItem.IconSource>
+
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
@@ -30,7 +34,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Button Grid.Row="0" Content="刷新系统信息" Click="RefreshSystemInfo_Click" Margin="0,8,0,8" HorizontalAlignment="Left"/>
+                    <Button Grid.Row="0" x:Uid="HomePage_RefreshSystemInfo" Click="RefreshSystemInfo_Click" Margin="0,8,0,8" HorizontalAlignment="Left"/>
                     <ScrollViewer Grid.Row="1">
                         <StackPanel Spacing="10">
                             <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
@@ -98,6 +102,9 @@
             </TabViewItem>
 
             <TabViewItem Header="快速扫描" IsClosable="False">
+                <TabViewItem.IconSource>
+                    <FontIconSource Glyph="&#xE721;"/>
+                </TabViewItem.IconSource>
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
@@ -142,6 +149,9 @@
             </TabViewItem>
 
             <TabViewItem Header="安全统计" IsClosable="False">
+                <TabViewItem.IconSource>
+                    <FontIconSource Glyph="&#xE9D2;"/>
+                </TabViewItem.IconSource>
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
@@ -204,6 +214,9 @@
             </TabViewItem>
 
             <TabViewItem Header="实时防护" IsClosable="False">
+                <TabViewItem.IconSource>
+                    <FontIconSource Glyph="&#xEA18;"/>
+                </TabViewItem.IconSource>
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
@@ -268,6 +281,9 @@
             </TabViewItem>
 
             <TabViewItem Header="系统日志" IsClosable="False">
+                <TabViewItem.IconSource>
+                    <FontIconSource Glyph="&#xF738;"/>
+                </TabViewItem.IconSource>
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>

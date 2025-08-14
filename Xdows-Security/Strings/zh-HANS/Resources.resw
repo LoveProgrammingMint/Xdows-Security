@@ -392,4 +392,7 @@
 雨天不是漏洞，是光在给自己加滤镜.
 如果终点是光的谜面，那么谜面的尽头是谁在出题？</value>
   </data>
+  <data name="HomePage_RefreshSystemInfo.Content" xml:space="preserve">
+    <value>刷新系统信息</value>
+  </data>
 </root>

@@ -10,6 +10,9 @@
     <Grid Margin="64,16,64,0" VerticalAlignment="Top">
         <TabView IsAddTabButtonVisible="False" SelectionChanged="TabView_SelectionChanged" TabWidthMode="Equal">
             <TabViewItem Header="进程管理" IsClosable="False">
+                <TabViewItem.IconSource>
+                    <FontIconSource Glyph="&#xE9D9;"/>
+                </TabViewItem.IconSource>
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
@@ -89,6 +92,9 @@
             </TabViewItem>
 
             <TabViewItem Header="命令提示符" IsClosable="False">
+                <TabViewItem.IconSource>
+                    <FontIconSource Glyph="&#xE756;"/>
+                </TabViewItem.IconSource>
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
@@ -158,6 +164,9 @@
             </TabViewItem>
 
             <TabViewItem Header="系统修复" IsClosable="False">
+                <TabViewItem.IconSource>
+                    <FontIconSource Glyph="&#xE90F;"/>
+                </TabViewItem.IconSource>
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>

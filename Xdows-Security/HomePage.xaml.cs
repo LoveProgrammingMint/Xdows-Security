@@ -112,10 +112,6 @@ namespace Xdows_Security
         {
             try
             {
-                var proc = Process.GetCurrentProcess();
-                var memoryUsed = proc.WorkingSet64 / 1024 / 1024;
-
-                // 使用Windows API获取内存信息
                 var memStatus = new MEMORYSTATUSEX
                 {
                     dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
@@ -123,27 +119,33 @@ namespace Xdows_Security
 
                 if (GlobalMemoryStatusEx(ref memStatus))
                 {
-                    List <string> strings = new List<string> { "KB", "MB", "GB", "TB" }; 
-                    var totalMemory = memStatus.ullTotalPhys;
-                    var availableMemory = memStatus.ullAvailPhys;
-                    var usedMemory = totalMemory - availableMemory;
+                    string[] units = { "B", "KB", "MB", "GB", "TB" };
+                    double totalMemory = memStatus.ullTotalPhys;
+                    double availableMemory = memStatus.ullAvailPhys;
+                    double usedMemory = totalMemory - availableMemory;
 
-                    ulong Divisor = (ulong)(long)((((char)totalMemory).ToString().Length / 4) * 1024);
+                    // 自动选择合适的单位
+                    int unitIndex = 0;
+                    while (totalMemory >= 1024 && unitIndex < units.Length - 1)
+                    {
+                        totalMemory /= 1024;
+                        availableMemory /= 1024;
+                        usedMemory /= 1024;
+                        unitIndex++;
+                    }
 
-                    totalMemory = totalMemory / Divisor;
-                    availableMemory = availableMemory / Divisor;
-
-                    var usagePercent = (double)memStatus.dwMemoryLoad;
-                    MemoryUsageText.Text = $"{usedMemory:F1}  / {totalMemory:F1}  ({usagePercent:F1}%)";
+                    var usagePercent = memStatus.dwMemoryLoad;
+                    MemoryUsageText.Text = $"{usedMemory:F1} {units[unitIndex]} / {totalMemory:F1} {units[unitIndex]} ({usagePercent:F1}%)";
                 }
                 else
                 {
-                    MemoryUsageText.Text = "获取失败";
+                    var error = Marshal.GetLastWin32Error();
+                    MemoryUsageText.Text = $"获取失败 (错误码: {error})";
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                MemoryUsageText.Text = "获取失败";
+                MemoryUsageText.Text = $"获取失败: {ex.Message}";
             }
         }
 

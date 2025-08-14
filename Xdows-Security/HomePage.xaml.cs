@@ -15,6 +15,7 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.System;
 using WinRT.Interop;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Xdows_Security
 {
@@ -35,6 +36,12 @@ namespace Xdows_Security
             InitializeData();
             LogText.TextChanged += LogText_TextChanged;
             UpdateData();
+            string Pomes = _resourceLoader.GetString("HomePage_Pomes");
+            var randomLine = Pomes
+                .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                .OrderBy(_ => Guid.NewGuid())
+                .FirstOrDefault();
+            HomePage_Pomes.Text = randomLine;
         }
         
         private void InitializeTimers()
@@ -436,8 +443,8 @@ namespace Xdows_Security
         {
             var savePicker = new FileSavePicker();
             savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-            savePicker.FileTypeChoices.Add("文本文件", new List<string> { ".txt" });
-            savePicker.SuggestedFileName = $"XdowsSecurity_Log_{DateTime.Now:yyyyMMdd_HHmmss}.txt";
+            savePicker.FileTypeChoices.Add("日志文件", new List<string> { ".log" });
+            savePicker.SuggestedFileName = $"XdowsSecurity_Log_{DateTime.Now:yyyyMMdd_HHmmss}.log";
             
             var window = new Window();
             var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);

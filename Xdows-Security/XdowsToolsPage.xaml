@@ -8,7 +8,7 @@
     mc:Ignorable="d"
     Loaded="Page_Loaded">
     <Grid Margin="64,16,64,0" VerticalAlignment="Top">
-        <TabView IsAddTabButtonVisible="False" SelectionChanged="TabView_SelectionChanged">
+        <TabView IsAddTabButtonVisible="False" SelectionChanged="TabView_SelectionChanged" TabWidthMode="Equal">
             <TabViewItem Header="进程管理" IsClosable="False">
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>

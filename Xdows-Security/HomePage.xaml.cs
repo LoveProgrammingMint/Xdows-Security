@@ -28,14 +28,13 @@ namespace Xdows_Security
         private ObservableCollection<ActivityItem> _recentActivities;
         private ObservableCollection<ProtectionLogItem> _protectionLogs;
         private CancellationTokenSource _scanCancellationTokenSource;
-        
+
         public HomePage()
         {
             this.InitializeComponent();
             InitializeTimers();
             InitializeData();
             LogText.TextChanged += LogText_TextChanged;
-            UpdateData();
             string Pomes = _resourceLoader.GetString("HomePage_Pomes");
             var randomLine = Pomes
                 .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
@@ -73,16 +72,16 @@ namespace Xdows_Security
             LoadRecentActivities();
             LoadProtectionLogs();
         }
-        
-        private async void LoadSystemInfo()
+
+        private void LoadSystemInfo()
         {
             try
             {
                 var osVersion = Environment.OSVersion;
-                OSNameText.Text = "Windows " + (App.CheckWindowsVersion() ? "11" : osVersion.Version.Major.ToString());
+                OSNameText.Text = "Windows " + (osVersion.Version.Major >= 10 ? "10/11" : osVersion.Version.Major.ToString());
                 OSVersionText.Text = osVersion.VersionString;
-                
-                await UpdateMemoryUsage();
+
+                UpdateMemoryUsage();
             }
             catch (Exception ex)
             {
@@ -90,8 +89,7 @@ namespace Xdows_Security
                 OSVersionText.Text = ex.Message;
             }
         }
-        
-        // 添加Windows API结构体和函数声明
+
         [StructLayout(LayoutKind.Sequential)]
         public struct MEMORYSTATUSEX
         {
@@ -110,25 +108,33 @@ namespace Xdows_Security
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
 
-        private async Task UpdateMemoryUsage()
+        private void UpdateMemoryUsage()
         {
             try
             {
                 var proc = Process.GetCurrentProcess();
                 var memoryUsed = proc.WorkingSet64 / 1024 / 1024;
-                
+
                 // 使用Windows API获取内存信息
-                var memStatus = new MEMORYSTATUSEX();
-                memStatus.dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX));
-                
+                var memStatus = new MEMORYSTATUSEX
+                {
+                    dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
+                };
+
                 if (GlobalMemoryStatusEx(ref memStatus))
                 {
-                    var totalMemory = memStatus.ullTotalPhys / 1024 / 1024;
-                    var availableMemory = memStatus.ullAvailPhys / 1024 / 1024;
+                    List <string> strings = new List<string> { "KB", "MB", "GB", "TB" }; 
+                    var totalMemory = memStatus.ullTotalPhys;
+                    var availableMemory = memStatus.ullAvailPhys;
                     var usedMemory = totalMemory - availableMemory;
+
+                    ulong Divisor = (ulong)(long)((((char)totalMemory).ToString().Length / 4) * 1024);
+
+                    totalMemory = totalMemory / Divisor;
+                    availableMemory = availableMemory / Divisor;
+
                     var usagePercent = (double)memStatus.dwMemoryLoad;
-                    
-                    MemoryUsageText.Text = $"{usedMemory:F1} MB / {totalMemory:F1} MB ({usagePercent:F1}%)";
+                    MemoryUsageText.Text = $"{usedMemory:F1}  / {totalMemory:F1}  ({usagePercent:F1}%)";
                 }
                 else
                 {
@@ -140,7 +146,7 @@ namespace Xdows_Security
                 MemoryUsageText.Text = "获取失败";
             }
         }
-        
+
         private void LoadProtectionStatus()
         {
             var isProtected = Protection.IsOpen();
@@ -208,7 +214,7 @@ namespace Xdows_Security
         
         private void SystemInfoTimer_Tick(object sender, object e)
         {
-            _ = UpdateMemoryUsage();
+            UpdateMemoryUsage();
             LoadProtectionStatus();
         }
         

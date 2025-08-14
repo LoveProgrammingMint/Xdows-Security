@@ -79,7 +79,7 @@ namespace Xdows_Security
             try
             {
                 var osVersion = Environment.OSVersion;
-                OSNameText.Text = "Windows " + (osVersion.Version.Major >= 10 ? "10/11" : osVersion.Version.Major.ToString());
+                OSNameText.Text = "Windows " + (App.CheckWindowsVersion() ? "11" : osVersion.Version.Major.ToString());
                 OSVersionText.Text = osVersion.VersionString;
                 
                 await UpdateMemoryUsage();
@@ -320,7 +320,7 @@ namespace Xdows_Security
                         _scanCancellationTokenSource = null;
                     });
                 }
-                catch (Exception ex)
+                catch // (Exception ex)
                 {
                     //await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     //{

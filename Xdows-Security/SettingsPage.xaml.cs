@@ -73,7 +73,7 @@ namespace Xdows_Security
         private void LoadScanSetting()
         {
             var settings = ApplicationData.Current.LocalSettings;
-            if (settings.Values.TryGetValue("ShowScanProgress", out object value))
+            if (settings.Values.TryGetValue("ShowScanProgress", out object? value))
             {
                 bool showScanProgress = value is bool && (bool)value;
                 ScanProgressToggle.IsOn = showScanProgress;
@@ -166,9 +166,9 @@ namespace Xdows_Security
         private void LoadThemeSetting()
         {
             var settings = ApplicationData.Current.LocalSettings;
-            if (settings.Values.TryGetValue("AppTheme", out object theme))
+            if (settings.Values.TryGetValue("AppTheme", out object? theme))
             {
-                string themeString = theme as string;
+                string themeString = theme as string ?? ElementTheme.Default.ToString();
                 if (Enum.TryParse(themeString, out ElementTheme themeValue))
                 {
                     switch (themeValue)
@@ -254,7 +254,7 @@ namespace Xdows_Security
         {
             if (BackdropComboBox.SelectedItem is ComboBoxItem selected)
             {
-                string backdropType = selected.Tag as string;
+                string backdropType = selected.Tag as string ?? ElementTheme.Default.ToString();
                 var settings = ApplicationData.Current.LocalSettings;
                 settings.Values["AppBackdrop"] = backdropType;
 

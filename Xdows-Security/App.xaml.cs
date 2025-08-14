@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Win32;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -81,7 +82,7 @@ namespace Xdows_Security
 
     public partial class App : Application
     {
-        public static MainWindow? MainWindow { get; private set; }
+        public static MainWindow MainWindow { get; private set; } = new();
         public static string GetCloudApiKey() {return ""; }//想盗用 ApiKey ? 没门
 
         public App()
@@ -92,12 +93,9 @@ namespace Xdows_Security
 
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            CheckWindowsVersion();
             InitializeLanguage();
             InitializeTheme();
             InitializeBackdrop();
-
-            MainWindow = new MainWindow();
 
             // 设置主窗口主题
             if (MainWindow.Content is FrameworkElement rootElement)
@@ -108,7 +106,7 @@ namespace Xdows_Security
             MainWindow.Activate();
         }
 
-        private void InitializeLanguage()
+        private static void InitializeLanguage()
         {
             var settings = ApplicationData.Current.LocalSettings;
             if (settings.Values.TryGetValue("AppLanguage", out object? language))
@@ -179,20 +177,18 @@ namespace Xdows_Security
 
 
         // 背景材质
-        public static bool IsWindows11OrGreater { get; private set; }
         private const string DefaultBackdrop = "Mica";
 
-        private static void CheckWindowsVersion()
+        protected internal static bool CheckWindowsVersion()
         {
-            try
+            var version = Environment.OSVersion.Version;
+            if (version.Major == 10 && version.Build >= 22000)
             {
-                ulong version = ulong.Parse(Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamilyVersion);
-                ulong build = (version & 0x00000000FFFF0000L) >> 16;
-                IsWindows11OrGreater = build >= 22000; // Windows 11 起始版本号
+               return true;
             }
-            catch
+            else
             {
-                IsWindows11OrGreater = false;
+                return false;
             }
         }
 
@@ -201,7 +197,7 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             if (!settings.Values.ContainsKey("AppBackdrop"))
             {
-                settings.Values["AppBackdrop"] = IsWindows11OrGreater ?
+                settings.Values["AppBackdrop"] = CheckWindowsVersion() ?
                     DefaultBackdrop : "Acrylic";
             }
         }

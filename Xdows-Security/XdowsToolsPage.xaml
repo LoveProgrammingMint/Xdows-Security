@@ -141,24 +141,18 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBox x:Name="CmdInput"
-                                     PlaceholderText="输入命令..."
-                                     KeyDown="CmdInput_KeyDown"
-                                     VerticalAlignment="Center"
-                                     Height="30"/>
+                            PlaceholderText="输入命令..."
+                            KeyDown="CmdInput_KeyDown"
+                            VerticalAlignment="Center"
+                            Height="30"/>
                         <Button x:Name="ExecuteButton"
-                                Grid.Column="1"
-                                Content="执行"
-                                Click="ExecuteButton_Click"
-                                MinWidth="80"
-                                Height="30"
-                                Style="{StaticResource AccentButtonStyle}"
-                                Margin="8,0,0,0">
-                            <Button.Flyout>
-                                <Flyout>
-                                    <TextBlock Text="按 Enter 键也可执行命令" FontSize="12"/>
-                                </Flyout>
-                            </Button.Flyout>
-                        </Button>
+                            Grid.Column="1"
+                            Content="执行"
+                            Click="ExecuteButton_Click"
+                            MinWidth="80"
+                            Height="30"
+                            Style="{StaticResource AccentButtonStyle}"
+                            Margin="8,0,0,0"/>
                     </Grid>
                 </Grid>
             </TabViewItem>

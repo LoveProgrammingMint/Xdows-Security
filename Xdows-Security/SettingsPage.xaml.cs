@@ -228,8 +228,8 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             var savedBackdrop = settings.Values["AppBackdrop"] as string;
 
-            MicaOption.IsEnabled = App.IsWindows11OrGreater;
-            MicaAltOption.IsEnabled = App.IsWindows11OrGreater;
+            MicaOption.IsEnabled = App.CheckWindowsVersion();
+            MicaAltOption.IsEnabled = App.CheckWindowsVersion();
 
             bool found = false;
 
@@ -244,7 +244,7 @@ namespace Xdows_Security
             }
             if (!found)
             {
-                BackdropComboBox.SelectedIndex = App.IsWindows11OrGreater ? 1 : 3;
+                BackdropComboBox.SelectedIndex = App.CheckWindowsVersion() ? 1 : 3;
             }
 
             BackdropComboBox.SelectionChanged += BackdropComboBox_SelectionChanged;

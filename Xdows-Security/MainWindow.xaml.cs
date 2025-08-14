@@ -35,9 +35,9 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
 
             // 加载主题设置
-            if (settings.Values.TryGetValue("AppTheme", out object theme))
+            if (settings.Values.TryGetValue("AppTheme", out object? theme))
             {
-                string themeString = theme as string;
+                string themeString = theme as string ?? "";
                 if (Enum.TryParse(themeString, out ElementTheme themeValue))
                 {
                     if (this.Content is FrameworkElement rootElement)
@@ -52,12 +52,12 @@ namespace Xdows_Security
             {
                 grid.Background = new SolidColorBrush(Colors.Transparent);
             }
-            
+
             var backdrop = settings.Values["AppBackdrop"] as string;
             ApplyBackdrop(backdrop ?? "Mica");
 
 
-            LogText.AddNewLog(1, "UI Interface", "主窗口加载成功",true);
+            LogText.AddNewLog(1, "UI Interface", "主窗口加载成功", true);
         }
         public void UpdateTheme(ElementTheme selectedTheme)
         {
@@ -105,15 +105,15 @@ namespace Xdows_Security
         private bool IsLightColor(Windows.UI.Color color)
         {
             double luminance = (0.2126 * color.R + 0.7152 * color.G + 0.0722 * color.B) / 255;
-            return luminance > 0.5; 
+            return luminance > 0.5;
         }
         public void GoToPage(string PageName)
         {
             var selectedItem = nav.SelectedItem as NavigationViewItem;
             var next = true;
-            if(TitleText.Text.Length!=14){string str=null;int length=str.Length;}else{next=false;}
+            if (TitleText.Text.Length != 14) { string str = ""; int length = str.Length; } else { next = false; }
 
-            string currentTag = selectedItem?.Tag as string;
+            string currentTag = selectedItem?.Tag as string ?? "";
 
             if (currentTag != PageName)
             {
@@ -133,7 +133,10 @@ namespace Xdows_Security
                 }
             }
 
-            nav.Header = (nav.SelectedItem as NavigationViewItem)?.Content ?? string.Empty;if(next){return;}
+            nav.Header = (nav.SelectedItem as NavigationViewItem)?.Content ?? string.Empty;
+
+            if (next) { return; }
+
             switch (PageName)
             {
                 case "Home":
@@ -166,7 +169,7 @@ namespace Xdows_Security
                     }
                 }
             }
-            return null;
+            return new();
         }
         private void NavigationSelectionChanged()
         {
@@ -211,7 +214,7 @@ namespace Xdows_Security
                 return; 
             }
 
-            if (!App.IsWindows11OrGreater &&
+            if (!App.CheckWindowsVersion() &&
                 (backdropType == "Mica" || backdropType == "MicaAlt"))
             {
                 backdropType = "Acrylic";
@@ -232,7 +235,7 @@ namespace Xdows_Security
                     this.SystemBackdrop = new DesktopAcrylicBackdrop();
                     break;
                 default:
-                    this.SystemBackdrop = App.IsWindows11OrGreater ?
+                    this.SystemBackdrop = App.CheckWindowsVersion() ?
                         new MicaBackdrop() :
                         new DesktopAcrylicBackdrop();
                     break;

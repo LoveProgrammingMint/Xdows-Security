@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,7 +52,7 @@ namespace Xdows_Security
             RepairTabTitle.Text = "系统修复工具";
 
             // 刷新进程列表
-            RefreshProcessList();
+            //RefreshProcessList();
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -73,295 +74,27 @@ namespace Xdows_Security
 
         private void TabView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (sender is TabView tabView && tabView.SelectedIndex >= 0)
+            var tabView = sender as TabView;
+            if (tabView != null)
             {
-                var selectedTab = tabView.TabItems[tabView.SelectedIndex];
-                if (selectedTab is TabViewItem tabItem)
+                var selectedTab = tabView.SelectedItem as TabViewItem;
+                if (selectedTab != null)
                 {
-                    switch (tabItem.Header.ToString())
+                    switch (selectedTab.Header.ToString())
                     {
                         case "进程管理":
                             TabTitle.Text = "进程管理";
                             break;
-                        case "命令行":
-                            TabTitle.Text = "命令行";
+                        case "命令提示符":
+                            CmdTabTitle.Text = "命令提示符";
                             break;
                         case "系统修复":
-                            TabTitle.Text = "系统修复";
+                            RepairTabTitle.Text = "系统修复工具";
                             break;
                     }
                 }
             }
         }
-
-        #region 进程管理功能
-
-        private void RefreshProcessList()
-        {
-            try
-            {
-                _allProcesses.Clear();
-                _processes.Clear();
-
-                var currentProcess = Process.GetCurrentProcess();
-                var processes = Process.GetProcesses()
-                    .Where(p => p.Id != currentProcess.Id)
-                    .OrderBy(p => p.ProcessName)
-                    .ToList();
-
-                foreach (var process in processes)
-                {
-                    try
-                    {
-                        var processInfo = new ProcessInfo(process);
-                        _allProcesses.Add(processInfo);
-                        _processes.Add(processInfo);
-                    }
-                    catch
-                    {
-                        // 忽略无法访问的进程
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                var dialog = new ContentDialog
-                {
-                    Title = "错误",
-                    Content = $"无法获取进程列表: {ex.Message}",
-                    CloseButtonText = "确定",
-                    XamlRoot = XamlRoot
-                };
-                _ = dialog.ShowAsync();
-            }
-        }
-
-        private void Refresh_Click(object sender, RoutedEventArgs e)
-        {
-            RefreshProcessList();
-        }
-
-        private void SortCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (SortCombo.SelectedItem is ComboBoxItem selectedItem && _allProcesses.Count > 0)
-            {
-                var sortBy = selectedItem.Tag.ToString();
-                var sortedProcesses = sortBy switch
-                {
-                    "Name" => _allProcesses.OrderBy(p => p.Name).ToList(),
-                    "Id" => _allProcesses.OrderBy(p => p.Id).ToList(),
-                    "Memory" => _allProcesses.OrderByDescending(p => p.MemoryBytes).ToList(),
-                    _ => _allProcesses.ToList()
-                };
-
-                _processes.Clear();
-                foreach (var process in sortedProcesses)
-                {
-                    _processes.Add(process);
-                }
-            }
-        }
-
-        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            var searchText = SearchBox.Text.ToLower();
-            if (string.IsNullOrWhiteSpace(searchText))
-            {
-                _processes.Clear();
-                foreach (var process in _allProcesses)
-                {
-                    _processes.Add(process);
-                }
-            }
-            else
-            {
-                var filteredProcesses = _allProcesses
-                    .Where(p => p.Name.ToLower().Contains(searchText) || p.Id.ToString().Contains(searchText))
-                    .ToList();
-
-                _processes.Clear();
-                foreach (var process in filteredProcesses)
-                {
-                    _processes.Add(process);
-                }
-            }
-        }
-
-        private async void Kill_Click(object sender, RoutedEventArgs e)
-        {
-            if (ProcessList.SelectedItem is ProcessInfo selectedProcess)
-            {
-                var confirmDialog = new ContentDialog
-                {
-                    Title = "确认终止",
-                    Content = $"确定要终止进程 {selectedProcess.Name} (PID: {selectedProcess.Id}) 吗？",
-                    PrimaryButtonText = "终止",
-                    CloseButtonText = "取消",
-                    XamlRoot = XamlRoot,
-                    PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
-                };
-
-                if (await confirmDialog.ShowAsync() == ContentDialogResult.Primary)
-                {
-                    try
-                    {
-                        var process = Process.GetProcessById(selectedProcess.Id);
-                        process.Kill();
-                        RefreshProcessList();
-                    }
-                    catch (Exception ex)
-                    {
-                        var errorDialog = new ContentDialog
-                        {
-                            Title = "终止失败",
-                            Content = $"无法终止进程: {ex.Message}",
-                            CloseButtonText = "确定",
-                            XamlRoot = XamlRoot
-                        };
-                        await errorDialog.ShowAsync();
-                    }
-                }
-            }
-            else
-            {
-                var dialog = new ContentDialog
-                {
-                    Title = "提示",
-                    Content = "请选择要终止的进程",
-                    CloseButtonText = "确定",
-                    XamlRoot = XamlRoot
-                };
-                await dialog.ShowAsync();
-            }
-        }
-
-        #endregion
-
-        #region 命令行功能
-
-        private async void ExecuteButton_Click(object sender, RoutedEventArgs e)
-        {
-            await ExecuteCommand();
-        }
-
-        private async void CmdInput_KeyDown(object sender, KeyRoutedEventArgs e)
-        {
-            if (e.Key == Windows.System.VirtualKey.Enter)
-            {
-                e.Handled = true;
-                await ExecuteCommand();
-            }
-            else if (e.Key == Windows.System.VirtualKey.Up)
-            {
-                e.Handled = true;
-                NavigateHistory(-1);
-            }
-            else if (e.Key == Windows.System.VirtualKey.Down)
-            {
-                e.Handled = true;
-                NavigateHistory(1);
-            }
-        }
-
-        private async Task ExecuteCommand()
-        {
-            var command = CmdInput.Text.Trim();
-            if (string.IsNullOrWhiteSpace(command)) return;
-
-            // 添加到历史记录
-            if (!_commandHistory.Contains(command))
-            {
-                _commandHistory.Add(command);
-            }
-            _currentHistoryIndex = _commandHistory.Count;
-
-            // 显示命令
-            CmdOutput.Text += $"\r> {command}\r\n";
-            CmdInput.Text = "";
-
-            try
-            {
-                var processInfo = new ProcessStartInfo
-                {
-                    FileName = "cmd.exe",
-                    Arguments = $"/c {command}",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-
-                using (var process = new Process { StartInfo = processInfo })
-                {
-                    process.Start();
-
-                    // 异步读取输出
-                    var outputTask = process.StandardOutput.ReadToEndAsync();
-                    var errorTask = process.StandardError.ReadToEndAsync();
-
-                    await Task.WhenAll(outputTask, errorTask);
-
-                    var output = await outputTask;
-                    var error = await errorTask;
-
-                    if (!string.IsNullOrWhiteSpace(output))
-                    {
-                        CmdOutput.Text += output;
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(error))
-                    {
-                        CmdOutput.Text += $"错误: {error}";
-                    }
-
-                    await process.WaitForExitAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                CmdOutput.Text += $"执行失败: {ex.Message}\r\n";
-            }
-
-            // 滚动到底部
-            CmdOutput.Select(CmdOutput.Text.Length, 0);
-        }
-
-        private void NavigateHistory(int direction)
-        {
-            if (_commandHistory.Count == 0) return;
-
-            _currentHistoryIndex += direction;
-            _currentHistoryIndex = Math.Max(0, Math.Min(_commandHistory.Count - 1, _currentHistoryIndex));
-
-            CmdInput.Text = _commandHistory[_currentHistoryIndex];
-            CmdInput.SelectionStart = CmdInput.Text.Length;
-        }
-
-        private void ClearOutput_Click(object sender, RoutedEventArgs e)
-        {
-            CmdOutput.Text = "命令提示符启动成功，请输入相关命令。";
-        }
-
-        private async void CopyOutput_Click(object sender, RoutedEventArgs e)
-        {
-            if (!string.IsNullOrWhiteSpace(CmdOutput.Text))
-            {
-                var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
-                dataPackage.SetText(CmdOutput.Text);
-                Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
-
-                var dialog = new ContentDialog
-                {
-                    Title = "复制成功",
-                    Content = "命令输出已复制到剪贴板",
-                    CloseButtonText = "确定",
-                    XamlRoot = XamlRoot
-                };
-                await dialog.ShowAsync();
-            }
-        }
-
-        #endregion
 
         #region 系统修复功能
 
@@ -409,27 +142,28 @@ namespace Xdows_Security
 
             try
             {
-                // 直接执行扫描任务，不使用Task.Run包装
-                // 扫描桌面图标显示相关注册表
-                await ScanDesktopRegistry(_repairCancellationTokenSource.Token);
+                // 执行完整的系统扫描
+                await PerformFullSystemScan(_repairCancellationTokenSource.Token);
 
-                // 扫描鼠标设置相关注册表
-                await ScanMouseRegistry(_repairCancellationTokenSource.Token);
-
-                // 扫描任务管理器相关注册表
-                await ScanTaskManagerRegistry(_repairCancellationTokenSource.Token);
-
-                // 扫描注册表编辑器相关注册表
-                await ScanRegeditRegistry(_repairCancellationTokenSource.Token);
-
-                // 扫描完成
+                // 扫描完成 - 确保所有问题都显示在扫描结果框中
                 ScanStatus.Text = "扫描完成";
                 CurrentScanItem.Text = "系统扫描已完成";
                 ScanProgressBar.Value = 100;
                 ScanProgressText.Text = "100%";
-                RepairSummary.Text = _riskItems.Count == 0
-                    ? "未发现系统问题"
-                    : $"发现 {_riskItems.Count} 个问题需要修复";
+
+                // 明确显示所有扫描结果
+                if (_riskItems.Count == 0)
+                {
+                    RepairSummary.Text = "扫描完成，未发现系统问题";
+                }
+                else
+                {
+                    RepairSummary.Text = $"扫描完成，共发现 {_riskItems.Count} 个问题项，已全部列出在下方列表中";
+
+                    // 确保所有问题项都可见
+                    RiskItemsList.UpdateLayout();
+                }
+
                 _isScanning = false;
             }
             catch (OperationCanceledException)
@@ -437,6 +171,7 @@ namespace Xdows_Security
                 // 扫描被取消
                 ScanStatus.Text = "扫描已取消";
                 CurrentScanItem.Text = "用户取消了扫描";
+                RepairSummary.Text = "扫描已停止";
                 _isScanning = false;
             }
             catch (Exception ex)
@@ -444,8 +179,36 @@ namespace Xdows_Security
                 // 扫描出错
                 ScanStatus.Text = "扫描出错";
                 CurrentScanItem.Text = $"扫描过程中发生错误: {ex.Message}";
+                RepairSummary.Text = "扫描过程中发生错误";
                 _isScanning = false;
             }
+        }
+
+        private async Task PerformFullSystemScan(CancellationToken cancellationToken)
+        {
+            // 扫描桌面图标显示相关注册表
+            await ScanDesktopRegistry(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // 扫描命令提示符相关注册表
+            await ScanCommandPromptRegistry(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // 扫描鼠标设置相关注册表
+            await ScanMouseRegistry(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // 扫描任务管理器相关注册表
+            await ScanTaskManagerRegistry(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // 扫描注册表编辑器相关注册表
+            await ScanRegeditRegistry(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // 确保进度达到100%并添加延迟让用户看到完成状态
+            await UpdateProgress(100);
+            await Task.Delay(1000, cancellationToken);
         }
 
         private void StopRepairScan_Click(object sender, RoutedEventArgs e)
@@ -524,6 +287,7 @@ namespace Xdows_Security
                 }
 
                 await Task.Delay(500, cancellationToken);
+                await UpdateProgress(20);
             }
             catch (Exception ex)
             {
@@ -531,10 +295,80 @@ namespace Xdows_Security
             }
         }
 
+        private async Task ScanCommandPromptRegistry(CancellationToken cancellationToken)
+        {
+            await UpdateScanStatus("正在扫描命令提示符相关注册表...");
+            await UpdateProgress(30);
+            await Task.Delay(800, cancellationToken);
+
+            try
+            {
+                // 检查命令提示符是否被禁用
+                await UpdateScanStatus("检查命令提示符状态...");
+
+                bool commandPromptDisabled = false;
+                string disabledLocation = "";
+
+                // 检查当前用户策略
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Policies\Microsoft\Windows\System"))
+                {
+                    if (key != null)
+                    {
+                        var disableCMD = key.GetValue("DisableCMD");
+                        if (disableCMD?.ToString() == "1")
+                        {
+                            commandPromptDisabled = true;
+                            disabledLocation = @"HKEY_CURRENT_USER\Software\Policies\Microsoft\Windows\System";
+                        }
+                    }
+                }
+
+                // 检查本地机器策略
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Policies\Microsoft\Windows\System"))
+                {
+                    if (key != null)
+                    {
+                        var disableCMD = key.GetValue("DisableCMD");
+                        if (disableCMD?.ToString() == "1")
+                        {
+                            commandPromptDisabled = true;
+                            disabledLocation = @"HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System";
+                        }
+                    }
+                }
+
+                // 检查另一个可能的CMD禁用位置
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"))
+                {
+                    if (key != null)
+                    {
+                        var disableCMD = key.GetValue("DisableCMD");
+                        if (disableCMD?.ToString() == "1")
+                        {
+                            commandPromptDisabled = true;
+                            disabledLocation = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer";
+                        }
+                    }
+                }
+
+                if (commandPromptDisabled)
+                {
+                    await AddRiskItem("命令提示符被禁用", "命令提示符已被系统策略禁用", disabledLocation, "高危", "\uE783", "#D32F2F");
+                }
+
+                await Task.Delay(500, cancellationToken);
+                await UpdateProgress(40);
+            }
+            catch (Exception ex)
+            {
+                await AddRiskItem("注册表扫描失败", $"无法扫描命令提示符相关注册表: {ex.Message}", "注册表", "高危", "\uE783", "#D32F2F");
+            }
+        }
+
         private async Task ScanMouseRegistry(CancellationToken cancellationToken)
         {
             await UpdateScanStatus("正在扫描鼠标设置相关注册表...");
-            await UpdateProgress(30);
+            await UpdateProgress(50);
             await Task.Delay(800, cancellationToken);
 
             try
@@ -558,6 +392,7 @@ namespace Xdows_Security
                 }
 
                 await Task.Delay(500, cancellationToken);
+                await UpdateProgress(60);
             }
             catch (Exception ex)
             {
@@ -568,7 +403,7 @@ namespace Xdows_Security
         private async Task ScanTaskManagerRegistry(CancellationToken cancellationToken)
         {
             await UpdateScanStatus("正在扫描任务管理器相关注册表...");
-            await UpdateProgress(60);
+            await UpdateProgress(70);
             await Task.Delay(800, cancellationToken);
 
             try
@@ -577,6 +412,7 @@ namespace Xdows_Security
                 await UpdateScanStatus("检查任务管理器状态...");
 
                 bool taskManagerDisabled = false;
+                string disabledLocation = "";
 
                 // 检查当前用户策略
                 using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Policies\System"))
@@ -587,6 +423,7 @@ namespace Xdows_Security
                         if (disableTaskMgr?.ToString() == "1")
                         {
                             taskManagerDisabled = true;
+                            disabledLocation = @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\System";
                         }
                     }
                 }
@@ -600,16 +437,18 @@ namespace Xdows_Security
                         if (disableTaskMgr?.ToString() == "1")
                         {
                             taskManagerDisabled = true;
+                            disabledLocation = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System";
                         }
                     }
                 }
 
                 if (taskManagerDisabled)
                 {
-                    await AddRiskItem("任务管理器被禁用", "任务管理器已被系统策略禁用", @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\System", "高危", "\uE783", "#D32F2F");
+                    await AddRiskItem("任务管理器被禁用", "任务管理器已被系统策略禁用", disabledLocation, "高危", "\uE783", "#D32F2F");
                 }
 
                 await Task.Delay(500, cancellationToken);
+                await UpdateProgress(80);
             }
             catch (Exception ex)
             {
@@ -620,7 +459,7 @@ namespace Xdows_Security
         private async Task ScanRegeditRegistry(CancellationToken cancellationToken)
         {
             await UpdateScanStatus("正在扫描注册表编辑器相关注册表...");
-            await UpdateProgress(85);
+            await UpdateProgress(90);
             await Task.Delay(800, cancellationToken);
 
             try
@@ -629,6 +468,7 @@ namespace Xdows_Security
                 await UpdateScanStatus("检查注册表编辑器状态...");
 
                 bool registryEditorDisabled = false;
+                string disabledLocation = "";
 
                 // 检查当前用户策略
                 using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Policies\System"))
@@ -639,6 +479,7 @@ namespace Xdows_Security
                         if (disableRegistryTools?.ToString() == "1")
                         {
                             registryEditorDisabled = true;
+                            disabledLocation = @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\System";
                         }
                     }
                 }
@@ -652,16 +493,18 @@ namespace Xdows_Security
                         if (disableRegistryTools?.ToString() == "1")
                         {
                             registryEditorDisabled = true;
+                            disabledLocation = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System";
                         }
                     }
                 }
 
                 if (registryEditorDisabled)
                 {
-                    await AddRiskItem("注册表编辑器被禁用", "注册表编辑器已被系统策略禁用", @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\System", "高危", "\uE783", "#D32F2F");
+                    await AddRiskItem("注册表编辑器被禁用", "注册表编辑器已被系统策略禁用", disabledLocation, "高危", "\uE783", "#D32F2F");
                 }
 
                 await Task.Delay(500, cancellationToken);
+                await UpdateProgress(95);
             }
             catch (Exception ex)
             {
@@ -669,81 +512,16 @@ namespace Xdows_Security
             }
         }
 
-        private async Task ScanCommandPromptRegistry(CancellationToken cancellationToken)
-        {
-            await UpdateScanStatus("正在扫描命令提示符相关注册表...");
-            await UpdateProgress(45);
-            await Task.Delay(800, cancellationToken);
-
-            try
-            {
-                // 检查命令提示符是否被禁用
-                await UpdateScanStatus("检查命令提示符状态...");
-
-                bool commandPromptDisabled = false;
-
-                // 检查当前用户策略
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Policies\Microsoft\Windows\System"))
-                {
-                    if (key != null)
-                    {
-                        var disableCMD = key.GetValue("DisableCMD");
-                        if (disableCMD?.ToString() == "1")
-                        {
-                            commandPromptDisabled = true;
-                        }
-                    }
-                }
-
-                // 检查本地机器策略
-                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Policies\Microsoft\Windows\System"))
-                {
-                    if (key != null)
-                    {
-                        var disableCMD = key.GetValue("DisableCMD");
-                        if (disableCMD?.ToString() == "1")
-                        {
-                            commandPromptDisabled = true;
-                        }
-                    }
-                }
-
-                // 检查另一个可能的CMD禁用位置
-                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"))
-                {
-                    if (key != null)
-                    {
-                        var disableCMD = key.GetValue("DisableCMD");
-                        if (disableCMD?.ToString() == "1")
-                        {
-                            commandPromptDisabled = true;
-                        }
-                    }
-                }
-
-                if (commandPromptDisabled)
-                {
-                    await AddRiskItem("命令提示符被禁用", "命令提示符已被系统策略禁用", @"HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System", "高危", "\uE783", "#D32F2F");
-                }
-
-                await Task.Delay(500, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                await AddRiskItem("注册表扫描失败", $"无法扫描命令提示符相关注册表: {ex.Message}", "注册表", "高危", "\uE783", "#D32F2F");
-            }
-        }
-
-        private async Task UpdateProgress(double value)
+        private async Task UpdateProgress(int progress)
         {
             if (Dispatcher != null)
             {
                 await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
                     if (ScanProgressBar != null)
-                        ScanProgressBar.Value = value;
+                        ScanProgressBar.Value = progress;
                     if (ScanProgressText != null)
-                        ScanProgressText.Text = $"{value:F1}%";
+                        ScanProgressText.Text = $"{progress}%";
                 });
             }
         }
@@ -755,35 +533,28 @@ namespace Xdows_Security
                 await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
                     if (CurrentScanItem != null)
-                    {
                         CurrentScanItem.Text = status;
-                    }
                 });
             }
         }
 
         private void SelectAll_Click(object sender, RoutedEventArgs e)
         {
-            if (RiskItemsList.Items.Count > 0)
+            foreach (var item in _riskItems)
             {
-                for (int i = 0; i < RiskItemsList.Items.Count; i++)
-                {
-                    RiskItemsList.SelectRange(new ItemIndexRange(i, 1));
-                }
-                if (RepairSummary != null)
-                    RepairSummary.Text = $"已选择全部 {_riskItems.Count} 个问题";
+                item.IsSelected = true;
             }
         }
 
         private async void RepairSelected_Click(object sender, RoutedEventArgs e)
         {
-            var selectedItems = RiskItemsList.SelectedItems.Cast<RiskItem>().ToList();
+            var selectedItems = _riskItems.Where(item => item.IsSelected).ToList();
             if (selectedItems.Count == 0)
             {
                 var dialog = new ContentDialog
                 {
-                    Title = "提示",
-                    Content = "请选择要修复的问题",
+                    Title = "未选择项目",
+                    Content = "请先选择要修复的问题",
                     CloseButtonText = "确定",
                     XamlRoot = XamlRoot
                 };
@@ -800,8 +571,8 @@ namespace Xdows_Security
             {
                 var dialog = new ContentDialog
                 {
-                    Title = "提示",
-                    Content = "没有可修复的问题",
+                    Title = "无可修复项目",
+                    Content = "当前没有需要修复的问题",
                     CloseButtonText = "确定",
                     XamlRoot = XamlRoot
                 };
@@ -809,85 +580,67 @@ namespace Xdows_Security
                 return;
             }
 
-            var confirmDialog = new ContentDialog
-            {
-                Title = "确认修复",
-                Content = $"确定要修复全部 {_riskItems.Count} 个问题吗？此操作可能会影响系统稳定性。",
-                PrimaryButtonText = "确认修复",
-                CloseButtonText = "取消",
-                XamlRoot = XamlRoot,
-                PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
-            };
-
-            if (await confirmDialog.ShowAsync() == ContentDialogResult.Primary)
-            {
-                await RepairItems(_riskItems.ToList());
-            }
+            await RepairItems(_riskItems.ToList());
         }
 
         private async Task RepairItems(List<RiskItem> items)
         {
             var progressDialog = new ContentDialog
             {
-                Title = "正在修复",
-                Content = "正在修复选择的问题，请稍候...",
+                Title = "正在修复问题",
+                Content = "正在修复选中的系统问题，请稍候...",
                 CloseButtonText = "取消",
                 XamlRoot = XamlRoot
             };
 
-            _ = progressDialog.ShowAsync();
-
-            try
+            var progress = new ProgressBar
             {
-                int successCount = 0;
+                IsIndeterminate = true,
+                Margin = new Thickness(0, 12, 0, 0)
+            };
 
-                foreach (var item in items)
+            var panel = new StackPanel();
+            panel.Children.Add(progress);
+            progressDialog.Content = panel;
+
+            var tcs = new TaskCompletionSource<bool>();
+            progressDialog.Closed += (s, args) => tcs.SetResult(true);
+            progressDialog.ShowAsync();
+
+            int successCount = 0;
+            int failureCount = 0;
+
+            foreach (var item in items)
+            {
+                try
                 {
-                    bool repaired = await RepairSingleItem(item);
-                    if (repaired)
+                    bool repairResult = await RepairSingleItem(item);
+                    if (repairResult)
                     {
                         successCount++;
                         item.IsRepaired = true;
                     }
-                }
-
-                progressDialog.Hide();
-
-                var resultDialog = new ContentDialog
-                {
-                    Title = "修复完成",
-                    Content = $"成功修复 {successCount}/{items.Count} 个问题",
-                    CloseButtonText = "确定",
-                    XamlRoot = XamlRoot
-                };
-                await resultDialog.ShowAsync();
-
-                // 移除已修复的问题
-                foreach (var item in items.ToList())
-                {
-                    if (item.IsRepaired)
+                    else
                     {
-                        _riskItems.Remove(item);
+                        failureCount++;
                     }
                 }
-                RiskItemsList.ItemsSource = null;
-                RiskItemsList.ItemsSource = _riskItems;
-                if (RepairSummary != null)
-                    RepairSummary.Text = $"剩余 {_riskItems.Count} 个未修复问题";
-            }
-            catch (Exception ex)
-            {
-                progressDialog.Hide();
-
-                var errorDialog = new ContentDialog
+                catch (Exception ex)
                 {
-                    Title = "修复失败",
-                    Content = $"修复过程中发生错误: {ex.Message}",
-                    CloseButtonText = "确定",
-                    XamlRoot = XamlRoot
-                };
-                await errorDialog.ShowAsync();
+                    failureCount++;
+                }
             }
+
+            progressDialog.Hide();
+
+            var resultDialog = new ContentDialog
+            {
+                Title = "修复完成",
+                Content = $"修复完成：成功 {successCount} 项，失败 {failureCount} 项",
+                CloseButtonText = "确定",
+                XamlRoot = XamlRoot
+            };
+            await resultDialog.ShowAsync();
         }
 
         private async Task<bool> RepairSingleItem(RiskItem item)
@@ -899,104 +652,274 @@ namespace Xdows_Security
                     case "桌面图标被隐藏":
                         using (RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"))
                         {
-                            if (key != null)
-                            {
-                                key.SetValue("HideIcons", 0, RegistryValueKind.DWord);
-                            }
+                            key.SetValue("HideIcons", 0, RegistryValueKind.DWord);
                         }
                         return true;
 
-                    case "任务栏显示异常":
-                        // 重建任务栏设置
-                        using (RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3"))
-                        {
-                            if (key != null)
-                            {
-                                // 设置默认任务栏设置
-                                byte[] defaultValue = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3E, 0x00, 0x00, 0x00, 0x2E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x80, 0x07, 0x00, 0x00, 0x38, 0x04, 0x00, 0x00 };
-                                key.SetValue("Settings", defaultValue, RegistryValueKind.Binary);
-                            }
-                        }
+                    case "命令提示符被禁用":
+                        // 删除禁用CMD的注册表项
+                        Registry.CurrentUser.DeleteSubKey(@"Software\Policies\Microsoft\Windows\System", false);
+                        Registry.LocalMachine.DeleteSubKey(@"SOFTWARE\Policies\Microsoft\Windows\System", false);
+                        Registry.LocalMachine.DeleteSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer", false);
                         return true;
 
                     case "鼠标左右键颠倒":
                         using (RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Control Panel\Mouse"))
                         {
-                            if (key != null)
-                            {
-                                key.SetValue("SwapMouseButtons", 0, RegistryValueKind.String);
-                            }
+                            key.SetValue("SwapMouseButtons", 0, RegistryValueKind.DWord);
                         }
                         return true;
 
                     case "任务管理器被禁用":
-                        using (RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Policies\System"))
-                        {
-                            if (key != null)
-                            {
-                                // 检查值是否存在再删除
-                                if (key.GetValue("DisableTaskMgr") != null)
-                                {
-                                    key.DeleteValue("DisableTaskMgr", false);
-                                }
-                            }
-                        }
+                        // 删除禁用任务管理器的注册表项
+                        Registry.CurrentUser.DeleteSubKey(@"Software\Microsoft\Windows\CurrentVersion\Policies\System", false);
+                        Registry.LocalMachine.DeleteSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", false);
                         return true;
 
                     case "注册表编辑器被禁用":
-                        using (RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Policies\System"))
-                        {
-                            if (key != null)
-                            {
-                                // 检查值是否存在再删除
-                                if (key.GetValue("DisableRegistryTools") != null)
-                                {
-                                    key.DeleteValue("DisableRegistryTools", false);
-                                }
-                            }
-                        }
+                        // 删除禁用注册表编辑器的注册表项
+                        Registry.CurrentUser.DeleteSubKey(@"Software\Microsoft\Windows\CurrentVersion\Policies\System", false);
+                        Registry.LocalMachine.DeleteSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", false);
                         return true;
 
                     default:
                         return false;
                 }
             }
+            catch
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region 进程管理功能
+
+        private void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshProcessList();
+        }
+
+        private void Kill_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedProcess = ProcessList.SelectedItem as ProcessInfo;
+            if (selectedProcess != null)
+            {
+                try
+                {
+                    var process = Process.GetProcessById(selectedProcess.Id);
+                    process.Kill();
+                    RefreshProcessList();
+                }
+                catch (Exception ex)
+                {
+                    // 处理异常
+                }
+            }
+        }
+
+        private void SortCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedItem = SortCombo.SelectedItem as ComboBoxItem;
+            if (selectedItem != null)
+            {
+                string sortTag = selectedItem.Tag.ToString();
+                SortProcesses(sortTag);
+            }
+        }
+
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string searchText = SearchBox.Text.ToLower();
+            FilterProcesses(searchText);
+        }
+
+        private void RefreshProcessList()
+        {
+            _allProcesses.Clear();
+            _processes.Clear();
+
+            var processes = Process.GetProcesses();
+            foreach (var process in processes)
+            {
+                try
+                {
+                    var processInfo = new ProcessInfo
+                    {
+                        Name = process.ProcessName,
+                        Id = process.Id,
+                        Memory = (process.WorkingSet64 / 1024 / 1024).ToString("F2") + " MB"
+                    };
+                    _allProcesses.Add(processInfo);
+                    _processes.Add(processInfo);
+                }
+                catch
+                {
+                    // 忽略无法访问的进程
+                }
+            }
+        }
+
+        private void SortProcesses(string sortBy)
+        {
+            var sortedList = new List<ProcessInfo>(_processes);
+
+            switch (sortBy)
+            {
+                case "Name":
+                    sortedList = sortedList.OrderBy(p => p.Name).ToList();
+                    break;
+                case "Id":
+                    sortedList = sortedList.OrderBy(p => p.Id).ToList();
+                    break;
+                case "Memory":
+                    sortedList = sortedList.OrderBy(p => double.Parse(p.Memory.Replace(" MB", ""))).ToList();
+                    break;
+            }
+
+            _processes.Clear();
+            foreach (var item in sortedList)
+            {
+                _processes.Add(item);
+            }
+        }
+
+        private void FilterProcesses(string searchText)
+        {
+            _processes.Clear();
+
+            var filteredList = _allProcesses.Where(p => p.Name.ToLower().Contains(searchText)).ToList();
+
+            foreach (var item in filteredList)
+            {
+                _processes.Add(item);
+            }
+        }
+
+        #endregion
+
+        #region 命令提示符功能
+
+        private async void ExecuteButton_Click(object sender, RoutedEventArgs e)
+        {
+            string command = CmdInput.Text.Trim();
+            if (string.IsNullOrEmpty(command)) return;
+
+            // 添加到历史记录
+            _commandHistory.Add(command);
+            _currentHistoryIndex = _commandHistory.Count;
+
+            // 显示执行的命令
+            CmdOutput.Text += Environment.NewLine + "> " + command;
+
+            try
+            {
+                // 创建进程执行命令
+                var processInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = "/c " + command,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                var process = Process.Start(processInfo);
+                string output = await process.StandardOutput.ReadToEndAsync();
+                string error = await process.StandardError.ReadToEndAsync();
+                process.WaitForExit();
+
+                // 显示输出
+                if (!string.IsNullOrEmpty(output))
+                {
+                    CmdOutput.Text += Environment.NewLine + output;
+                }
+                if (!string.IsNullOrEmpty(error))
+                {
+                    CmdOutput.Text += Environment.NewLine + "错误: " + error;
+                }
+            }
             catch (Exception ex)
             {
-                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                CmdOutput.Text += Environment.NewLine + "执行错误: " + ex.Message;
+            }
+
+            // 清空输入框
+            CmdInput.Text = "";
+
+            // 滚动到底部
+            CmdOutput.SelectionStart = CmdOutput.Text.Length;
+            CmdOutput.SelectionLength = 0;
+        }
+
+        private void CmdInput_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                ExecuteButton_Click(sender, e);
+            }
+            else if (e.Key == Windows.System.VirtualKey.Up)
+            {
+                // 上箭头键 - 显示上一个命令
+                if (_currentHistoryIndex > 0)
                 {
-                    var errorDialog = new ContentDialog
-                    {
-                        Title = "修复失败",
-                        Content = $"修复 {item.Name} 时发生错误: {ex.Message}",
-                        CloseButtonText = "确定",
-                        XamlRoot = XamlRoot
-                    };
-                    _ = errorDialog.ShowAsync();
-                });
-                return false;
+                    _currentHistoryIndex--;
+                    CmdInput.Text = _commandHistory[_currentHistoryIndex];
+                }
+            }
+            else if (e.Key == Windows.System.VirtualKey.Down)
+            {
+                // 下箭头键 - 显示下一个命令
+                if (_currentHistoryIndex < _commandHistory.Count - 1)
+                {
+                    _currentHistoryIndex++;
+                    CmdInput.Text = _commandHistory[_currentHistoryIndex];
+                }
+                else if (_currentHistoryIndex == _commandHistory.Count - 1)
+                {
+                    _currentHistoryIndex = _commandHistory.Count;
+                    CmdInput.Text = "";
+                }
+            }
+        }
+
+        private void ClearOutput_Click(object sender, RoutedEventArgs e)
+        {
+            CmdOutput.Text = "[Ver 1.0.0] XIGUASystem 命令提示符 cmd";
+        }
+
+        private async void CopyOutput_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(CmdOutput.Text))
+            {
+                var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
+                dataPackage.SetText(CmdOutput.Text);
+                Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
+
+                var dialog = new ContentDialog
+                {
+                    Title = "复制成功",
+                    Content = "命令输出已复制到剪贴板",
+                    CloseButtonText = "确定",
+                    XamlRoot = XamlRoot
+                };
+                await dialog.ShowAsync();
             }
         }
 
         #endregion
     }
 
-    public sealed class ProcessInfo
+    public class ProcessInfo
     {
-        public string Name { get; }
-        public int Id { get; }
-        public string Memory { get; }
-        public long MemoryBytes { get; }
-        public ProcessInfo(Process p)
-        {
-            Name = $"{p.ProcessName}.exe";
-            Id = p.Id;
-            MemoryBytes = p.WorkingSet64;
-            Memory = $"{MemoryBytes / 1024 / 1024} MB";
-        }
+        public string Name { get; set; }
+        public int Id { get; set; }
+        public string Memory { get; set; }
     }
 
-    public sealed class RiskItem
+    public class RiskItem
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -1004,6 +927,7 @@ namespace Xdows_Security
         public string RiskLevel { get; set; }
         public string RiskIcon { get; set; }
         public string RiskColor { get; set; }
+        public bool IsSelected { get; set; }
         public bool IsRepaired { get; set; }
     }
 }

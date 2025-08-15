@@ -27,7 +27,7 @@ namespace Xdows_Security
         private ObservableCollection<ScanResult> _quickScanResults;
         private ObservableCollection<ActivityItem> _recentActivities;
         private ObservableCollection<ProtectionLogItem> _protectionLogs;
-        private CancellationTokenSource _scanCancellationTokenSource;
+        private CancellationTokenSource? _scanCancellationTokenSource;
 
         public HomePage()
         {
@@ -161,12 +161,12 @@ namespace Xdows_Security
                 new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Red);
             
             var settings = ApplicationData.Current.LocalSettings;
-            if (settings.Values.TryGetValue("LastScanTime", out object lastScanTime))
+            if (settings.Values.TryGetValue("LastScanTime", out var lastScanTime))
             {
                 LastScanText.Text = lastScanTime.ToString();
             }
             
-            if (settings.Values.TryGetValue("ThreatCount", out object threatCount))
+            if (settings.Values.TryGetValue("ThreatCount", out var threatCount))
             {
                 ThreatCountText.Text = threatCount.ToString();
             }
@@ -183,7 +183,7 @@ namespace Xdows_Security
         {
             _recentActivities.Clear();
             var settings = ApplicationData.Current.LocalSettings;
-            if (settings.Values.TryGetValue("RecentActivities", out object activitiesObj))
+            if (settings.Values.TryGetValue("RecentActivities", out var activitiesObj))
             {
                 var activities = activitiesObj as string;
                 if (!string.IsNullOrEmpty(activities))
@@ -543,21 +543,21 @@ namespace Xdows_Security
     
     public class ScanResult
     {
-        public string FilePath { get; set; }
-        public string Status { get; set; }
+        public string? FilePath { get; set; }
+        public string? Status { get; set; }
     }
     
     public class ActivityItem
     {
-        public string Activity { get; set; }
-        public string Time { get; set; }
+        public string? Activity { get; set; }
+        public string? Time { get; set; }
     }
     
     public class ProtectionLogItem
     {
-        public string Icon { get; set; }
-        public Microsoft.UI.Xaml.Media.SolidColorBrush Color { get; set; }
-        public string Message { get; set; }
-        public string Time { get; set; }
+        public string? Icon { get; set; }
+        public Microsoft.UI.Xaml.Media.SolidColorBrush? Color { get; set; }
+        public string? Message { get; set; }
+        public string? Time { get; set; }
     }
 }

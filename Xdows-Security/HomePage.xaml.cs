@@ -155,7 +155,8 @@ namespace Xdows_Security
         private void LoadProtectionStatus()
         {
             var isProtected = Protection.IsOpen();
-            ProtectionStatusText.Text = isProtected ? "已启用" : "已禁用";
+            string[] DisplayText = _resourceLoader.GetString("AllPage_Status").Split(',');
+            ProtectionStatusText.Text = isProtected ? DisplayText[0] : DisplayText[1];
             ProtectionStatusText.Foreground = isProtected ? 
                 new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green) : 
                 new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Red);

@@ -19,7 +19,7 @@
             </StackPanel>
         </StackPanel>
         <TabView Grid.Row="1" IsAddTabButtonVisible="False" SelectionChanged="TabView_SelectionChanged" TabWidthMode="Equal">
-            <TabViewItem Header="系统状态" IsClosable="False">
+            <TabViewItem x:Uid="HomePage_Tab1_Title" IsClosable="False">
                 <TabViewItem.IconSource>
                     <FontIconSource Glyph="&#xE770;"/>
                 </TabViewItem.IconSource>
@@ -34,64 +34,64 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Button Grid.Row="0" x:Uid="HomePage_RefreshSystemInfo" Click="RefreshSystemInfo_Click" Margin="0,8,0,8" HorizontalAlignment="Left"/>
+                    <Button Grid.Row="0" x:Uid="HomePage_Tab1_RefreshSystemInfo" Click="RefreshSystemInfo_Click" Margin="0,8,0,8" HorizontalAlignment="Left"/>
                     <ScrollViewer Grid.Row="1">
                         <StackPanel Spacing="10">
                             <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
                                 <StackPanel>
-                                    <TextBlock Text="系统信息" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    <TextBlock x:Uid="HomePage_Tab1_SystemInfo" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="操作系统：" Grid.Column="0" Margin="0,0,10,0"/>
-                                        <TextBlock x:Name="OSNameText" Grid.Column="1" Text="正在加载..."/>
+                                        <TextBlock x:Uid="HomePage_Tab1_OSName" Grid.Column="0" Margin="0,0,10,0"/>
+                                        <TextBlock x:Name="OSNameText" Grid.Column="1" x:Uid="AllPage_Loading" />
                                     </Grid>
                                     <Grid Margin="0,5,0,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="系统版本：" Grid.Column="0" Margin="0,0,10,0"/>
-                                        <TextBlock x:Name="OSVersionText" Grid.Column="1" Text="正在加载..."/>
+                                        <TextBlock x:Uid="HomePage_Tab1_OSVersion"  Grid.Column="0" Margin="0,0,10,0"/>
+                                        <TextBlock x:Name="OSVersionText" Grid.Column="1" x:Uid="AllPage_Loading" />
                                     </Grid>
                                     <Grid Margin="0,5,0,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="内存使用：" Grid.Column="0" Margin="0,0,10,0"/>
-                                        <TextBlock x:Name="MemoryUsageText" Grid.Column="1" Text="正在加载..."/>
+                                        <TextBlock x:Uid="HomePage_Tab1_OSMemory" Grid.Column="0" Margin="0,0,10,0"/>
+                                        <TextBlock x:Name="MemoryUsageText" Grid.Column="1" x:Uid="AllPage_Loading" />
                                     </Grid>
                                 </StackPanel>
                             </Border>
 
                             <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
                                 <StackPanel>
-                                    <TextBlock Text="防护状态" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    <TextBlock x:Uid="HomePage_Tab1_ProtectionStatus" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="实时防护：" Grid.Column="0" Margin="0,0,10,0"/>
-                                        <TextBlock x:Name="ProtectionStatusText" Grid.Column="1" Text="正在加载..."/>
+                                        <TextBlock x:Uid="HomePage_Tab1_Protection" Grid.Column="0" Margin="0,0,10,0"/>
+                                        <TextBlock x:Name="ProtectionStatusText" Grid.Column="1" x:Uid="AllPage_Loading" />
                                     </Grid>
                                     <Grid Margin="0,5,0,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="上次扫描：" Grid.Column="0" Margin="0,0,10,0"/>
-                                        <TextBlock x:Name="LastScanText" Grid.Column="1" Text="暂无扫描记录"/>
+                                        <TextBlock x:Uid="HomePage_Tab1_LastScan" Grid.Column="0" Margin="0,0,10,0"/>
+                                        <TextBlock x:Name="LastScanText" Grid.Column="1" x:Uid="AllPage_Undefined"/>
                                     </Grid>
                                     <Grid Margin="0,5,0,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="检测到威胁：" Grid.Column="0" Margin="0,0,10,0"/>
+                                        <TextBlock x:Uid="HomePage_Tab1_NumberOfThreats" Grid.Column="0" Margin="0,0,10,0"/>
                                         <TextBlock x:Name="ThreatCountText" Grid.Column="1" Text="0"/>
                                     </Grid>
                                 </StackPanel>

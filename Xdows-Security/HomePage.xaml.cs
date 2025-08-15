@@ -79,7 +79,7 @@ namespace Xdows_Security
             try
             {
                 var osVersion = Environment.OSVersion;
-                OSNameText.Text = "Windows " + (osVersion.Version.Major >= 10 ? "10/11" : osVersion.Version.Major.ToString());
+                OSNameText.Text = "Windows " + (App.CheckWindowsVersion() ? "11" : osVersion.Version.Major.ToString());
                 OSVersionText.Text = osVersion.VersionString;
 
                 UpdateMemoryUsage();
@@ -152,7 +152,6 @@ namespace Xdows_Security
                 LogText.AddNewLog(3, "HomePage - UpdateMemoryUsage", $"Cannot get MemoryStatus,because: {ex.Message}", true);
             }
         }
-
         private void LoadProtectionStatus()
         {
             var isProtected = Protection.IsOpen();
@@ -447,8 +446,7 @@ namespace Xdows_Security
         
         private void ClearLog_Click(object sender, RoutedEventArgs e)
         {
-            LogText.Text = string.Empty;
-            AddActivity("清空系统日志");
+            LogText.ClearLog();
         }
         
         private async void ExportLog_Click(object sender, RoutedEventArgs e)

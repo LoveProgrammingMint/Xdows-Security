@@ -23,6 +23,12 @@ namespace Xdows_Security
 
         private static readonly int MAXLONG = 8000;
 
+        public static void ClearLog()
+        {
+            Text = String.Empty;
+            AddNewLog(1, "LogSystem", "Log is Clear", true);
+        }
+
         public static void AddNewLog(int Level, string Source, string Info, bool Update)
         {
             string currentTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"); // 获取当前本地时间

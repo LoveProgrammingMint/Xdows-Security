@@ -296,7 +296,7 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,8,0,8">
-                        <Button Content="清空日志" Click="ClearLog_Click" IsEnabled="False"/>
+                        <Button Content="清空日志" Click="ClearLog_Click"/>
                         <Button Content="导出日志" Click="ExportLog_Click"/>
                         <ComboBox x:Name="LogLevelFilter" SelectedIndex="0" SelectionChanged="LogLevelFilter_SelectionChanged">
                             <ComboBoxItem Tag ="All" Content="所有级别"/>

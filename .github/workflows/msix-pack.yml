@@ -14,36 +14,30 @@ env:
 jobs:
   build:
     runs-on: windows-latest
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+    - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    # 还原时关闭 ReadyToRun，避免缺少 runtime package
-    - name: Restore
-      run: dotnet restore ${{ env.CSPROJ_PATH }} -p:PublishReadyToRun=false
+    - run: dotnet restore ${{ env.CSPROJ_PATH }}
 
-    - name: Build
-      run: dotnet build ${{ env.CSPROJ_PATH }} -c Release --no-restore
+    - run: dotnet build ${{ env.CSPROJ_PATH }} -c Release --no-restore
 
-    - name: Publish MSIX
-      run: >
+    # 关键：把 ReadyToRun 彻底关掉
+    - run: >
         dotnet publish ${{ env.CSPROJ_PATH }}
         -c Release
         -r win-x64
         --self-contained true
         -p:PublishAppxPackage=true
         -p:AppxPackageSigningEnabled=false
-        -p:PublishReadyToRun=false      # 关键：关闭 ReadyToRun
+        -p:PublishReadyToRun=false
+        -p:PublishTrimmed=false
         -o artifacts
 
-    - name: Upload MSIX Artifact
-      uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v4
       with:
         name: ${{ env.ARTIFACT_NAME }}
         path: artifacts/**/*.msix

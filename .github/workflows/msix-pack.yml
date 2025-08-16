@@ -1,0 +1,49 @@
+# .github/workflows/msix-pack.yml
+name: MSIX Package
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  PROJECT_PATH: 'src/Xdows-Security/Xdows-Security.csproj'   # 换成实际路径
+  ARTIFACT_NAME: 'Xdows-Security-MSIX'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore
+      run: dotnet restore ${{ env.PROJECT_PATH }}
+
+    - name: Build
+      run: dotnet build ${{ env.PROJECT_PATH }} -c Release --no-restore
+
+    # 仅打包 MSIX（不签名）
+    - name: Publish MSIX
+      run: >
+        dotnet publish ${{ env.PROJECT_PATH }}
+        -c Release
+        -r win-x64
+        --self-contained true
+        -p:PublishAppxPackage=true
+        -p:AppxPackageSigningEnabled=false
+        -o artifacts
+
+    - name: Upload MSIX Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.ARTIFACT_NAME }}
+        path: artifacts/**/*.msix

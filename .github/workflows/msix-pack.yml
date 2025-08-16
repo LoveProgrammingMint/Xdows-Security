@@ -79,7 +79,7 @@ jobs:
         prerelease: true
         files: Xdows-Security-Unsigned.zip
         body: >-
-          ## 更新日志  
+          ## 最近更改
 
           ${{ steps.changelog.outputs.CHANGELOG }}
 

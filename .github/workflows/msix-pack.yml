@@ -1,8 +1,8 @@
 name: Build & Prerelease MSIX
 
 permissions:
-  contents: write           # 允许创建 release
-  pull-requests: read       # 其余权限按需开
+  contents: write
+  pull-requests: read
 
 on:
   push:
@@ -71,7 +71,6 @@ jobs:
         echo "EOF" >> $env:GITHUB_OUTPUT
 
     # 创建预发布 Release
-    # 创建预发布 Release
     - name: Create Prerelease
       uses: softprops/action-gh-release@v2
       with:
@@ -80,12 +79,9 @@ jobs:
         prerelease: true
         files: Xdows-Security-Unsigned.zip
         body: >-
-          🚧 预发布版本说明
-          - 未签名，请自行解决安装问题
-          - CzkCloud 扫描引擎暂不可用
-          - 仅供测试，随时可能回滚
-
-          ### 更新日志
-          ```
+          ## 更新日志  
           ${{ steps.changelog.outputs.CHANGELOG }}
-          ```
+          ## 预发布版本说明  
+          - 打包后的文件未签名，请自行解决签名问题  
+          - CzkCloud 扫描引擎无法使用，没有解决方法  
+          - 任何更改仅供测试，随时可能回滚  

@@ -1,9 +1,7 @@
-name: MSIX Package
+name: Build & Prerelease MSIX
 
 on:
   push:
-    branches: [ master, main ]
-  pull_request:
     branches: [ master, main ]
 
 env:
@@ -16,18 +14,32 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v4
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0          # 让 git 能拿到提交历史
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - run: >
-        dotnet restore ${{ env.CSPROJ_PATH }} -r ${{ env.RID }} -p:PublishReadyToRun=false
+    - name: Restore
+      run: >
+        dotnet restore ${{ env.CSPROJ_PATH }}
+        -r ${{ env.RID }}
+        -p:PublishReadyToRun=false
 
-    - run: >
-        dotnet build ${{ env.CSPROJ_PATH }} -c Release -r ${{ env.RID }} --no-restore -p:PublishReadyToRun=false
+    - name: Build
+      run: >
+        dotnet build ${{ env.CSPROJ_PATH }}
+        -c Release
+        -r ${{ env.RID }}
+        --no-restore
+        -p:PublishReadyToRun=false
 
-    - run: >
+    - name: Publish MSIX (Unsigned)
+      run: >
         dotnet publish ${{ env.CSPROJ_PATH }}
         -c Release
         -r ${{ env.RID }}
@@ -37,9 +49,38 @@ jobs:
         -p:PublishReadyToRun=false
         -p:PublishTrimmed=false
         -p:PublishProfile=
+        -o artifacts
 
-    # 直接打包 AppPackages 下真正的安装包目录
-    - uses: actions/upload-artifact@v4
+    - name: Zip package for upload
+      shell: pwsh
+      run: |
+        Compress-Archive -Path "artifacts/*_Test/*" -DestinationPath "Xdows-Security-Unsigned.zip"
+
+    # 生成变更日志（最近 10 条提交）
+    - name: Generate changelog
+      id: changelog
+      shell: pwsh
+      run: |
+        $log = (git log --oneline -10) -join "`n"
+        echo "CHANGELOG<<EOF" >> $env:GITHUB_OUTPUT
+        echo "$log" >> $env:GITHUB_OUTPUT
+        echo "EOF" >> $env:GITHUB_OUTPUT
+
+    # 创建预发布 Release
+    - name: Create Prerelease
+      uses: softprops/action-gh-release@v2
       with:
-        name: ${{ env.ARTIFACT_NAME }}
-        path: Xdows-Security/bin/Release/net8.0-windows10.0.19041.0/win-x64/AppPackages/*_Test
+        tag_name: nightly-${{ github.run_number }}
+        name: Nightly ${{ github.run_number }}
+        prerelease: true
+        files: Xdows-Security-Unsigned.zip
+        body: |
+           **关于预发布版本**
+          -  预发布版本没有签名，请自行解决该问题
+          -  预发布版本将无法使用 CzkCloud 扫描引擎
+          -  任何更改都有可能被回滚，仅供测试
+
+          ### 更新日志
+          ```
+          ${{ steps.changelog.outputs.CHANGELOG }}
+          ```

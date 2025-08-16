@@ -9,40 +9,31 @@ on:
 env:
   DOTNET_VERSION: '8.0.x'
   CSPROJ_PATH: 'Xdows-Security/Xdows-Security.csproj'
-  RID: 'win-x64'              # 指定具体架构
+  RID: 'win-x64'
   ARTIFACT_NAME: 'Xdows-Security-MSIX'
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    # 1) 还原 —— 指定 RID
-    - name: Restore
-      run: >
+    - run: >
         dotnet restore ${{ env.CSPROJ_PATH }}
         -r ${{ env.RID }}
         -p:PublishReadyToRun=false
 
-    # 2) 构建 —— 指定 RID
-    - name: Build
-      run: >
+    - run: >
         dotnet build ${{ env.CSPROJ_PATH }}
         -c Release
-        --no-restore
         -r ${{ env.RID }}
+        --no-restore
         -p:PublishReadyToRun=false
 
-    # 3) 发布 MSIX —— 同样指定 RID
-    - name: Publish MSIX
-      run: >
+    - run: >
         dotnet publish ${{ env.CSPROJ_PATH }}
         -c Release
         -r ${{ env.RID }}
@@ -51,11 +42,11 @@ jobs:
         -p:AppxPackageSigningEnabled=false
         -p:PublishReadyToRun=false
         -p:PublishTrimmed=false
-        -o artifacts
+        -p:PublishProfile=
 
-    # 4) 上传
-    - name: Upload MSIX
-      uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v4
       with:
         name: ${{ env.ARTIFACT_NAME }}
-        path: artifacts/**/*.msix
+        path: |
+          **/*.msix
+          **/*.msixbundle

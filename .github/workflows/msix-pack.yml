@@ -15,23 +15,25 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
-    - uses: actions/setup-dotnet@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    # 1) 还原时关掉 ReadyToRun
+    # 1️⃣ 还原时强制关闭 ReadyToRun
     - name: Restore
       run: >
         dotnet restore ${{ env.CSPROJ_PATH }}
         -p:PublishReadyToRun=false
 
-    # 2) 构建
+    # 2️⃣ 构建
     - name: Build
       run: dotnet build ${{ env.CSPROJ_PATH }} -c Release --no-restore
 
-    # 3) 发布 MSIX（同样关闭 ReadyToRun & Trim）
+    # 3️⃣ 发布 MSIX（再次强制关闭 ReadyToRun & Trim）
     - name: Publish MSIX
       run: >
         dotnet publish ${{ env.CSPROJ_PATH }}
@@ -44,8 +46,9 @@ jobs:
         -p:PublishTrimmed=false
         -o artifacts
 
-    # 4) 上传
-    - uses: actions/upload-artifact@v4
+    # 4️⃣ 上传成品
+    - name: Upload MSIX
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ env.ARTIFACT_NAME }}
         path: artifacts/**/*.msix

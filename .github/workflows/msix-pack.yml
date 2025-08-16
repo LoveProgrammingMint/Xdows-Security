@@ -1,4 +1,3 @@
-# .github/workflows/msix-pack.yml
 name: MSIX Package
 
 on:
@@ -9,7 +8,7 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.x'
-  PROJECT_PATH: 'Xdows-Security/Xdows-Security.csproj'   # 换成实际路径
+  CSPROJ_PATH: 'Xdows-Security/Xdows-Security.csproj'
   ARTIFACT_NAME: 'Xdows-Security-MSIX'
 
 jobs:
@@ -25,21 +24,22 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
+    # 还原时关闭 ReadyToRun，避免缺少 runtime package
     - name: Restore
-      run: dotnet restore ${{ env.PROJECT_PATH }}
+      run: dotnet restore ${{ env.CSPROJ_PATH }} -p:PublishReadyToRun=false
 
     - name: Build
-      run: dotnet build ${{ env.PROJECT_PATH }} -c Release --no-restore
+      run: dotnet build ${{ env.CSPROJ_PATH }} -c Release --no-restore
 
-    # 仅打包 MSIX（不签名）
     - name: Publish MSIX
       run: >
-        dotnet publish ${{ env.PROJECT_PATH }}
+        dotnet publish ${{ env.CSPROJ_PATH }}
         -c Release
         -r win-x64
         --self-contained true
         -p:PublishAppxPackage=true
         -p:AppxPackageSigningEnabled=false
+        -p:PublishReadyToRun=false      # 关键：关闭 ReadyToRun
         -o artifacts
 
     - name: Upload MSIX Artifact

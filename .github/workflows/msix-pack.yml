@@ -1,5 +1,9 @@
 name: Build & Prerelease MSIX
 
+permissions:
+  contents: write           # 允许创建 release
+  pull-requests: read       # 其余权限按需开
+
 on:
   push:
     branches: [ master, main ]

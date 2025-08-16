@@ -67,6 +67,7 @@ jobs:
         echo "EOF" >> $env:GITHUB_OUTPUT
 
     # 创建预发布 Release
+    # 创建预发布 Release
     - name: Create Prerelease
       uses: softprops/action-gh-release@v2
       with:
@@ -75,10 +76,10 @@ jobs:
         prerelease: true
         files: Xdows-Security-Unsigned.zip
         body: >-
-           **关于预发布版本**
-          -  预发布版本没有签名，请自行解决该问题
-          -  预发布版本将无法使用 CzkCloud 扫描引擎
-          -  任何更改都有可能被回滚，仅供测试
+          🚧 预发布版本说明
+          - 未签名，请自行解决安装问题
+          - CzkCloud 扫描引擎暂不可用
+          - 仅供测试，随时可能回滚
 
           ### 更新日志
           ```

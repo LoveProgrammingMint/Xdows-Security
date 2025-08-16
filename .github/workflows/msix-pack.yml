@@ -9,7 +9,7 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.x'
-  PROJECT_PATH: 'src/Xdows-Security/Xdows-Security.csproj'   # 换成实际路径
+  PROJECT_PATH: 'Xdows-Security/Xdows-Security.csproj'   # 换成实际路径
   ARTIFACT_NAME: 'Xdows-Security-MSIX'
 
 jobs:

@@ -88,7 +88,7 @@ namespace Xdows_Security
             {
                 OSNameText.Text = "获取失败";
                 OSVersionText.Text = "获取失败";
-                LogText.AddNewLog(3, "HomePage - LoadSystemInfo", $"Cannot get SystemInfo,because: {ex.Message}", true);
+                LogText.AddNewLog(3, "HomePage - LoadSystemInfo", $"Cannot get SystemInfo,because: {ex.Message}");
             }
         }
 
@@ -143,13 +143,13 @@ namespace Xdows_Security
                 {
                     var error = Marshal.GetLastWin32Error();
                     MemoryUsageText.Text = "获取失败";
-                    LogText.AddNewLog(3, "HomePage - UpdateMemoryUsage", $"Cannot get MemoryStatus,because: {error}", true);
+                    LogText.AddNewLog(3, "HomePage - UpdateMemoryUsage", $"Cannot get MemoryStatus,because: {error}");
                 }
             }
             catch (Exception ex)
             {
                 MemoryUsageText.Text = "获取失败";
-                LogText.AddNewLog(3, "HomePage - UpdateMemoryUsage", $"Cannot get MemoryStatus,because: {ex.Message}", true);
+                LogText.AddNewLog(3, "HomePage - UpdateMemoryUsage", $"Cannot get MemoryStatus,because: {ex.Message}");
             }
         }
         private void LoadProtectionStatus()

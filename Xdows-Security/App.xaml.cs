@@ -26,10 +26,10 @@ namespace Xdows_Security
         public static void ClearLog()
         {
             Text = String.Empty;
-            AddNewLog(1, "LogSystem", "Log is Clear", true);
+            AddNewLog(1, "LogSystem", "Log is Clear");
         }
 
-        public static void AddNewLog(int Level, string Source, string Info, bool Update)
+        public static void AddNewLog(int Level, string Source, string Info)
         {
             string currentTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"); // 获取当前本地时间
             string LevelText = Level switch
@@ -51,7 +51,7 @@ namespace Xdows_Security
                 Text += logEntry;
             }
 
-            if (Update)
+            if (MainWindow.NowPage == "Home")
             {
                 TextChanged?.Invoke(null, EventArgs.Empty);
             }
@@ -74,12 +74,12 @@ namespace Xdows_Security
             };
             try
             {
-                LogText.AddNewLog(1, "Protection", $"Try to Run {RunFileName}...", false);
+                LogText.AddNewLog(1, "Protection", $"Try to Run {RunFileName}...");
                 Process.Start(RunFileName);
             }
             catch (Exception ex)
             {
-                LogText.AddNewLog(3, "Protection", ex.Message, false);
+                LogText.AddNewLog(3, "Protection", ex.Message);
                 return false;
             }
             return true;
@@ -93,7 +93,7 @@ namespace Xdows_Security
 
         public App()
         {
-            LogText.AddNewLog(1, "UI Interface", "尝试加载主窗口",false);
+            LogText.AddNewLog(1, "UI Interface", "尝试加载主窗口");
             this.InitializeComponent();
         }
 

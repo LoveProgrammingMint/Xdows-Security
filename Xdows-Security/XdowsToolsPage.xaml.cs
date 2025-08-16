@@ -102,12 +102,12 @@ namespace Xdows_Security
                 PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
             };
             if (await confirm.ShowAsync() != ContentDialogResult.Primary) return;
-            LogText.AddNewLog(1, "Xdows Tools - KillProgress", $"{info.Name}({info.Id})", false);
+            LogText.AddNewLog(1, "Xdows Tools - KillProgress", $"{info.Name}({info.Id})");
 
             var result = TryKill(info.Id);
             if (result.Success)
             {
-                LogText.AddNewLog(1, "Xdows Tools - KillProgress - Result", "Termination Successful", false);
+                LogText.AddNewLog(1, "Xdows Tools - KillProgress - Result", "Termination Successful");
             }
             else
             {
@@ -119,7 +119,7 @@ namespace Xdows_Security
                     XamlRoot = XamlRoot,
                     CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 }.ShowAsync();
-                LogText.AddNewLog(2, "Xdows Tools - KillProgress - Result", $"Cannot terminate this process because {result.Error}", false);
+                LogText.AddNewLog(2, "Xdows Tools - KillProgress - Result", $"Cannot terminate this process because {result.Error}");
             }
             RefreshProcesses();
         }
@@ -179,7 +179,7 @@ namespace Xdows_Security
             }
 
             await _cmdProcess!.StandardInput.WriteLineAsync(cmd);
-            LogText.AddNewLog(1, "Xdows Tools - RunCommand", cmd, false);
+            LogText.AddNewLog(1, "Xdows Tools - RunCommand", cmd);
             CmdInput.Text = string.Empty;
         }
 

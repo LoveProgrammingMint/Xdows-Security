@@ -139,7 +139,7 @@
     <value>Xdows Tools</value>
   </data>
   <data name="HomePage_TextBlock_Open" xml:space="preserve">
-    <value>You are protection.</value>
+    <value>You are protection</value>
   </data>
   <data name="AllPage_Not_Open_Yet.Text" xml:space="preserve">
     <value>Not Open Yet</value>
@@ -160,7 +160,7 @@
     <value>Application Theme</value>
   </data>
   <data name="SettingsPage_Appearance_Theme.Description" xml:space="preserve">
-    <value>Select the application theme to display.</value>
+    <value>Select the application theme to display</value>
   </data>
   <data name="SettingsPage_Appearance_Theme_ComboBox_System.Content" xml:space="preserve">
     <value>Use system setting</value>
@@ -178,25 +178,25 @@
     <value>Xdows Local Engine</value>
   </data>
   <data name="SettingsPage_Scan_Local.Description" xml:space="preserve">
-    <value>The local integrated engine is relatively fast but may not promptly detect new threats.</value>
+    <value>The local integrated engine is relatively fast but may not promptly detect new threats</value>
   </data>
   <data name="SettingsPage_Scan_Cloud.Header" xml:space="preserve">
     <value>CzkCloud Engine</value>
   </data>
   <data name="SettingsPage_Scan_Cloud.Description" xml:space="preserve">
-    <value>Connecting to the cloud engine improves detection and accuracy but requires internet access.</value>
+    <value>Connecting to the cloud engine improves detection and accuracy but requires internet access</value>
   </data>
   <data name="SettingsPage_Scan_Local_DeepScan.Header" xml:space="preserve">
     <value>Deep Scan</value>
   </data>
   <data name="SettingsPage_Scan_Local_DeepScan.Description" xml:space="preserve">
-    <value>Deeper file analysis may increase false positives.</value>
+    <value>Deeper file analysis may increase false positives</value>
   </data>
   <data name="SettingsPage_Scan_Cloud_AutoReport.Header" xml:space="preserve">
     <value>Auto Report</value>
   </data>
   <data name="SettingsPage_Scan_Cloud_AutoReport.Description" xml:space="preserve">
-    <value>It is beneficial in addressing rare viruses, but it takes a longer time.</value>
+    <value>It is beneficial in addressing rare viruses, but it takes a longer time</value>
   </data>
   <data name="SettingsPage_Protection.Text" xml:space="preserve">
     <value>Protection</value>
@@ -298,7 +298,7 @@
     <value>Check for Updates</value>
   </data>
   <data name="SettingsPage_Other_About.Description" xml:space="preserve">
-    <value>Information related to this software.</value>
+    <value>Information related to this software</value>
   </data>
   <data name="SettingsPage_Other_About.Header" xml:space="preserve">
     <value>About</value>
@@ -349,16 +349,16 @@
     <value>Display Progress</value>
   </data>
   <data name="SettingsPage_Scan_ScanProgress.Description" xml:space="preserve">
-    <value>Disabling this option will increase the scanning speed, especially when scanning a large number of files.</value>
+    <value>Disabling this option will increase the scanning speed, especially when scanning a large number of files</value>
   </data>
   <data name="HomePage_TextBlock_Close" xml:space="preserve">
-    <value>Protection is not enabled.</value>
+    <value>Protection is not enabled</value>
   </data>
   <data name="SettingsPage_Scan_Local_ExtraData.Header" xml:space="preserve">
     <value>Extra Data</value>
   </data>
   <data name="SettingsPage_Scan_Local_ExtraData.Description" xml:space="preserve">
-    <value>The selection competition for the addition of extra data in the virus name.</value>
+    <value>The selection competition for the addition of extra data in the virus name</value>
   </data>
   <data name="HomePage_Pomes" xml:space="preserve">
     <value>Light—cosmic dot; black hole its plotted ellipsis.
@@ -423,7 +423,7 @@ If the end is light’s riddle, who sets the riddle past the end?</value>
     <value>Last Scan: </value>
   </data>
   <data name="HomePage_Tab1_NumberOfThreats.Text" xml:space="preserve">
-    <value>Number of Threats:</value>
+    <value>Number of Threats: </value>
   </data>
   <data name="AllPage_Status" xml:space="preserve">
     <value>Enable,Disabled</value>

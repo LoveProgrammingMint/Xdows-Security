@@ -83,7 +83,7 @@ namespace Xdows_Security
             {
                 Log += " CloudScan";
             }
-            LogText.AddNewLog(1, "Security - StartScan", Log, false);
+            LogText.AddNewLog(1, "Security - StartScan", Log);
             _currentResults = new ObservableCollection<VirusRow>();
             _dispatcherQueue.TryEnqueue(() =>
             {
@@ -136,7 +136,7 @@ namespace Xdows_Security
 
                         _dispatcherQueue.TryEnqueue(() =>
                         {
-                            LogText.AddNewLog(1, "Security - ScanFile", file, false);
+                            LogText.AddNewLog(1, "Security - ScanFile", file);
                             StatusText.Text = $"’˝‘⁄…®√Ë£∫{file}";
                         });
                         try
@@ -163,12 +163,12 @@ namespace Xdows_Security
                             }
                             if (Result != string.Empty)
                             {
-                                LogText.AddNewLog(1, "Security - Find", Result, false);
+                                LogText.AddNewLog(1, "Security - Find", Result);
                                 _dispatcherQueue.TryEnqueue(() => _currentResults!.Add(new VirusRow(file, Result)));
                             }
                             else
                             {
-                                LogText.AddNewLog(1, "Security - Find", "Is Safe", false);
+                                LogText.AddNewLog(1, "Security - Find", "Is Safe");
                             }
 
                         }
@@ -205,7 +205,7 @@ namespace Xdows_Security
                 {
                     _dispatcherQueue.TryEnqueue(() =>
                     {
-                        LogText.AddNewLog(1, "Security - Failed", ex.Message, false);
+                        LogText.AddNewLog(1, "Security - Failed", ex.Message);
                         StatusText.Text = $"…®√Ë ß∞‹£∫{ex.Message}";
                         ScanProgress.Visibility = Visibility.Collapsed;
                     });

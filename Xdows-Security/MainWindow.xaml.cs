@@ -17,6 +17,7 @@ namespace Xdows_Security
 {
     public sealed partial class MainWindow : Window
     {
+        public static string NowPage = "Home";
         //private readonly ResourceLoader _resourceLoader = ResourceLoader.GetForViewIndependentUse(); //多语言调用
         public MainWindow()
         {
@@ -57,7 +58,7 @@ namespace Xdows_Security
             ApplyBackdrop(backdrop ?? "Mica");
 
 
-            LogText.AddNewLog(1, "UI Interface", "主窗口加载成功", true);
+            LogText.AddNewLog(1, "UI Interface", "主窗口加载成功");
         }
         public void UpdateTheme(ElementTheme selectedTheme)
         {
@@ -136,7 +137,7 @@ namespace Xdows_Security
             nav.Header = (nav.SelectedItem as NavigationViewItem)?.Content ?? string.Empty;
 
             if (next) { return; }
-
+            NowPage = PageName; 
             switch (PageName)
             {
                 case "Home":

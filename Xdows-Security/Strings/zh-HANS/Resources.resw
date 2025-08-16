@@ -399,13 +399,13 @@
     <value>系统信息</value>
   </data>
   <data name="HomePage_Tab1_OSName.Text" xml:space="preserve">
-    <value>操作系统：</value>
+    <value>操作系统: </value>
   </data>
   <data name="HomePage_Tab1_OSVersion.Text" xml:space="preserve">
-    <value>系统版本：</value>
+    <value>系统版本: </value>
   </data>
   <data name="HomePage_Tab1_OSMemory.Text" xml:space="preserve">
-    <value>使用内存：</value>
+    <value>使用内存: </value>
   </data>
   <data name="AllPage_Loading" xml:space="preserve">
     <value>正在加載...</value>
@@ -417,16 +417,16 @@
     <value>防护状态</value>
   </data>
   <data name="HomePage_Tab1_Protection.Text" xml:space="preserve">
-    <value>实时防护：</value>
+    <value>实时防护: </value>
   </data>
   <data name="HomePage_Tab1_LastScan.Text" xml:space="preserve">
-    <value>上次扫描：</value>
+    <value>上次扫描: </value>
   </data>
   <data name="HomePage_Tab1_NumberOfThreats.Text" xml:space="preserve">
-    <value>威胁数量：</value>
+    <value>威胁数量: </value>
   </data>
   <data name="AllPage_Status" xml:space="preserve">
-    <value>启用,禁用</value>
+    <value>已启用,已禁用</value>
   </data>
   <data name="AllPage_Undefined.Text" xml:space="preserve">
     <value>未定义</value>

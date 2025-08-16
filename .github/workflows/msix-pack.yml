@@ -1,4 +1,4 @@
-name: Build MSIX
+name: MSIX Package
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
 env:
   DOTNET_VERSION: '8.0.x'
   CSPROJ_PATH: 'Xdows-Security/Xdows-Security.csproj'
+  RID: 'win-x64'              # 指定具体架构
   ARTIFACT_NAME: 'Xdows-Security-MSIX'
 
 jobs:
@@ -23,26 +24,28 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    # 1) 还原——显式关闭 ReadyToRun
+    # 1) 还原 —— 指定 RID
     - name: Restore
       run: >
         dotnet restore ${{ env.CSPROJ_PATH }}
+        -r ${{ env.RID }}
         -p:PublishReadyToRun=false
 
-    # 2) 构建
+    # 2) 构建 —— 指定 RID
     - name: Build
       run: >
         dotnet build ${{ env.CSPROJ_PATH }}
         -c Release
         --no-restore
+        -r ${{ env.RID }}
         -p:PublishReadyToRun=false
 
-    # 3) 发布 MSIX——同样关闭 ReadyToRun & Trim
+    # 3) 发布 MSIX —— 同样指定 RID
     - name: Publish MSIX
       run: >
         dotnet publish ${{ env.CSPROJ_PATH }}
         -c Release
-        -r win-x64
+        -r ${{ env.RID }}
         --self-contained true
         -p:PublishAppxPackage=true
         -p:AppxPackageSigningEnabled=false

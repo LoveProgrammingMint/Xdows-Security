@@ -21,12 +21,19 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - run: dotnet restore ${{ env.CSPROJ_PATH }}
+    # 1) 还原时关掉 ReadyToRun
+    - name: Restore
+      run: >
+        dotnet restore ${{ env.CSPROJ_PATH }}
+        -p:PublishReadyToRun=false
 
-    - run: dotnet build ${{ env.CSPROJ_PATH }} -c Release --no-restore
+    # 2) 构建
+    - name: Build
+      run: dotnet build ${{ env.CSPROJ_PATH }} -c Release --no-restore
 
-    # 关键：把 ReadyToRun 彻底关掉
-    - run: >
+    # 3) 发布 MSIX（同样关闭 ReadyToRun & Trim）
+    - name: Publish MSIX
+      run: >
         dotnet publish ${{ env.CSPROJ_PATH }}
         -c Release
         -r win-x64
@@ -37,6 +44,7 @@ jobs:
         -p:PublishTrimmed=false
         -o artifacts
 
+    # 4) 上传
     - uses: actions/upload-artifact@v4
       with:
         name: ${{ env.ARTIFACT_NAME }}

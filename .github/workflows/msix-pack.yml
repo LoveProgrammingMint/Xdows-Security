@@ -80,7 +80,9 @@ jobs:
         files: Xdows-Security-Unsigned.zip
         body: >-
           ## 更新日志  
+
           ${{ steps.changelog.outputs.CHANGELOG }}
+
           ## 预发布版本说明  
           - 打包后的文件未签名，请自行解决签名问题  
           - CzkCloud 扫描引擎无法使用，没有解决方法  

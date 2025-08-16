@@ -60,6 +60,11 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             settings.Values["ExtraData"] = ExtraDataToggle.IsOn;
         }
+        private void SouXiaoScanToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            var settings = ApplicationData.Current.LocalSettings;
+            settings.Values["SouXiaoScan"] = SouXiaoScanToggle.IsOn;
+        }
         private void LocalScanToggle_Toggled(object sender, RoutedEventArgs e)
         {
             var settings = ApplicationData.Current.LocalSettings;
@@ -97,6 +102,11 @@ namespace Xdows_Security
             {
                 bool CloudScan = value is bool && (bool)value;
                 CloudScanToggle.IsOn = CloudScan;
+            }
+            if (settings.Values.TryGetValue("SouXiaoScan", out value))
+            {
+                bool SouXiaoScan = value is bool && (bool)value;
+                SouXiaoScanToggle.IsOn = SouXiaoScan;
             }
         }
         private void LoadLanguageSetting()

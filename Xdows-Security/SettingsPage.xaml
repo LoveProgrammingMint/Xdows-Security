@@ -37,6 +37,18 @@
             </controls:SettingsCard>
             <controls:SettingsExpander
                             VerticalAlignment="Top"
+                            x:Uid="SettingsPage_Scan_SouXiao"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xF22C;}">
+                <ToggleSwitch x:Name="SouXiaoScanToggle" Toggled="SouXiaoScanToggle_Toggled"  />
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard
+                            x:Uid="SettingsPage_Scan_SouXiao_Develop"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xEC7A;}">
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
+            <controls:SettingsExpander
+                            VerticalAlignment="Top"
                             x:Uid="SettingsPage_Scan_Local"
                             HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
                 <ToggleSwitch x:Name="LocalScanToggle" Toggled="LocalScanToggle_Toggled" />

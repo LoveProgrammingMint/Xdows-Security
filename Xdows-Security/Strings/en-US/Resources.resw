@@ -431,4 +431,16 @@ If the end is light’s riddle, who sets the riddle past the end?</value>
   <data name="AllPage_Undefined.Text" xml:space="preserve">
     <value>Undefined</value>
   </data>
+  <data name="SettingsPage_Scan_SouXiao.Header" xml:space="preserve">
+    <value>SouXiao Engine</value>
+  </data>
+  <data name="SettingsPage_Scan_SouXiao.Description" xml:space="preserve">
+    <value>The SouXiao scanning engine is from a third party, which improves the detection rate</value>
+  </data>
+  <data name="SettingsPage_Scan_SouXiao_Develop.Description" xml:space="preserve">
+    <value>Working Cat is the developer and maintainer of this scanning engine</value>
+  </data>
+  <data name="SettingsPage_Scan_SouXiao_Develop.Header" xml:space="preserve">
+    <value>About this Engine</value>
+  </data>
 </root>

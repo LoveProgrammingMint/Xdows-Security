@@ -1,3 +1,4 @@
+using SuoXiaoENGINE;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -20,6 +21,13 @@ namespace Xdows_Security
     public enum ScanMode { Quick, Full, File, Folder, More }
     public record VirusRow(string FilePath, string VirusName);
 
+    // 对于 SouXiaoEngine 的使用，其开发者有如下说明：
+    //
+    // 注：本扫描引擎所有版权归 WorkingCat 所有（QQ: 3327867352），仅给予使用权&引用权，授权期限为版权所有者规定（随时可取消）
+    //
+    // 我们将会在不违反其开发者的任何规定的情况下进行使用/引用，如果我们触犯了其开发者的任何规定请联系我们
+    // 联系方式：邮箱:XdowsSoftware @outlook.com,a1b2c3ABC1231@outlook.com 或 QQ:2966643247
+
     public sealed partial class SecurityPage : Page
     {
         private CancellationTokenSource? _cts;
@@ -37,7 +45,8 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             bool UseLocalScan = settings.Values["LocalScan"] is bool && (bool)settings.Values["LocalScan"];
             bool UseCloudScan = settings.Values["CloudScan"] is bool && (bool)settings.Values["CloudScan"];
-            if (!UseLocalScan && !UseCloudScan) {
+            bool UseSouXiaoScan = settings.Values["SouXiaoScan"] is bool && (bool)settings.Values["SouXiaoScan"];
+            if (!UseLocalScan && !UseCloudScan && !UseSouXiaoScan) {
                 var dialog = new ContentDialog
                 {
                     Title = "当前没有选择扫描引擎",
@@ -74,6 +83,13 @@ namespace Xdows_Security
             bool ExtraData = settings.Values["ExtraData"] is bool && (bool)settings.Values["ExtraData"];
             bool UseLocalScan = settings.Values["LocalScan"] is bool && (bool)settings.Values["LocalScan"];
             bool UseCloudScan = settings.Values["CloudScan"] is bool && (bool)settings.Values["CloudScan"];
+            bool UseSouXiaoScan = settings.Values["SouXiaoScan"] is bool && (bool)settings.Values["SouXiaoScan"];
+            MalwareScanner? SouXiaoEngine = null;
+            if (UseSouXiaoScan) {
+                string ModelPath = AppDomain.CurrentDomain.BaseDirectory + "model.onnx";
+                SouXiaoEngine = new MalwareScanner(ModelPath);
+            }
+
             string Log = "Use";
             if (UseLocalScan) {
                 Log += " LocalScan";
@@ -82,6 +98,10 @@ namespace Xdows_Security
             if (UseCloudScan)
             {
                 Log += " CloudScan";
+            }
+            if (UseSouXiaoScan)
+            {
+                Log += " SouXiaoScan";
             }
             LogText.AddNewLog(1, "Security - StartScan", Log);
             _currentResults = new ObservableCollection<VirusRow>();
@@ -141,23 +161,34 @@ namespace Xdows_Security
                         });
                         try
                         {
-                            var Result = string.Empty;
-                            if (UseLocalScan) {
-                                var LocalResult = await Xdows.ScanEngine.ScanEngine.LocalScanAsync(file, DeepScan, ExtraData);
-                                if (LocalResult != string.Empty)
-                                {
-                                    if (DeepScan) { Result = $"{LocalResult} with DeepScan"; } else { Result = LocalResult; }
+                            string Result = string.Empty;
 
+                            if (UseSouXiaoScan)
+                            {
+                                if (SouXiaoEngine != null)
+                                {
+                                    Result = SouXiaoEngine.ScanFile(file) ? "SouXiaoEngine.Malware" : string.Empty;
                                 }
                             }
-                            if (UseCloudScan)
-                            {
-                                if (Result == string.Empty)
+
+                            if (Result == string.Empty) {
+                                if (UseLocalScan)
                                 {
-                                    var CloudResult = await Xdows.ScanEngine.ScanEngine.CloudScanAsync(file, App.GetCloudApiKey());
-                                    if (CloudResult.result != "safe")
+                                    string localResult = await Xdows.ScanEngine.ScanEngine.LocalScanAsync(file, DeepScan, ExtraData);
+                                    if (!string.IsNullOrEmpty(localResult))
                                     {
-                                        Result = CloudResult.result;
+                                        Result = DeepScan ? $"{localResult} with DeepScan" : localResult;
+                                    }
+                                }
+                            }
+                            if (Result == string.Empty)
+                            {
+                                if (UseCloudScan)
+                                {
+                                    var cloudResult = await Xdows.ScanEngine.ScanEngine.CloudScanAsync(file, App.GetCloudApiKey());
+                                    if (cloudResult.result != "safe")
+                                    {
+                                        Result = cloudResult.result;
                                     }
                                 }
                             }
@@ -173,7 +204,8 @@ namespace Xdows_Security
 
                         }
                         catch
-                        {
+                        { 
+                            throw;
                             // 跳过单个文件错误
                         }
 
@@ -205,7 +237,7 @@ namespace Xdows_Security
                 {
                     _dispatcherQueue.TryEnqueue(() =>
                     {
-                        LogText.AddNewLog(1, "Security - Failed", ex.Message);
+                        LogText.AddNewLog(4, "Security - Failed", ex.Message);
                         StatusText.Text = $"扫描失败：{ex.Message}";
                         ScanProgress.Visibility = Visibility.Collapsed;
                     });

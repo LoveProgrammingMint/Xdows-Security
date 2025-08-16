@@ -431,4 +431,16 @@
   <data name="AllPage_Undefined.Text" xml:space="preserve">
     <value>未定义</value>
   </data>
+  <data name="SettingsPage_Scan_SouXiao.Header" xml:space="preserve">
+    <value>SouXiao 本地引擎</value>
+  </data>
+  <data name="SettingsPage_Scan_SouXiao.Description" xml:space="preserve">
+    <value>SouXiao 扫描引擎来自于第三方，可以提高查杀率</value>
+  </data>
+  <data name="SettingsPage_Scan_SouXiao_Develop.Description" xml:space="preserve">
+    <value>Working Cat 是这个扫描引擎的开发者和维护者</value>
+  </data>
+  <data name="SettingsPage_Scan_SouXiao_Develop.Header" xml:space="preserve">
+    <value>关于引擎</value>
+  </data>
 </root>

@@ -1,4 +1,4 @@
-name: MSIX Package
+name: Build MSIX
 
 on:
   push:
@@ -23,17 +23,21 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    # 1️⃣ 还原时强制关闭 ReadyToRun
+    # 1) 还原——显式关闭 ReadyToRun
     - name: Restore
       run: >
         dotnet restore ${{ env.CSPROJ_PATH }}
         -p:PublishReadyToRun=false
 
-    # 2️⃣ 构建
+    # 2) 构建
     - name: Build
-      run: dotnet build ${{ env.CSPROJ_PATH }} -c Release --no-restore
+      run: >
+        dotnet build ${{ env.CSPROJ_PATH }}
+        -c Release
+        --no-restore
+        -p:PublishReadyToRun=false
 
-    # 3️⃣ 发布 MSIX（再次强制关闭 ReadyToRun & Trim）
+    # 3) 发布 MSIX——同样关闭 ReadyToRun & Trim
     - name: Publish MSIX
       run: >
         dotnet publish ${{ env.CSPROJ_PATH }}
@@ -46,7 +50,7 @@ jobs:
         -p:PublishTrimmed=false
         -o artifacts
 
-    # 4️⃣ 上传成品
+    # 4) 上传
     - name: Upload MSIX
       uses: actions/upload-artifact@v4
       with:

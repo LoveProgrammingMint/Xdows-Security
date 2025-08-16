@@ -22,16 +22,10 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - run: >
-        dotnet restore ${{ env.CSPROJ_PATH }}
-        -r ${{ env.RID }}
-        -p:PublishReadyToRun=false
+        dotnet restore ${{ env.CSPROJ_PATH }} -r ${{ env.RID }} -p:PublishReadyToRun=false
 
     - run: >
-        dotnet build ${{ env.CSPROJ_PATH }}
-        -c Release
-        -r ${{ env.RID }}
-        --no-restore
-        -p:PublishReadyToRun=false
+        dotnet build ${{ env.CSPROJ_PATH }} -c Release -r ${{ env.RID }} --no-restore -p:PublishReadyToRun=false
 
     - run: >
         dotnet publish ${{ env.CSPROJ_PATH }}
@@ -44,9 +38,8 @@ jobs:
         -p:PublishTrimmed=false
         -p:PublishProfile=
 
+    # 直接打包 AppPackages 下真正的安装包目录
     - uses: actions/upload-artifact@v4
       with:
         name: ${{ env.ARTIFACT_NAME }}
-        path: |
-          **/*.msix
-          **/*.msixbundle
+        path: Xdows-Security/bin/Release/net8.0-windows10.0.19041.0/win-x64/AppPackages/*_Test

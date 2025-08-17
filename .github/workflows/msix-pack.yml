@@ -50,6 +50,7 @@ jobs:
         --self-contained true
         -p:PublishAppxPackage=true
         -p:AppxPackageSigningEnabled=false
+        -p:PackageCertificateThumbprint=
         -p:PublishReadyToRun=false
         -p:PublishTrimmed=false
         -p:PublishProfile=

@@ -11,7 +11,7 @@
             <FontIcon x:Name="Icon" Margin="16,0,0,0" HorizontalAlignment="Left" Glyph="&#xE73E;" FontSize="124" FontWeight="Bold"/>
             <!-- 右侧文本 -->
             <StackPanel Margin="24,16,0,0" Orientation="Vertical">
-                <TextBlock Margin="0,12,0,0" x:Name="HomePage_TextBlock" FontSize="24" FontWeight="Bold"/>
+                <TextBlock Margin="0,12,0,0" x:Name="HomePage_TextBlock" FontSize="28" FontWeight="Bold"/>
                 <TextBlock
                    x:Name="HomePage_Pomes"
                    Style="{StaticResource BodyTextBlockStyle}"

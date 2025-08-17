@@ -8,11 +8,37 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <!-- 雷达扫描动画 -->
+        <!-- 雷达扫描动画 -->
+        <Storyboard x:Name="RadarScanStoryboard">
+            <DoubleAnimation 
+                Storyboard.TargetName="RadarScanLine"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                From="0" To="360" Duration="0:0:3" RepeatBehavior="Forever" />
+            <DoubleAnimation 
+                Storyboard.TargetName="RadarPulse"
+                Storyboard.TargetProperty="Opacity"
+                From="0.8" To="0" Duration="0:0:1.5" RepeatBehavior="Forever" AutoReverse="True" />
+            <DoubleAnimation 
+                Storyboard.TargetName="RadarPulse"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
+                From="0.5" To="1.5" Duration="0:0:1.5" RepeatBehavior="Forever" AutoReverse="True" />
+            <DoubleAnimation 
+                Storyboard.TargetName="RadarPulse"
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
+                From="0.5" To="1.5" Duration="0:0:1.5" RepeatBehavior="Forever" AutoReverse="True" />
+        </Storyboard>
+    </Page.Resources>
+
     <Grid Margin="64,16,64,0" VerticalAlignment="Top">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -20,22 +46,125 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <!-- 扫描路径 -->
-        <TextBlock Name="PathText"
-                   Text="扫描模式：未指定"
-                   FontSize="16"
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Left"
-                   Grid.Column="0"/>
+        <!-- 扫描区域状态显示 -->
+        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+            <StackPanel>
+                <TextBlock Text="扫描状态" FontSize="16" FontWeight="Bold" Margin="0,0,0,8" Foreground="{ThemeResource SystemAccentColor}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <FontIcon x:Name="ScanAreaIcon" Grid.Column="0" Glyph="&#xE721;" FontSize="24" Margin="0,0,12,0" Foreground="{ThemeResource SystemAccentColor}"/>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock x:Name="CurrentScanAreaText" Text="准备开始扫描" FontSize="14" FontWeight="SemiBold" Foreground="{ThemeResource SystemAccentColor}"/>
+                        <TextBlock x:Name="ScanProgressDetailText" Text="等待用户选择扫描类型" FontSize="12" Opacity="0.7" Foreground="{ThemeResource SystemAccentColor}"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
 
-        <!-- 选择按钮 -->
-        <Button Content="选择文件"
-        Name="ScanButton"
-        Width="88"
-        Height="40"
-        VerticalAlignment="Center"
-        HorizontalAlignment="Right"
-        Grid.Column="1">
+        <!-- 扫描项目状态区域 -->
+        
+            
+
+        <!-- 功能按钮区域 -->
+        <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="8" Margin="0,0,0,16">
+            <Button x:Name="BackToVirusListButton" Click="OnBackToVirusListClick" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE72A;"/>
+                    <TextBlock Text="返回病毒列表"/>
+                </StackPanel>
+            </Button>
+            <Button x:Name="PauseScanButton" Click="OnPauseScanClick" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE769;"/>
+                    <TextBlock Text="暂停扫描"/>
+                </StackPanel>
+            </Button>
+            <Button x:Name="ResumeScanButton" Click="OnResumeScanClick" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE768;"/>
+                    <TextBlock Text="继续扫描"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <!-- 图形化进度显示 - 火绒风格雷达扫描 -->
+        <Border Grid.Row="3" Grid.ColumnSpan="2" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+            <StackPanel>
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="扫描进度" FontSize="16" FontWeight="Bold" Foreground="{ThemeResource SystemAccentColor}"/>
+                    <TextBlock Grid.Column="1" x:Name="ProgressPercentText" Text="0%" FontSize="14" FontWeight="Bold" Foreground="{ThemeResource SystemAccentColor}"/>
+                </Grid>
+
+                <!-- 雷达扫描区域 -->
+                <Grid Height="120" Margin="0,8,0,8">
+                    <!-- 雷达背景圆圈 -->
+                    <Ellipse Width="100" Height="100" Stroke="{ThemeResource SystemAccentColor}" StrokeThickness="2" Opacity="0.3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Ellipse Width="80" Height="80" Stroke="{ThemeResource SystemAccentColor}" StrokeThickness="1" Opacity="0.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Ellipse Width="60" Height="60" Stroke="{ThemeResource SystemAccentColor}" StrokeThickness="1" Opacity="0.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Ellipse Width="40" Height="40" Stroke="{ThemeResource SystemAccentColor}" StrokeThickness="1" Opacity="0.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                    <!-- 雷达扫描线 -->
+                    <!-- 雷达扫描线 -->
+                    <Line x:Name="RadarScanLine" X1="0" Y1="50" X2="0" Y2="0" Stroke="{ThemeResource SystemAccentColor}" StrokeThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.8">
+                        <Line.RenderTransform>
+                            <RotateTransform CenterX="0" CenterY="50"/>
+                        </Line.RenderTransform>
+                    </Line>
+
+                    <!-- 雷达脉冲效果 -->
+                    <Ellipse x:Name="RadarPulse" Width="20" Height="20" Fill="{ThemeResource SystemAccentColor}" Opacity="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Ellipse.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform CenterX="10" CenterY="10"/>
+                                <RotateTransform CenterX="10" CenterY="10"/>
+                            </TransformGroup>
+                        </Ellipse.RenderTransform>
+                    </Ellipse>
+
+                    <!-- 中心点 -->
+                    <Ellipse Width="8" Height="8" Fill="{ThemeResource SystemAccentColor}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Grid>
+
+                <!-- 进度条 -->
+                <ProgressBar x:Name="ScanProgress" Height="8" CornerRadius="4" Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" Foreground="{ThemeResource SystemAccentColor}"/>
+
+                <!-- 统计信息 -->
+                <Grid Margin="0,8,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                        <FontIcon Glyph="&#xE8B7;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource SystemAccentColor}"/>
+                        <TextBlock x:Name="FilesScannedText" Text="0 个文件" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource SystemAccentColor}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                        <FontIcon Glyph="&#xE7C9;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource SystemAccentColor}"/>
+                        <TextBlock x:Name="FilesSafeText" Text="0 个安全" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource SystemAccentColor}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                        <FontIcon Glyph="&#xE783;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource SystemAccentColor}"/>
+                        <TextBlock x:Name="ThreatsFoundText" Text="0 个威胁" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource SystemAccentColor}"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- 扫描路径和选择按钮 -->
+        <TextBlock Name="PathText" Grid.Row="4" Grid.Column="0" Text="选择扫描文件" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,16" Foreground="{ThemeResource SystemAccentColor}"/>
+        <Button Name="ScanButton" Grid.Row="4" Grid.Column="1" Width="110" Height="40" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,0,10">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <FontIcon Glyph="&#xE8B7;"/>
+                <TextBlock Text="开始扫描"/>
+            </StackPanel>
             <Button.Flyout>
                 <MenuFlyout Placement="Bottom">
                     <MenuFlyoutItem Text="快速扫描" Tag="Quick" Click="OnScanMenuClick">
@@ -69,25 +198,11 @@
             </Button.Flyout>
         </Button>
 
-        <!-- 进度条 -->
-        <ProgressBar Name="ScanProgress"
-                     Grid.Row="1"
-                     Margin="0,16,0,0"
-                     IsIndeterminate="False"
-                     Visibility="Collapsed"/>
-
         <!-- 状态文本 -->
-        <TextBlock Name="StatusText"
-                   Grid.Row="2"
-                   Margin="0,8,0,0"
-                   FontSize="14"/>
+        <TextBlock Name="StatusText" Grid.Row="5" Margin="0,8,0,0" FontSize="14" TextWrapping="Wrap" Foreground="{ThemeResource SystemAccentColor}"/>
 
-        <ListView Name="VirusList"
-          Grid.Row="3"
-          Margin="0,8,0,0"
-          Visibility="Collapsed"
-          DoubleTapped="VirusList_DoubleTapped">
-            <!-- 行模板 -->
+        <!-- 病毒列表 -->
+        <ListView Name="VirusList" Grid.Row="6" Margin="-28,10,0,1" Visibility="Collapsed" DoubleTapped="VirusList_DoubleTapped">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid Padding="12,6">
@@ -95,39 +210,27 @@
                             <ColumnDefinition Width="2*" MinWidth="300"/>
                             <ColumnDefinition Width="*"   MinWidth="150"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{Binding FilePath}"
-                           TextTrimming="CharacterEllipsis"/>
-                        <TextBlock Grid.Column="1" Text="{Binding VirusName}"/>
+                        <TextBlock Grid.Column="0" Text="{Binding FilePath}" TextTrimming="CharacterEllipsis" Foreground="{ThemeResource SystemAccentColor}"/>
+                        <TextBlock Grid.Column="1" Text="{Binding VirusName}" Foreground="{ThemeResource SystemAccentColor}"/>
 
                         <Grid.ContextFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem Text="详细信息"
-                                        Click="OnDetailClick"
-                                        Tag="{Binding}">
+                                <MenuFlyoutItem Text="详细信息" Click="OnDetailClick" Tag="{Binding}">
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xE946;" />
                                     </MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
                                 <MenuFlyoutSeparator/>
-                                <MenuFlyoutItem Text="删除文件"
-                                        Click="OnDeleteClick"
-                                        Tag="{Binding}">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon Glyph="&#xE74D;" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
+                                <MenuFlyoutItem Text="删除文件" Click="OnDeleteClick" Tag="{Binding}">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE74D;" />
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
                             </MenuFlyout>
                         </Grid.ContextFlyout>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
-
-            <!-- 虚拟化 -->
-            <ListView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <ItemsStackPanel/>
-                </ItemsPanelTemplate>
-            </ListView.ItemsPanel>
         </ListView>
     </Grid>
 </Page>

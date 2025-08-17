@@ -22,11 +22,12 @@ namespace Xdows_Security
     public sealed partial class HomePage : Page
     {
         private readonly ResourceLoader _resourceLoader = ResourceLoader.GetForViewIndependentUse();
-        private DispatcherTimer _systemInfoTimer;
-        private DispatcherTimer _protectionTimer;
-        private ObservableCollection<ScanResult> _quickScanResults;
-        private ObservableCollection<ActivityItem> _recentActivities;
-        private ObservableCollection<ProtectionLogItem> _protectionLogs;
+        
+        private DispatcherTimer _systemInfoTimer = new();
+        private DispatcherTimer _protectionTimer = new();
+        private ObservableCollection<ScanResult> _quickScanResults = new();
+        private ObservableCollection<ActivityItem> _recentActivities = new();
+        private ObservableCollection<ProtectionLogItem> _protectionLogs = new();
         private CancellationTokenSource? _scanCancellationTokenSource;
 
         public HomePage()
@@ -46,12 +47,10 @@ namespace Xdows_Security
         
         private void InitializeTimers()
         {
-            _systemInfoTimer = new DispatcherTimer();
             _systemInfoTimer.Interval = TimeSpan.FromSeconds(30);
             _systemInfoTimer.Tick += SystemInfoTimer_Tick;
             _systemInfoTimer.Start();
             
-            _protectionTimer = new DispatcherTimer();
             _protectionTimer.Interval = TimeSpan.FromSeconds(5);
             _protectionTimer.Tick += ProtectionTimer_Tick;
             _protectionTimer.Start();
@@ -59,10 +58,6 @@ namespace Xdows_Security
         
         private void InitializeData()
         {
-            _quickScanResults = new ObservableCollection<ScanResult>();
-            _recentActivities = new ObservableCollection<ActivityItem>();
-            _protectionLogs = new ObservableCollection<ProtectionLogItem>();
-            
             QuickScanResults.ItemsSource = _quickScanResults;
             RecentActivityList.ItemsSource = _recentActivities;
             ProtectionLogList.ItemsSource = _protectionLogs;
@@ -218,13 +213,13 @@ namespace Xdows_Security
             });
         }
         
-        private void SystemInfoTimer_Tick(object sender, object e)
+        private void SystemInfoTimer_Tick(object? sender, object e)
         {
             UpdateMemoryUsage();
             LoadProtectionStatus();
         }
         
-        private void ProtectionTimer_Tick(object sender, object e)
+        private void ProtectionTimer_Tick(object? sender, object e)
         {
             // 模拟防护日志更新
             //if (new Random().Next(100) < 10) // 10% 概率添加新日志
@@ -544,21 +539,21 @@ namespace Xdows_Security
     
     public class ScanResult
     {
-        public string? FilePath { get; set; }
-        public string? Status { get; set; }
+        public string FilePath { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
     }
     
     public class ActivityItem
     {
-        public string? Activity { get; set; }
-        public string? Time { get; set; }
+        public string Activity { get; set; } = string.Empty;
+        public string Time { get; set; } = string.Empty;
     }
     
     public class ProtectionLogItem
     {
-        public string? Icon { get; set; }
-        public Microsoft.UI.Xaml.Media.SolidColorBrush? Color { get; set; }
-        public string? Message { get; set; }
-        public string? Time { get; set; }
+        public string Icon { get; set; } = string.Empty;
+        public Microsoft.UI.Xaml.Media.SolidColorBrush Color { get; set; } = new(Microsoft.UI.Colors.Green);
+        public string Message { get; set; } = string.Empty;
+        public string Time { get; set; } = string.Empty;
     }
 }

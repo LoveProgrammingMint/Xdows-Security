@@ -11,7 +11,6 @@ namespace Xdows_Security
 {
     public sealed partial class SettingsPage : Page
     {
-        public bool IsCardEnabled { get; set; } = true;
         private readonly ResourceLoader _resourceLoader = ResourceLoader.GetForViewIndependentUse();
 
         public SettingsPage()

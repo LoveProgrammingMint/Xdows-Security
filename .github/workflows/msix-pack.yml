@@ -11,7 +11,7 @@ env:
   DOTNET_VERSION: '8.0.x'
   CSPROJ_PATH: 'Xdows-Security/Xdows-Security.csproj'
   RID: 'win-x64'
-  ARTIFACT_NAME: 'Xdows-Security-MSIX'
+  OUT_DIR: 'Xdows-Security/bin/Release/net8.0-windows10.0.19041.0/win-x64/AppPackages'
 
 jobs:
   build:
@@ -19,25 +19,22 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
+    # 1. 还原 & 编译（跳过签名）
     - name: Restore
       run: >
-        dotnet restore ${{ env.CSPROJ_PATH }}
-        -r ${{ env.RID }}
-        -p:PublishReadyToRun=false
+        dotnet restore ${{ env.CSPROJ_PATH }} -r ${{ env.RID }} -p:PublishReadyToRun=false
 
     - name: Build
       run: >
-        dotnet build ${{ env.CSPROJ_PATH }}
-        -c Release
-        -r ${{ env.RID }}
-        --no-restore
-        -p:PublishReadyToRun=false
+        dotnet build ${{ env.CSPROJ_PATH }} -c Release -r ${{ env.RID }} --no-restore -p:PublishReadyToRun=false
 
     - name: Publish MSIX (Unsigned)
       run: >
@@ -46,40 +43,28 @@ jobs:
         -r ${{ env.RID }}
         --self-contained true
         -p:PublishAppxPackage=true
-        -p:AppxPackageSigningEnabled=false   
+        -p:AppxPackageSigningEnabled=false
         -p:PublishReadyToRun=false
         -p:PublishTrimmed=false
-        -p:PublishProfile=                  
-        -o artifacts
+        -p:PublishProfile=
 
-    - name: Zip package for upload
-      shell: pwsh
-      run: |
-        Compress-Archive -Path "artifacts\*_Test" `
-                         -DestinationPath "Xdows-Security-Unsigned.zip"
-
+    # 2. 上传原始 AppPackages 文件夹
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ env.ARTIFACT_NAME }}
-        path: Xdows-Security-Unsigned.zip
+        name: Xdows-Security-Unsigned
+        path: ${{ env.OUT_DIR }}/*_Test
 
+    # 3. 直接发布到 Release（不上传 zip，而是把文件夹整体传上去）
     - name: Create prerelease
       uses: softprops/action-gh-release@v2
       with:
         tag_name: nightly-${{ github.run_number }}
         name: Nightly ${{ github.run_number }}
         prerelease: true
-        files: Xdows-Security-Unsigned.zip
-        body: >-
-          ## 最近更改
-
-          ${{ steps.changelog.outputs.CHANGELOG }}
-
-          ## 预发布版本说明  
-
-          打包后的文件未签名，请自行解决签名问题  
-
-          CzkCloud 扫描引擎无法使用，没有解决方法  
-
-          任何更改仅供测试，随时可能回滚  
+        files: ${{ env.OUT_DIR }}/*_Test/**
+        body: |
+          ## 预发布版本说明
+          - 打包文件 **未签名**，请自行解决签名问题  
+          - **CzkCloud 扫描引擎暂不可用**  
+          - 仅供测试，随时可能回滚

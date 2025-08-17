@@ -112,9 +112,9 @@
 
                     <!-- 雷达扫描线 -->
                     <!-- 雷达扫描线 -->
-                    <Line x:Name="RadarScanLine" X1="0" Y1="50" X2="0" Y2="0" Stroke="{ThemeResource SystemAccentColor}" StrokeThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.8">
+                    <Line x:Name="RadarScanLine" X1="30" Y1="130" X2="0" Y2="0" Stroke="{ThemeResource SystemAccentColor}" StrokeThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.8">
                         <Line.RenderTransform>
-                            <RotateTransform CenterX="0" CenterY="50"/>
+                            <RotateTransform CenterX="15" CenterY="65"/>
                         </Line.RenderTransform>
                     </Line>
 

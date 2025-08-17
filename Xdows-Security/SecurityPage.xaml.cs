@@ -1,9 +1,12 @@
-using SuoXiaoENGINE;
+using Microsoft.UI;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
+using SuoXiaoENGINE;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,6 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using Windows.UI;
 using WinRT.Interop;
 using Xdows.ScanEngine;
 
@@ -21,36 +25,141 @@ namespace Xdows_Security
     public enum ScanMode { Quick, Full, File, Folder, More }
     public record VirusRow(string FilePath, string VirusName);
 
-    // 对于 SouXiaoEngine 的使用，其开发者有如下说明：
-    //
-    // 注：本扫描引擎所有版权归 WorkingCat 所有（QQ: 3327867352），仅给予使用权&引用权，授权期限为版权所有者规定（随时可取消）
-    //
-    // 我们将会在不违反其开发者的任何规定的情况下进行使用/引用，如果我们触犯了其开发者的任何规定请联系我们
-    // 联系方式：邮箱:XdowsSoftware @outlook.com,a1b2c3ABC1231@outlook.com 或 QQ:2966643247
+    // 扫描项目数据模型
+    public class ScanItem
+    {
+        public string ItemName { get; set; } = string.Empty;
+        public string IconGlyph { get; set; } = "&#xE721;";
+        public SolidColorBrush IconColor { get; set; } = new SolidColorBrush(Colors.Gray);
+        public string StatusText { get; set; } = "等待扫描";
+        public int ThreatCount { get; set; } = 0;
+        public Visibility ThreatCountVisibility { get; set; } = Visibility.Collapsed;
+        public SolidColorBrush ThreatCountBackground { get; set; } = new SolidColorBrush(Colors.Red);
+    }
 
     public sealed partial class SecurityPage : Page
     {
         private CancellationTokenSource? _cts;
         private readonly DispatcherQueue _dispatcherQueue;
         private ObservableCollection<VirusRow>? _currentResults;
+        private List<ScanItem>? _scanItems;
+        private bool _isPaused = false;
+        private int _filesScanned = 0;
+        private int _filesSafe = 0;
+        private int _threatsFound = 0;
 
         public SecurityPage()
         {
             this.InitializeComponent();
             _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
             PathText.Text = "扫描模式：未指定";
+            InitializeScanItems();
         }
+
+        // 初始化扫描项目
+        private void InitializeScanItems()
+        {
+            _scanItems = new List<ScanItem>
+            {
+                new ScanItem { ItemName = "系统关键区域", IconGlyph = "&#xE721;" },
+                new ScanItem { ItemName = "内存进程", IconGlyph = "&#xE896;" },
+                new ScanItem { ItemName = "启动扫描", IconGlyph = "&#xE812;" },
+                new ScanItem { ItemName = "用户文档", IconGlyph = "&#xE8A5;" }
+            };
+
+            
+        }
+
+        // 启动火绒风格雷达扫描动画
+        private void StartRadarAnimation()
+        {
+            _dispatcherQueue.TryEnqueue(() =>
+            {
+                RadarScanStoryboard.Begin();
+            });
+        }
+
+        // 停止火绒风格雷达扫描动画
+        private void StopRadarAnimation()
+        {
+            _dispatcherQueue.TryEnqueue(() =>
+            {
+                RadarScanStoryboard.Stop();
+            });
+        }
+
+        // 暂停火绒风格雷达扫描动画
+        private void PauseRadarAnimation()
+        {
+            _dispatcherQueue.TryEnqueue(() =>
+            {
+                RadarScanStoryboard.Pause();
+            });
+        }
+
+        // 继续火绒风格雷达扫描动画
+        private void ResumeRadarAnimation()
+        {
+            _dispatcherQueue.TryEnqueue(() =>
+            {
+                RadarScanStoryboard.Resume();
+            });
+        }
+
+        // 更新扫描区域信息
+        private void UpdateScanAreaInfo(string areaName, string detailInfo)
+        {
+            _dispatcherQueue.TryEnqueue(() =>
+            {
+                CurrentScanAreaText.Text = areaName;
+                ScanProgressDetailText.Text = detailInfo;
+            });
+        }
+
+        // 更新扫描项目状态
+        private void UpdateScanItemStatus(int itemIndex, string status, bool isActive, int threatCount = 0)
+        {
+            _dispatcherQueue.TryEnqueue(() =>
+            {
+                if (_scanItems != null && itemIndex < _scanItems.Count)
+                {
+                    var item = _scanItems[itemIndex];
+                    item.StatusText = status;
+                    item.IconColor = new SolidColorBrush(isActive ? Colors.DodgerBlue : Colors.Gray);
+                    item.ThreatCount = threatCount;
+                    item.ThreatCountVisibility = threatCount > 0 ? Visibility.Visible : Visibility.Collapsed;
+                }
+            });
+        }
+
+        // 更新扫描统计信息
+        private void UpdateScanStats(int filesScanned, int filesSafe, int threatsFound)
+        {
+            _dispatcherQueue.TryEnqueue(() =>
+            {
+                _filesScanned = filesScanned;
+                _filesSafe = filesSafe;
+                _threatsFound = threatsFound;
+
+                FilesScannedText.Text = $"{filesScanned} 个文件";
+                FilesSafeText.Text = $"{filesSafe} 个安全";
+                ThreatsFoundText.Text = $"{threatsFound} 个威胁";
+            });
+        }
+
         private void OnScanMenuClick(object sender, RoutedEventArgs e)
         {
             var settings = ApplicationData.Current.LocalSettings;
             bool UseLocalScan = settings.Values["LocalScan"] is bool && (bool)settings.Values["LocalScan"];
             bool UseCloudScan = settings.Values["CloudScan"] is bool && (bool)settings.Values["CloudScan"];
             bool UseSouXiaoScan = settings.Values["SouXiaoScan"] is bool && (bool)settings.Values["SouXiaoScan"];
-            if (!UseLocalScan && !UseCloudScan && !UseSouXiaoScan) {
+
+            if (!UseLocalScan && !UseCloudScan && !UseSouXiaoScan)
+            {
                 var dialog = new ContentDialog
                 {
                     Title = "当前没有选择扫描引擎",
-                    Content = "请转到 设置 - 引擎 来启用至少一个引擎。",
+                    Content = "请转到 设置 - 扫描引擎 选择一个引擎。",
                     PrimaryButtonText = "确定",
                     XamlRoot = this.XamlRoot,
                     PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
@@ -76,6 +185,7 @@ namespace Xdows_Security
             _cts?.Cancel();
             _cts = new CancellationTokenSource();
             var token = _cts.Token;
+            _isPaused = false;
 
             var settings = ApplicationData.Current.LocalSettings;
             bool showScanProgress = settings.Values["ShowScanProgress"] is bool && (bool)settings.Values["ShowScanProgress"];
@@ -84,14 +194,17 @@ namespace Xdows_Security
             bool UseLocalScan = settings.Values["LocalScan"] is bool && (bool)settings.Values["LocalScan"];
             bool UseCloudScan = settings.Values["CloudScan"] is bool && (bool)settings.Values["CloudScan"];
             bool UseSouXiaoScan = settings.Values["SouXiaoScan"] is bool && (bool)settings.Values["SouXiaoScan"];
+
             MalwareScanner? SouXiaoEngine = null;
-            if (UseSouXiaoScan) {
+            if (UseSouXiaoScan)
+            {
                 string ModelPath = AppDomain.CurrentDomain.BaseDirectory + "model.onnx";
                 SouXiaoEngine = new MalwareScanner(ModelPath);
             }
 
             string Log = "Use";
-            if (UseLocalScan) {
+            if (UseLocalScan)
+            {
                 Log += " LocalScan";
                 if (DeepScan) { Log += "-DeepScan"; }
             }
@@ -104,15 +217,35 @@ namespace Xdows_Security
                 Log += " SouXiaoScan";
             }
             LogText.AddNewLog(1, "Security - StartScan", Log);
+
+            // 重置统计信息
+            _filesScanned = 0;
+            _filesSafe = 0;
+            _threatsFound = 0;
+            UpdateScanStats(0, 0, 0);
+
+            // 重置扫描项目状态
+            for (int i = 0; i < _scanItems!.Count; i++)
+            {
+                UpdateScanItemStatus(i, "等待扫描", false, 0);
+            }
+
             _currentResults = new ObservableCollection<VirusRow>();
             _dispatcherQueue.TryEnqueue(() =>
             {
                 ScanProgress.IsIndeterminate = !showScanProgress;
                 VirusList.ItemsSource = _currentResults;
-                VirusList.Visibility = Visibility.Visible;
+                VirusList.Visibility = Visibility.Collapsed;
+                BackToVirusListButton.Visibility = Visibility.Collapsed;
                 ScanProgress.Value = 0;
                 ScanProgress.Visibility = Visibility.Visible;
+                ProgressPercentText.Text = "0%";
                 PathText.Text = $"扫描模式：{displayName}";
+                PauseScanButton.Visibility = Visibility.Visible;
+                ResumeScanButton.Visibility = Visibility.Collapsed;
+
+                // 启动火绒风格雷达扫描动画
+                StartRadarAnimation();
             });
 
             if (mode == ScanMode.More)
@@ -121,6 +254,7 @@ namespace Xdows_Security
                 {
                     ScanProgress.Visibility = Visibility.Collapsed;
                     StatusText.Text = "暂未实现";
+                    StopRadarAnimation();
                 });
                 return;
             }
@@ -134,7 +268,8 @@ namespace Xdows_Security
                     _dispatcherQueue.TryEnqueue(() =>
                     {
                         ScanProgress.Visibility = Visibility.Collapsed;
-                        StatusText.Text = "已取消选择";
+                        StatusText.Text = "取消选择";
+                        StopRadarAnimation();
                     });
                     return;
                 }
@@ -149,9 +284,39 @@ namespace Xdows_Security
                     var files = EnumerateFiles(mode, userPath);
                     int total = files.Count();
                     int finished = 0;
+                    int currentItemIndex = 0;
+
+                    // 根据扫描模式设置扫描区域信息
+                    switch (mode)
+                    {
+                        case ScanMode.Quick:
+                            UpdateScanAreaInfo("快速扫描系统关键区域", "正在检测系统关键文件和目录");
+                            currentItemIndex = 0;
+                            break;
+                        case ScanMode.Full:
+                            UpdateScanAreaInfo("全面扫描全盘", "正在检测所有磁盘和文件");
+                            currentItemIndex = 1;
+                            break;
+                        case ScanMode.File:
+                            UpdateScanAreaInfo("单独扫描指定文件", $"正在检测：{userPath}");
+                            currentItemIndex = 2;
+                            break;
+                        case ScanMode.Folder:
+                            UpdateScanAreaInfo("单独扫描指定目录", $"正在检测：{userPath}");
+                            currentItemIndex = 3;
+                            break;
+                    }
+
+                    // 激活当前扫描项目
+                    UpdateScanItemStatus(currentItemIndex, "正在扫描", true);
 
                     foreach (var file in files)
                     {
+                        while (_isPaused && !token.IsCancellationRequested)
+                        {
+                            await Task.Delay(100, token);
+                        }
+
                         if (token.IsCancellationRequested) break;
 
                         _dispatcherQueue.TryEnqueue(() =>
@@ -159,6 +324,7 @@ namespace Xdows_Security
                             LogText.AddNewLog(1, "Security - ScanFile", file);
                             StatusText.Text = $"正在扫描：{file}";
                         });
+
                         try
                         {
                             string Result = string.Empty;
@@ -171,7 +337,8 @@ namespace Xdows_Security
                                 }
                             }
 
-                            if (Result == string.Empty) {
+                            if (Result == string.Empty)
+                            {
                                 if (UseLocalScan)
                                 {
                                     string localResult = await Xdows.ScanEngine.ScanEngine.LocalScanAsync(file, DeepScan, ExtraData);
@@ -196,33 +363,55 @@ namespace Xdows_Security
                             {
                                 LogText.AddNewLog(1, "Security - Find", Result);
                                 _dispatcherQueue.TryEnqueue(() => _currentResults!.Add(new VirusRow(file, Result)));
+                                _threatsFound++;
+                                UpdateScanItemStatus(currentItemIndex, "发现威胁", true, _threatsFound);
                             }
                             else
                             {
                                 LogText.AddNewLog(1, "Security - Find", "Is Safe");
+                                _filesSafe++;
                             }
 
                         }
                         catch
-                        { 
-                            throw;
-                            // 跳过单个文件错误
+                        {
+                            // 忽略无法访问的文件
                         }
 
-
                         finished++;
+                        _filesScanned = finished;
+
                         if (showScanProgress)
                         {
                             var percent = total == 0 ? 100 : (double)finished / total * 100;
-                            _dispatcherQueue.TryEnqueue(() => ScanProgress.Value = percent);
+                            _dispatcherQueue.TryEnqueue(() =>
+                            {
+                                ScanProgress.Value = percent;
+                                ProgressPercentText.Text = $"{percent:F0}%";
+                            });
                         }
+
+                        UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
                         await Task.Delay(1, token);
                     }
 
+                    // 完成当前扫描项目
+                    UpdateScanItemStatus(currentItemIndex, "扫描完成", false, _threatsFound);
+
                     _dispatcherQueue.TryEnqueue(() =>
                     {
-                        StatusText.Text = $"扫描完成，共发现 {_currentResults.Count} 个威胁";
+                        StatusText.Text = $"扫描完成，发现 {_currentResults.Count} 个威胁";
                         ScanProgress.Visibility = Visibility.Collapsed;
+                        PauseScanButton.Visibility = Visibility.Collapsed;
+                        ResumeScanButton.Visibility = Visibility.Collapsed;
+
+                        // 停止火绒风格雷达扫描动画
+                        StopRadarAnimation();
+
+                        if (_currentResults.Count > 0)
+                        {
+                            BackToVirusListButton.Visibility = Visibility.Visible;
+                        }
                     });
                 }
                 catch (OperationCanceledException)
@@ -231,6 +420,11 @@ namespace Xdows_Security
                     {
                         StatusText.Text = "扫描已取消";
                         ScanProgress.Visibility = Visibility.Collapsed;
+                        PauseScanButton.Visibility = Visibility.Collapsed;
+                        ResumeScanButton.Visibility = Visibility.Collapsed;
+
+                        // 停止火绒风格雷达扫描动画
+                        StopRadarAnimation();
                     });
                 }
                 catch (Exception ex)
@@ -240,11 +434,48 @@ namespace Xdows_Security
                         LogText.AddNewLog(4, "Security - Failed", ex.Message);
                         StatusText.Text = $"扫描失败：{ex.Message}";
                         ScanProgress.Visibility = Visibility.Collapsed;
+                        PauseScanButton.Visibility = Visibility.Collapsed;
+                        ResumeScanButton.Visibility = Visibility.Collapsed;
+
+                        // 停止火绒风格雷达扫描动画
+                        StopRadarAnimation();
                     });
                 }
             });
             ScanButton.IsEnabled = true;
         }
+
+        // 返回病毒列表按钮事件
+        private void OnBackToVirusListClick(object sender, RoutedEventArgs e)
+        {
+            VirusList.Visibility = Visibility.Visible;
+            BackToVirusListButton.Visibility = Visibility.Collapsed;
+        }
+
+        // 暂停扫描按钮事件
+        private void OnPauseScanClick(object sender, RoutedEventArgs e)
+        {
+            _isPaused = true;
+            PauseScanButton.Visibility = Visibility.Collapsed;
+            ResumeScanButton.Visibility = Visibility.Visible;
+            UpdateScanAreaInfo("扫描已暂停", "请点击继续扫描按钮恢复扫描");
+
+            // 暂停火绒风格雷达扫描动画
+            PauseRadarAnimation();
+        }
+
+        // 继续扫描按钮事件
+        private void OnResumeScanClick(object sender, RoutedEventArgs e)
+        {
+            _isPaused = false;
+            PauseScanButton.Visibility = Visibility.Visible;
+            ResumeScanButton.Visibility = Visibility.Collapsed;
+            UpdateScanAreaInfo("正在继续扫描", "扫描进程已恢复");
+
+            // 继续火绒风格雷达扫描动画
+            ResumeRadarAnimation();
+        }
+
         private async void VirusList_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             if ((sender as ListView)?.SelectedItem is VirusRow row)
@@ -267,8 +498,8 @@ namespace Xdows_Security
 
             var dialog = new ContentDialog
             {
-                Title = "你需要删除这个文件吗？",
-                Content = $"确定要删除这个文件吗？\n{row.FilePath}\n这将不会经过回收站，可能需要第三方软件才能恢复。",
+                Title = "确认要删除此文件吗",
+                Content = $"确定要删除此文件\n{row.FilePath}\n这将永久删除文件，无法恢复",
                 PrimaryButtonText = "删除",
                 CloseButtonText = "取消",
                 XamlRoot = this.XamlRoot,
@@ -279,8 +510,15 @@ namespace Xdows_Security
                 try
                 {
                     File.Delete(row.FilePath);
-                    _currentResults.Remove(row);   // UI 立即刷新
-                    StatusText.Text = $"扫描完成，共发现 {_currentResults.Count} 个威胁";
+                    // 修复：通过匹配FilePath和VirusName找到并移除项
+                    var itemToRemove = _currentResults.FirstOrDefault(r => r.FilePath == row.FilePath && r.VirusName == row.VirusName);
+                    if (itemToRemove != null)
+                    {
+                        _currentResults.Remove(itemToRemove);
+                    }
+                    _threatsFound--;
+                    UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
+                    StatusText.Text = $"扫描完成，发现 {_currentResults.Count} 个威胁";
                 }
                 catch (Exception ex)
                 {
@@ -294,87 +532,145 @@ namespace Xdows_Security
                 }
             }
         }
-
         private async Task ShowDetailsDialog(VirusRow row)
         {
-            var dlg = new ContentDialog
+            try
             {
-                Title = "文件详细信息",
-                Content = new StackPanel
+                var fileInfo = new FileInfo(row.FilePath);
+                var dialog = new ContentDialog
                 {
-                    Spacing = 8,
-                    Children =
+                    Title = "病毒详细信息",
+                    Content = new ScrollViewer
                     {
-                        new TextBlock{Text="文件路径：",FontWeight=FontWeights.SemiBold},
-                        new TextBox{Text=row.FilePath,IsReadOnly=true,TextWrapping=TextWrapping.Wrap},
-                        new TextBlock{Text="威胁名称：",FontWeight=FontWeights.SemiBold},
-                        new TextBlock{Text=row.VirusName}
-                    }
-                },
-                PrimaryButtonText = "确定",
-                XamlRoot = this.XamlRoot,
-                PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
-            };
-            await dlg.ShowAsync();
+                        Content = new StackPanel
+                        {
+                            Children =
+                            {
+                                new TextBlock { Text = $"文件路径：{row.FilePath}", TextWrapping = TextWrapping.Wrap },
+                                new TextBlock { Text = $"病毒名称：{row.VirusName}", Margin = new Thickness(0, 8, 0, 0) },
+                                new TextBlock { Text = $"文件大小：{fileInfo.Length / 1024:F2} KB", Margin = new Thickness(0, 8, 0, 0) },
+                                new TextBlock { Text = $"创建时间：{fileInfo.CreationTime}", Margin = new Thickness(0, 8, 0, 0) },
+                                new TextBlock { Text = $"修改时间：{fileInfo.LastWriteTime}", Margin = new Thickness(0, 8, 0, 0) }
+                            }
+                        },
+                        MaxHeight = 400
+                    },
+                    CloseButtonText = "确定",
+                    XamlRoot = this.XamlRoot
+                };
+                await dialog.ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                await new ContentDialog
+                {
+                    Title = "获取详情失败",
+                    Content = ex.Message,
+                    CloseButtonText = "确定",
+                    XamlRoot = this.XamlRoot
+                }.ShowAsync();
+            }
         }
         #endregion
 
-        #region 辅助
+        #region 文件选择和枚举
         private async Task<string?> PickPathAsync(ScanMode mode)
         {
-            var hwnd = WindowNative.GetWindowHandle(App.MainWindow);
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+
             if (mode == ScanMode.File)
             {
-                var picker = new FileOpenPicker { ViewMode = PickerViewMode.List, SuggestedStartLocation = PickerLocationId.ComputerFolder };
-                picker.FileTypeFilter.Add("*");
-                InitializeWithWindow.Initialize(picker, hwnd);
-                return (await picker.PickSingleFileAsync())?.Path;
+                var filePicker = new FileOpenPicker();
+                filePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+                filePicker.FileTypeFilter.Add("*");
+                WinRT.Interop.InitializeWithWindow.Initialize(filePicker, hwnd);
+
+                var file = await filePicker.PickSingleFileAsync();
+                return file?.Path;
             }
-            if (mode == ScanMode.Folder)
+            else
             {
-                var picker = new FolderPicker { SuggestedStartLocation = PickerLocationId.ComputerFolder };
-                picker.FileTypeFilter.Add("*");
-                InitializeWithWindow.Initialize(picker, hwnd);
-                return (await picker.PickSingleFolderAsync())?.Path;
+                var folderPicker = new FolderPicker();
+                folderPicker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
+                folderPicker.FileTypeFilter.Add("*");
+                WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hwnd);
+
+                var folder = await folderPicker.PickSingleFolderAsync();
+                return folder?.Path;
             }
-            return null;
         }
 
-        private static IEnumerable<string> EnumerateFiles(ScanMode mode, string? userPath = null) =>
-            mode switch
-            {
-                ScanMode.Quick => SafeEnumerateFiles(Environment.GetFolderPath(Environment.SpecialFolder.Desktop)),
-                ScanMode.Full => DriveInfo.GetDrives()
-                                          .Where(d => d.DriveType == DriveType.Fixed && d.IsReady)
-                                          .SelectMany(d => SafeEnumerateFiles(d.RootDirectory.FullName)),
-                ScanMode.File => userPath is null ? Array.Empty<string>() : new[] { userPath },
-                ScanMode.Folder => userPath is null ? Array.Empty<string>() : SafeEnumerateFiles(userPath),
-                _ => Array.Empty<string>()
-            };
-
-        private static IEnumerable<string> SafeEnumerateFiles(string root, bool recursive = true)
+        private IEnumerable<string> EnumerateFiles(ScanMode mode, string? userPath)
         {
-            var allow = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            switch (mode)
             {
-                 ".exe", ".dll", ".sys", ".scr", ".bat", ".cmd", ".doc", ".docx"
-            };
-            var dirs = new Stack<string>();
-            dirs.Push(root);
-
-            while (dirs.Count > 0)
-            {
-                var cur = dirs.Pop();
-
-                foreach (var f in Directory.EnumerateFiles(cur))
-                    if (allow.Contains(Path.GetExtension(f)))
-                        yield return f;
-
-                if (!recursive) continue;
-                foreach (var d in Directory.EnumerateDirectories(cur))
-                    dirs.Push(d);
+                case ScanMode.Quick:
+                    return EnumerateQuickScanFiles();
+                case ScanMode.Full:
+                    return EnumerateFullScanFiles();
+                case ScanMode.File:
+                    return userPath != null && File.Exists(userPath) ? new[] { userPath } : Enumerable.Empty<string>();
+                case ScanMode.Folder:
+                    return userPath != null && Directory.Exists(userPath) ? Directory.EnumerateFiles(userPath, "*.*", SearchOption.AllDirectories) : Enumerable.Empty<string>();
+                default:
+                    return Enumerable.Empty<string>();
             }
+        }
+
+        private IEnumerable<string> EnumerateQuickScanFiles()
+        {
+            var paths = new List<string>();
+            var systemDrive = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.Windows));
+
+            // 添加系统关键目录
+            var criticalPaths = new[]
+            {
+                Environment.GetFolderPath(Environment.SpecialFolder.Windows),
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "SysWOW64")
+            };
+
+            foreach (var path in criticalPaths)
+            {
+                if (Directory.Exists(path))
+                {
+                    try
+                    {
+                        paths.AddRange(Directory.EnumerateFiles(path, "*.exe", SearchOption.TopDirectoryOnly));
+                        paths.AddRange(Directory.EnumerateFiles(path, "*.dll", SearchOption.TopDirectoryOnly));
+                        paths.AddRange(Directory.EnumerateFiles(path, "*.sys", SearchOption.TopDirectoryOnly));
+                    }
+                    catch { /* 忽略无法访问的目录 */ }
+                }
+            }
+
+            return paths.Distinct();
+        }
+
+        private IEnumerable<string> EnumerateFullScanFiles()
+        {
+            var paths = new List<string>();
+            var drives = DriveInfo.GetDrives();
+
+            foreach (var drive in drives)
+            {
+                if (drive.IsReady)
+                {
+                    try
+                    {
+                        paths.AddRange(Directory.EnumerateFiles(drive.RootDirectory.FullName, "*.*", SearchOption.AllDirectories));
+                    }
+                    catch { /* 忽略无法访问的驱动器 */ }
+                }
+            }
+
+            return paths;
         }
         #endregion
     }
-
 }

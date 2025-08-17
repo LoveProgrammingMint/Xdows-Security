@@ -72,9 +72,9 @@ jobs:
         files: Xdows-Security-Unsigned.zip
         body: |
           ## 最近更改
-          ```
+
           ${{ steps.changelog.outputs.CHANGELOG }}
-          ```
+
           ## 预发布版本说明
           - 打包文件 **未签名**，请自行解决签名问题  
           - **CzkCloud 扫描引擎暂不可用**  

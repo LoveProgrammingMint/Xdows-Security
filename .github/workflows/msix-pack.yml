@@ -2,7 +2,6 @@ name: Build & Prerelease MSIX
 
 permissions:
   contents: write
-  pull-requests: read
 
 on:
   push:
@@ -20,8 +19,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0          # 让 git 能拿到提交历史
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -49,30 +46,25 @@ jobs:
         -r ${{ env.RID }}
         --self-contained true
         -p:PublishAppxPackage=true
-        -p:AppxPackageSigningEnabled=false
-        -p:PackageCertificateThumbprint=
+        -p:AppxPackageSigningEnabled=false   
         -p:PublishReadyToRun=false
         -p:PublishTrimmed=false
-        -p:PublishProfile=
+        -p:PublishProfile=                  
         -o artifacts
 
     - name: Zip package for upload
       shell: pwsh
       run: |
-        Compress-Archive -Path "artifacts/*_Test/*" -DestinationPath "Xdows-Security-Unsigned.zip"
+        Compress-Archive -Path "artifacts\*_Test" `
+                         -DestinationPath "Xdows-Security-Unsigned.zip"
 
-    # 生成变更日志（最近 10 条提交）
-    - name: Generate changelog
-      id: changelog
-      shell: pwsh
-      run: |
-        $log = (git log --oneline -10) -join "`n"
-        echo "CHANGELOG<<EOF" >> $env:GITHUB_OUTPUT
-        echo "$log" >> $env:GITHUB_OUTPUT
-        echo "EOF" >> $env:GITHUB_OUTPUT
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.ARTIFACT_NAME }}
+        path: Xdows-Security-Unsigned.zip
 
-    # 创建预发布 Release
-    - name: Create Prerelease
+    - name: Create prerelease
       uses: softprops/action-gh-release@v2
       with:
         tag_name: nightly-${{ github.run_number }}

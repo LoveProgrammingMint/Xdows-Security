@@ -10,7 +10,6 @@
 
     <Page.Resources>
         <!-- 雷达扫描动画 -->
-        <!-- 雷达扫描动画 -->
         <Storyboard x:Name="RadarScanStoryboard">
             <DoubleAnimation 
                 Storyboard.TargetName="RadarScanLine"
@@ -49,16 +48,16 @@
         <!-- 扫描区域状态显示 -->
         <Border Grid.Row="0" Grid.ColumnSpan="2" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
             <StackPanel>
-                <TextBlock Text="扫描状态" FontSize="16" FontWeight="Bold" Margin="0,0,0,8" Foreground="{ThemeResource SystemAccentColor}"/>
+                <TextBlock Text="扫描状态" FontSize="16" FontWeight="Bold" Margin="0,0,0,16"/>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <FontIcon x:Name="ScanAreaIcon" Grid.Column="0" Glyph="&#xE721;" FontSize="24" Margin="0,0,12,0" Foreground="{ThemeResource SystemAccentColor}"/>
+                    <FontIcon x:Name="ScanAreaIcon" Grid.Column="0" Glyph="&#xE721;" FontSize="24" Margin="0,0,12,0"/>
                     <StackPanel Grid.Column="1">
-                        <TextBlock x:Name="CurrentScanAreaText" Text="准备开始扫描" FontSize="14" FontWeight="SemiBold" Foreground="{ThemeResource SystemAccentColor}"/>
-                        <TextBlock x:Name="ScanProgressDetailText" Text="等待用户选择扫描类型" FontSize="12" Opacity="0.7" Foreground="{ThemeResource SystemAccentColor}"/>
+                        <TextBlock x:Name="CurrentScanAreaText" Text="准备开始扫描" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock x:Name="ScanProgressDetailText" Text="等待用户选择扫描类型" FontSize="12" Opacity="0.7"/>
                     </StackPanel>
                 </Grid>
             </StackPanel>
@@ -90,7 +89,6 @@
             </Button>
         </StackPanel>
 
-        <!-- 图形化进度显示 - 火绒风格雷达扫描 -->
         <Border Grid.Row="3" Grid.ColumnSpan="2" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
             <StackPanel>
                 <Grid Margin="0,0,0,8">
@@ -98,8 +96,8 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="扫描进度" FontSize="16" FontWeight="Bold" Foreground="{ThemeResource SystemAccentColor}"/>
-                    <TextBlock Grid.Column="1" x:Name="ProgressPercentText" Text="0%" FontSize="14" FontWeight="Bold" Foreground="{ThemeResource SystemAccentColor}"/>
+                    <TextBlock Grid.Column="0" Text="扫描进度" FontSize="16" FontWeight="Bold"/>
+                    <TextBlock Grid.Column="1" x:Name="ProgressPercentText" Text="0%" FontSize="14" FontWeight="Bold"/>
                 </Grid>
 
                 <!-- 雷达扫描区域 -->
@@ -159,10 +157,10 @@
         </Border>
 
         <!-- 扫描路径和选择按钮 -->
-        <TextBlock Name="PathText" Grid.Row="4" Grid.Column="0" Text="选择扫描文件" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,16" Foreground="{ThemeResource SystemAccentColor}"/>
+        <TextBlock Name="PathText" Grid.Row="4" Grid.Column="0" Text="选择扫描文件" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,16"/>
         <Button Name="ScanButton" Grid.Row="4" Grid.Column="1" Width="110" Height="40" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,0,10">
             <StackPanel Orientation="Horizontal" Spacing="4">
-                <FontIcon Glyph="&#xE8B7;"/>
+                <FontIcon Glyph="&#xE8B7;" FontSize="16"/>
                 <TextBlock Text="开始扫描"/>
             </StackPanel>
             <Button.Flyout>

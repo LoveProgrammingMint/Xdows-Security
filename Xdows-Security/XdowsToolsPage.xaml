@@ -324,35 +324,28 @@
 
                         <Button x:Name="SelectAllButton"
                                 Grid.Column="1" 
-                                Content="全选" 
+                                Content="全选项目" 
                                 Click="SelectAll_Click" 
                                 MinWidth="80" 
                                 Height="35" 
-                                CornerRadius="6" 
-                                Background="#F0F0F0" 
-                                Foreground="#333" 
                                 Margin="0,0,8,0"/>
 
                         <Button x:Name="RepairSelectedButton"
                                 Grid.Column="2" 
-                                Content="修复选中项" 
+                                Content="修复选中" 
                                 Click="RepairSelected_Click" 
-                                MinWidth="100" 
+                                MinWidth="80" 
                                 Height="35" 
-                                CornerRadius="6" 
-                                Background="#FF6B35" 
-                                Foreground="White" 
                                 Margin="0,0,8,0"/>
 
                         <Button x:Name="RepairAllButton"
                                 Grid.Column="3" 
                                 Content="修复全部" 
                                 Click="RepairAll_Click" 
+                                Style="{ThemeResource AccentButtonStyle}"
                                 MinWidth="80" 
                                 Height="35" 
-                                CornerRadius="6" 
-                                Background="#D32F2F" 
-                                Foreground="White"/>
+                                CornerRadius="6" />
                     </Grid>
                 </Grid>
             </TabViewItem>

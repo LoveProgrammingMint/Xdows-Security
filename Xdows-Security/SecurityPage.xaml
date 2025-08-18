@@ -46,7 +46,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- 扫描区域状态显示 -->
-            <Border Grid.Row="0" Grid.ColumnSpan="2" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+            <Border Grid.Row="0" Grid.ColumnSpan="2" Background="{ThemeResource SystemChromeWhiteColor}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="扫描状态" FontSize="16" FontWeight="Bold" Margin="0,0,0,16"/>
                     <Grid>
@@ -76,8 +76,8 @@
                     </StackPanel>
                 </Button>
                 <Button x:Name="PauseScanButton" Click="OnPauseScanClick" Visibility="Collapsed">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE769;"/>
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <FontIcon Glyph="&#xF5E7;"/>
                         <TextBlock Text="暂停扫描"/>
                     </StackPanel>
                 </Button>
@@ -89,7 +89,7 @@
                 </Button>
             </StackPanel>
 
-            <Border Grid.Row="3" Grid.ColumnSpan="2" Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+            <Border Grid.Row="3" Grid.ColumnSpan="2" Background="{ThemeResource SystemChromeWhiteColor}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
                 <StackPanel>
                     <Grid Margin="0,0,0,8">
                         <Grid.ColumnDefinitions>

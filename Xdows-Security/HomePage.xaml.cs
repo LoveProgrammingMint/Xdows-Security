@@ -52,7 +52,6 @@ namespace Xdows_Security
             _systemInfoTimer.Start();
             
             _protectionTimer.Interval = TimeSpan.FromSeconds(5);
-            _protectionTimer.Tick += ProtectionTimer_Tick;
             _protectionTimer.Start();
         }
         
@@ -219,25 +218,6 @@ namespace Xdows_Security
             LoadProtectionStatus();
         }
         
-        private void ProtectionTimer_Tick(object? sender, object e)
-        {
-            // 模拟防护日志更新
-            //if (new Random().Next(100) < 10) // 10% 概率添加新日志
-            //{
-                //_protectionLogs.Insert(0, new ProtectionLogItem
-                //{
-                    //Icon = "\uE8A5",
-                    //Color = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Blue),
-                    //Message = "文件扫描完成",
-                    //Time = DateTime.Now.ToString("HH:mm:ss")
-                //});
-                
-                //if (_protectionLogs.Count > 50)
-                //{
-                   // _protectionLogs.RemoveAt(_protectionLogs.Count - 1);
-                //}
-            //}
-        }
         
         private void RefreshSystemInfo_Click(object sender, RoutedEventArgs e)
         {

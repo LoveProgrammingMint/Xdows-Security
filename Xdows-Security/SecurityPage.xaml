@@ -71,8 +71,8 @@
             <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="8" Margin="0,0,0,16">
                 <Button x:Name="BackToVirusListButton" Click="OnBackToVirusListClick" Visibility="Collapsed">
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE72A;"/>
-                        <TextBlock Text="返回病毒列表"/>
+                        <FontIcon Glyph="&#xE890;"/>
+                        <TextBlock Text="查看威胁列表"/>
                     </StackPanel>
                 </Button>
                 <Button x:Name="PauseScanButton" Click="OnPauseScanClick" Visibility="Collapsed">
@@ -108,7 +108,6 @@
                         <Ellipse Width="60" Height="60" Stroke="{ThemeResource SystemAccentColor}" StrokeThickness="1" Opacity="0.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <Ellipse Width="40" Height="40" Stroke="{ThemeResource SystemAccentColor}" StrokeThickness="1" Opacity="0.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-                    <!-- 雷达扫描线 -->
                     <!-- 雷达扫描线 -->
                     <Line x:Name="RadarScanLine" X1="30" Y1="130" X2="0" Y2="0" Stroke="{ThemeResource SystemAccentColor}" StrokeThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.8">
                         <Line.RenderTransform>

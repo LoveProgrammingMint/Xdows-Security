@@ -75,7 +75,7 @@
                             x:Uid="SettingsPage_Scan_Cloud_AutoReport"
                             IsEnabled="False" 
                             HeaderIcon="{ui:FontIcon Glyph=&#xE9F9;}">
-                        <ToggleSwitch IsOn="True" />
+                        <ToggleSwitch/>
                     </controls:SettingsCard>
                 </controls:SettingsExpander.Items>
             </controls:SettingsExpander>
@@ -190,7 +190,7 @@
                             HeaderIcon="{ui:FontIcon Glyph=&#xE946;}">
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard x:Uid="SettingsPage_Other_About_Name" HeaderIcon="{ui:FontIcon Glyph=&#xE8AC;}">
-                        <TextBlock Text="Xdows-Security @ XIGUASecurity" />
+                        <TextBlock Text="Xdows-Security &amp; XIGUASecurity" />
                     </controls:SettingsCard>
                     <controls:SettingsCard x:Uid="SettingsPage_Other_About_Version" HeaderIcon="{ui:FontIcon Glyph=&#xE7B8;}">
                         <TextBlock x:Name="Settings_About_Version" />

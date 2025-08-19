@@ -163,7 +163,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <Button Grid.Row="0" Content="刷新统计" Click="RefreshStatistics_Click" Margin="0,8,0,8" HorizontalAlignment="Left"/>
+                    <Button Grid.Row="0" Content="刷新统计信息" Click="RefreshStatistics_Click" Margin="0,8,0,8" HorizontalAlignment="Left"/>
 
                     <ScrollViewer Grid.Row="1">
                         <StackPanel Spacing="10">

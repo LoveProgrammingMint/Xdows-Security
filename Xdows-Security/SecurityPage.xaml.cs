@@ -70,7 +70,6 @@ namespace Xdows_Security
             
         }
 
-        // 启动火绒风格雷达扫描动画
         private void StartRadarAnimation()
         {
             _dispatcherQueue.TryEnqueue(() =>
@@ -79,7 +78,6 @@ namespace Xdows_Security
             });
         }
 
-        // 停止火绒风格雷达扫描动画
         private void StopRadarAnimation()
         {
             _dispatcherQueue.TryEnqueue(() =>
@@ -88,7 +86,6 @@ namespace Xdows_Security
             });
         }
 
-        // 暂停火绒风格雷达扫描动画
         private void PauseRadarAnimation()
         {
             _dispatcherQueue.TryEnqueue(() =>
@@ -97,7 +94,6 @@ namespace Xdows_Security
             });
         }
 
-        // 继续火绒风格雷达扫描动画
         private void ResumeRadarAnimation()
         {
             _dispatcherQueue.TryEnqueue(() =>
@@ -163,8 +159,7 @@ namespace Xdows_Security
                     PrimaryButtonText = "确定",
                     XamlRoot = this.XamlRoot,
                     PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
-                };
-                _ = dialog.ShowAsync();
+                }.ShowAsync();
                 return;
             }
 
@@ -177,6 +172,20 @@ namespace Xdows_Security
                 "Folder" => ScanMode.Folder,
                 _ => ScanMode.More
             };
+            if (mode == ScanMode.More)
+            {
+                var dialog = new ContentDialog
+                {
+                    Title = "暂未实现",
+                    Content = "请使用其它扫描方式进行扫描任务。",
+                    PrimaryButtonText = "确定",
+                    XamlRoot = this.XamlRoot,
+                    PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                }.ShowAsync();
+                return;
+            }
+
+
             _ = StartScanAsync(((MenuFlyoutItem)sender).Text, mode);
         }
 
@@ -218,36 +227,6 @@ namespace Xdows_Security
             }
             LogText.AddNewLog(1, "Security - StartScan", Log);
 
-            // 重置统计信息
-            _filesScanned = 0;
-            _filesSafe = 0;
-            _threatsFound = 0;
-            UpdateScanStats(0, 0, 0);
-
-            // 重置扫描项目状态
-            for (int i = 0; i < _scanItems!.Count; i++)
-            {
-                UpdateScanItemStatus(i, "等待扫描", false, 0);
-            }
-
-            _currentResults = new ObservableCollection<VirusRow>();
-            _dispatcherQueue.TryEnqueue(() =>
-            {
-                ScanProgress.IsIndeterminate = !showScanProgress;
-                VirusList.ItemsSource = _currentResults;
-                VirusList.Visibility = Visibility.Collapsed;
-                BackToVirusListButton.Visibility = Visibility.Collapsed;
-                ScanProgress.Value = 0;
-                ScanProgress.Visibility = Visibility.Visible;
-                ProgressPercentText.Text = "0%";
-                PathText.Text = $"扫描模式：{displayName}";
-                PauseScanButton.Visibility = Visibility.Visible;
-                ResumeScanButton.Visibility = Visibility.Collapsed;
-
-                // 启动火绒风格雷达扫描动画
-                StartRadarAnimation();
-            });
-
             if (mode == ScanMode.More)
             {
                 _dispatcherQueue.TryEnqueue(() =>
@@ -276,6 +255,35 @@ namespace Xdows_Security
             }
 
             ScanButton.IsEnabled = false;
+
+            // 重置统计信息
+            _filesScanned = 0;
+            _filesSafe = 0;
+            _threatsFound = 0;
+            UpdateScanStats(0, 0, 0);
+
+            // 重置扫描项目状态
+            for (int i = 0; i < _scanItems!.Count; i++)
+            {
+                UpdateScanItemStatus(i, "等待扫描", false, 0);
+            }
+
+            _currentResults = new ObservableCollection<VirusRow>();
+            _dispatcherQueue.TryEnqueue(() =>
+            {
+                ScanProgress.IsIndeterminate = !showScanProgress;
+                VirusList.ItemsSource = _currentResults;
+                VirusList.Visibility = Visibility.Collapsed;
+                BackToVirusListButton.Visibility = Visibility.Collapsed;
+                ScanProgress.Value = 0;
+                ScanProgress.Visibility = Visibility.Visible;
+                ProgressPercentText.Text = "0%";
+                PathText.Text = $"扫描模式：{displayName}";
+                PauseScanButton.Visibility = Visibility.Visible;
+                ResumeScanButton.Visibility = Visibility.Collapsed;
+
+                StartRadarAnimation();
+            });
 
             await Task.Run(async () =>
             {
@@ -405,7 +413,6 @@ namespace Xdows_Security
                         PauseScanButton.Visibility = Visibility.Collapsed;
                         ResumeScanButton.Visibility = Visibility.Collapsed;
 
-                        // 停止火绒风格雷达扫描动画
                         StopRadarAnimation();
 
                         if (_currentResults.Count > 0)
@@ -423,7 +430,6 @@ namespace Xdows_Security
                         PauseScanButton.Visibility = Visibility.Collapsed;
                         ResumeScanButton.Visibility = Visibility.Collapsed;
 
-                        // 停止火绒风格雷达扫描动画
                         StopRadarAnimation();
                     });
                 }
@@ -437,7 +443,6 @@ namespace Xdows_Security
                         PauseScanButton.Visibility = Visibility.Collapsed;
                         ResumeScanButton.Visibility = Visibility.Collapsed;
 
-                        // 停止火绒风格雷达扫描动画
                         StopRadarAnimation();
                     });
                 }
@@ -460,7 +465,6 @@ namespace Xdows_Security
             ResumeScanButton.Visibility = Visibility.Visible;
             UpdateScanAreaInfo("扫描已暂停", "请点击继续扫描按钮恢复扫描");
 
-            // 暂停火绒风格雷达扫描动画
             PauseRadarAnimation();
         }
 
@@ -472,7 +476,6 @@ namespace Xdows_Security
             ResumeScanButton.Visibility = Visibility.Collapsed;
             UpdateScanAreaInfo("正在继续扫描", "扫描进程已恢复");
 
-            // 继续火绒风格雷达扫描动画
             ResumeRadarAnimation();
         }
 
@@ -484,7 +487,6 @@ namespace Xdows_Security
             }
         }
 
-        #region 右键菜单
         private async void OnDetailClick(object sender, RoutedEventArgs e)
         {
             if ((sender as MenuFlyoutItem)?.Tag is VirusRow row)
@@ -539,7 +541,7 @@ namespace Xdows_Security
                 var fileInfo = new FileInfo(row.FilePath);
                 var dialog = new ContentDialog
                 {
-                    Title = "病毒详细信息",
+                    Title = "详细信息",
                     Content = new ScrollViewer
                     {
                         Content = new StackPanel
@@ -547,7 +549,7 @@ namespace Xdows_Security
                             Children =
                             {
                                 new TextBlock { Text = $"文件路径：{row.FilePath}", TextWrapping = TextWrapping.Wrap },
-                                new TextBlock { Text = $"病毒名称：{row.VirusName}", Margin = new Thickness(0, 8, 0, 0) },
+                                new TextBlock { Text = $"威胁名称：{row.VirusName}", Margin = new Thickness(0, 8, 0, 0) },
                                 new TextBlock { Text = $"文件大小：{fileInfo.Length / 1024:F2} KB", Margin = new Thickness(0, 8, 0, 0) },
                                 new TextBlock { Text = $"创建时间：{fileInfo.CreationTime}", Margin = new Thickness(0, 8, 0, 0) },
                                 new TextBlock { Text = $"修改时间：{fileInfo.LastWriteTime}", Margin = new Thickness(0, 8, 0, 0) }
@@ -556,7 +558,8 @@ namespace Xdows_Security
                         MaxHeight = 400
                     },
                     CloseButtonText = "确定",
-                    XamlRoot = this.XamlRoot
+                    XamlRoot = this.XamlRoot,
+                    CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 };
                 await dialog.ShowAsync();
             }
@@ -567,11 +570,11 @@ namespace Xdows_Security
                     Title = "获取详情失败",
                     Content = ex.Message,
                     CloseButtonText = "确定",
-                    XamlRoot = this.XamlRoot
+                    XamlRoot = this.XamlRoot,
+                    PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 }.ShowAsync();
             }
         }
-        #endregion
 
         #region 文件选择和枚举
         private async Task<string?> PickPathAsync(ScanMode mode)

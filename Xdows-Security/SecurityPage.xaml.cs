@@ -270,6 +270,7 @@ namespace Xdows_Security
                 PathText.Text = $"扫描模式：{displayName}";
                 PauseScanButton.Visibility = Visibility.Visible;
                 ResumeScanButton.Visibility = Visibility.Collapsed;
+                StatusText.Text = "正在处理文件...";
 
                 StartRadarAnimation();
             });
@@ -278,7 +279,6 @@ namespace Xdows_Security
             {
                 try
                 {
-                    StatusText.Text = $"正在处理文件...";
                     var files = EnumerateFiles(mode, userPath);
 
                     int total = files.Count();

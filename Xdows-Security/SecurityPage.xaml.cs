@@ -227,17 +227,6 @@ namespace Xdows_Security
             }
             LogText.AddNewLog(1, "Security - StartScan", Log);
 
-            if (mode == ScanMode.More)
-            {
-                _dispatcherQueue.TryEnqueue(() =>
-                {
-                    ScanProgress.Visibility = Visibility.Collapsed;
-                    StatusText.Text = "暂未实现";
-                    StopRadarAnimation();
-                });
-                return;
-            }
-
             string? userPath = null;
             if (mode is ScanMode.File or ScanMode.Folder)
             {
@@ -289,12 +278,13 @@ namespace Xdows_Security
             {
                 try
                 {
+                    StatusText.Text = $"正在处理文件...";
                     var files = EnumerateFiles(mode, userPath);
+
                     int total = files.Count();
                     int finished = 0;
                     int currentItemIndex = 0;
 
-                    // 根据扫描模式设置扫描区域信息
                     switch (mode)
                     {
                         case ScanMode.Quick:
@@ -302,7 +292,7 @@ namespace Xdows_Security
                             currentItemIndex = 0;
                             break;
                         case ScanMode.Full:
-                            UpdateScanAreaInfo("全面扫描全盘", "正在检测所有磁盘和文件");
+                            UpdateScanAreaInfo("全面扫描所有磁盘", "正在检测所有磁盘的文件");
                             currentItemIndex = 1;
                             break;
                         case ScanMode.File:
@@ -512,7 +502,6 @@ namespace Xdows_Security
                 try
                 {
                     File.Delete(row.FilePath);
-                    // 修复：通过匹配FilePath和VirusName找到并移除项
                     var itemToRemove = _currentResults.FirstOrDefault(r => r.FilePath == row.FilePath && r.VirusName == row.VirusName);
                     if (itemToRemove != null)
                     {
@@ -567,11 +556,11 @@ namespace Xdows_Security
             {
                 await new ContentDialog
                 {
-                    Title = "获取详情失败",
+                    Title = "获取失败",
                     Content = ex.Message,
                     CloseButtonText = "确定",
                     XamlRoot = this.XamlRoot,
-                    PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                    CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 }.ShowAsync();
             }
         }
@@ -603,76 +592,99 @@ namespace Xdows_Security
             }
         }
 
-        private IEnumerable<string> EnumerateFiles(ScanMode mode, string? userPath)
-        {
-            switch (mode)
+        private IEnumerable<string> EnumerateFiles(ScanMode mode, string? userPath) =>
+            mode switch
             {
-                case ScanMode.Quick:
-                    return EnumerateQuickScanFiles();
-                case ScanMode.Full:
-                    return EnumerateFullScanFiles();
-                case ScanMode.File:
-                    return userPath != null && File.Exists(userPath) ? new[] { userPath } : Enumerable.Empty<string>();
-                case ScanMode.Folder:
-                    return userPath != null && Directory.Exists(userPath) ? Directory.EnumerateFiles(userPath, "*.*", SearchOption.AllDirectories) : Enumerable.Empty<string>();
-                default:
-                    return Enumerable.Empty<string>();
-            }
-        }
+                ScanMode.Quick => EnumerateQuickScanFiles(),
+                ScanMode.Full => EnumerateFullScanFiles(),
+                ScanMode.File => (userPath != null && File.Exists(userPath)) ? new[] { userPath } : Enumerable.Empty<string>(),
+                ScanMode.Folder => (userPath != null && Directory.Exists(userPath))
+                                    ? Directory.EnumerateFiles(userPath, "*.*", SearchOption.AllDirectories)
+                                    : Enumerable.Empty<string>(),
+                _ => Enumerable.Empty<string>()
+            };
 
         private IEnumerable<string> EnumerateQuickScanFiles()
         {
-            var paths = new List<string>();
-            var systemDrive = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.Windows));
-
-            // 添加系统关键目录
             var criticalPaths = new[]
             {
-                Environment.GetFolderPath(Environment.SpecialFolder.Windows),
-                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
-                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "SysWOW64")
+                 Environment.GetFolderPath(Environment.SpecialFolder.Windows),
+                 Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                 Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                 Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32"),
+                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "SysWOW64")
             };
 
-            foreach (var path in criticalPaths)
-            {
-                if (Directory.Exists(path))
-                {
-                    try
-                    {
-                        paths.AddRange(Directory.EnumerateFiles(path, "*.exe", SearchOption.TopDirectoryOnly));
-                        paths.AddRange(Directory.EnumerateFiles(path, "*.dll", SearchOption.TopDirectoryOnly));
-                        paths.AddRange(Directory.EnumerateFiles(path, "*.sys", SearchOption.TopDirectoryOnly));
-                    }
-                    catch { /* 忽略无法访问的目录 */ }
-                }
-            }
+            var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".exe", ".dll", ".sys" };
 
-            return paths.Distinct();
+            return criticalPaths
+                   .Where(Directory.Exists)
+                   .SelectMany(dir =>
+                   {
+                       try
+                       {
+                           return Directory.EnumerateFiles(dir, "*", SearchOption.TopDirectoryOnly)
+                                           .Where(f => extensions.Contains(Path.GetExtension(f)));
+                       }
+                       catch
+                       {
+                           return Enumerable.Empty<string>();
+                       }
+                   })
+                   .Distinct(StringComparer.OrdinalIgnoreCase);
         }
 
         private IEnumerable<string> EnumerateFullScanFiles()
         {
-            var paths = new List<string>();
-            var drives = DriveInfo.GetDrives();
+            var scanned = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var drive in drives)
+            foreach (var drive in DriveInfo.GetDrives())
             {
-                if (drive.IsReady)
+                if (!drive.IsReady || drive.DriveType is DriveType.CDRom or DriveType.Network)
+                    continue;
+
+                foreach (var file in SafeEnumerateFiles(drive.RootDirectory.FullName, scanned))
+                    yield return file;
+            }
+        }
+
+        private IEnumerable<string> SafeEnumerateFiles(string root, HashSet<string> scanned)
+        {
+            var stack = new Stack<string>();
+            stack.Push(root);
+
+            while (stack.Count > 0)
+            {
+                var currentDir = stack.Pop();
+
+                if (!scanned.Add(currentDir))
+                    continue;
+
+                IEnumerable<string>? entries = null;
+                try
                 {
-                    try
+                    entries = Directory.EnumerateFileSystemEntries(currentDir);
+                }
+                catch
+                {
+                    continue;
+                }
+
+                foreach (var entry in entries)
+                {
+                    if (Directory.Exists(entry))
                     {
-                        paths.AddRange(Directory.EnumerateFiles(drive.RootDirectory.FullName, "*.*", SearchOption.AllDirectories));
+                        stack.Push(entry);
                     }
-                    catch { /* 忽略无法访问的驱动器 */ }
+                    else if (File.Exists(entry) && scanned.Add(entry)) 
+                    {
+                        yield return entry;
+                    }
                 }
             }
-
-            return paths;
         }
         #endregion
     }

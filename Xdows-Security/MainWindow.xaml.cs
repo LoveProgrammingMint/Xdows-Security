@@ -26,16 +26,18 @@ namespace Xdows_Security
             window.ExtendsContentIntoTitleBar = true;
             AppWindow.SetIcon("logo.ico");
             this.AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
-            if (ExtendsContentIntoTitleBar == true)
+            if (ExtendsContentIntoTitleBar)
             {
                 this.SetTitleBar(CustomTitleBar);
             }
-
             nav.SelectedItem = nav.MenuItems.OfType<NavigationViewItem>().First();
-
+            Activated += MainWindow_Activated_FirstTime;
+            LogText.AddNewLog(1, "UI Interface", "主窗口加载成功");
+        }
+        private void MainWindow_Activated_FirstTime(object sender, WindowActivatedEventArgs args)
+        {
             var settings = ApplicationData.Current.LocalSettings;
 
-            // 加载主题设置
             if (settings.Values.TryGetValue("AppTheme", out object? theme))
             {
                 string themeString = theme as string ?? "";
@@ -56,9 +58,7 @@ namespace Xdows_Security
 
             var backdrop = settings.Values["AppBackdrop"] as string;
             ApplyBackdrop(backdrop ?? "Mica");
-
-
-            LogText.AddNewLog(1, "UI Interface", "主窗口加载成功");
+            Activated -= MainWindow_Activated_FirstTime;
         }
         public void UpdateTheme(ElementTheme selectedTheme)
         {

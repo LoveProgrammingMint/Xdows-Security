@@ -222,7 +222,6 @@ namespace Xdows_Security
             }
             App.MainWindow.UpdateTheme(selectedTheme);
 
-            // 如果当前是纯色背景，重新应用背景
             var backdrop = settings.Values["AppBackdrop"] as string;
             if (backdrop == "Solid" && App.MainWindow != null)
             {

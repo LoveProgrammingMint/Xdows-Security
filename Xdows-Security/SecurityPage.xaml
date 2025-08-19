@@ -46,7 +46,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- 扫描区域状态显示 -->
-            <Border Grid.Row="0" Grid.ColumnSpan="2" Background="{ThemeResource SystemChromeWhiteColor}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+            <Border Grid.Row="0" Grid.ColumnSpan="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="扫描状态" FontSize="16" FontWeight="Bold" Margin="0,0,0,16"/>
                     <Grid>
@@ -89,7 +89,7 @@
                 </Button>
             </StackPanel>
 
-            <Border Grid.Row="3" Grid.ColumnSpan="2" Background="{ThemeResource SystemChromeWhiteColor}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+            <Border Grid.Row="3" Grid.ColumnSpan="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
                 <StackPanel>
                     <Grid Margin="0,0,0,8">
                         <Grid.ColumnDefinitions>
@@ -103,20 +103,20 @@
                     <!-- 雷达扫描区域 -->
                     <Grid Height="120" Margin="0,8,0,8">
                         <!-- 雷达背景圆圈 -->
-                        <Ellipse Width="100" Height="100" Stroke="{ThemeResource SystemAccentColor}" StrokeThickness="2" Opacity="0.3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <Ellipse Width="80" Height="80" Stroke="{ThemeResource SystemAccentColor}" StrokeThickness="1" Opacity="0.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <Ellipse Width="60" Height="60" Stroke="{ThemeResource SystemAccentColor}" StrokeThickness="1" Opacity="0.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <Ellipse Width="40" Height="40" Stroke="{ThemeResource SystemAccentColor}" StrokeThickness="1" Opacity="0.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Ellipse Width="100" Height="100" Stroke="{ThemeResource AccentTextFillColorTertiaryBrush}" StrokeThickness="2" Opacity="0.3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Ellipse Width="80" Height="80" Stroke="{ThemeResource AccentTextFillColorTertiaryBrush}" StrokeThickness="1" Opacity="0.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Ellipse Width="60" Height="60" Stroke="{ThemeResource AccentTextFillColorTertiaryBrush}" StrokeThickness="1" Opacity="0.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Ellipse Width="40" Height="40" Stroke="{ThemeResource AccentTextFillColorTertiaryBrush}" StrokeThickness="1" Opacity="0.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                     <!-- 雷达扫描线 -->
-                    <Line x:Name="RadarScanLine" X1="30" Y1="130" X2="0" Y2="0" Stroke="{ThemeResource SystemAccentColor}" StrokeThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.8">
+                    <Line x:Name="RadarScanLine" X1="30" Y1="130" X2="0" Y2="0" Stroke="{ThemeResource AccentTextFillColorTertiaryBrush}" StrokeThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.8">
                         <Line.RenderTransform>
                             <RotateTransform CenterX="15" CenterY="65"/>
                         </Line.RenderTransform>
                     </Line>
 
                         <!-- 雷达脉冲效果 -->
-                        <Ellipse x:Name="RadarPulse" Width="20" Height="20" Fill="{ThemeResource SystemAccentColor}" Opacity="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Ellipse x:Name="RadarPulse" Width="20" Height="20" Fill="{ThemeResource AccentTextFillColorTertiaryBrush}" Opacity="0" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <Ellipse.RenderTransform>
                                 <TransformGroup>
                                     <ScaleTransform CenterX="10" CenterY="10"/>
@@ -126,11 +126,11 @@
                         </Ellipse>
 
                         <!-- 中心点 -->
-                        <Ellipse Width="8" Height="8" Fill="{ThemeResource SystemAccentColor}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Ellipse Width="8" Height="8" Fill="{ThemeResource AccentTextFillColorTertiaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Grid>
 
                     <!-- 进度条 -->
-                    <ProgressBar x:Name="ScanProgress" Height="8" CornerRadius="4" Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" Foreground="{ThemeResource SystemAccentColor}"/>
+                    <ProgressBar x:Name="ScanProgress" Height="8" CornerRadius="4" Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
 
                     <!-- 统计信息 -->
                     <Grid Margin="0,8,0,0">
@@ -140,16 +140,16 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" HorizontalAlignment="Center">
-                            <FontIcon Glyph="&#xE8B7;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource SystemAccentColor}"/>
-                            <TextBlock x:Name="FilesScannedText" Text="0 个文件" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource SystemAccentColor}"/>
+                            <FontIcon Glyph="&#xE8B7;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
+                            <TextBlock x:Name="FilesScannedText" Text="0 个文件" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-                            <FontIcon Glyph="&#xE7C9;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource SystemAccentColor}"/>
-                            <TextBlock x:Name="FilesSafeText" Text="0 个安全" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource SystemAccentColor}"/>
+                            <FontIcon Glyph="&#xE7C9;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
+                            <TextBlock x:Name="FilesSafeText" Text="0 个安全" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
                         </StackPanel>
                         <StackPanel Grid.Column="2" HorizontalAlignment="Center">
-                            <FontIcon Glyph="&#xE783;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource SystemAccentColor}"/>
-                            <TextBlock x:Name="ThreatsFoundText" Text="0 个威胁" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource SystemAccentColor}"/>
+                            <FontIcon Glyph="&#xE783;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
+                            <TextBlock x:Name="ThreatsFoundText" Text="0 个威胁" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>

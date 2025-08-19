@@ -163,7 +163,7 @@
                 </Grid>
             </TabViewItem>
 
-            <TabViewItem Header="系统修复" IsClosable="False">
+            <TabViewItem Header="系统修复" IsClosable="False" IsEnabled="False">
                 <TabViewItem.IconSource>
                     <FontIconSource Glyph="&#xE90F;"/>
                 </TabViewItem.IconSource>

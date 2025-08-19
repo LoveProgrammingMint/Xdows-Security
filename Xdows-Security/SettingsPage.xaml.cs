@@ -21,6 +21,10 @@ namespace Xdows_Security
             LoadBackdropSetting();
             LoadScanSetting();
             Settings_About_Version.Text = _resourceLoader.GetString("APP_Version");
+            if (App.GetCloudApiKey() == string.Empty) {
+                CloudScanToggle.IsOn = false;
+                CloudScanToggle.IsEnabled = false;
+            }
         }
         private void RunProtection(object sender, RoutedEventArgs e)
         {

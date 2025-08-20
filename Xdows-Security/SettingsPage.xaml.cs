@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
+using System.IO;
 using System.Diagnostics;
 using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
@@ -24,6 +25,10 @@ namespace Xdows_Security
             if (App.GetCloudApiKey() == string.Empty) {
                 CloudScanToggle.IsOn = false;
                 CloudScanToggle.IsEnabled = false;
+            }
+            if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "model.onnx")) {
+                SouXiaoScanToggle.IsOn = false;
+                SouXiaoScanToggle.IsEnabled = false;
             }
         }
         private void RunProtection(object sender, RoutedEventArgs e)

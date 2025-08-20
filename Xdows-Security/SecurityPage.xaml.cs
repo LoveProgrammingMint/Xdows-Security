@@ -117,15 +117,20 @@ namespace Xdows_Security
         {
             _dispatcherQueue.TryEnqueue(() =>
             {
-                if (_scanItems != null && itemIndex < _scanItems.Count)
+                try
                 {
-                    var item = _scanItems[itemIndex];
-                    item.StatusText = status;
-                    item.IconColor = new SolidColorBrush(isActive ? Colors.DodgerBlue : Colors.Gray);
-                    item.ThreatCount = threatCount;
-                    item.ThreatCountVisibility = threatCount > 0 ? Visibility.Visible : Visibility.Collapsed;
+                    if (_scanItems != null && itemIndex < _scanItems.Count)
+                    {
+                        var item = _scanItems[itemIndex];
+                        item.StatusText = status;
+                        item.IconColor = new SolidColorBrush(isActive ? Colors.DodgerBlue : Colors.Gray);
+                        item.ThreatCount = threatCount;
+                        item.ThreatCountVisibility = threatCount > 0 ? Visibility.Visible : Visibility.Collapsed;
+                    }
                 }
+                catch { }
             });
+
         }
 
         // 更新扫描统计信息
@@ -136,10 +141,13 @@ namespace Xdows_Security
                 _filesScanned = filesScanned;
                 _filesSafe = filesSafe;
                 _threatsFound = threatsFound;
-
-                FilesScannedText.Text = $"{filesScanned} 个文件";
-                FilesSafeText.Text = $"{filesSafe} 个安全";
-                ThreatsFoundText.Text = $"{threatsFound} 个威胁";
+                try
+                {
+                    FilesScannedText.Text = $"{filesScanned} 个文件";
+                    FilesSafeText.Text = $"{filesSafe} 个安全";
+                    ThreatsFoundText.Text = $"{threatsFound} 个威胁";
+                }
+                catch { }
             });
         }
 
@@ -320,7 +328,11 @@ namespace Xdows_Security
                         _dispatcherQueue.TryEnqueue(() =>
                         {
                             LogText.AddNewLog(1, "Security - ScanFile", file);
-                            StatusText.Text = $"正在扫描：{file}";
+                            try {
+                                StatusText.Text = $"正在扫描：{file}";
+                            }
+                            catch {
+                            }
                         });
 
                         try
@@ -360,9 +372,12 @@ namespace Xdows_Security
                             if (Result != string.Empty)
                             {
                                 LogText.AddNewLog(1, "Security - Find", Result);
+                                try { 
                                 _dispatcherQueue.TryEnqueue(() => _currentResults!.Add(new VirusRow(file, Result)));
                                 _threatsFound++;
                                 UpdateScanItemStatus(currentItemIndex, "发现威胁", true, _threatsFound);
+                                }
+                                catch { }
                             }
                             else
                             {
@@ -388,8 +403,11 @@ namespace Xdows_Security
                                 ProgressPercentText.Text = $"{percent:F0}%";
                             });
                         }
-
-                        UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
+                        try
+                        {
+                            UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
+                        }
+                        catch { }
                         await Task.Delay(1, token);
                     }
 

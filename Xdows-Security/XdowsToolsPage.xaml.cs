@@ -177,8 +177,10 @@ namespace Xdows_Security
                 CmdOutput.Text = "命令提示符启动成功，请输入相关命令。";
                 StartCmd();
             }
-
+            try { 
             await _cmdProcess!.StandardInput.WriteLineAsync(cmd);
+            }
+            catch { }
             LogText.AddNewLog(1, "Xdows Tools - RunCommand", cmd);
             CmdInput.Text = string.Empty;
         }

@@ -246,6 +246,7 @@ namespace Xdows_Security
             QuickScanStatusText.Text = "正在扫描...";
 
             var scanType = (QuickScanTypeCombo.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "系统关键目录";
+            try { QuickScanProgress.IsIndeterminate = false; } catch { return; }
 
             await Task.Run(async () =>
             {
@@ -255,7 +256,6 @@ namespace Xdows_Security
                     int total = scanPaths.Count;
                     int completed = 0;
 
-                    QuickScanProgress.IsIndeterminate = false;
 
                     foreach (var path in scanPaths)
                     {
@@ -288,12 +288,12 @@ namespace Xdows_Security
                         });
                     }
 
-                    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                    {
-                        QuickScanStatusText.Text = $"扫描完成，共检查 {total} 个项目";
-                        QuickScanProgress.Visibility = Visibility.Collapsed;
-                        _scanCancellationTokenSource = null;
-                    });
+                        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                        {
+                            try {QuickScanStatusText.Text = $"扫描完成，共检查 {total} 个项目";
+                            QuickScanProgress.Visibility = Visibility.Collapsed;
+                            _scanCancellationTokenSource = null; } catch { }
+                        });
 
                     UpdateScanStatistics(total, 0);
                     AddActivity($"完成{scanType}扫描");

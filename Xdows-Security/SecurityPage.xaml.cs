@@ -619,17 +619,46 @@ namespace Xdows_Security
             }
         }
 
-        private IEnumerable<string> EnumerateFiles(ScanMode mode, string? userPath) =>
+        private IReadOnlyList<string> EnumerateFiles(ScanMode mode, string? userPath) =>
             mode switch
             {
-                ScanMode.Quick => EnumerateQuickScanFiles(),
-                ScanMode.Full => EnumerateFullScanFiles(),
-                ScanMode.File => (userPath != null && File.Exists(userPath)) ? new[] { userPath } : Enumerable.Empty<string>(),
+                ScanMode.Quick => EnumerateQuickScanFiles().ToList(),
+                ScanMode.Full => EnumerateFullScanFiles().ToList(),
+                ScanMode.File => (userPath != null && File.Exists(userPath))
+                                  ? new[] { userPath }
+                                  : Array.Empty<string>(),
                 ScanMode.Folder => (userPath != null && Directory.Exists(userPath))
-                                    ? Directory.EnumerateFiles(userPath, "*.*", SearchOption.AllDirectories)
-                                    : Enumerable.Empty<string>(),
-                _ => Enumerable.Empty<string>()
+                                  ? SafeEnumerateFolder(userPath).ToList()
+                                  : Array.Empty<string>(),
+                _ => Array.Empty<string>()
             };
+
+        private static IEnumerable<string> SafeEnumerateFolder(string folder)
+        {
+            var stack = new Stack<string>();
+            stack.Push(folder);
+
+            while (stack.Count > 0)
+            {
+                var dir = stack.Pop();
+
+                IEnumerable<string> entries;
+                try { entries = Directory.EnumerateFileSystemEntries(dir); }
+                catch { continue; }
+
+                foreach (var entry in entries)
+                {
+                    System.IO.FileAttributes attr;
+                    try { attr = File.GetAttributes(entry); }
+                    catch { continue; }
+
+                    if ((attr & System.IO.FileAttributes.Directory) != 0)
+                        stack.Push(entry);
+                    else
+                        yield return entry;
+                }
+            }
+        }
 
         private IEnumerable<string> EnumerateQuickScanFiles()
         {

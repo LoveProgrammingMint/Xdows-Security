@@ -129,11 +129,14 @@ namespace Xdows_Security
         public App()
         {
             LogText.AddNewLog(1, "UI Interface", "尝试加载主窗口");
-            if (!RequestAdminPrivilegesAsync()) {
-                LogText.AddNewLog(3, "System", "无法获取管理员权限");
-                return;
+            if (RequestAdminPrivilegesAsync()) {
+                this.InitializeComponent();
             }
-            this.InitializeComponent();
+            else
+            {
+                LogText.AddNewLog(3, "System", "无法获取管理员权限");
+                Environment.Exit(0);
+            }
         }
 
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)

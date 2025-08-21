@@ -15,7 +15,7 @@ using Windows.System.UserProfile;
 
 namespace Xdows_Security
 {
-    public static class LogText 
+    public static class LogText
     {
         private static string? _Text;
         public static string Text { get => _Text ??= String.Empty; set => _Text = value; }
@@ -61,7 +61,8 @@ namespace Xdows_Security
 
     public static class Protection
     {
-        public static bool IsOpen() {
+        public static bool IsOpen()
+        {
             return true;
         }
         public static bool Run(int RunID)
@@ -86,16 +87,11 @@ namespace Xdows_Security
             return true;
         }
     }
-    // 这 UAC 写的什么代码
-    class sj
-    {
-        public static int virus = 0;
-        public static int virus1 = 1;
-    }
+
     public partial class App : Application
     {
         public static MainWindow MainWindow { get; private set; } = new();
-        public static string GetCloudApiKey() {return ""; }//想盗用 ApiKey ? 没门
+        public static string GetCloudApiKey() { return ""; }//想盗用 ApiKey ? 没门
         private bool RequestAdminPrivilegesAsync()
         {
             try
@@ -134,7 +130,8 @@ namespace Xdows_Security
         public App()
         {
             LogText.AddNewLog(1, "UI Interface", "尝试加载主窗口");
-            if (RequestAdminPrivilegesAsync()) {
+            if (RequestAdminPrivilegesAsync())
+            {
                 this.InitializeComponent();
             }
             else
@@ -237,7 +234,7 @@ namespace Xdows_Security
             var version = Environment.OSVersion.Version;
             if (version.Major == 10 && version.Build >= 22000)
             {
-               return true;
+                return true;
             }
             else
             {

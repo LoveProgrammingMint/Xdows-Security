@@ -67,7 +67,7 @@ namespace Xdows_Security
                 new ScanItem { ItemName = "用户文档", IconGlyph = "&#xE8A5;" }
             };
 
-            
+
         }
 
         private void StartRadarAnimation()
@@ -330,11 +330,12 @@ namespace Xdows_Security
                         _dispatcherQueue.TryEnqueue(() =>
                         {
                             LogText.AddNewLog(1, "Security - ScanFile", file);
-                            try {
+                            try
+                            {
                                 StatusText.Text = $"正在扫描：{file}";
-                                sj.virus1 = sj.virus1 + 1;
                             }
-                            catch {
+                            catch
+                            {
                             }
                         });
 
@@ -375,10 +376,11 @@ namespace Xdows_Security
                             if (Result != string.Empty)
                             {
                                 LogText.AddNewLog(1, "Security - Find", Result);
-                                try { 
-                                _dispatcherQueue.TryEnqueue(() => _currentResults!.Add(new VirusRow(file, Result)));
-                                _threatsFound++;
-                                UpdateScanItemStatus(currentItemIndex, "发现威胁", true, _threatsFound);
+                                try
+                                {
+                                    _dispatcherQueue.TryEnqueue(() => _currentResults!.Add(new VirusRow(file, Result)));
+                                    _threatsFound++;
+                                    UpdateScanItemStatus(currentItemIndex, "发现威胁", true, _threatsFound);
                                 }
                                 catch { }
                             }
@@ -423,7 +425,7 @@ namespace Xdows_Security
                         ScanProgress.Visibility = Visibility.Collapsed;
                         PauseScanButton.Visibility = Visibility.Collapsed;
                         ResumeScanButton.Visibility = Visibility.Collapsed;
-                        sj.virus = _currentResults.Count;
+
                         StopRadarAnimation();
 
                         if (_currentResults.Count > 0)
@@ -532,7 +534,6 @@ namespace Xdows_Security
                     _threatsFound--;
                     UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
                     StatusText.Text = $"扫描完成，发现 {_currentResults.Count} 个威胁";
-                    sj.virus = _currentResults.Count;
                 }
                 catch (Exception ex)
                 {
@@ -705,7 +706,7 @@ namespace Xdows_Security
                     {
                         stack.Push(entry);
                     }
-                    else if (File.Exists(entry) && scanned.Add(entry)) 
+                    else if (File.Exists(entry) && scanned.Add(entry))
                     {
                         yield return entry;
                     }

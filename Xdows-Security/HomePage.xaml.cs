@@ -22,7 +22,7 @@ namespace Xdows_Security
     public sealed partial class HomePage : Page
     {
         private readonly ResourceLoader _resourceLoader = ResourceLoader.GetForViewIndependentUse();
-        
+
         private DispatcherTimer _systemInfoTimer = new();
         private DispatcherTimer _protectionTimer = new();
         private ObservableCollection<ScanResult> _quickScanResults = new();
@@ -44,23 +44,23 @@ namespace Xdows_Security
             HomePage_Pomes.Text = randomLine;
             UpdateData();
         }
-        
+
         private void InitializeTimers()
         {
             _systemInfoTimer.Interval = TimeSpan.FromSeconds(30);
             _systemInfoTimer.Tick += SystemInfoTimer_Tick;
             _systemInfoTimer.Start();
-            
+
             _protectionTimer.Interval = TimeSpan.FromSeconds(5);
             _protectionTimer.Start();
         }
-        
+
         private void InitializeData()
         {
             QuickScanResults.ItemsSource = _quickScanResults;
             RecentActivityList.ItemsSource = _recentActivities;
             ProtectionLogList.ItemsSource = _protectionLogs;
-            
+
             LoadSystemInfo();
             LoadStatistics();
             LoadProtectionStatus();
@@ -151,30 +151,29 @@ namespace Xdows_Security
             var isProtected = Protection.IsOpen();
             string[] DisplayText = _resourceLoader.GetString("AllPage_Status").Split(',');
             ProtectionStatusText.Text = isProtected ? DisplayText[0] : DisplayText[1];
-            ProtectionStatusText.Foreground = isProtected ? 
-                new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green) : 
+            ProtectionStatusText.Foreground = isProtected ?
+                new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green) :
                 new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Red);
-            
+
             var settings = ApplicationData.Current.LocalSettings;
             if (settings.Values.TryGetValue("LastScanTime", out var lastScanTime))
             {
                 LastScanText.Text = lastScanTime.ToString();
             }
-            
+
             if (settings.Values.TryGetValue("ThreatCount", out var threatCount))
             {
                 ThreatCountText.Text = threatCount.ToString();
             }
         }
-        
+
         private void LoadStatistics()
         {
             var settings = ApplicationData.Current.LocalSettings;
             TotalScansText.Text = settings.Values["TotalScans"]?.ToString() ?? "0";
             TotalThreatsText.Text = settings.Values["TotalThreats"]?.ToString() ?? "0";
-            TotalScansText.Text = sj.virus1.ToString();
         }
-        
+
         private void LoadRecentActivities()
         {
             _recentActivities.Clear();
@@ -200,7 +199,7 @@ namespace Xdows_Security
                 }
             }
         }
-        
+
         private void LoadProtectionLogs()
         {
             _protectionLogs.Clear();
@@ -212,25 +211,21 @@ namespace Xdows_Security
                 Time = DateTime.Now.ToString("HH:mm:ss")
             });
         }
-        
+
         private void SystemInfoTimer_Tick(object? sender, object e)
         {
             UpdateMemoryUsage();
             LoadProtectionStatus();
-            TotalThreatsText.Text = sj.virus.ToString();
-            TotalScansText.Text = sj.virus1.ToString();
         }
-        
-        
+
+
         private void RefreshSystemInfo_Click(object sender, RoutedEventArgs e)
         {
             LoadSystemInfo();
-            TotalThreatsText.Text = sj.virus.ToString();
-            TotalScansText.Text = sj.virus1.ToString();
             LoadProtectionStatus();
             AddActivity("刷新系统信息");
         }
-        
+
         private async void StartQuickScan_Click(object sender, RoutedEventArgs e)
         {
             if (_scanCancellationTokenSource != null)
@@ -240,18 +235,18 @@ namespace Xdows_Security
                 QuickScanStatusText.Text = "扫描已取消";
                 return;
             }
-            
+
             _scanCancellationTokenSource = new CancellationTokenSource();
             var token = _scanCancellationTokenSource.Token;
-            
+
             _quickScanResults.Clear();
             QuickScanResults.Visibility = Visibility.Visible;
             QuickScanProgress.Visibility = Visibility.Visible;
             QuickScanProgress.IsIndeterminate = true;
             QuickScanStatusText.Text = "正在扫描...";
-            
+
             var scanType = (QuickScanTypeCombo.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "系统关键目录";
-            
+
             await Task.Run(async () =>
             {
                 try
@@ -259,32 +254,32 @@ namespace Xdows_Security
                     var scanPaths = GetScanPaths(scanType);
                     int total = scanPaths.Count;
                     int completed = 0;
-                    
+
                     QuickScanProgress.IsIndeterminate = false;
-                    
+
                     foreach (var path in scanPaths)
                     {
                         if (token.IsCancellationRequested) break;
-                        
+
                         await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                         {
                             QuickScanStatusText.Text = $"正在扫描: {path}";
                         });
-                        
+
                         // 模拟扫描过程
                         await Task.Delay(100, token);
-                        
+
                         var result = new ScanResult
                         {
                             FilePath = path,
                             Status = "安全"
                         };
-                        
+
                         await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                         {
                             _quickScanResults.Add(result);
                         });
-                        
+
                         completed++;
                         var progress = (double)completed / total * 100;
                         await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
@@ -292,14 +287,14 @@ namespace Xdows_Security
                             QuickScanProgress.Value = progress;
                         });
                     }
-                    
+
                     await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     {
                         QuickScanStatusText.Text = $"扫描完成，共检查 {total} 个项目";
                         QuickScanProgress.Visibility = Visibility.Collapsed;
                         _scanCancellationTokenSource = null;
                     });
-                    
+
                     UpdateScanStatistics(total, 0);
                     AddActivity($"完成{scanType}扫描");
                 }
@@ -316,18 +311,18 @@ namespace Xdows_Security
                 {
                     //await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     //{
-                        //QuickScanStatusText.Text = $"扫描失败: {ex.Message}";
-                        //QuickScanProgress.Visibility = Visibility.Collapsed;
-                       // _scanCancellationTokenSource = null;
+                    //QuickScanStatusText.Text = $"扫描失败: {ex.Message}";
+                    //QuickScanProgress.Visibility = Visibility.Collapsed;
+                    // _scanCancellationTokenSource = null;
                     //});
                 }
             });
         }
-        
+
         private List<string> GetScanPaths(string scanType)
         {
             var paths = new List<string>();
-            
+
             switch (scanType)
             {
                 case "系统关键目录":
@@ -363,24 +358,24 @@ namespace Xdows_Security
                     paths.Add(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
                     break;
             }
-            
+
             return paths.Distinct().Where(File.Exists).ToList();
         }
-        
+
         private void UpdateScanStatistics(int totalScans, int threatsFound)
         {
             var settings = ApplicationData.Current.LocalSettings;
             var currentTotal = settings.Values["TotalScans"] as int? ?? 0;
             var currentThreats = settings.Values["TotalThreats"] as int? ?? 0;
-            
+
             settings.Values["TotalScans"] = currentTotal + 1;
             settings.Values["TotalThreats"] = currentThreats + threatsFound;
             settings.Values["LastScanTime"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            
+
             LoadStatistics();
             LoadProtectionStatus();
         }
-        
+
         private void AddActivity(string activity)
         {
             var activityItem = new ActivityItem
@@ -388,32 +383,32 @@ namespace Xdows_Security
                 Activity = activity,
                 Time = DateTime.Now.ToString("HH:mm:ss")
             };
-            
+
             _recentActivities.Insert(0, activityItem);
-            
+
             if (_recentActivities.Count > 20)
             {
                 _recentActivities.RemoveAt(_recentActivities.Count - 1);
             }
-            
+
             // 保存到设置
             var activities = string.Join("|", _recentActivities.Select(a => $"{a.Activity};{a.Time}"));
             var settings = ApplicationData.Current.LocalSettings;
             settings.Values["RecentActivities"] = activities;
         }
-        
+
         private void RefreshStatistics_Click(object sender, RoutedEventArgs e)
         {
             LoadStatistics();
             LoadRecentActivities();
             AddActivity("刷新统计数据");
         }
-        
+
         private void ProcessProtectionToggle_Toggled(object sender, RoutedEventArgs e)
         {
             var isOn = (sender as ToggleSwitch)?.IsOn ?? false;
             var result = Protection.Run(0); // 进程防护
-            
+
             _protectionLogs.Insert(0, new ProtectionLogItem
             {
                 Icon = result ? "\uE73E" : "\uE711",
@@ -421,26 +416,26 @@ namespace Xdows_Security
                 Message = result ? "进程防护已启用" : "进程防护已禁用",
                 Time = DateTime.Now.ToString("HH:mm:ss")
             });
-            
+
             AddActivity(result ? "启用进程防护" : "禁用进程防护");
         }
-        
+
         private void ClearLog_Click(object sender, RoutedEventArgs e)
         {
             LogText.ClearLog();
         }
-        
+
         private async void ExportLog_Click(object sender, RoutedEventArgs e)
         {
             var savePicker = new FileSavePicker();
             savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
             savePicker.FileTypeChoices.Add("日志文件", new List<string> { ".log" });
             savePicker.SuggestedFileName = $"XdowsSecurity_Log_{DateTime.Now:yyyyMMdd_HHmmss}.log";
-            
+
             var window = new Window();
             var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
             WinRT.Interop.InitializeWithWindow.Initialize(savePicker, hWnd);
-            
+
             var file = await savePicker.PickSaveFileAsync();
             if (file != null)
             {
@@ -455,11 +450,11 @@ namespace Xdows_Security
                 }
             }
         }
-        
+
         private void LogLevelFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string filter = (LogLevelFilter.SelectedItem as ComboBoxItem)?.Tag.ToString() ?? "All";
-            
+
             if (filter == "All")
             {
                 if (LogTextBox != null)
@@ -470,7 +465,7 @@ namespace Xdows_Security
             else
             {
                 var lines = LogText.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-                var filteredLines = lines.Where(line => 
+                var filteredLines = lines.Where(line =>
                 {
                     if (filter == "UNKNOWN") return line.Contains("[UNKNOWN]");
                     if (filter == "DEBUG") return line.Contains("[DEBUG]");
@@ -483,24 +478,22 @@ namespace Xdows_Security
                 LogTextBox.Text = string.Join(Environment.NewLine, filteredLines);
             }
         }
-        
+
         private void TabView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var selectedTab = e.AddedItems.FirstOrDefault() as TabViewItem;
             if (selectedTab != null)
             {
                 AddActivity($"切换到{selectedTab.Header}选项卡");
-                
             }
         }
-        
+
         private void LogText_TextChanged(object? sender, EventArgs e)
         {
             UpdateData();
-            TotalThreatsText.Text=sj.virus.ToString();
         }
-        
-        private void UpdateData() 
+
+        private void UpdateData()
         {
             this.LogTextBox.Text = LogText.Text;
             if (Protection.IsOpen())
@@ -514,7 +507,7 @@ namespace Xdows_Security
                 Icon.Glyph = "\uE711";
             }
         }
-        
+
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
@@ -523,19 +516,19 @@ namespace Xdows_Security
             _scanCancellationTokenSource?.Cancel();
         }
     }
-    
+
     public class ScanResult
     {
         public string FilePath { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
     }
-    
+
     public class ActivityItem
     {
         public string Activity { get; set; } = string.Empty;
         public string Time { get; set; } = string.Empty;
     }
-    
+
     public class ProtectionLogItem
     {
         public string Icon { get; set; } = string.Empty;

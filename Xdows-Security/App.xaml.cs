@@ -86,7 +86,12 @@ namespace Xdows_Security
             return true;
         }
     }
-
+    // 这 UAC 写的什么代码
+    class sj
+    {
+        public static int virus = 0;
+        public static int virus1 = 1;
+    }
     public partial class App : Application
     {
         public static MainWindow MainWindow { get; private set; } = new();

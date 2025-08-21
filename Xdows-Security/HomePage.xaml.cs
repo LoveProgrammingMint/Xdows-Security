@@ -172,6 +172,7 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             TotalScansText.Text = settings.Values["TotalScans"]?.ToString() ?? "0";
             TotalThreatsText.Text = settings.Values["TotalThreats"]?.ToString() ?? "0";
+            TotalScansText.Text = sj.virus1.ToString();
         }
         
         private void LoadRecentActivities()
@@ -216,12 +217,16 @@ namespace Xdows_Security
         {
             UpdateMemoryUsage();
             LoadProtectionStatus();
+            TotalThreatsText.Text = sj.virus.ToString();
+            TotalScansText.Text = sj.virus1.ToString();
         }
         
         
         private void RefreshSystemInfo_Click(object sender, RoutedEventArgs e)
         {
             LoadSystemInfo();
+            TotalThreatsText.Text = sj.virus.ToString();
+            TotalScansText.Text = sj.virus1.ToString();
             LoadProtectionStatus();
             AddActivity("刷新系统信息");
         }
@@ -485,12 +490,14 @@ namespace Xdows_Security
             if (selectedTab != null)
             {
                 AddActivity($"切换到{selectedTab.Header}选项卡");
+                
             }
         }
         
         private void LogText_TextChanged(object? sender, EventArgs e)
         {
             UpdateData();
+            TotalThreatsText.Text=sj.virus.ToString();
         }
         
         private void UpdateData() 

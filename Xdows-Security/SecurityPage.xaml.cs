@@ -25,13 +25,13 @@ namespace Xdows_Security
     public enum ScanMode { Quick, Full, File, Folder, More }
     public record VirusRow(string FilePath, string VirusName);
 
-    // æ‰«æé¡¹ç›®æ•°æ®æ¨¡å‹
+    // É¨ÃèÏîÄ¿Êı¾İÄ£ĞÍ
     public class ScanItem
     {
         public string ItemName { get; set; } = string.Empty;
         public string IconGlyph { get; set; } = "&#xE721;";
         public SolidColorBrush IconColor { get; set; } = new SolidColorBrush(Colors.Gray);
-        public string StatusText { get; set; } = "ç­‰å¾…æ‰«æ";
+        public string StatusText { get; set; } = "µÈ´ıÉ¨Ãè";
         public int ThreatCount { get; set; } = 0;
         public Visibility ThreatCountVisibility { get; set; } = Visibility.Collapsed;
         public SolidColorBrush ThreatCountBackground { get; set; } = new SolidColorBrush(Colors.Red);
@@ -52,19 +52,19 @@ namespace Xdows_Security
         {
             this.InitializeComponent();
             _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
-            PathText.Text = "æ‰«ææ¨¡å¼ï¼šæœªæŒ‡å®š";
+            PathText.Text = "É¨ÃèÄ£Ê½£ºÎ´Ö¸¶¨";
             InitializeScanItems();
         }
 
-        // åˆå§‹åŒ–æ‰«æé¡¹ç›®
+        // ³õÊ¼»¯É¨ÃèÏîÄ¿
         private void InitializeScanItems()
         {
             _scanItems = new List<ScanItem>
             {
-                new ScanItem { ItemName = "ç³»ç»Ÿå…³é”®åŒºåŸŸ", IconGlyph = "&#xE721;" },
-                new ScanItem { ItemName = "å†…å­˜è¿›ç¨‹", IconGlyph = "&#xE896;" },
-                new ScanItem { ItemName = "å¯åŠ¨æ‰«æ", IconGlyph = "&#xE812;" },
-                new ScanItem { ItemName = "ç”¨æˆ·æ–‡æ¡£", IconGlyph = "&#xE8A5;" }
+                new ScanItem { ItemName = "ÏµÍ³¹Ø¼üÇøÓò", IconGlyph = "&#xE721;" },
+                new ScanItem { ItemName = "ÄÚ´æ½ø³Ì", IconGlyph = "&#xE896;" },
+                new ScanItem { ItemName = "Æô¶¯É¨Ãè", IconGlyph = "&#xE812;" },
+                new ScanItem { ItemName = "ÓÃ»§ÎÄµµ", IconGlyph = "&#xE8A5;" }
             };
 
             
@@ -102,7 +102,7 @@ namespace Xdows_Security
             });
         }
 
-        // æ›´æ–°æ‰«æåŒºåŸŸä¿¡æ¯
+        // ¸üĞÂÉ¨ÃèÇøÓòĞÅÏ¢
         private void UpdateScanAreaInfo(string areaName, string detailInfo)
         {
             _dispatcherQueue.TryEnqueue(() =>
@@ -112,7 +112,7 @@ namespace Xdows_Security
             });
         }
 
-        // æ›´æ–°æ‰«æé¡¹ç›®çŠ¶æ€
+        // ¸üĞÂÉ¨ÃèÏîÄ¿×´Ì¬
         private void UpdateScanItemStatus(int itemIndex, string status, bool isActive, int threatCount = 0)
         {
             _dispatcherQueue.TryEnqueue(() =>
@@ -133,7 +133,7 @@ namespace Xdows_Security
 
         }
 
-        // æ›´æ–°æ‰«æç»Ÿè®¡ä¿¡æ¯
+        // ¸üĞÂÉ¨ÃèÍ³¼ÆĞÅÏ¢
         private void UpdateScanStats(int filesScanned, int filesSafe, int threatsFound)
         {
             _dispatcherQueue.TryEnqueue(() =>
@@ -143,9 +143,9 @@ namespace Xdows_Security
                 _threatsFound = threatsFound;
                 try
                 {
-                    FilesScannedText.Text = $"{filesScanned} ä¸ªæ–‡ä»¶";
-                    FilesSafeText.Text = $"{filesSafe} ä¸ªå®‰å…¨";
-                    ThreatsFoundText.Text = $"{threatsFound} ä¸ªå¨èƒ";
+                    FilesScannedText.Text = $"{filesScanned} ¸öÎÄ¼ş";
+                    FilesSafeText.Text = $"{filesSafe} ¸ö°²È«";
+                    ThreatsFoundText.Text = $"{threatsFound} ¸öÍşĞ²";
                 }
                 catch { }
             });
@@ -162,9 +162,9 @@ namespace Xdows_Security
             {
                 var dialog = new ContentDialog
                 {
-                    Title = "å½“å‰æ²¡æœ‰é€‰æ‹©æ‰«æå¼•æ“",
-                    Content = "è¯·è½¬åˆ° è®¾ç½® - æ‰«æå¼•æ“ é€‰æ‹©ä¸€ä¸ªå¼•æ“ã€‚",
-                    PrimaryButtonText = "ç¡®å®š",
+                    Title = "µ±Ç°Ã»ÓĞÑ¡ÔñÉ¨ÃèÒıÇæ",
+                    Content = "Çë×ªµ½ ÉèÖÃ - É¨ÃèÒıÇæ Ñ¡ÔñÒ»¸öÒıÇæ¡£",
+                    PrimaryButtonText = "È·¶¨",
                     XamlRoot = this.XamlRoot,
                     RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                     PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
@@ -185,9 +185,9 @@ namespace Xdows_Security
             {
                 var dialog = new ContentDialog
                 {
-                    Title = "æš‚æœªå®ç°",
-                    Content = "è¯·ä½¿ç”¨å…¶å®ƒæ‰«ææ–¹å¼è¿›è¡Œæ‰«æä»»åŠ¡ã€‚",
-                    PrimaryButtonText = "ç¡®å®š",
+                    Title = "ÔİÎ´ÊµÏÖ",
+                    Content = "ÇëÊ¹ÓÃÆäËüÉ¨Ãè·½Ê½½øĞĞÉ¨ÃèÈÎÎñ¡£",
+                    PrimaryButtonText = "È·¶¨",
                     XamlRoot = this.XamlRoot,
                     RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                     PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
@@ -246,7 +246,7 @@ namespace Xdows_Security
                     _dispatcherQueue.TryEnqueue(() =>
                     {
                         ScanProgress.Visibility = Visibility.Collapsed;
-                        StatusText.Text = "å–æ¶ˆé€‰æ‹©";
+                        StatusText.Text = "È¡ÏûÑ¡Ôñ";
                         StopRadarAnimation();
                     });
                     return;
@@ -255,16 +255,16 @@ namespace Xdows_Security
 
             ScanButton.IsEnabled = false;
 
-            // é‡ç½®ç»Ÿè®¡ä¿¡æ¯
+            // ÖØÖÃÍ³¼ÆĞÅÏ¢
             _filesScanned = 0;
             _filesSafe = 0;
             _threatsFound = 0;
             UpdateScanStats(0, 0, 0);
 
-            // é‡ç½®æ‰«æé¡¹ç›®çŠ¶æ€
+            // ÖØÖÃÉ¨ÃèÏîÄ¿×´Ì¬
             for (int i = 0; i < _scanItems!.Count; i++)
             {
-                UpdateScanItemStatus(i, "ç­‰å¾…æ‰«æ", false, 0);
+                UpdateScanItemStatus(i, "µÈ´ıÉ¨Ãè", false, 0);
             }
 
             _currentResults = new ObservableCollection<VirusRow>();
@@ -277,10 +277,10 @@ namespace Xdows_Security
                 ScanProgress.Value = 0;
                 ScanProgress.Visibility = Visibility.Visible;
                 ProgressPercentText.Text = "0%";
-                PathText.Text = $"æ‰«ææ¨¡å¼ï¼š{displayName}";
+                PathText.Text = $"É¨ÃèÄ£Ê½£º{displayName}";
                 PauseScanButton.Visibility = Visibility.Visible;
                 ResumeScanButton.Visibility = Visibility.Collapsed;
-                StatusText.Text = "æ­£åœ¨å¤„ç†æ–‡ä»¶...";
+                StatusText.Text = "ÕıÔÚ´¦ÀíÎÄ¼ş...";
 
                 StartRadarAnimation();
             });
@@ -298,25 +298,25 @@ namespace Xdows_Security
                     switch (mode)
                     {
                         case ScanMode.Quick:
-                            UpdateScanAreaInfo("å¿«é€Ÿæ‰«æç³»ç»Ÿå…³é”®åŒºåŸŸ", "æ­£åœ¨æ£€æµ‹ç³»ç»Ÿå…³é”®æ–‡ä»¶å’Œç›®å½•");
+                            UpdateScanAreaInfo("¿ìËÙÉ¨ÃèÏµÍ³¹Ø¼üÇøÓò", "ÕıÔÚ¼ì²âÏµÍ³¹Ø¼üÎÄ¼şºÍÄ¿Â¼");
                             currentItemIndex = 0;
                             break;
                         case ScanMode.Full:
-                            UpdateScanAreaInfo("å…¨é¢æ‰«ææ‰€æœ‰ç£ç›˜", "æ­£åœ¨æ£€æµ‹æ‰€æœ‰ç£ç›˜çš„æ–‡ä»¶");
+                            UpdateScanAreaInfo("È«ÃæÉ¨ÃèËùÓĞ´ÅÅÌ", "ÕıÔÚ¼ì²âËùÓĞ´ÅÅÌµÄÎÄ¼ş");
                             currentItemIndex = 1;
                             break;
                         case ScanMode.File:
-                            UpdateScanAreaInfo("å•ç‹¬æ‰«ææŒ‡å®šæ–‡ä»¶", $"æ­£åœ¨æ£€æµ‹ï¼š{userPath}");
+                            UpdateScanAreaInfo("µ¥¶ÀÉ¨ÃèÖ¸¶¨ÎÄ¼ş", $"ÕıÔÚ¼ì²â£º{userPath}");
                             currentItemIndex = 2;
                             break;
                         case ScanMode.Folder:
-                            UpdateScanAreaInfo("å•ç‹¬æ‰«ææŒ‡å®šç›®å½•", $"æ­£åœ¨æ£€æµ‹ï¼š{userPath}");
+                            UpdateScanAreaInfo("µ¥¶ÀÉ¨ÃèÖ¸¶¨Ä¿Â¼", $"ÕıÔÚ¼ì²â£º{userPath}");
                             currentItemIndex = 3;
                             break;
                     }
 
-                    // æ¿€æ´»å½“å‰æ‰«æé¡¹ç›®
-                    UpdateScanItemStatus(currentItemIndex, "æ­£åœ¨æ‰«æ", true);
+                    // ¼¤»îµ±Ç°É¨ÃèÏîÄ¿
+                    UpdateScanItemStatus(currentItemIndex, "ÕıÔÚÉ¨Ãè", true);
 
                     foreach (var file in files)
                     {
@@ -331,7 +331,8 @@ namespace Xdows_Security
                         {
                             LogText.AddNewLog(1, "Security - ScanFile", file);
                             try {
-                                StatusText.Text = $"æ­£åœ¨æ‰«æï¼š{file}";
+                                StatusText.Text = $"ÕıÔÚÉ¨Ãè£º{file}";
+                                sj.virus1 = sj.virus1 + 1;
                             }
                             catch {
                             }
@@ -377,7 +378,7 @@ namespace Xdows_Security
                                 try { 
                                 _dispatcherQueue.TryEnqueue(() => _currentResults!.Add(new VirusRow(file, Result)));
                                 _threatsFound++;
-                                UpdateScanItemStatus(currentItemIndex, "å‘ç°å¨èƒ", true, _threatsFound);
+                                UpdateScanItemStatus(currentItemIndex, "·¢ÏÖÍşĞ²", true, _threatsFound);
                                 }
                                 catch { }
                             }
@@ -390,7 +391,7 @@ namespace Xdows_Security
                         }
                         catch
                         {
-                            // å¿½ç•¥æ— æ³•è®¿é—®çš„æ–‡ä»¶
+                            // ºöÂÔÎŞ·¨·ÃÎÊµÄÎÄ¼ş
                         }
 
                         finished++;
@@ -413,16 +414,16 @@ namespace Xdows_Security
                         await Task.Delay(1, token);
                     }
 
-                    // å®Œæˆå½“å‰æ‰«æé¡¹ç›®
-                    UpdateScanItemStatus(currentItemIndex, "æ‰«æå®Œæˆ", false, _threatsFound);
+                    // Íê³Éµ±Ç°É¨ÃèÏîÄ¿
+                    UpdateScanItemStatus(currentItemIndex, "É¨ÃèÍê³É", false, _threatsFound);
 
                     _dispatcherQueue.TryEnqueue(() =>
                     {
-                        StatusText.Text = $"æ‰«æå®Œæˆï¼Œå‘ç° {_currentResults.Count} ä¸ªå¨èƒ";
+                        StatusText.Text = $"É¨ÃèÍê³É£¬·¢ÏÖ {_currentResults.Count} ¸öÍşĞ²";
                         ScanProgress.Visibility = Visibility.Collapsed;
                         PauseScanButton.Visibility = Visibility.Collapsed;
                         ResumeScanButton.Visibility = Visibility.Collapsed;
-
+                        sj.virus = _currentResults.Count;
                         StopRadarAnimation();
 
                         if (_currentResults.Count > 0)
@@ -435,7 +436,7 @@ namespace Xdows_Security
                 {
                     _dispatcherQueue.TryEnqueue(() =>
                     {
-                        StatusText.Text = "æ‰«æå·²å–æ¶ˆ";
+                        StatusText.Text = "É¨ÃèÒÑÈ¡Ïû";
                         ScanProgress.Visibility = Visibility.Collapsed;
                         PauseScanButton.Visibility = Visibility.Collapsed;
                         ResumeScanButton.Visibility = Visibility.Collapsed;
@@ -448,7 +449,7 @@ namespace Xdows_Security
                     _dispatcherQueue.TryEnqueue(() =>
                     {
                         LogText.AddNewLog(4, "Security - Failed", ex.Message);
-                        StatusText.Text = $"æ‰«æå¤±è´¥ï¼š{ex.Message}";
+                        StatusText.Text = $"É¨ÃèÊ§°Ü£º{ex.Message}";
                         ScanProgress.Visibility = Visibility.Collapsed;
                         PauseScanButton.Visibility = Visibility.Collapsed;
                         ResumeScanButton.Visibility = Visibility.Collapsed;
@@ -460,31 +461,31 @@ namespace Xdows_Security
             ScanButton.IsEnabled = true;
         }
 
-        // è¿”å›ç—…æ¯’åˆ—è¡¨æŒ‰é’®äº‹ä»¶
+        // ·µ»Ø²¡¶¾ÁĞ±í°´Å¥ÊÂ¼ş
         private void OnBackToVirusListClick(object sender, RoutedEventArgs e)
         {
             VirusList.Visibility = Visibility.Visible;
             BackToVirusListButton.Visibility = Visibility.Collapsed;
         }
 
-        // æš‚åœæ‰«ææŒ‰é’®äº‹ä»¶
+        // ÔİÍ£É¨Ãè°´Å¥ÊÂ¼ş
         private void OnPauseScanClick(object sender, RoutedEventArgs e)
         {
             _isPaused = true;
             PauseScanButton.Visibility = Visibility.Collapsed;
             ResumeScanButton.Visibility = Visibility.Visible;
-            UpdateScanAreaInfo("æ‰«æå·²æš‚åœ", "è¯·ç‚¹å‡»ç»§ç»­æ‰«ææŒ‰é’®æ¢å¤æ‰«æ");
+            UpdateScanAreaInfo("É¨ÃèÒÑÔİÍ£", "Çëµã»÷¼ÌĞøÉ¨Ãè°´Å¥»Ö¸´É¨Ãè");
 
             PauseRadarAnimation();
         }
 
-        // ç»§ç»­æ‰«ææŒ‰é’®äº‹ä»¶
+        // ¼ÌĞøÉ¨Ãè°´Å¥ÊÂ¼ş
         private void OnResumeScanClick(object sender, RoutedEventArgs e)
         {
             _isPaused = false;
             PauseScanButton.Visibility = Visibility.Visible;
             ResumeScanButton.Visibility = Visibility.Collapsed;
-            UpdateScanAreaInfo("æ­£åœ¨ç»§ç»­æ‰«æ", "æ‰«æè¿›ç¨‹å·²æ¢å¤");
+            UpdateScanAreaInfo("ÕıÔÚ¼ÌĞøÉ¨Ãè", "É¨Ãè½ø³ÌÒÑ»Ö¸´");
 
             ResumeRadarAnimation();
         }
@@ -510,10 +511,10 @@ namespace Xdows_Security
 
             var dialog = new ContentDialog
             {
-                Title = "ç¡®è®¤è¦åˆ é™¤æ­¤æ–‡ä»¶å—",
-                Content = $"ç¡®å®šè¦åˆ é™¤æ­¤æ–‡ä»¶\n{row.FilePath}\nè¿™å°†æ°¸ä¹…åˆ é™¤æ–‡ä»¶ï¼Œæ— æ³•æ¢å¤",
-                PrimaryButtonText = "åˆ é™¤",
-                CloseButtonText = "å–æ¶ˆ",
+                Title = "È·ÈÏÒªÉ¾³ı´ËÎÄ¼şÂğ",
+                Content = $"È·¶¨ÒªÉ¾³ı´ËÎÄ¼ş\n{row.FilePath}\nÕâ½«ÓÀ¾ÃÉ¾³ıÎÄ¼ş£¬ÎŞ·¨»Ö¸´",
+                PrimaryButtonText = "É¾³ı",
+                CloseButtonText = "È¡Ïû",
                 XamlRoot = this.XamlRoot,
                 RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                 PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
@@ -530,15 +531,16 @@ namespace Xdows_Security
                     }
                     _threatsFound--;
                     UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
-                    StatusText.Text = $"æ‰«æå®Œæˆï¼Œå‘ç° {_currentResults.Count} ä¸ªå¨èƒ";
+                    StatusText.Text = $"É¨ÃèÍê³É£¬·¢ÏÖ {_currentResults.Count} ¸öÍşĞ²";
+                    sj.virus = _currentResults.Count;
                 }
                 catch (Exception ex)
                 {
                     await new ContentDialog
                     {
-                        Title = "åˆ é™¤å¤±è´¥",
+                        Title = "É¾³ıÊ§°Ü",
                         Content = ex.Message,
-                        CloseButtonText = "ç¡®å®š",
+                        CloseButtonText = "È·¶¨",
                         RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                         XamlRoot = this.XamlRoot
                     }.ShowAsync();
@@ -552,23 +554,23 @@ namespace Xdows_Security
                 var fileInfo = new FileInfo(row.FilePath);
                 var dialog = new ContentDialog
                 {
-                    Title = "è¯¦ç»†ä¿¡æ¯",
+                    Title = "ÏêÏ¸ĞÅÏ¢",
                     Content = new ScrollViewer
                     {
                         Content = new StackPanel
                         {
                             Children =
                             {
-                                new TextBlock { Text = $"æ–‡ä»¶è·¯å¾„ï¼š{row.FilePath}", TextWrapping = TextWrapping.Wrap },
-                                new TextBlock { Text = $"å¨èƒåç§°ï¼š{row.VirusName}", Margin = new Thickness(0, 8, 0, 0) },
-                                new TextBlock { Text = $"æ–‡ä»¶å¤§å°ï¼š{fileInfo.Length / 1024:F2} KB", Margin = new Thickness(0, 8, 0, 0) },
-                                new TextBlock { Text = $"åˆ›å»ºæ—¶é—´ï¼š{fileInfo.CreationTime}", Margin = new Thickness(0, 8, 0, 0) },
-                                new TextBlock { Text = $"ä¿®æ”¹æ—¶é—´ï¼š{fileInfo.LastWriteTime}", Margin = new Thickness(0, 8, 0, 0) }
+                                new TextBlock { Text = $"ÎÄ¼şÂ·¾¶£º{row.FilePath}", TextWrapping = TextWrapping.Wrap },
+                                new TextBlock { Text = $"ÍşĞ²Ãû³Æ£º{row.VirusName}", Margin = new Thickness(0, 8, 0, 0) },
+                                new TextBlock { Text = $"ÎÄ¼ş´óĞ¡£º{fileInfo.Length / 1024:F2} KB", Margin = new Thickness(0, 8, 0, 0) },
+                                new TextBlock { Text = $"´´½¨Ê±¼ä£º{fileInfo.CreationTime}", Margin = new Thickness(0, 8, 0, 0) },
+                                new TextBlock { Text = $"ĞŞ¸ÄÊ±¼ä£º{fileInfo.LastWriteTime}", Margin = new Thickness(0, 8, 0, 0) }
                             }
                         },
                         MaxHeight = 400
                     },
-                    CloseButtonText = "ç¡®å®š",
+                    CloseButtonText = "È·¶¨",
                     XamlRoot = this.XamlRoot,
                     RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                     CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
@@ -579,9 +581,9 @@ namespace Xdows_Security
             {
                 await new ContentDialog
                 {
-                    Title = "è·å–å¤±è´¥",
+                    Title = "»ñÈ¡Ê§°Ü",
                     Content = ex.Message,
-                    CloseButtonText = "ç¡®å®š",
+                    CloseButtonText = "È·¶¨",
                     XamlRoot = this.XamlRoot,
                     RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                     CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
@@ -589,7 +591,7 @@ namespace Xdows_Security
             }
         }
 
-        #region æ–‡ä»¶é€‰æ‹©å’Œæšä¸¾
+        #region ÎÄ¼şÑ¡ÔñºÍÃ¶¾Ù
         private async Task<string?> PickPathAsync(ScanMode mode)
         {
             var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);

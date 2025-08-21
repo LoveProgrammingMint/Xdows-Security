@@ -37,6 +37,7 @@ namespace Xdows_Security
                     Title = "刷新失败",
                     Content = ex.Message,
                     CloseButtonText = "确定",
+                    RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                     XamlRoot = XamlRoot
                 }.ShowAsync();
             }
@@ -99,6 +100,7 @@ namespace Xdows_Security
                 PrimaryButtonText = "结束",
                 CloseButtonText = "取消",
                 XamlRoot = XamlRoot,
+                RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                 PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
             };
             if (await confirm.ShowAsync() != ContentDialogResult.Primary) return;
@@ -116,6 +118,7 @@ namespace Xdows_Security
                     Title = "结束失败",
                     Content = $"不能结束这个进程，因为 {result.Error}。",
                     CloseButtonText = "确定",
+                    RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                     XamlRoot = XamlRoot,
                     CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 }.ShowAsync();

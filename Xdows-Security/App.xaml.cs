@@ -32,7 +32,7 @@ namespace Xdows_Security
 
         public static void AddNewLog(int Level, string Source, string Info)
         {
-            string currentTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"); // 获取当前本地时间
+            string currentTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             string LevelText = Level switch
             {
                 0 => "DEBUG",
@@ -196,7 +196,9 @@ namespace Xdows_Security
             {
                 Title = _resourceLoader.GetString(titleKey),
                 Content = message,
+                PrimaryButtonText = _resourceLoader.GetString("RetryButtonText"),
                 CloseButtonText = _resourceLoader.GetString("CloseButtonText"),
+                RequestedTheme = ((FrameworkElement)MainWindow.Content).RequestedTheme,
                 XamlRoot = MainWindow.Content.XamlRoot
             };
             await dialog.ShowAsync().AsTask();

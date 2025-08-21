@@ -160,6 +160,7 @@ namespace Xdows_Security
                 Content = _resourceLoader.GetString("Restart_Message"),
                 PrimaryButtonText = _resourceLoader.GetString("Button_Yes"),
                 SecondaryButtonText = _resourceLoader.GetString("Button_No"),
+                RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                 XamlRoot = this.XamlRoot,
                 PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
             };

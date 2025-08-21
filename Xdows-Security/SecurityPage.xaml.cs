@@ -166,6 +166,7 @@ namespace Xdows_Security
                     Content = "请转到 设置 - 扫描引擎 选择一个引擎。",
                     PrimaryButtonText = "确定",
                     XamlRoot = this.XamlRoot,
+                    RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                     PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 }.ShowAsync();
                 return;
@@ -188,6 +189,7 @@ namespace Xdows_Security
                     Content = "请使用其它扫描方式进行扫描任务。",
                     PrimaryButtonText = "确定",
                     XamlRoot = this.XamlRoot,
+                    RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                     PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 }.ShowAsync();
                 return;
@@ -513,6 +515,7 @@ namespace Xdows_Security
                 PrimaryButtonText = "删除",
                 CloseButtonText = "取消",
                 XamlRoot = this.XamlRoot,
+                RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                 PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
             };
             if (await dialog.ShowAsync() == ContentDialogResult.Primary)
@@ -536,6 +539,7 @@ namespace Xdows_Security
                         Title = "删除失败",
                         Content = ex.Message,
                         CloseButtonText = "确定",
+                        RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                         XamlRoot = this.XamlRoot
                     }.ShowAsync();
                 }
@@ -566,6 +570,7 @@ namespace Xdows_Security
                     },
                     CloseButtonText = "确定",
                     XamlRoot = this.XamlRoot,
+                    RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                     CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 };
                 await dialog.ShowAsync();
@@ -578,6 +583,7 @@ namespace Xdows_Security
                     Content = ex.Message,
                     CloseButtonText = "确定",
                     XamlRoot = this.XamlRoot,
+                    RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                     CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 }.ShowAsync();
             }

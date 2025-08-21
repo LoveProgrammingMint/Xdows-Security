@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
 using Windows.Storage;
@@ -90,10 +91,48 @@ namespace Xdows_Security
     {
         public static MainWindow MainWindow { get; private set; } = new();
         public static string GetCloudApiKey() {return ""; }//想盗用 ApiKey ? 没门
+        private bool RequestAdminPrivilegesAsync()
+        {
+            try
+            {
+                using (var identity = System.Security.Principal.WindowsIdentity.GetCurrent())
+                {
+                    var principal = new System.Security.Principal.WindowsPrincipal(identity);
+                    if (principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator))
+                    {
+                        return true;
+                    }
+                }
+                ProcessStartInfo startInfo = new ProcessStartInfo()
+                {
+                    FileName = Environment.ProcessPath,
+                    UseShellExecute = true,
+                    Verb = "runas",
+                    WindowStyle = ProcessWindowStyle.Hidden
+                };
 
+                try
+                {
+                    Process.Start(startInfo);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
         public App()
         {
             LogText.AddNewLog(1, "UI Interface", "尝试加载主窗口");
+            if (!RequestAdminPrivilegesAsync()) {
+                LogText.AddNewLog(3, "System", "无法获取管理员权限");
+                return;
+            }
             this.InitializeComponent();
         }
 
@@ -102,13 +141,11 @@ namespace Xdows_Security
             InitializeLanguage();
             InitializeTheme();
             InitializeBackdrop();
-
             // 设置主窗口主题
             if (MainWindow.Content is FrameworkElement rootElement)
             {
                 rootElement.RequestedTheme = Theme;
             }
-
             MainWindow.Activate();
         }
 

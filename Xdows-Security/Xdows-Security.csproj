@@ -42,6 +42,7 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Protection\Protection.csproj" />
     <ProjectReference Include="..\ScanEngine\ScanEngine.csproj" />
   </ItemGroup>
   <ItemGroup>

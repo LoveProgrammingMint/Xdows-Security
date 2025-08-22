@@ -1,6 +1,8 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Win32;
+using Microsoft.Windows.AppNotifications;
+using Microsoft.Windows.AppNotifications.Builder;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -12,6 +14,8 @@ using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
 using Windows.Storage;
 using Windows.System.UserProfile;
+using Xdows.Protection;
+using static Xdows.Protection.ProcessProtection;
 
 namespace Xdows_Security
 {
@@ -62,14 +66,35 @@ namespace Xdows_Security
         public static int ScansQuantity { get; set; } = 0;
         public static int VirusQuantity { get; set; } = 0;
     }
+    public static class Notifications
+    {
+        public static void ShowNotification(string title, string content)
+        {
+            AppNotification notification = new AppNotificationBuilder()
+                .AddText (title)
+                .AddText(content)
+                .BuildNotification();
+            AppNotificationManager.Default.Show(notification);
+        }
+
+    } 
     public static class Protection
     {
         public static bool IsOpen()
         {
             return true;
         }
+        public static ToastCallBack toastCallBack = (title, content) =>
+        {
+            Notifications.ShowNotification(title, content);
+        };
         public static bool Run(int RunID)
         {
+            if (RunID == 0) {
+                return Xdows.Protection.ProcessProtection.EnableProtection(toastCallBack);
+            }
+
+
             string RunFileName = RunID switch
             {
                 0 => "XIGUASecurityProgress.exe",

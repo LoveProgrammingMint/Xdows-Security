@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="SouXiaoEngine">
+      <HintPath>..\SouXiaoEngine\SouXiaoEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

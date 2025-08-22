@@ -58,7 +58,10 @@ namespace Xdows_Security
             }
         }
     }
-
+    class Statistics {
+        public static int ScansQuantity { get; set; } = 0;
+        public static int VirusQuantity { get; set; } = 0;
+    }
     public static class Protection
     {
         public static bool IsOpen()

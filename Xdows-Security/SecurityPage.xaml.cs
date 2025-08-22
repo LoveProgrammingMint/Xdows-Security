@@ -373,9 +373,11 @@ namespace Xdows_Security
                                     }
                                 }
                             }
+                            Statistics.ScansQuantity += 1;
                             if (Result != string.Empty)
                             {
                                 LogText.AddNewLog(1, "Security - Find", Result);
+                                Statistics.VirusQuantity += 1;
                                 try
                                 {
                                     _dispatcherQueue.TryEnqueue(() => _currentResults!.Add(new VirusRow(file, Result)));

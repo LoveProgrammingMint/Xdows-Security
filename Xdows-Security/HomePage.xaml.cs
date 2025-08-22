@@ -170,8 +170,8 @@ namespace Xdows_Security
         private void LoadStatistics()
         {
             var settings = ApplicationData.Current.LocalSettings;
-            TotalScansText.Text = settings.Values["TotalScans"]?.ToString() ?? "0";
-            TotalThreatsText.Text = settings.Values["TotalThreats"]?.ToString() ?? "0";
+            TotalScansText.Text = Statistics.ScansQuantity.ToString() ?? "0";
+            TotalThreatsText.Text = Statistics.VirusQuantity.ToString() ?? "0";
         }
 
         private void LoadRecentActivities()
@@ -266,7 +266,6 @@ namespace Xdows_Security
                             QuickScanStatusText.Text = $"正在扫描: {path}";
                         });
 
-                        // 模拟扫描过程
                         await Task.Delay(100, token);
 
                         var result = new ScanResult

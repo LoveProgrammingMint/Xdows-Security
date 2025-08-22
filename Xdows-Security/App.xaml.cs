@@ -12,6 +12,7 @@ using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
 using Windows.Storage;
 using Windows.System.UserProfile;
+using Xdows.Protection;
 
 namespace Xdows_Security
 {
@@ -70,6 +71,11 @@ namespace Xdows_Security
         }
         public static bool Run(int RunID)
         {
+            if (RunID == 0) {
+                return Xdows.Protection.ProcessProtection.EnableProtection();
+            }
+
+
             string RunFileName = RunID switch
             {
                 0 => "XIGUASecurityProgress.exe",

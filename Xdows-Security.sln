@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xdows-Security", "Xdows-Sec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScanEngine", "ScanEngine\ScanEngine.csproj", "{26DE7ED1-5BB7-4660-B8E5-2210404A29CE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Protection", "Protection\Protection.csproj", "{87EF52DC-2D4F-46F0-AEFA-2502B9127AD7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -47,6 +49,18 @@ Global
 		{26DE7ED1-5BB7-4660-B8E5-2210404A29CE}.Release|x64.Build.0 = Release|Any CPU
 		{26DE7ED1-5BB7-4660-B8E5-2210404A29CE}.Release|x86.ActiveCfg = Release|Any CPU
 		{26DE7ED1-5BB7-4660-B8E5-2210404A29CE}.Release|x86.Build.0 = Release|Any CPU
+		{87EF52DC-2D4F-46F0-AEFA-2502B9127AD7}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{87EF52DC-2D4F-46F0-AEFA-2502B9127AD7}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{87EF52DC-2D4F-46F0-AEFA-2502B9127AD7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{87EF52DC-2D4F-46F0-AEFA-2502B9127AD7}.Debug|x64.Build.0 = Debug|Any CPU
+		{87EF52DC-2D4F-46F0-AEFA-2502B9127AD7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{87EF52DC-2D4F-46F0-AEFA-2502B9127AD7}.Debug|x86.Build.0 = Debug|Any CPU
+		{87EF52DC-2D4F-46F0-AEFA-2502B9127AD7}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{87EF52DC-2D4F-46F0-AEFA-2502B9127AD7}.Release|ARM64.Build.0 = Release|Any CPU
+		{87EF52DC-2D4F-46F0-AEFA-2502B9127AD7}.Release|x64.ActiveCfg = Release|Any CPU
+		{87EF52DC-2D4F-46F0-AEFA-2502B9127AD7}.Release|x64.Build.0 = Release|Any CPU
+		{87EF52DC-2D4F-46F0-AEFA-2502B9127AD7}.Release|x86.ActiveCfg = Release|Any CPU
+		{87EF52DC-2D4F-46F0-AEFA-2502B9127AD7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

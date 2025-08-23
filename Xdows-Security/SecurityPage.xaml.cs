@@ -276,12 +276,11 @@ namespace Xdows_Security
                 BackToVirusListButton.Visibility = Visibility.Collapsed;
                 ScanProgress.Value = 0;
                 ScanProgress.Visibility = Visibility.Visible;
-                ProgressPercentText.Text = "0%";
+                ProgressPercentText.Text = showScanProgress? "0%":String.Empty;
                 PathText.Text = $"扫描模式：{displayName}";
                 PauseScanButton.Visibility = Visibility.Visible;
                 ResumeScanButton.Visibility = Visibility.Collapsed;
                 StatusText.Text = "正在处理文件...";
-
                 StartRadarAnimation();
             });
 

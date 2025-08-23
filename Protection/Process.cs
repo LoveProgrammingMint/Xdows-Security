@@ -121,7 +121,7 @@ namespace Xdows.Protection
 
             IntPtr hProc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, pid);
             if (hProc == IntPtr.Zero)
-                return null;
+                return string.Empty;
 
             try
             {
@@ -135,7 +135,7 @@ namespace Xdows.Protection
                 CloseHandle(hProc);
             }
 
-            return null;
+            return string.Empty;
         }
 
         [DllImport("kernel32.dll", SetLastError = true)]

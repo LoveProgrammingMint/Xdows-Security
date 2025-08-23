@@ -84,7 +84,7 @@
                 VerticalAlignment="Top"
                 x:Uid="SettingsPage_Protection_Process"
                 HeaderIcon="{ui:FontIcon Glyph=&#xE9D5;}">
-                <ToggleSwitch Tag="Process" Toggled="RunProtection" />
+                <ToggleSwitch x:Name="ProcessToggle" Tag="Process" Toggled="RunProtection" />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                         x:Uid="SettingsPage_Protection_Process_DeepScan"

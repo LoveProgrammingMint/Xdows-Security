@@ -236,7 +236,7 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="进程防护" VerticalAlignment="Center"/>
-                            <ToggleSwitch x:Name="ProcessProtectionToggle" Grid.Column="1" Toggled="ProcessProtectionToggle_Toggled"/>
+                            <ToggleSwitch x:Name="ProcessProtectionToggle" Grid.Column="1" IsEnabled="False" Toggled="ProcessProtectionToggle_Toggled"/>
                         </Grid>
                         <Grid>
                             <Grid.ColumnDefinitions>

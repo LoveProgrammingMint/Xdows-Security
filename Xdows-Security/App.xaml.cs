@@ -84,10 +84,12 @@ namespace Xdows_Security
         {
             return true;
         }
-        public static InterceptCallBack interceptCallBack = (bool succeed, string path) =>
+        public static InterceptCallBack interceptCallBack = (bool isSucceed, string path) =>
         {
-
-            string content = succeed
+            LogText.AddNewLog(2, "Protection", isSucceed
+                ? $"InterceptProcess：{Path.GetFileName(path)}"
+                : $"Cannot InterceptProcess：{Path.GetFileName(path)}");
+            string content = isSucceed
                 ? $"Xdows Security 已发现威胁.{Environment.NewLine}相关进程：{Path.GetFileName(path)}"
                 : $"Xdows Security 无法处理威胁.{Environment.NewLine}相关进程：{Path.GetFileName(path)}";
             Notifications.ShowNotification("发现威胁", content);
@@ -95,7 +97,16 @@ namespace Xdows_Security
         public static bool Run(int RunID)
         {
             if (RunID == 0) {
-                return Xdows.Protection.ProcessProtection.EnableProtection(interceptCallBack);
+                if (ProcessProtection.IsEnabled())
+                {
+                    LogText.AddNewLog(1, "Protection", $"Try to Disable ProcessProtection ...");
+                    return Xdows.Protection.ProcessProtection.Disable();
+                }
+                else 
+                {
+                    LogText.AddNewLog(1, "Protection", $"Try to Enable ProcessProtection ...");
+                    return Xdows.Protection.ProcessProtection.Enable(interceptCallBack);
+                }
             }
 
 

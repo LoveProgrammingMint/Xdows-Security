@@ -2,11 +2,12 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
 using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
 using Windows.Storage;
+using Xdows.Protection;
 
 namespace Xdows_Security
 {
@@ -26,6 +27,7 @@ namespace Xdows_Security
                 CloudScanToggle.IsOn = false;
                 CloudScanToggle.IsEnabled = false;
             }
+
             if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "model.onnx")) {
                 SouXiaoScanToggle.IsOn = false;
                 SouXiaoScanToggle.IsEnabled = false;
@@ -34,24 +36,20 @@ namespace Xdows_Security
         private void RunProtection(object sender, RoutedEventArgs e)
         {
             var Toggle = sender as ToggleSwitch;
-
-            if (Toggle?.IsOn == true)
+            if (Toggle == null) return;
+            int RunID = Toggle.Tag switch
             {
-                int RunID = Toggle.Tag switch
-                {
-                    "Progress" => 0,
-                    "Boot" => 1,
-                    "Register" => 2,
-                    _ => 0,
-                };
-                if (!Protection.Run(RunID)) {
-                    Toggle.IsOn = !Toggle.IsOn;
-                }
-            }
-            else
+                "Progress" => 0,
+                "Boot" => 1,
+                "Register" => 2,
+                _ => 0,
+            };
+            if (!Protection.Run(RunID))
             {
-
+                Toggle.IsOn = !Toggle.IsOn;
             }
+            Toggle.IsOn = ProcessProtection.IsEnabled();
+
         }
         private void ScanProgressToggle_Toggled(object sender, RoutedEventArgs e)
         {
@@ -116,6 +114,7 @@ namespace Xdows_Security
                 bool SouXiaoScan = value is bool && (bool)value;
                 SouXiaoScanToggle.IsOn = SouXiaoScan;
             }
+            ProcessToggle.IsOn = ProcessProtection.IsEnabled();
         }
         private void LoadLanguageSetting()
         {

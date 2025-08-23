@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 using static Xdows.Protection.ProcessProtection;
 
 namespace Xdows.Protection
@@ -16,14 +17,14 @@ namespace Xdows.Protection
     public static class ProcessProtection
     {
         // 感谢 XiaoWeiSecurity 对开源杀毒软件项目（特别是主动防御）的巨大贡献！！
-        public delegate void InterceptCallBack(bool succeed, string path);
+        public delegate void InterceptCallBack(bool isSucceed, string path);
 
-        private static CancellationTokenSource? _cts;
-        private static Task? _monitorTask;
+        private static CancellationTokenSource? _cts = null;
+        private static Task? _monitorTask = null;
 
-        public static bool EnableProtection(InterceptCallBack toastCallBack)
+        public static bool Enable(InterceptCallBack toastCallBack)
         {
-            if (IsProtectionEnabled())
+            if (IsEnabled())
                 return true;
             try
             {
@@ -36,9 +37,9 @@ namespace Xdows.Protection
                 return false;
             }
         }
-        public static bool DisableProtection()
+        public static bool Disable()
         {
-            if (!IsProtectionEnabled())
+            if (!IsEnabled())
                 return true;
             try
             {
@@ -64,12 +65,9 @@ namespace Xdows.Protection
 
             return true;
         }
-        public static bool IsProtectionEnabled()
+        public static bool IsEnabled()
         {
-            return _monitorTask != null &&
-                   !_monitorTask.IsCompleted &&
-                   !_monitorTask.IsCanceled &&
-                   !_monitorTask.IsFaulted;
+            return _cts is { IsCancellationRequested: false };
         }
 
         private static readonly List<int> _oldPids = new List<int>();
@@ -107,6 +105,10 @@ namespace Xdows.Protection
                                 bool Succeed = TryKillProcess(pid);
 
                                 interceptCallBack(Succeed, path);
+                                if (string.Concat(path.EnumerateRunes().Reverse().Take(6).Reverse()) != ".virus")
+                                {
+                                    try { File.Move(path, path + ".virus"); } catch { }
+                                }
                             }
                         }
 
@@ -114,9 +116,8 @@ namespace Xdows.Protection
                         _oldPids.AddRange(currentPids);
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
-                    Debug.WriteLine("MonitorNewProcessesLoop error: " + ex);
                 }
                 try
                 {

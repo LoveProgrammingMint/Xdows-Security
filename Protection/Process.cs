@@ -16,12 +16,19 @@ namespace Xdows.Protection
     public static class ProcessProtection
     {
         // 感谢 XiaoWeiSecurity 对开源杀毒软件项目（特别是主动防御）的巨大贡献！！
-        public delegate void ToastCallBack(string title,string content);
-        public static bool EnableProtection(ToastCallBack toastCallBack)
+        public delegate void InterceptCallBack(bool succeed, string path);
+
+        private static CancellationTokenSource? _cts;
+        private static Task? _monitorTask;
+
+        public static bool EnableProtection(InterceptCallBack toastCallBack)
         {
+            if (IsProtectionEnabled())
+                return true;
             try
             {
-                _ = Task.Run(() => MonitorNewProcessesLoop(toastCallBack));
+                _cts = new CancellationTokenSource();
+                _monitorTask = Task.Run(() => MonitorNewProcessesLoop(toastCallBack, _cts.Token), _cts.Token);
                 return true;
             }
             catch
@@ -29,14 +36,51 @@ namespace Xdows.Protection
                 return false;
             }
         }
+        public static bool DisableProtection()
+        {
+            if (!IsProtectionEnabled())
+                return true;
+            try
+            {
+                if (_cts is null || _monitorTask is null)
+                    return true;
+                try
+                {
+                    _cts.Cancel();
+                    _monitorTask.Wait(2000);
+                }
+                catch { }
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                _cts?.Dispose();
+                _cts = null;
+                _monitorTask = null;
+            }
+
+            return true;
+        }
+        public static bool IsProtectionEnabled()
+        {
+            return _monitorTask != null &&
+                   !_monitorTask.IsCompleted &&
+                   !_monitorTask.IsCanceled &&
+                   !_monitorTask.IsFaulted;
+        }
 
         private static readonly List<int> _oldPids = new List<int>();
-        private static void MonitorNewProcessesLoop(ToastCallBack toastCallBack)
+
+        private static void MonitorNewProcessesLoop(InterceptCallBack interceptCallBack, CancellationToken token)
         {
-            string ModelPath = AppDomain.CurrentDomain.BaseDirectory + "model.onnx";
-            MalwareScanner SouXiaoEngine = new MalwareScanner(ModelPath);
+            string modelPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "model.onnx");
+            MalwareScanner scanner = new MalwareScanner(modelPath);
             Debug.WriteLine("Protection Enabled");
-            while (true)
+
+            while (!token.IsCancellationRequested)
             {
                 try
                 {
@@ -55,25 +99,17 @@ namespace Xdows.Protection
                             if (string.IsNullOrEmpty(path))
                                 continue;
 
-
-                            string Result = SouXiaoEngine.ScanFile(path) ? SouXiaoEngine.GetReturn() : string.Empty;
-
-                            bool isVirus = Result == string.Empty ? false : true;
-
+                            string result = scanner.ScanFile(path) ? scanner.GetReturn() : string.Empty;
+                            bool isVirus = !string.IsNullOrEmpty(result);
 
                             if (isVirus)
                             {
-                                bool canKill = TryKillProcess(pid);
+                                bool Succeed = TryKillProcess(pid);
 
-                                string title = "发现威胁";
-                                string body = canKill
-                                    ? $"Xdows Security 已发现威胁.{Environment.NewLine}相关进程：{Path.GetFileName(path)}"
-                                    : $"Xdows Security 无法处理威胁.{Environment.NewLine}相关进程：{Path.GetFileName(path)}";
-                                toastCallBack(title, body);
+                                interceptCallBack(Succeed, path);
                             }
                         }
 
-                        // 更新旧列表
                         _oldPids.Clear();
                         _oldPids.AddRange(currentPids);
                     }
@@ -82,9 +118,17 @@ namespace Xdows.Protection
                 {
                     Debug.WriteLine("MonitorNewProcessesLoop error: " + ex);
                 }
-
-                Thread.Sleep(10);
+                try
+                {
+                    Task.Delay(10, token).Wait(token);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
             }
+
+            Debug.WriteLine("Protection Disabled");
         }
 
         private static List<int> GetProcessIdList()
@@ -105,11 +149,10 @@ namespace Xdows.Protection
                     break;
                 }
 
-                // 扩容
                 Array.Resize(ref pids, pids.Length + 128);
             }
 
-            return pids.Where(id => id > 0).Distinct().ToList(); // 简易去重
+            return pids.Where(id => id > 0).Distinct().ToList();
         }
 
         [DllImport("psapi.dll", SetLastError = true)]

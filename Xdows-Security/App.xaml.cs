@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
 using System;
+using System.IO;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -79,19 +80,22 @@ namespace Xdows_Security
 
     } 
     public static class Protection
-    {
-        public static bool IsOpen()
+    {        public static bool IsOpen()
         {
             return true;
         }
-        public static ToastCallBack toastCallBack = (title, content) =>
+        public static InterceptCallBack interceptCallBack = (bool succeed, string path) =>
         {
-            Notifications.ShowNotification(title, content);
+
+            string content = succeed
+                ? $"Xdows Security 已发现威胁.{Environment.NewLine}相关进程：{Path.GetFileName(path)}"
+                : $"Xdows Security 无法处理威胁.{Environment.NewLine}相关进程：{Path.GetFileName(path)}";
+            Notifications.ShowNotification("发现威胁", content);
         };
         public static bool Run(int RunID)
         {
             if (RunID == 0) {
-                return Xdows.Protection.ProcessProtection.EnableProtection(toastCallBack);
+                return Xdows.Protection.ProcessProtection.EnableProtection(interceptCallBack);
             }
 
 

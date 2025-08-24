@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Windows.ApplicationModel.Resources;
@@ -91,35 +92,22 @@ namespace Xdows_Security
         private void LoadScanSetting()
         {
             var settings = ApplicationData.Current.LocalSettings;
-            if (settings.Values.TryGetValue("ShowScanProgress", out object? value))
+            var toggleSettings = new Dictionary<string, ToggleSwitch>
             {
-                bool showScanProgress = value is bool && (bool)value;
-                ScanProgressToggle.IsOn = showScanProgress;
-            }
-            if (settings.Values.TryGetValue("DeepScan", out value))
+                ["ShowScanProgress"] = ScanProgressToggle,
+                ["DeepScan"] = DeepScanToggle,
+                ["ExtraData"] = ExtraDataToggle,
+                ["LocalScan"] = LocalScanToggle,
+                ["CloudScan"] = CloudScanToggle,
+                ["SouXiaoScan"] = SouXiaoScanToggle
+            };
+
+            foreach (var setting in toggleSettings)
             {
-                bool DeepScan = value is bool && (bool)value;
-                DeepScanToggle.IsOn = DeepScan;
-            }
-            if (settings.Values.TryGetValue("ExtraData", out value))
-            {
-                bool ExtraData = value is bool && (bool)value;
-                ExtraDataToggle.IsOn = ExtraData;
-            }
-            if (settings.Values.TryGetValue("LocalScan", out value))
-            {
-                bool LocalScan = value is bool && (bool)value;
-                LocalScanToggle.IsOn = LocalScan;
-            }
-            if (settings.Values.TryGetValue("CloudScan", out value))
-            {
-                bool CloudScan = value is bool && (bool)value;
-                CloudScanToggle.IsOn = CloudScan;
-            }
-            if (settings.Values.TryGetValue("SouXiaoScan", out value))
-            {
-                bool SouXiaoScan = value is bool && (bool)value;
-                SouXiaoScanToggle.IsOn = SouXiaoScan;
+                if (settings.Values.TryGetValue(setting.Key, out object? value))
+                {
+                    setting.Value.IsOn = value is bool boolValue && boolValue;
+                }
             }
             ProcessToggle.IsOn = ProcessProtection.IsEnabled();
             FilesToggle.IsOn = FilesProtection.IsEnabled();
@@ -160,7 +148,6 @@ namespace Xdows_Security
         private async void ShowRestartMessage()
         {
             if (this.XamlRoot == null) return;
-
             ContentDialog dialog = new ContentDialog
             {
                 Title = _resourceLoader.GetString("Restart_Title"),
@@ -171,7 +158,6 @@ namespace Xdows_Security
                 XamlRoot = this.XamlRoot,
                 PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
             };
-
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {

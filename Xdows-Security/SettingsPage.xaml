@@ -98,12 +98,12 @@
                 VerticalAlignment="Top"
                 x:Uid="SettingsPage_Protection_Files"
                 HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
-                <ToggleSwitch IsEnabled="False"  />
+                <ToggleSwitch x:Name="FilesToggle" Tag="Files" Toggled="RunProtection"/>
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                         x:Uid="SettingsPage_Protection_Files_AllFiles"
                         HeaderIcon="{ui:FontIcon Glyph=&#xE71D;}"
-                        IsEnabled="False" >
+                        IsEnabled="False">
                         <ToggleSwitch />
                     </controls:SettingsCard>
                 </controls:SettingsExpander.Items>
@@ -132,7 +132,7 @@
                 VerticalAlignment="Top"
                 x:Uid="SettingsPage_Protection_Boot"
                 HeaderIcon="{ui:FontIcon Glyph=&#xEDA2;}">
-                <ToggleSwitch Tag="Boot" Toggled="RunProtection"  />
+                <ToggleSwitch Tag="Boot" IsEnabled="False" Toggled="RunProtection"/>
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                         x:Uid="SettingsPage_Protection_Boot_Save"
@@ -152,7 +152,7 @@
                 VerticalAlignment="Top"
                 x:Uid="SettingsPage_Protection_Register"
                 HeaderIcon="{ui:FontIcon Glyph=&#xEA37;}">
-                <ToggleSwitch Tag="Register" Toggled="RunProtection"/>
+                <ToggleSwitch Tag="Register" IsEnabled="False" Toggled="RunProtection"/>
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                          x:Uid="SettingsPage_Protection_Register_Secondary"

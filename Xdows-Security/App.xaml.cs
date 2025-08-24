@@ -17,6 +17,8 @@ using Windows.Storage;
 using Windows.System.UserProfile;
 using Xdows.Protection;
 using static Xdows.Protection.ProcessProtection;
+using static Xdows.Protection.FilesProtection;
+using static Xdows.Protection.CallBack;
 
 namespace Xdows_Security
 {
@@ -90,8 +92,8 @@ namespace Xdows_Security
                 ? $"InterceptProcess：{Path.GetFileName(path)}"
                 : $"Cannot InterceptProcess：{Path.GetFileName(path)}");
             string content = isSucceed
-                ? $"Xdows Security 已发现威胁.{Environment.NewLine}相关进程：{Path.GetFileName(path)}"
-                : $"Xdows Security 无法处理威胁.{Environment.NewLine}相关进程：{Path.GetFileName(path)}";
+                ? $"Xdows Security 已发现威胁.{Environment.NewLine}相关数据：{Path.GetFileName(path)}"
+                : $"Xdows Security 无法处理威胁.{Environment.NewLine}相关数据：{Path.GetFileName(path)}";
             Notifications.ShowNotification("发现威胁", content);
         };
         public static bool Run(int RunID)
@@ -108,7 +110,19 @@ namespace Xdows_Security
                     return Xdows.Protection.ProcessProtection.Enable(interceptCallBack);
                 }
             }
-
+            if (RunID == 1)
+            {
+                if (FilesProtection.IsEnabled())
+                {
+                    LogText.AddNewLog(1, "Protection", $"Try to Disable FilesProtection ...");
+                    return Xdows.Protection.FilesProtection.Disable();
+                }
+                else
+                {
+                    LogText.AddNewLog(1, "Protection", $"Try to Enable FilesProtection ...");
+                    return Xdows.Protection.FilesProtection.Enable(interceptCallBack);
+                }
+            }
 
             string RunFileName = RunID switch
             {

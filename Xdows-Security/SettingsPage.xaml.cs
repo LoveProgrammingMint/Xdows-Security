@@ -40,16 +40,19 @@ namespace Xdows_Security
             int RunID = Toggle.Tag switch
             {
                 "Progress" => 0,
-                "Boot" => 1,
-                "Register" => 2,
+                "Files" => 1,
+                "Boot" => 2,
+                "Register" => 3,
                 _ => 0,
             };
             if (!Protection.Run(RunID))
             {
                 Toggle.IsOn = !Toggle.IsOn;
             }
-            Toggle.IsOn = ProcessProtection.IsEnabled();
-
+            if (RunID == 0)
+                Toggle.IsOn = ProcessProtection.IsEnabled();
+            if (RunID == 1)
+                Toggle.IsOn = FilesProtection.IsEnabled();
         }
         private void ScanProgressToggle_Toggled(object sender, RoutedEventArgs e)
         {
@@ -115,6 +118,7 @@ namespace Xdows_Security
                 SouXiaoScanToggle.IsOn = SouXiaoScan;
             }
             ProcessToggle.IsOn = ProcessProtection.IsEnabled();
+            FilesToggle.IsOn = FilesProtection.IsEnabled();
         }
         private void LoadLanguageSetting()
         {

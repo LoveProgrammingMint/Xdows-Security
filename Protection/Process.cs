@@ -10,14 +10,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
-using static Xdows.Protection.ProcessProtection;
+using static Xdows.Protection.CallBack;
 
 namespace Xdows.Protection
 {
     public static class ProcessProtection
     {
         // 感谢 XiaoWeiSecurity 对开源杀毒软件项目（特别是主动防御）的巨大贡献！！
-        public delegate void InterceptCallBack(bool isSucceed, string path);
 
         private static CancellationTokenSource? _cts = null;
         private static Task? _monitorTask = null;

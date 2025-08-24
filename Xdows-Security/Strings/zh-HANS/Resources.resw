@@ -289,7 +289,7 @@
     <value>其它</value>
   </data>
   <data name="SettingsPage_Other_Language.Description" xml:space="preserve">
-    <value>更改应用程序显示语言</value>
+    <value>更改应用程序的显示语言</value>
   </data>
   <data name="SettingsPage_Other_Language.Header" xml:space="preserve">
     <value>语言（Language）</value>

@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+
 // using Windows.ApplicationModel.Resources;//多语言调用
 using Windows.Storage;
 using Windows.UI;
@@ -59,6 +61,10 @@ namespace Xdows_Security
             var backdrop = settings.Values["AppBackdrop"] as string;
             ApplyBackdrop(backdrop ?? "Mica");
             Activated -= MainWindow_Activated_FirstTime;
+            if (!App.IsRunAsAdmin())
+            {
+                TitleText.Text += " (受限模式)";
+            }
         }
         public void UpdateTheme(ElementTheme selectedTheme)
         {
@@ -111,8 +117,6 @@ namespace Xdows_Security
         public void GoToPage(string PageName)
         {
             var selectedItem = nav.SelectedItem as NavigationViewItem;
-            var next = true;
-            if (TitleText.Text.Length != 14) { string str = ""; int length = str.Length; } else { next = false; }
 
             string currentTag = selectedItem?.Tag as string ?? "";
 
@@ -136,7 +140,6 @@ namespace Xdows_Security
 
             nav.Header = (nav.SelectedItem as NavigationViewItem)?.Content ?? string.Empty;
 
-            if (next) { return; }
             NowPage = PageName; 
             switch (PageName)
             {
@@ -180,7 +183,6 @@ namespace Xdows_Security
                 GoToPage(pageName);
             }
         }
-        // 背景材质
         private ElementTheme GetCurrentTheme()
         {
             if (RootGrid.RequestedTheme != ElementTheme.Default)

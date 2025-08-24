@@ -544,7 +544,8 @@ namespace Xdows_Security
                         Content = ex.Message,
                         CloseButtonText = "È·¶¨",
                         RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
-                        XamlRoot = this.XamlRoot
+                        XamlRoot = this.XamlRoot,
+                        CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                     }.ShowAsync();
                 }
             }

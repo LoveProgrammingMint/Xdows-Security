@@ -4,21 +4,24 @@ using Microsoft.Win32;
 using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
 using System;
-using System.IO;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using Microsoft.UI.Dispatching;
 using System.Linq;
-using System.Reflection.Emit;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
 using Windows.Storage;
 using Windows.System.UserProfile;
 using Xdows.Protection;
-using static Xdows.Protection.ProcessProtection;
-using static Xdows.Protection.FilesProtection;
 using static Xdows.Protection.CallBack;
+using static Xdows.Protection.FilesProtection;
+using static Xdows.Protection.ProcessProtection;
+using Microsoft.VisualBasic;
 
 namespace Xdows_Security
 {
@@ -149,53 +152,29 @@ namespace Xdows_Security
     {
         public static MainWindow MainWindow { get; private set; } = new();
         public static string GetCloudApiKey() { return ""; }//想盗用 ApiKey ? 没门
-        private bool RequestAdminPrivilegesAsync()
+        public static bool IsRunAsAdmin()
         {
-            try
-            {
-                using (var identity = System.Security.Principal.WindowsIdentity.GetCurrent())
-                {
-                    var principal = new System.Security.Principal.WindowsPrincipal(identity);
-                    if (principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator))
-                    {
-                        return true;
-                    }
-                }
-                ProcessStartInfo startInfo = new ProcessStartInfo()
-                {
-                    FileName = Environment.ProcessPath,
-                    UseShellExecute = true,
-                    Verb = "runas",
-                    WindowStyle = ProcessWindowStyle.Hidden
-                };
-
-                try
-                {
-                    Process.Start(startInfo);
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-            catch
-            {
-                return false;
-            }
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
+        //public static void RestartAsAdmin()
+        //{
+        //    var exePath = Process.GetCurrentProcess().MainModule.FileName;
+        //    var startInfo = new ProcessStartInfo
+        //    {
+        //        FileName = exePath,
+        //        Verb = "runas",
+        //        UseShellExecute = true,
+        //        WorkingDirectory = Path.GetDirectoryName(exePath)
+        //    };
+        //    Process.Start(startInfo);
+        //    Application.Current.Exit();
+        //}
         public App()
         {
             LogText.AddNewLog(1, "UI Interface", "尝试加载主窗口");
-            if (RequestAdminPrivilegesAsync())
-            {
-                this.InitializeComponent();
-            }
-            else
-            {
-                LogText.AddNewLog(3, "System", "无法获取管理员权限");
-                Environment.Exit(0);
-            }
+            this.InitializeComponent();
         }
 
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)

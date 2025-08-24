@@ -207,7 +207,7 @@ namespace Xdows.ScanEngine
                 }
 
                 if (ContainsSuspiciousContent(fileContent, new[] {
-                    "PYAS", "wsctrlsvc", "ESET", "zhudongfangyu", "avp", "avconsol",
+                    "wsctrlsvc", "ESET", "zhudongfangyu", "avp", "avconsol",
                     "ASWSCAN", "KWatch", "QQPCTray", "360tray", "360sd", "ccSvcHst",
                     "f-secure", "KvMonXP", "RavMonD", "Mcshield", "ekrn", "kxetray",
                     "avcenter", "avguard", "Sophos", "safedog"}))

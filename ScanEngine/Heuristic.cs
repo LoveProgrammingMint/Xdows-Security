@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using static Xdows.ScanEngine.ScanEngine;
 
@@ -14,16 +15,12 @@ namespace Xdows.ScanEngine
             extra = string.Empty;
             var score = 0;
 
-            // 读取文件内容
             var fileContent = File.ReadAllBytes(path);
 
-            // 文件扩展名检查
             var fileExtension = Path.GetExtension(path).ToLower();
 
-            // 附加数据初始化
             var suspiciousData = new List<string>();
 
-            // 文件扩展名检查
             if (fileExtension == ".bat" || fileExtension == ".cmd")
             {
                 if (IsSuspiciousBat(fileContent))
@@ -41,9 +38,12 @@ namespace Xdows.ScanEngine
                 }
             }
 
-            // PE 文件特征检查
             if (fileExtension == ".exe" || fileExtension == ".dll")
             {
+                if (IsFileDigitallySignedAndValid(path))
+                {
+                    score -= 5;
+                }
                 if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "LoadLibrary" }))
                 {
                     if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "GetProcAddress" }))
@@ -247,6 +247,26 @@ namespace Xdows.ScanEngine
                    content.Contains("C:\\windows\\") ||
                    content.Contains("*.exe") ||
                    content.Contains("Shutdown");
+        }
+
+        public static bool IsFileDigitallySignedAndValid(string filePath)
+        {
+            try
+            {
+                X509Certificate2 cert = new X509Certificate2(X509Certificate.CreateFromSignedFile(filePath));
+
+                X509Chain chain = new X509Chain();
+                chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
+                chain.ChainPolicy.RevocationFlag = X509RevocationFlag.ExcludeRoot;
+                chain.ChainPolicy.UrlRetrievalTimeout = TimeSpan.FromSeconds(30);
+                chain.ChainPolicy.VerificationFlags = X509VerificationFlags.NoFlag;
+
+                return chain.Build(cert);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private static bool IsSuspiciousDoc(byte[] fileContent)

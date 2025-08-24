@@ -31,6 +31,10 @@ namespace Xdows_Security
             if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "model.onnx")) {
                 SouXiaoScanToggle.IsOn = false;
                 SouXiaoScanToggle.IsEnabled = false;
+                ProcessToggle.IsOn = false;
+                ProcessToggle.IsEnabled = false;
+                FilesToggle.IsOn = false;
+                FilesToggle.IsEnabled = false;
             }
         }
         private void RunProtection(object sender, RoutedEventArgs e)

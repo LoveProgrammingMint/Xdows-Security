@@ -53,7 +53,7 @@ namespace Xdows.Protection
 
         public static bool IsEnabled()
         {
-            return _isMonitoring;
+            try {return _isMonitoring;} catch { return false; }
         }
 
         private static void StartMonitoring()

@@ -213,7 +213,7 @@
   <data name="SettingsPage_Protection_Boot.Header" xml:space="preserve">
     <value>引导防护</value>
   </data>
-  <data name="SettingsPage_Protection_Register.Header" xml:space="preserve">
+  <data name="SettingsPage_Protection_Registry.Header" xml:space="preserve">
     <value>注册表防护</value>
   </data>
   <data name="SettingsPage_Protection_Behavior.Description" xml:space="preserve">
@@ -228,7 +228,7 @@
   <data name="SettingsPage_Protection_Process.Description" xml:space="preserve">
     <value>在文件运行前扫描此文件，以保证其安全性</value>
   </data>
-  <data name="SettingsPage_Protection_Register.Description" xml:space="preserve">
+  <data name="SettingsPage_Protection_Registry.Description" xml:space="preserve">
     <value>当注册表被恶意篡改后将会尝试恢复注册表</value>
   </data>
   <data name="SettingsPage_Protection_Process_DeepScan.Header" xml:space="preserve">
@@ -273,16 +273,16 @@
   <data name="SettingsPage_Protection_Boot_Open_Button.Content" xml:space="preserve">
     <value>打开文件</value>
   </data>
-  <data name="SettingsPage_Protection_Register_Others.Header" xml:space="preserve">
+  <data name="SettingsPage_Protection_Registry_Others.Header" xml:space="preserve">
     <value>保护其它项目</value>
   </data>
-  <data name="SettingsPage_Protection_Register_Others.Description" xml:space="preserve">
+  <data name="SettingsPage_Protection_Registry_Others.Description" xml:space="preserve">
     <value>部分注册表修改不会影响使用，但会导致界面显示问题</value>
   </data>
-  <data name="SettingsPage_Protection_Register_Secondary.Header" xml:space="preserve">
+  <data name="SettingsPage_Protection_Registry_Secondary.Header" xml:space="preserve">
     <value>部分辅助功能</value>
   </data>
-  <data name="SettingsPage_Protection_Register_Secondary.Description" xml:space="preserve">
+  <data name="SettingsPage_Protection_Registry_Secondary.Description" xml:space="preserve">
     <value>部分辅助功能也可能被利用，开启后将保护这些注册表</value>
   </data>
   <data name="SettingsPage_Other.Text" xml:space="preserve">

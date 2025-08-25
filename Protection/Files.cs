@@ -78,7 +78,7 @@ namespace Xdows.Protection
 
                     _watchers[i].Changed += OnChanged;
                     _watchers[i].Created += OnChanged;
-                    _watchers[i].Deleted += OnChanged;
+                    // _watchers[i].Deleted += OnChanged;
                     _watchers[i].Renamed += OnChanged;
                     _watchers[i].EnableRaisingEvents = true;
                 }

@@ -20,6 +20,7 @@ using Windows.System.UserProfile;
 using Xdows.Protection;
 using static Xdows.Protection.CallBack;
 using static Xdows.Protection.FilesProtection;
+using static Xdows.Protection.RegistryProtection;
 using static Xdows.Protection.ProcessProtection;
 using Microsoft.VisualBasic;
 
@@ -101,37 +102,51 @@ namespace Xdows_Security
         };
         public static bool Run(int RunID)
         {
-            if (RunID == 0) {
-                if (ProcessProtection.IsEnabled())
-                {
-                    LogText.AddNewLog(1, "Protection", $"Try to Disable ProcessProtection ...");
-                    return Xdows.Protection.ProcessProtection.Disable();
-                }
-                else 
-                {
-                    LogText.AddNewLog(1, "Protection", $"Try to Enable ProcessProtection ...");
-                    return Xdows.Protection.ProcessProtection.Enable(interceptCallBack);
-                }
-            }
-            if (RunID == 1)
+            switch (RunID)
             {
-                if (FilesProtection.IsEnabled())
-                {
-                    LogText.AddNewLog(1, "Protection", $"Try to Disable FilesProtection ...");
-                    return Xdows.Protection.FilesProtection.Disable();
-                }
-                else
-                {
-                    LogText.AddNewLog(1, "Protection", $"Try to Enable FilesProtection ...");
-                    return Xdows.Protection.FilesProtection.Enable(interceptCallBack);
-                }
+                case 0:
+                    if (ProcessProtection.IsEnabled())
+                    {
+                        LogText.AddNewLog(1, "Protection", $"Try to Disable ProcessProtection ...");
+                        return Xdows.Protection.ProcessProtection.Disable();
+                    }
+                    else
+                    {
+                        LogText.AddNewLog(1, "Protection", $"Try to Enable ProcessProtection ...");
+                        return Xdows.Protection.ProcessProtection.Enable(interceptCallBack);
+                    }
+                case 1:
+                    if (FilesProtection.IsEnabled())
+                    {
+                        LogText.AddNewLog(1, "Protection", $"Try to Disable FilesProtection ...");
+                        return Xdows.Protection.FilesProtection.Disable();
+                    }
+                    else
+                    {
+                        LogText.AddNewLog(1, "Protection", $"Try to Enable FilesProtection ...");
+                        return Xdows.Protection.FilesProtection.Enable(interceptCallBack);
+                    }
+                case 4:
+                    if (RegistryProtection.IsEnabled())
+                    {
+                        LogText.AddNewLog(1, "Protection", $"Try to Disable RegistryProtection ...");
+                        return Xdows.Protection.RegistryProtection.Disable();
+                    }
+                    else
+                    {
+                        LogText.AddNewLog(1, "Protection", $"Try to Enable RegistryProtection ...");
+                        return Xdows.Protection.RegistryProtection.Enable(interceptCallBack);
+                    }
+                default:
+                    return false;
             }
+
 
             string RunFileName = RunID switch
             {
                 0 => "XIGUASecurityProgress.exe",
                 1 => "XIGUASecurityBoot.exe",
-                2 => "XIGUASecurityRegister.exe",
+                2 => "XIGUASecurityRegistry.exe",
                 _ => "XIGUASecurityProgress.exe",
             };
             try

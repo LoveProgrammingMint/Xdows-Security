@@ -150,18 +150,18 @@
             </controls:SettingsExpander>
             <controls:SettingsExpander
                 VerticalAlignment="Top"
-                x:Uid="SettingsPage_Protection_Register"
+                x:Uid="SettingsPage_Protection_Registry"
                 HeaderIcon="{ui:FontIcon Glyph=&#xEA37;}">
-                <ToggleSwitch Tag="Register" IsEnabled="False" Toggled="RunProtection"/>
+                <ToggleSwitch x:Name="RegistryToggle" Tag="Registry" Toggled="RunProtection"/>
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
-                         x:Uid="SettingsPage_Protection_Register_Secondary"
+                         x:Uid="SettingsPage_Protection_Registry_Secondary"
                         IsEnabled="False"
                          HeaderIcon="{ui:FontIcon Glyph=&#xED4D;}">
                         <ToggleSwitch />
                     </controls:SettingsCard>
                     <controls:SettingsCard
-                         x:Uid="SettingsPage_Protection_Register_Others"
+                         x:Uid="SettingsPage_Protection_Registry_Others"
                         IsEnabled="False"
                          HeaderIcon="{ui:FontIcon Glyph=&#xEA8F;}">
                         <ToggleSwitch />

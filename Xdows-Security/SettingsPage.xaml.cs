@@ -37,27 +37,37 @@ namespace Xdows_Security
                 FilesToggle.IsOn = false;
                 FilesToggle.IsEnabled = false;
             }
+            if (!App.IsRunAsAdmin())
+            {
+                RegistryToggle.IsEnabled = false;
+                RegistryToggle.IsOn = false;
+            }
         }
+        private void RunProtectionWithToggle(ToggleSwitch toggle, int runId)
+        {
+            toggle.Toggled -= RunProtection;
+            if (!Protection.Run(runId))
+                toggle.IsOn = !toggle.IsOn;
+            if (runId == 0)
+                toggle.IsOn = ProcessProtection.IsEnabled();
+            if (runId == 1)
+                toggle.IsOn = FilesProtection.IsEnabled();
+            if (runId == 4)
+                toggle.IsOn = RegistryProtection.IsEnabled();
+            toggle.Toggled += RunProtection;
+        }
+
         private void RunProtection(object sender, RoutedEventArgs e)
         {
-            var Toggle = sender as ToggleSwitch;
-            if (Toggle == null) return;
-            int RunID = Toggle.Tag switch
+            if (sender is not ToggleSwitch toggle) return;
+            int runId = toggle.Tag switch
             {
                 "Progress" => 0,
                 "Files" => 1,
-                "Boot" => 2,
-                "Register" => 3,
-                _ => 0,
+                "Registry" => 4,
+                _ => 0
             };
-            if (!Protection.Run(RunID))
-            {
-                Toggle.IsOn = !Toggle.IsOn;
-            }
-            if (RunID == 0)
-                Toggle.IsOn = ProcessProtection.IsEnabled();
-            if (RunID == 1)
-                Toggle.IsOn = FilesProtection.IsEnabled();
+            RunProtectionWithToggle(toggle, runId);
         }
         private void ScanProgressToggle_Toggled(object sender, RoutedEventArgs e)
         {
@@ -111,6 +121,7 @@ namespace Xdows_Security
             }
             ProcessToggle.IsOn = ProcessProtection.IsEnabled();
             FilesToggle.IsOn = FilesProtection.IsEnabled();
+            RegistryToggle.IsOn = RegistryProtection.IsEnabled();
         }
         private void LoadLanguageSetting()
         {

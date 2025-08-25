@@ -213,7 +213,7 @@
   <data name="SettingsPage_Protection_Boot.Header" xml:space="preserve">
     <value>Boot Guard</value>
   </data>
-  <data name="SettingsPage_Protection_Register.Header" xml:space="preserve">
+  <data name="SettingsPage_Protection_Registry.Header" xml:space="preserve">
     <value>Registry Guard</value>
   </data>
   <data name="SettingsPage_Protection_Behavior.Description" xml:space="preserve">
@@ -228,7 +228,7 @@
   <data name="SettingsPage_Protection_Process.Description" xml:space="preserve">
     <value>Scan files before execution for safety</value>
   </data>
-  <data name="SettingsPage_Protection_Register.Description" xml:space="preserve">
+  <data name="SettingsPage_Protection_Registry.Description" xml:space="preserve">
     <value>Restore registry if maliciously altered</value>
   </data>
   <data name="SettingsPage_Protection_Process_DeepScan.Header" xml:space="preserve">
@@ -273,16 +273,16 @@
   <data name="SettingsPage_Protection_Boot_Open_Button.Content" xml:space="preserve">
     <value>Open File</value>
   </data>
-  <data name="SettingsPage_Protection_Register_Others.Header" xml:space="preserve">
+  <data name="SettingsPage_Protection_Registry_Others.Header" xml:space="preserve">
     <value>Protect misc items</value>
   </data>
-  <data name="SettingsPage_Protection_Register_Others.Description" xml:space="preserve">
+  <data name="SettingsPage_Protection_Registry_Others.Description" xml:space="preserve">
     <value>May cause interface display issues only</value>
   </data>
-  <data name="SettingsPage_Protection_Register_Secondary.Header" xml:space="preserve">
+  <data name="SettingsPage_Protection_Registry_Secondary.Header" xml:space="preserve">
     <value>Protect aux functions</value>
   </data>
-  <data name="SettingsPage_Protection_Register_Secondary.Description" xml:space="preserve">
+  <data name="SettingsPage_Protection_Registry_Secondary.Description" xml:space="preserve">
     <value>Secures registry for secondary features</value>
   </data>
   <data name="SettingsPage_Other.Text" xml:space="preserve">

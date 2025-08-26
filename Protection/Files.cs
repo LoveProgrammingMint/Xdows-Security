@@ -93,37 +93,52 @@ namespace Xdows.Protection
                 Thread.Sleep(1000);
             }
         }
-
+        static bool IsFileAccessible(string path)
+        {
+            try
+            {
+                if (Directory.Exists(path))
+                    return false;
+                if (!File.Exists(path))
+                    return false;
+                using var _ = File.Open(path, FileMode.Open, FileAccess.Read,
+                                         FileShare.ReadWrite);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
         private static void OnChanged(object sender, FileSystemEventArgs e)
         {
             try
             {
                 if (
-                    e.FullPath.Contains("\\AppData\\Local\\Temp", StringComparison.OrdinalIgnoreCase) &&
-                    e.FullPath.Contains(".virus", StringComparison.OrdinalIgnoreCase)
-                    )
+                    e.FullPath.Contains("\\AppData\\Local\\Temp", StringComparison.OrdinalIgnoreCase) ||
+                    string.Concat(e.FullPath.EnumerateRunes().Reverse().Take(6).Reverse()) == ".virus" ||
+                    !IsFileAccessible(e.FullPath)
+                )
                 {
                     return;
                 }
-                if (scanner.ScanFile(e.FullPath))
+                bool isVirus = false;
+                isVirus = scanner.ScanFile(e.FullPath);
+                if (isVirus)
                 {
-                    if (string.Concat(e.FullPath.EnumerateRunes().Reverse().Take(6).Reverse()) != ".virus")
+                    try
                     {
-                        try
-                        {
-                            File.Move(e.FullPath, e.FullPath + ".virus");
-                            _toastCallBack?.Invoke(true, e.FullPath);
-                        }
-                        catch
-                        {
-                            _toastCallBack?.Invoke(false, e.FullPath);
-                        }
+                        File.Move(e.FullPath, e.FullPath + ".virus");
+                        _toastCallBack?.Invoke(true, e.FullPath);
                     }
+                    catch
+                    {
+                        _toastCallBack?.Invoke(false, e.FullPath);
+                    }
+
                 }
             }
-            catch
-            {
-            }
+            catch { }
         }
     }
 }

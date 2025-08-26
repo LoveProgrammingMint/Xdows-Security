@@ -140,26 +140,6 @@ namespace Xdows_Security
                 default:
                     return false;
             }
-
-
-            string RunFileName = RunID switch
-            {
-                0 => "XIGUASecurityProgress.exe",
-                1 => "XIGUASecurityBoot.exe",
-                2 => "XIGUASecurityRegistry.exe",
-                _ => "XIGUASecurityProgress.exe",
-            };
-            try
-            {
-                LogText.AddNewLog(1, "Protection", $"Try to Run {RunFileName}...");
-                Process.Start(RunFileName);
-            }
-            catch (Exception ex)
-            {
-                LogText.AddNewLog(3, "Protection", ex.Message);
-                return false;
-            }
-            return true;
         }
     }
 

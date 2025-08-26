@@ -192,11 +192,11 @@
   <data name="SettingsPage_Scan_Local_DeepScan.Description" xml:space="preserve">
     <value>更深度的分析文件，误报可能较高</value>
   </data>
-  <data name="SettingsPage_Scan_Cloud_AutoReport.Header" xml:space="preserve">
-    <value>自动上报</value>
+  <data name="SettingsPage_Scan_Cloud_Develop.Header" xml:space="preserve">
+    <value>关于引擎</value>
   </data>
-  <data name="SettingsPage_Scan_Cloud_AutoReport.Description" xml:space="preserve">
-    <value>有利于应对未知病毒，但耗时较长</value>
+  <data name="SettingsPage_Scan_Cloud_Develop.Description" xml:space="preserve">
+    <value>天启星图网络科技 是这个扫描引擎的开发者和维护者</value>
   </data>
   <data name="SettingsPage_Protection.Text" xml:space="preserve">
     <value>防护</value>

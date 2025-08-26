@@ -72,10 +72,9 @@
                 <ToggleSwitch x:Name="CloudScanToggle" Toggled="CloudScanToggle_Toggled"  />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
-                            x:Uid="SettingsPage_Scan_Cloud_AutoReport"
-                            IsEnabled="False" 
-                            HeaderIcon="{ui:FontIcon Glyph=&#xE9F9;}">
-                        <ToggleSwitch/>
+                            x:Uid="SettingsPage_Scan_Cloud_Develop"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xEC7A;}">
+                        <HyperlinkButton x:Uid="AllPage_OpenLink" NavigateUri="https://www.szczk.top/" />
                     </controls:SettingsCard>
                 </controls:SettingsExpander.Items>
             </controls:SettingsExpander>

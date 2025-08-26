@@ -192,11 +192,11 @@
   <data name="SettingsPage_Scan_Local_DeepScan.Description" xml:space="preserve">
     <value>Deeper file analysis may increase false positives</value>
   </data>
-  <data name="SettingsPage_Scan_Cloud_AutoReport.Header" xml:space="preserve">
-    <value>Auto Report</value>
+  <data name="SettingsPage_Scan_Cloud_Develop.Header" xml:space="preserve">
+    <value>About this Engine</value>
   </data>
-  <data name="SettingsPage_Scan_Cloud_AutoReport.Description" xml:space="preserve">
-    <value>It is beneficial in addressing rare viruses, but it takes a longer time</value>
+  <data name="SettingsPage_Scan_Cloud_Develop.Description" xml:space="preserve">
+    <value>天启星图网络科技 is the developer and maintainer of this scanning engine</value>
   </data>
   <data name="SettingsPage_Protection.Text" xml:space="preserve">
     <value>Protection</value>

@@ -4,6 +4,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -17,7 +21,9 @@ namespace Xdows_Security
         {
             InitializeComponent();
             SortCombo.SelectedIndex = 0;
+            PopupSortCombo.SelectedIndex = 0;
             RefreshProcesses();
+            InitializePopupRules();
         }
 
         private void RefreshProcesses()
@@ -34,9 +40,9 @@ namespace Xdows_Security
             {
                 _ = new ContentDialog
                 {
-                    Title = "Ë¢ĞÂÊ§°Ü",
+                    Title = "Ë¢ï¿½ï¿½Ê§ï¿½ï¿½",
                     Content = ex.Message,
-                    CloseButtonText = "È·¶¨",
+                    CloseButtonText = "È·ï¿½ï¿½",
                     RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                     XamlRoot = XamlRoot
                 }.ShowAsync();
@@ -58,7 +64,7 @@ namespace Xdows_Security
 
             if (!string.IsNullOrEmpty(keyword))
             {
-                // È«Êı×Ö ¡ú PID ¾«È·Æ¥Åä£»·ñÔò ¡ú ½ø³ÌÃûÄ£ºıÆ¥Åä
+                // È«ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ PID ï¿½ï¿½È·Æ¥ï¿½ä£»ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½Æ¥ï¿½ï¿½
                 if (int.TryParse(keyword, out var pid))
                 {
                     filtered = _allProcesses.Where(p => p.Id == pid);
@@ -86,7 +92,13 @@ namespace Xdows_Security
 
         private void TabView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            TabTitle.Text = (e.AddedItems.FirstOrDefault() as TabViewItem)?.Header?.ToString();
+            var selectedTab = e.AddedItems.FirstOrDefault() as TabViewItem;
+            TabTitle.Text = selectedTab?.Header?.ToString();
+            
+            if (selectedTab?.Header?.ToString() == "å¼¹çª—æ‹¦æˆª")
+            {
+                PopupTabTitle.Text = "å¼¹çª—æ‹¦æˆªå™¨";
+            }
         }
 
         private async void Kill_Click(object sender, RoutedEventArgs e)
@@ -95,10 +107,10 @@ namespace Xdows_Security
 
             var confirm = new ContentDialog
             {
-                Title = $"ÄãÏ£Íû½áÊø {info.Name} ({info.Id}) Âğ£¿",
-                Content = "Èç¹ûÄ³¸ö´ò¿ªµÄ³ÌĞòÓë´Ë½ø³Ì¹ØÁª£¬Ôò»á¹Ø±Õ´Ë³ÌĞò²¢ÇÒ½«¶ªÊ§ËùÓĞÎ´±£´æµÄÊı¾İ¡£Èç¹û½áÊøÄ³¸öÏµÍ³½ø³Ì£¬Ôò¿ÉÄÜµ¼ÖÂÏµÍ³²»ÎÈ¶¨¡£ÄãÈ·¶¨Òª¼ÌĞøÂğ£¿",
-                PrimaryButtonText = "½áÊø",
-                CloseButtonText = "È¡Ïû",
+                Title = $"ï¿½ï¿½Ï£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {info.Name} ({info.Id}) ï¿½ï¿½",
+                Content = "ï¿½ï¿½ï¿½Ä³ï¿½ï¿½ï¿½ò¿ªµÄ³ï¿½ï¿½ï¿½ï¿½ï¿½Ë½ï¿½ï¿½Ì¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø±Õ´Ë³ï¿½ï¿½ï¿½ï¿½Ò½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½ÏµÍ³ï¿½ï¿½ï¿½Ì£ï¿½ï¿½ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ÏµÍ³ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½",
+                PrimaryButtonText = "ï¿½ï¿½ï¿½ï¿½",
+                CloseButtonText = "È¡ï¿½ï¿½",
                 XamlRoot = XamlRoot,
                 RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                 PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
@@ -115,9 +127,9 @@ namespace Xdows_Security
             {
                 await new ContentDialog
                 {
-                    Title = "½áÊøÊ§°Ü",
-                    Content = $"²»ÄÜ½áÊøÕâ¸ö½ø³Ì£¬ÒòÎª {result.Error}¡£",
-                    CloseButtonText = "È·¶¨",
+                    Title = "ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½",
+                    Content = $"ï¿½ï¿½ï¿½Ü½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì£ï¿½ï¿½ï¿½Îª {result.Error}ï¿½ï¿½",
+                    CloseButtonText = "È·ï¿½ï¿½",
                     RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                     XamlRoot = XamlRoot,
                     CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
@@ -137,15 +149,15 @@ namespace Xdows_Security
             }
             catch (Win32Exception)
             {
-                return new KillResult { Success = false, Error = "¾Ü¾ø·ÃÎÊ" };
+                return new KillResult { Success = false, Error = "ï¿½Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½" };
             }
             catch (UnauthorizedAccessException)
             {
-                return new KillResult { Success = false, Error = "Ã»ÓĞ×ã¹»È¨ÏŞ½áÊø¸Ã½ø³Ì" };
+                return new KillResult { Success = false, Error = "Ã»ï¿½ï¿½ï¿½ã¹»È¨ï¿½Ş½ï¿½ï¿½ï¿½ï¿½Ã½ï¿½ï¿½ï¿½" };
             }
             catch (InvalidOperationException)
             {
-                return new KillResult { Success = false, Error = "½ø³ÌÒÑÍË³ö" };
+                return new KillResult { Success = false, Error = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½" };
             }
             catch (Exception ex)
             {
@@ -164,7 +176,215 @@ namespace Xdows_Security
         private void StopRepairScan_Click(object sender, RoutedEventArgs e) { }
         private void Page_Loaded(object sender, RoutedEventArgs e) { }
         private void RepairSelected_Click(object sender, RoutedEventArgs e) { }
-        // ÃüÁîÌáÊ¾·û
+
+        // å¼¹çª—æ‹¦æˆªç›¸å…³ä»£ç 
+        private List<PopupRule> _popupRules = new();
+        private List<PopupRule> _filteredPopupRules = new();
+        private PopupBlocker _popupBlocker = new();
+        private bool _isPopupBlockingEnabled = false;
+
+        private void InitializePopupRules()
+        {
+            _popupRules = new List<PopupRule>
+            {
+                new PopupRule { Title = "å¹¿å‘Šå¼¹çª—", ProcessName = "*", IsEnabled = true },
+                new PopupRule { Title = "ç³»ç»Ÿé€šçŸ¥", ProcessName = "*", IsEnabled = false },
+                new PopupRule { Title = "è½¯ä»¶æ›´æ–°", ProcessName = "*", IsEnabled = true }
+            };
+            ApplyPopupFilterAndSort();
+        }
+
+        private void PopupSortCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            => ApplyPopupFilterAndSort();
+
+        private void PopupSearchBox_TextChanged(object sender, TextChangedEventArgs e)
+            => ApplyPopupFilterAndSort();
+
+        private void ApplyPopupFilterAndSort()
+        {
+            var keyword = PopupSearchBox.Text?.Trim() ?? "";
+            IEnumerable<PopupRule> filtered = _popupRules;
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                filtered = _popupRules
+                    .Where(p => p.Title.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                               p.ProcessName.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+            }
+
+            PopupRuleList.ItemsSource = ApplyPopupSort(filtered).ToList();
+        }
+
+        private IEnumerable<PopupRule> ApplyPopupSort(IEnumerable<PopupRule> src)
+        {
+            var tag = (PopupSortCombo.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Title";
+            return tag switch
+            {
+                "Status" => src.OrderBy(p => p.Status),
+                "Process" => src.OrderBy(p => p.ProcessName),
+                _ => src.OrderBy(p => p.Title)
+            };
+        }
+
+        private async void AddPopupRule_Click(object sender, RoutedEventArgs e)
+        {
+            var titleTextBox = new TextBox { PlaceholderText = "è¾“å…¥è¦æ‹¦æˆªçš„å¼¹çª—æ ‡é¢˜", Margin = new Thickness(0, 0, 0, 16) };
+            var processTextBox = new TextBox { PlaceholderText = "è¾“å…¥è¿›ç¨‹åç§°ï¼ˆå¯é€‰ï¼‰", Margin = new Thickness(0, 0, 0, 16) };
+            var enabledToggle = new ToggleSwitch { IsOn = true };
+
+            var dialog = new ContentDialog
+            {
+                Title = "æ·»åŠ å¼¹çª—æ‹¦æˆªè§„åˆ™",
+                Content = new StackPanel
+                {
+                    Children =
+                    {
+                        new TextBlock { Text = "å¼¹çª—æ ‡é¢˜:", Margin = new Thickness(0, 0, 0, 8) },
+                        titleTextBox,
+                        new TextBlock { Text = "è¿›ç¨‹åç§°:", Margin = new Thickness(0, 0, 0, 8) },
+                        processTextBox,
+                        new TextBlock { Text = "æ˜¯å¦å¯ç”¨:", Margin = new Thickness(0, 0, 0, 8) },
+                        enabledToggle
+                    }
+                },
+                PrimaryButtonText = "æ·»åŠ ",
+                CloseButtonText = "å–æ¶ˆ",
+                XamlRoot = XamlRoot,
+                RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme
+            };
+
+            if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+            {
+                if (!string.IsNullOrWhiteSpace(titleTextBox.Text))
+                {
+                    var newRule = new PopupRule
+                    {
+                        Title = titleTextBox.Text.Trim(),
+                        ProcessName = string.IsNullOrWhiteSpace(processTextBox.Text) ? "*" : processTextBox.Text.Trim(),
+                        IsEnabled = enabledToggle.IsOn
+                    };
+
+                    _popupRules.Add(newRule);
+                    ApplyPopupFilterAndSort();
+                    UpdatePopupBlocking();
+                    LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", $"Added rule: {newRule.Title}");
+                }
+            }
+        }
+
+        private async void DeletePopupRule_Click(object sender, RoutedEventArgs e)
+        {
+            if (PopupRuleList.SelectedItem is not PopupRule rule) return;
+
+            var confirm = new ContentDialog
+            {
+                Title = $"åˆ é™¤è§„åˆ™",
+                Content = $"ç¡®å®šè¦åˆ é™¤è§„åˆ™ \"{rule.Title}\" å—ï¼Ÿ",
+                PrimaryButtonText = "åˆ é™¤",
+                CloseButtonText = "å–æ¶ˆ",
+                XamlRoot = XamlRoot,
+                RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme
+            };
+
+            if (await confirm.ShowAsync() == ContentDialogResult.Primary)
+            {
+                _popupRules.Remove(rule);
+                ApplyPopupFilterAndSort();
+                UpdatePopupBlocking();
+                LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", $"Deleted rule: {rule.Title}");
+            }
+        }
+
+        private async void EditPopupRule_Click(object sender, RoutedEventArgs e)
+        {
+            if (PopupRuleList.SelectedItem is not PopupRule rule) return;
+
+            var titleTextBox = new TextBox { Text = rule.Title, Margin = new Thickness(0, 0, 0, 16) };
+            var processTextBox = new TextBox { Text = rule.ProcessName, Margin = new Thickness(0, 0, 0, 16) };
+            var enabledToggle = new ToggleSwitch { IsOn = rule.IsEnabled };
+
+            var dialog = new ContentDialog
+            {
+                Title = "ç¼–è¾‘å¼¹çª—æ‹¦æˆªè§„åˆ™",
+                Content = new StackPanel
+                {
+                    Children =
+                    {
+                        new TextBlock { Text = "å¼¹çª—æ ‡é¢˜:", Margin = new Thickness(0, 0, 0, 8) },
+                        titleTextBox,
+                        new TextBlock { Text = "è¿›ç¨‹åç§°:", Margin = new Thickness(0, 0, 0, 8) },
+                        processTextBox,
+                        new TextBlock { Text = "æ˜¯å¦å¯ç”¨:", Margin = new Thickness(0, 0, 0, 8) },
+                        enabledToggle
+                    }
+                },
+                PrimaryButtonText = "ä¿å­˜",
+                CloseButtonText = "å–æ¶ˆ",
+                XamlRoot = XamlRoot,
+                RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme
+            };
+
+            if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+            {
+                if (!string.IsNullOrWhiteSpace(titleTextBox.Text))
+                {
+                    rule.Title = titleTextBox.Text.Trim();
+                    rule.ProcessName = string.IsNullOrWhiteSpace(processTextBox.Text) ? "*" : processTextBox.Text.Trim();
+                    rule.IsEnabled = enabledToggle.IsOn;
+
+                    ApplyPopupFilterAndSort();
+                    UpdatePopupBlocking();
+                    LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", $"Edited rule: {rule.Title}");
+                }
+            }
+        }
+
+        private void PopupRuleToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (sender is ToggleSwitch toggle && toggle.DataContext is PopupRule rule)
+            {
+                rule.IsEnabled = toggle.IsOn;
+                UpdatePopupBlocking();
+                LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", $"Toggled rule: {rule.Title} - {rule.IsEnabled}");
+            }
+        }
+
+        private void UpdatePopupBlocking()
+        {
+            var enabledRules = _popupRules.Where(r => r.IsEnabled).ToList();
+            
+            if (enabledRules.Any())
+            {
+                if (!_isPopupBlockingEnabled)
+                {
+                    _popupBlocker.Start(enabledRules);
+                    _isPopupBlockingEnabled = true;
+                    LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", "Popup blocking enabled");
+                }
+                else
+                {
+                    _popupBlocker.UpdateRules(enabledRules);
+                    LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", "Popup rules updated");
+                }
+            }
+            else
+            {
+                if (_isPopupBlockingEnabled)
+                {
+                    _popupBlocker.Stop();
+                    _isPopupBlockingEnabled = false;
+                    LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", "Popup blocking disabled");
+                }
+            }
+        }
+
+        private void RefreshPopupList_Click(object sender, RoutedEventArgs e)
+        {
+            ApplyPopupFilterAndSort();
+            UpdatePopupBlocking();
+            LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", "Refreshed popup rules list");
+        }
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½
         private readonly System.Text.StringBuilder _cmdOutputSb = new();
         private System.Diagnostics.Process? _cmdProcess;
         private bool _cmdRunning;
@@ -177,7 +397,7 @@ namespace Xdows_Security
             if (_cmdProcess == null || _cmdProcess.HasExited)
             {
                 _cmdOutputSb.Clear();
-                CmdOutput.Text = "ÃüÁîÌáÊ¾·ûÆô¶¯³É¹¦£¬ÇëÊäÈëÏà¹ØÃüÁî¡£";
+                CmdOutput.Text = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½î¡£";
                 StartCmd();
             }
             try { 
@@ -211,7 +431,7 @@ namespace Xdows_Security
             _cmdProcess.Exited += (_, _) =>
             {
                 _cmdRunning = false;
-                AppendOutput("\n½ø³ÌÒÑÍË³ö¡£");
+                AppendOutput("\nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½ï¿½");
             };
 
             _cmdProcess.Start();
@@ -270,5 +490,137 @@ namespace Xdows_Security
             MemoryBytes = p.WorkingSet64;
             Memory = $"{MemoryBytes / 1024 / 1024} MB";
         }
+    }
+
+    public sealed class PopupRule
+    {
+        public string Title { get; set; } = "";
+        public string ProcessName { get; set; } = "*";
+        public bool IsEnabled { get; set; } = true;
+        public string Status => IsEnabled ? "å·²å¯ç”¨" : "å·²ç¦ç”¨";
+    }
+
+    public class PopupBlocker
+    {
+        private CancellationTokenSource? _cts;
+        private Task? _monitorTask;
+        private List<PopupRule> _rules = new();
+
+        public void Start(List<PopupRule> rules)
+        {
+            Stop();
+            _rules = rules;
+            _cts = new CancellationTokenSource();
+            _monitorTask = Task.Run(() => MonitorLoop(_cts.Token), _cts.Token);
+        }
+
+        public void Stop()
+        {
+            if (_cts != null)
+            {
+                _cts.Cancel();
+                _monitorTask?.Wait(1000);
+                _cts.Dispose();
+                _cts = null;
+                _monitorTask = null;
+            }
+        }
+
+        public void UpdateRules(List<PopupRule> rules)
+        {
+            _rules = rules;
+        }
+
+        private void MonitorLoop(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    EnumWindows((hWnd, lParam) =>
+                    {
+                        if (IsWindowVisible(hWnd) && !IsIconic(hWnd))
+                        {
+                            var title = GetWindowTitle(hWnd);
+                            var processName = GetWindowProcessName(hWnd);
+
+                            foreach (var rule in _rules)
+                            {
+                                if (title.Contains(rule.Title, StringComparison.OrdinalIgnoreCase) &&
+                                    (rule.ProcessName == "*" || processName.Contains(rule.ProcessName, StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", $"Blocking popup: '{title}' from {processName}");
+                                    PostMessage(hWnd, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+                                    break;
+                                }
+                            }
+                        }
+                        return true;
+                    }, IntPtr.Zero);
+                }
+                catch
+                {
+                }
+
+                try
+                {
+                    Task.Delay(500, token).Wait(token);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+            }
+        }
+
+        private string GetWindowTitle(IntPtr hWnd)
+        {
+            int length = GetWindowTextLength(hWnd);
+            if (length == 0) return string.Empty;
+
+            StringBuilder builder = new StringBuilder(length + 1);
+            GetWindowText(hWnd, builder, builder.Capacity);
+            return builder.ToString();
+        }
+
+        private string GetWindowProcessName(IntPtr hWnd)
+        {
+            GetWindowThreadProcessId(hWnd, out uint pid);
+            try
+            {
+                using var process = Process.GetProcessById((int)pid);
+                return process.ProcessName + ".exe";
+            }
+            catch
+            {
+                return "unknown.exe";
+            }
+        }
+
+        // Windows API
+        private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        private static extern int GetWindowTextLength(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool IsWindowVisible(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool IsIconic(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+        private const uint WM_CLOSE = 0x0010;
     }
 }

@@ -287,12 +287,18 @@ namespace Xdows_Security
                         });
                     }
 
+                    try {
                         await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                         {
-                            try {QuickScanStatusText.Text = $"扫描完成，共检查 {total} 个项目";
-                            QuickScanProgress.Visibility = Visibility.Collapsed;
-                            _scanCancellationTokenSource = null; } catch { }
+                            try
+                            {
+                                QuickScanStatusText.Text = $"扫描完成，共检查 {total} 个项目";
+                                QuickScanProgress.Visibility = Visibility.Collapsed;
+                                _scanCancellationTokenSource = null;
+                            }
+                            catch { }
                         });
+                    } catch { }
 
                     UpdateScanStatistics(total, 0);
                     AddActivity($"完成{scanType}扫描");

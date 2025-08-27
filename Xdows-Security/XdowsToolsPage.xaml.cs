@@ -40,9 +40,9 @@ namespace Xdows_Security
             {
                 _ = new ContentDialog
                 {
-                    Title = "ˢ��ʧ��",
+                    Title = "刷新失败",
                     Content = ex.Message,
-                    CloseButtonText = "ȷ��",
+                    CloseButtonText = "确定",
                     RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                     XamlRoot = XamlRoot
                 }.ShowAsync();
@@ -64,7 +64,6 @@ namespace Xdows_Security
 
             if (!string.IsNullOrEmpty(keyword))
             {
-                // ȫ���� �� PID ��ȷƥ�䣻���� �� ������ģ��ƥ��
                 if (int.TryParse(keyword, out var pid))
                 {
                     filtered = _allProcesses.Where(p => p.Id == pid);
@@ -107,10 +106,10 @@ namespace Xdows_Security
 
             var confirm = new ContentDialog
             {
-                Title = $"��ϣ������ {info.Name} ({info.Id}) ��",
-                Content = "���ĳ���򿪵ĳ�����˽��̹��������رմ˳����ҽ���ʧ����δ��������ݡ��������ĳ��ϵͳ���̣�����ܵ���ϵͳ���ȶ�����ȷ��Ҫ������",
-                PrimaryButtonText = "����",
-                CloseButtonText = "ȡ��",
+                Title = $"你希望结束 {info.Name} ({info.Id}) 吗？",
+                Content = "如果某个打开的程序与此进程关联，则会关闭此程序并且将丢失所有未保存的数据。如果结束某个系统进程，则可能导致系统不稳定。你确定要继续吗？",
+                PrimaryButtonText = "结束",
+                CloseButtonText = "取消",
                 XamlRoot = XamlRoot,
                 RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                 PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
@@ -127,9 +126,9 @@ namespace Xdows_Security
             {
                 await new ContentDialog
                 {
-                    Title = "����ʧ��",
-                    Content = $"���ܽ���������̣���Ϊ {result.Error}��",
-                    CloseButtonText = "ȷ��",
+                    Title = "结束失败",
+                    Content = $"不能结束这个进程，因为 {result.Error}。",
+                    CloseButtonText = "确定",
                     RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                     XamlRoot = XamlRoot,
                     CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
@@ -149,15 +148,15 @@ namespace Xdows_Security
             }
             catch (Win32Exception)
             {
-                return new KillResult { Success = false, Error = "�ܾ�����" };
+                return new KillResult { Success = false, Error = "拒绝访问" };
             }
             catch (UnauthorizedAccessException)
             {
-                return new KillResult { Success = false, Error = "û���㹻Ȩ�޽����ý���" };
+                return new KillResult { Success = false, Error = "没有足够权限结束该进程" };
             }
             catch (InvalidOperationException)
             {
-                return new KillResult { Success = false, Error = "�������˳�" };
+                return new KillResult { Success = false, Error = "进程已退出" };
             }
             catch (Exception ex)
             {
@@ -384,7 +383,6 @@ namespace Xdows_Security
             UpdatePopupBlocking();
             LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", "Refreshed popup rules list");
         }
-        // ������ʾ��
         private readonly System.Text.StringBuilder _cmdOutputSb = new();
         private System.Diagnostics.Process? _cmdProcess;
         private bool _cmdRunning;
@@ -397,7 +395,7 @@ namespace Xdows_Security
             if (_cmdProcess == null || _cmdProcess.HasExited)
             {
                 _cmdOutputSb.Clear();
-                CmdOutput.Text = "������ʾ�������ɹ���������������";
+                CmdOutput.Text = "命令提示符启动成功，请输入相关命令。";
                 StartCmd();
             }
             try { 
@@ -431,7 +429,7 @@ namespace Xdows_Security
             _cmdProcess.Exited += (_, _) =>
             {
                 _cmdRunning = false;
-                AppendOutput("\n�������˳���");
+                AppendOutput("\n进程已退出。");
             };
 
             _cmdProcess.Start();

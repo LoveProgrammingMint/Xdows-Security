@@ -9,7 +9,7 @@
     Loaded="Page_Loaded">
     <Grid Margin="64,16,64,0" VerticalAlignment="Top">
         <TabView IsAddTabButtonVisible="False" SelectionChanged="TabView_SelectionChanged" TabWidthMode="Equal">
-            <TabViewItem Header="进程管理" IsClosable="False">
+            <TabViewItem Header="进程管理器" IsClosable="False">
                 <TabViewItem.IconSource>
                     <FontIconSource Glyph="&#xE9D9;"/>
                 </TabViewItem.IconSource>
@@ -163,9 +163,9 @@
                 </Grid>
             </TabViewItem>
 
-            <TabViewItem Header="弹窗拦截" IsClosable="False">
+            <TabViewItem Header="弹窗拦截器" IsClosable="False">
                 <TabViewItem.IconSource>
-                    <FontIconSource Glyph="&#xE8BB;"/>
+                    <FontIconSource Glyph="&#xEA0D;"/>
                 </TabViewItem.IconSource>
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
@@ -188,6 +188,7 @@
                                 <TextBlock x:Name="PopupTabTitle"
                                            Style="{StaticResource CaptionTextBlockStyle}"
                                            Margin="12,16,0,0"
+                                           Text="弹窗拦截器"
                                            FontSize="16"/>
                                 <ComboBox x:Name="PopupSortCombo"
                                           Grid.Column="1"

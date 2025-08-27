@@ -176,7 +176,6 @@ namespace Xdows_Security
         private void Page_Loaded(object sender, RoutedEventArgs e) { }
         private void RepairSelected_Click(object sender, RoutedEventArgs e) { }
 
-        // 弹窗拦截相关代码
         private List<PopupRule> _popupRules = new();
         private List<PopupRule> _filteredPopupRules = new();
         private PopupBlocker _popupBlocker = new();
@@ -184,12 +183,7 @@ namespace Xdows_Security
 
         private void InitializePopupRules()
         {
-            _popupRules = new List<PopupRule>
-            {
-                new PopupRule { Title = "广告弹窗", ProcessName = "*", IsEnabled = true },
-                new PopupRule { Title = "系统通知", ProcessName = "*", IsEnabled = false },
-                new PopupRule { Title = "软件更新", ProcessName = "*", IsEnabled = true }
-            };
+            _popupRules = new List<PopupRule>{};
             ApplyPopupFilterAndSort();
         }
 

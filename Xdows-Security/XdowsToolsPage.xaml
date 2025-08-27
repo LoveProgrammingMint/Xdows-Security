@@ -213,7 +213,7 @@
                         <AppBarButton Icon="Delete" Label="删除规则" Click="DeletePopupRule_Click"/>
                         <AppBarButton Icon="Refresh" Label="刷新列表" Click="RefreshPopupList_Click"/>
                     </CommandBar>
-                    <ListView x:Name="PopupRuleList" Grid.Row="1" SelectionMode="Single" Margin="0,15,0,0">
+                    <ListView x:Name="PopupRuleList" Grid.Row="1" SelectionMode="Single" Margin="0,16,0,0">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -223,9 +223,9 @@
                                         <ColumnDefinition Width="120"/>
                                         <ColumnDefinition Width="80"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding Title}" FontSize="14" TextWrapping="Wrap"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding ProcessName}" FontSize="14"/>
-                                    <TextBlock Grid.Column="2" Text="{Binding Status}" FontSize="14"/>
+                                    <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{Binding Title}" FontSize="14" TextWrapping="Wrap"/>
+                                    <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{Binding ProcessName}" FontSize="14"/>
+                                    <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="{Binding Status}" FontSize="14"/>
                                     <ToggleSwitch Grid.Column="3" IsOn="{Binding IsEnabled}" Toggled="PopupRuleToggle_Toggled" MinWidth="60"/>
                                     <Grid.ContextFlyout>
                                         <MenuFlyout x:Name="PopupItemMenuFlyout">

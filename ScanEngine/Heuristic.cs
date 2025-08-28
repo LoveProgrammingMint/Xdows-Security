@@ -14,7 +14,10 @@ namespace Xdows.ScanEngine
         {
             extra = string.Empty;
             var score = 0;
-
+            if (peInfo.ImportsName == null)
+            {
+                return score;
+            }
             var fileContent = File.ReadAllBytes(path);
 
             var fileExtension = Path.GetExtension(path).ToLower();

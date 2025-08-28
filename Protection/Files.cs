@@ -9,9 +9,9 @@ namespace Xdows.Protection
 {
     public static class FilesProtection
     {
-        private static FileSystemWatcher[] _watchers;
-        private static InterceptCallBack _toastCallBack;
-        private static Thread _monitorThread;
+        private static FileSystemWatcher[]? _watchers;
+        private static InterceptCallBack? _toastCallBack;
+        private static Thread? _monitorThread;
         private static bool _isMonitoring = false;
         private static MalwareScanner scanner = new MalwareScanner(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "model.onnx"));
 
@@ -38,6 +38,10 @@ namespace Xdows.Protection
             }
 
             _isMonitoring = false;
+            if (_watchers == null)
+            {
+                return false;
+            }
             foreach (var watcher in _watchers)
             {
                 try {
@@ -46,7 +50,8 @@ namespace Xdows.Protection
                 }
                 catch { return false; }
             }
-            _monitorThread.Join();
+            if (_monitorThread != null && _monitorThread.IsAlive)
+                _monitorThread.Join();
 
             return true;
         }

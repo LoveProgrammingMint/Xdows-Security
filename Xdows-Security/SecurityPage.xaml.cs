@@ -350,7 +350,7 @@ namespace Xdows_Security
                                 }
                             }
 
-                            if (Result == string.Empty)
+                            if (!string.IsNullOrEmpty(Result))
                             {
                                 if (UseLocalScan)
                                 {
@@ -361,19 +361,19 @@ namespace Xdows_Security
                                     }
                                 }
                             }
-                            if (Result == string.Empty)
+                            if (!string.IsNullOrEmpty(Result))
                             {
                                 if (UseCloudScan)
                                 {
                                     var cloudResult = await Xdows.ScanEngine.ScanEngine.CloudScanAsync(file, App.GetCloudApiKey());
                                     if (cloudResult.result != "safe")
                                     {
-                                        Result = cloudResult.result;
+                                        Result = cloudResult.result??string.Empty;
                                     }
                                 }
                             }
                             Statistics.ScansQuantity += 1;
-                            if (Result != string.Empty)
+                            if (!string.IsNullOrEmpty(Result))
                             {
                                 LogText.AddNewLog(1, "Security - Find", Result);
                                 Statistics.VirusQuantity += 1;

@@ -15,9 +15,9 @@ namespace Xdows.ScanEngine
     {
         public class PEInfo
         {
-            public string[] ImportsDll;
-            public string[] ImportsName;
-            public string[] ExportsName;
+            public string[]? ImportsDll;
+            public string[]? ImportsName;
+            public string[]? ExportsName;
         }
 
         public static async Task<string> LocalScanAsync(string path, bool deep, bool ExtraData)
@@ -34,7 +34,7 @@ namespace Xdows.ScanEngine
                 var exports = peFile.ExportedFunctions;
                 if (exports != null)
                 {
-                    fileInfo.ExportsName = exports.Select(exported => exported.Name).ToArray();
+                    fileInfo.ExportsName = [.. exports.Select(exported => exported.Name?? string.Empty)];
                 }
                 else
                 {
@@ -51,7 +51,7 @@ namespace Xdows.ScanEngine
                     .ToList();
 
                 fileInfo.ImportsDll = validImports.Select(import => import.DLL).ToArray();
-                fileInfo.ImportsName = validImports.Select(import => import.Name).ToArray();
+                fileInfo.ImportsName = [.. validImports.Select(import => import.Name ?? string.Empty)];
             }
             else
             {
@@ -66,16 +66,16 @@ namespace Xdows.ScanEngine
             }
             return string.Empty;
         }
-        public static async Task<(int statusCode, string result)> CloudScanAsync(string path, string apiKey)
+        public static async Task<(int statusCode, string? result)> CloudScanAsync(string path, string apiKey)
         {
             using var client = new HttpClient();
-            var hash = await GetFileMD5Async(path);
-            var url = $"https://cv.szczk.top/scan/{apiKey}/{hash}";
+            string hash = await GetFileMD5Async(path);
+            string url = $"https://cv.szczk.top/scan/{apiKey}/{hash}";
             try
             {
-                var json = await client.GetStringAsync(url);
-                using var doc = JsonDocument.Parse(json);
-                if (doc.RootElement.TryGetProperty("result", out var prop))
+                string json = await client.GetStringAsync(url);
+                using JsonDocument doc = JsonDocument.Parse(json);
+                if (doc.RootElement.TryGetProperty("result", out JsonElement prop))
                     return (200, prop.GetString());
             }
             catch (HttpRequestException ex)

@@ -6,7 +6,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel Margin="64,0,64,0">
+    <Grid Margin="64,0,64,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
             <FontIcon x:Name="Icon" Margin="16,0,0,0" HorizontalAlignment="Left" Glyph="&#xE73E;" FontSize="124" FontWeight="Bold"/>
             <!-- 右侧文本 -->
@@ -26,7 +30,7 @@
 
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                        <TextBlock Text="{Binding}" FontSize="14"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>
@@ -107,7 +111,7 @@
                 </TabViewItem.IconSource>
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                        <TextBlock Text="{Binding}" FontSize="14"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>
@@ -154,7 +158,7 @@
                 </TabViewItem.IconSource>
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                        <TextBlock Text="{Binding}" FontSize="14"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>
@@ -219,7 +223,7 @@
                 </TabViewItem.IconSource>
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                        <TextBlock Text="{Binding}" FontSize="14"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>
@@ -286,7 +290,7 @@
                 </TabViewItem.IconSource>
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                        <TextBlock Text="{Binding}" FontSize="14"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>
@@ -320,5 +324,5 @@
                 </Grid>
             </TabViewItem>
         </TabView>
-    </StackPanel>
+    </Grid>
 </Page>

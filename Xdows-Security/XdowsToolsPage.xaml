@@ -15,7 +15,7 @@
                 </TabViewItem.IconSource>
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                        <TextBlock Text="{Binding}" FontSize="14"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>
@@ -97,7 +97,7 @@
                 </TabViewItem.IconSource>
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                        <TextBlock Text="{Binding}" FontSize="14"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>
@@ -169,7 +169,7 @@
                 </TabViewItem.IconSource>
                 <TabViewItem.HeaderTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" Style="{ThemeResource BaseTextBlockStyle}"/>
+                        <TextBlock Text="{Binding}" FontSize="14"/>
                     </DataTemplate>
                 </TabViewItem.HeaderTemplate>
                 <Grid>

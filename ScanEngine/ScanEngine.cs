@@ -25,8 +25,6 @@ namespace Xdows.ScanEngine
             if (!File.Exists(path)) return string.Empty;
 
             var md5 = await GetFileMD5Async(path);
-            if (Known(md5)) return "Xdows.local.code60";
-
             var peFile = new PeFile(path);
             var fileInfo = new PEInfo();
 
@@ -92,14 +90,5 @@ namespace Xdows.ScanEngine
             var hash = await md5.ComputeHashAsync(stream);
             return Convert.ToHexString(hash);
         }
-
-        private static bool Known(string h) => h switch
-        {
-            "1CD9B8C14E373112D055B86F14CE422F" or
-            "5F3D1F1E17AFC55FD804807831CB837C" or
-            "3F32A407163BF5963FC1555274FBA419" or
-            "6A4853CD0584DC90067E15AFB43C4962" => true,
-            _ => false
-        };
     }
 }

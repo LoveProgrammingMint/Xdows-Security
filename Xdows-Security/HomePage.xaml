@@ -39,8 +39,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <ScrollViewer Grid.Row="1">
-                        <StackPanel Spacing="10">
-                            <Button Grid.Row="0" x:Uid="HomePage_Tab1_RefreshSystemInfo" Click="RefreshSystemInfo_Click" Margin="0,16,0,0" HorizontalAlignment="Left"/>
+                        <StackPanel Spacing="10" Margin="0,16,0,0">
                             <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
                                 <StackPanel>
                                     <TextBlock x:Uid="HomePage_Tab1_SystemInfo" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
@@ -68,6 +67,9 @@
                                         <TextBlock x:Uid="HomePage_Tab1_OSMemory" Grid.Column="0" Margin="0,0,10,0"/>
                                         <TextBlock x:Name="MemoryUsageText" Grid.Column="1" x:Uid="AllPage_Loading" />
                                     </Grid>
+                                    <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                        <Button x:Uid="HomePage_Tab1_RefreshSystemInfo" Click="RefreshSystemInfo_Click" Margin="0,16,0,0" HorizontalAlignment="Left"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </Border>
 

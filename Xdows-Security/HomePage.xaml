@@ -68,7 +68,7 @@
                                         <TextBlock x:Name="MemoryUsageText" Grid.Column="1" x:Uid="AllPage_Loading" />
                                     </Grid>
                                     <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                                        <Button x:Uid="HomePage_Tab1_RefreshSystemInfo" Click="RefreshSystemInfo_Click" Margin="0,16,0,0" HorizontalAlignment="Left"/>
+                                        <Button x:Uid="HomePage_Tab1_RefreshSystemInfo" Click="RefreshSystemInfo_Click" Margin="0,16,0,0" HorizontalAlignment="Left" Width="140" Height="50" FontSize="14"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>

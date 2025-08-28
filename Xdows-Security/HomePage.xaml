@@ -38,10 +38,10 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Button Grid.Row="0" x:Uid="HomePage_Tab1_RefreshSystemInfo" Click="RefreshSystemInfo_Click" Margin="0,8,0,8" HorizontalAlignment="Left"/>
                     <ScrollViewer Grid.Row="1">
                         <StackPanel Spacing="10">
-                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
+                            <Button Grid.Row="0" x:Uid="HomePage_Tab1_RefreshSystemInfo" Click="RefreshSystemInfo_Click" Margin="0,16,0,0" HorizontalAlignment="Left"/>
+                            <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
                                 <StackPanel>
                                     <TextBlock x:Uid="HomePage_Tab1_SystemInfo" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
                                     <Grid>
@@ -71,7 +71,7 @@
                                 </StackPanel>
                             </Border>
 
-                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
+                            <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
                                 <StackPanel>
                                     <TextBlock x:Uid="HomePage_Tab1_ProtectionStatus" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
                                     <Grid>
@@ -171,7 +171,7 @@
 
                     <ScrollViewer Grid.Row="1">
                         <StackPanel Spacing="10">
-                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
+                            <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
                                 <StackPanel>
                                     <TextBlock Text="扫描统计" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
                                     <Grid>
@@ -191,7 +191,7 @@
                                 </StackPanel>
                             </Border>
 
-                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
+                            <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
                                 <StackPanel>
                                     <TextBlock Text="最近活动" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
                                     <ListView x:Name="RecentActivityList" Height="200">
@@ -233,7 +233,7 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0" Spacing="10" Margin="16,8,0,0">
-                        <TextBlock Text="多重防护 - 防护中心" Style="{ThemeResource BaseTextBlockStyle}"/>
+                        <TextBlock Text="防护中心" FontSize="18" FontWeight="Bold"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>

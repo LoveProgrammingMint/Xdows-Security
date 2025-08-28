@@ -38,7 +38,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <ScrollViewer Grid.Row="1">
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
                         <StackPanel Spacing="10" Margin="0,16,0,0">
                             <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
                                 <StackPanel>

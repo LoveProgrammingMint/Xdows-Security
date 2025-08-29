@@ -1,5 +1,7 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.VisualBasic;
 using Microsoft.Win32;
 using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
@@ -7,7 +9,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using Microsoft.UI.Dispatching;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -20,9 +21,8 @@ using Windows.System.UserProfile;
 using Xdows.Protection;
 using static Xdows.Protection.CallBack;
 using static Xdows.Protection.FilesProtection;
-using static Xdows.Protection.RegistryProtection;
 using static Xdows.Protection.ProcessProtection;
-using Microsoft.VisualBasic;
+using static Xdows.Protection.RegistryProtection;
 
 namespace Xdows_Security
 {

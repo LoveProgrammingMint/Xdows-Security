@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-
+using WinUIEx;
 // using Windows.ApplicationModel.Resources;//多语言调用
 using Windows.Storage;
 using Windows.UI;
@@ -34,6 +34,9 @@ namespace Xdows_Security
             }
             nav.SelectedItem = nav.MenuItems.OfType<NavigationViewItem>().First();
             Activated += MainWindow_Activated_FirstTime;
+            var manager = WinUIEx.WindowManager.Get(window);
+            manager.MinWidth = 650;
+            manager.MinHeight = 530;
             LogText.AddNewLog(1, "UI Interface", "主窗口加载成功");
         }
         private void MainWindow_Activated_FirstTime(object sender, WindowActivatedEventArgs args)

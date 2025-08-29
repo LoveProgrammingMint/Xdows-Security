@@ -10,4 +10,10 @@
     <PackageReference Include="PeNet" Version="5.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="SouXiaoEngine">
+      <HintPath>..\SouXiaoEngine\SouXiaoEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

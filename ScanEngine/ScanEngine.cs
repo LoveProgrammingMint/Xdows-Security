@@ -6,6 +6,7 @@ using System.Net;
 using System.Text.Json;
 using System.Linq;
 using System.Security.Cryptography;
+using SouXiaoEngine.APIs;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -89,6 +90,21 @@ namespace Xdows.ScanEngine
             await using var stream = File.OpenRead(path);
             var hash = await md5.ComputeHashAsync(stream);
             return Convert.ToHexString(hash);
+        }
+        public class SouXiaoEngineScan
+        {
+            private EngineV3Apis engineV3Apis = new(".\\");
+            public bool Initialize()
+            {
+                engineV3Apis.V3Ex_API_SetSetting(false, true, false, false, false, false);
+                engineV3Apis.V3Ex_API_LoadLib();
+                return true;
+            }
+            public (bool IsVirus,string Result) ScanFile(string path)
+            {
+                var result = engineV3Apis.V3Ex_API_ScanFile(path);
+                return result;
+            }
         }
     }
 }

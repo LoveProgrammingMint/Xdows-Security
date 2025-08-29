@@ -1,4 +1,4 @@
-﻿using SouXiaoEngine;
+﻿using Xdows.ScanEngine;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,9 +20,15 @@ namespace Xdows.Protection
 
         private static CancellationTokenSource? _cts = null;
         private static Task? _monitorTask = null;
-
+        private static Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan? SouXiaoEngine;
         public static bool Enable(InterceptCallBack toastCallBack)
         {
+            SouXiaoEngine ??= new Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan();
+            SouXiaoEngine.Initialize();
+            if (SouXiaoEngine == null)
+            {
+                return false;
+            }
             if (IsEnabled())
                 return true;
             try
@@ -73,8 +79,6 @@ namespace Xdows.Protection
 
         private static void MonitorNewProcessesLoop(InterceptCallBack interceptCallBack, CancellationToken token)
         {
-            string modelPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "model.onnx");
-            MalwareScanner scanner = new MalwareScanner(modelPath);
             Debug.WriteLine("Protection Enabled");
 
             while (!token.IsCancellationRequested)
@@ -93,11 +97,10 @@ namespace Xdows.Protection
                         foreach (int pid in newPids)
                         {
                             string path = ProcessPidToPath(pid);
-                            if (string.IsNullOrEmpty(path))
+                            if (string.IsNullOrEmpty(path) || SouXiaoEngine == null)
                                 continue;
 
-                            string result = scanner.ScanFile(path) ? scanner.GetReturn() : string.Empty;
-                            bool isVirus = !string.IsNullOrEmpty(result);
+                            bool isVirus = SouXiaoEngine.ScanFile(path).IsVirus;
 
                             if (isVirus)
                             {

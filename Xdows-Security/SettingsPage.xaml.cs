@@ -29,14 +29,14 @@ namespace Xdows_Security
                 CloudScanToggle.IsEnabled = false;
             }
 
-            if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "model.onnx")) {
-                SouXiaoScanToggle.IsOn = false;
-                SouXiaoScanToggle.IsEnabled = false;
-                ProcessToggle.IsOn = false;
-                ProcessToggle.IsEnabled = false;
-                FilesToggle.IsOn = false;
-                FilesToggle.IsEnabled = false;
-            }
+            //if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "model.onnx")) {
+            //    SouXiaoScanToggle.IsOn = false;
+            //    SouXiaoScanToggle.IsEnabled = false;
+            //    ProcessToggle.IsOn = false;
+            //    ProcessToggle.IsEnabled = false;
+            //    FilesToggle.IsOn = false;
+            //    FilesToggle.IsEnabled = false;
+            //}
             if (!App.IsRunAsAdmin())
             {
                 RegistryToggle.IsEnabled = false;

@@ -1,12 +1,13 @@
 ﻿using PeNet;
+using SouXiaoEngine;
+using SouXiaoEngine.APIs;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Text.Json;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
-using SouXiaoEngine.APIs;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -93,17 +94,31 @@ namespace Xdows.ScanEngine
         }
         public class SouXiaoEngineScan
         {
-            private EngineV3Apis engineV3Apis = new(".\\");
+            private readonly EngineV3Apis engineV3Apis = new(AppDomain.CurrentDomain.BaseDirectory);
             public bool Initialize()
             {
-                engineV3Apis.V3Ex_API_SetSetting(false, true, false, false, false, false);
-                engineV3Apis.V3Ex_API_LoadLib();
-                return true;
+                try
+                {
+                    engineV3Apis.V3Ex_API_SetSetting(true, true, true, true, true, true);
+                    engineV3Apis.V3Ex_API_LoadLib();
+                    return engineV3Apis.V3Ex_API_GetLibState() != MalwareMd5Check.States.NotInitialized;
+                }
+                catch
+                {
+                    return false;
+                }
             }
             public (bool IsVirus,string Result) ScanFile(string path)
             {
-                var result = engineV3Apis.V3Ex_API_ScanFile(path);
-                return result;
+                try {
+                    System.Diagnostics.Debug.WriteLine(engineV3Apis.V3Ex_API_GetLibState());
+                    var result = engineV3Apis.V3Ex_API_ScanFile(path);
+                    return (result.Item1, result.Item2.ToString());
+                }
+                catch 
+                {
+                    return (false, string.Empty);
+                }
             }
         }
     }

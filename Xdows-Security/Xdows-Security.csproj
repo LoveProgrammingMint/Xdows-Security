@@ -67,6 +67,9 @@
     <None Update="model.onnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="SouXiao.engine">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="XLin.engine">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -1,5 +1,5 @@
-﻿using SouXiaoEngine;
-using System;
+﻿using System;
+using Xdows.ScanEngine;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -13,14 +13,16 @@ namespace Xdows.Protection
         private static InterceptCallBack? _toastCallBack;
         private static Thread? _monitorThread;
         private static bool _isMonitoring = false;
-        private static MalwareScanner scanner = new MalwareScanner(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "model.onnx"));
-
+        private static Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan? SouXiaoEngine;
         public static bool Enable(InterceptCallBack toastCallBack)
         {
-            if (_isMonitoring)
+            SouXiaoEngine ??= new Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan();
+            SouXiaoEngine.Initialize();
+            if (_isMonitoring || SouXiaoEngine == null)
             {
                 return false;
             }
+            
             _isMonitoring = true;
             _toastCallBack = toastCallBack;
             _monitorThread = new Thread(StartMonitoring);
@@ -122,13 +124,14 @@ namespace Xdows.Protection
                 if (
                     e.FullPath.Contains("\\AppData\\Local\\Temp", StringComparison.OrdinalIgnoreCase) ||
                     string.Concat(e.FullPath.EnumerateRunes().Reverse().Take(6).Reverse()) == ".virus" ||
-                    !IsFileAccessible(e.FullPath)
+                    !IsFileAccessible(e.FullPath) ||
+                    SouXiaoEngine == null
                 )
                 {
                     return;
                 }
                 bool isVirus = false;
-                isVirus = scanner.ScanFile(e.FullPath);
+                isVirus = SouXiaoEngine.ScanFile(e.FullPath).IsVirus;
                 if (isVirus)
                 {
                     try

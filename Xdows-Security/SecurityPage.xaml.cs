@@ -213,11 +213,24 @@ namespace Xdows_Security
             bool UseCloudScan = settings.Values["CloudScan"] is bool && (bool)settings.Values["CloudScan"];
             bool UseSouXiaoScan = settings.Values["SouXiaoScan"] is bool && (bool)settings.Values["SouXiaoScan"];
 
-            MalwareScanner? SouXiaoEngine = null;
+            var SouXiaoEngine = new Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan();
             if (UseSouXiaoScan)
             {
-                string ModelPath = AppDomain.CurrentDomain.BaseDirectory + "model.onnx";
-                SouXiaoEngine = new MalwareScanner(ModelPath);
+                if (!SouXiaoEngine.Initialize()){
+                    _dispatcherQueue.TryEnqueue(() =>
+                    {
+                        var dialog = new ContentDialog
+                        {
+                            Title = "无法初始化 SouXiaoEngine",
+                            Content = "请转到 设置 - 扫描引擎 取消这个引擎的选中。",
+                            PrimaryButtonText = "确定",
+                            XamlRoot = this.XamlRoot,
+                            RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                            PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                        }.ShowAsync();
+                    });
+                    return;
+                }
             }
 
             string Log = "Use";
@@ -345,10 +358,11 @@ namespace Xdows_Security
                             {
                                 if (SouXiaoEngine != null)
                                 {
-                                    Result = SouXiaoEngine.ScanFile(file) ? SouXiaoEngine.GetReturn() : string.Empty;
+                                    var SouXiaoEngineResult = SouXiaoEngine.ScanFile(file);
+                                    Result = SouXiaoEngineResult.IsVirus ? SouXiaoEngineResult.Result : string.Empty;
                                 }
                             }
-
+                            
                             if (!string.IsNullOrEmpty(Result))
                             {
                                 if (UseLocalScan)

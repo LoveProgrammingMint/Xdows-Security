@@ -261,8 +261,8 @@
                             <ToggleSwitch x:Name="NetworkProtectionToggle" Grid.Column="1" IsEnabled="False"/>
                         </Grid>
                     </StackPanel>
-                    
-                    <Border Grid.Row="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
+
+                    <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Grid.Row="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
                         <StackPanel>
                             <TextBlock Text="防护日志" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
                             <ListView x:Name="ProtectionLogList" Height="250" Margin="-15,0,0,0">

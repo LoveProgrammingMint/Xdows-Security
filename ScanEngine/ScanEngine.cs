@@ -99,7 +99,7 @@ namespace Xdows.ScanEngine
             {
                 try
                 {
-                    engineV3Apis.V3Ex_API_SetSetting(true, true, true, true, true, true);
+                    engineV3Apis.V3Ex_API_SetSetting(true, true, true, true, true, false);
                     engineV3Apis.V3Ex_API_LoadLib();
                     return engineV3Apis.V3Ex_API_GetLibState() != MalwareMd5Check.States.NotInitialized;
                 }

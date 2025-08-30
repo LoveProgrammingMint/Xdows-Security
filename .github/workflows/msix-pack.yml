@@ -89,8 +89,8 @@ jobs:
       run: |
         $folder = Get-ChildItem "${{ env.OUT_DIR }}" -Directory -Filter "*_Test"
         Copy-Item "Certs\Cert.cer" "$($folder.FullName)\Cert.cer"
-	Compress-Archive -Path "$($folder.FullName)\*" `
-                	 -DestinationPath "Xdows-Security-Signed.zip"
+        Compress-Archive -Path "$($folder.FullName)\*" `
+            -DestinationPath "Xdows-Security-Signed.zip"
 
     - name: Create prerelease
       uses: softprops/action-gh-release@v2

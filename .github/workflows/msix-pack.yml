@@ -1,18 +1,14 @@
 name: Build & Prerelease MSIX
-
 permissions:
   contents: write
-
 on:
   push:
     branches: [ master, main ]
-
 env:
   DOTNET_VERSION: '8.0.x'
   CSPROJ_PATH: 'Xdows-Security/Xdows-Security.csproj'
   RID: 'win-x64'
   OUT_DIR: 'Xdows-Security/bin/Release/net8.0-windows10.0.19041.0/win-x64/AppPackages'
-
 jobs:
   build:
     runs-on: windows-latest
@@ -21,17 +17,14 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-
     - name: Restore & Build
       run: |
         dotnet restore ${{ env.CSPROJ_PATH }} -r ${{ env.RID }} -p:PublishReadyToRun=false
         dotnet build   ${{ env.CSPROJ_PATH }} -c Release -r ${{ env.RID }} --no-restore -p:PublishReadyToRun=false
-
     - name: Publish MSIX (Unsigned)
       run: >
         dotnet publish ${{ env.CSPROJ_PATH }}
@@ -43,47 +36,38 @@ jobs:
         -p:PublishReadyToRun=false
         -p:PublishTrimmed=false
         -p:PublishProfile=
-
     - name: Install certificate
       shell: pwsh
       run: |
         $certPath = "$env:RUNNER_TEMP\cert.pfx"
         $bytes = [Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
         [IO.File]::WriteAllBytes($certPath, $bytes)
-
     - name: Sign MSIX package
       shell: pwsh
       run: |
-        $signtool = (Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe" |
+        $signtool = (Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin*\x64\signtool.exe" |
                      Sort-Object LastWriteTime -Descending |
                      Select-Object -First 1).FullName
-
         if (-not $signtool) {
             throw "signtool.exe not found"
         }
-
         $msixFolder = Get-ChildItem "${{ env.OUT_DIR }}" -Directory -Filter "*_Test"
         $msixPath   = Get-ChildItem "$($msixFolder.FullName)" -Filter "*.msix" |
                       Select-Object -First 1 -ExpandProperty FullName
-
         if (-not $msixPath) {
             throw "No .msix file found to sign"
         }
-
         $certPath = "$env:RUNNER_TEMP\cert.pfx"
         $tsUrl    = "http://timestamp.digicert.com"
-
         & $signtool sign /fd SHA256 /a /f "$certPath" /p "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" /tr $tsUrl /td SHA256 "$msixPath"
-
     - name: Generate changelog
       id: changelog
       shell: pwsh
       run: |
         $log = (git log --oneline -10) -join "`n"
         echo "CHANGELOG<<EOF" >> $env:GITHUB_OUTPUT
-        echo "$log"               >> $env:GITHUB_OUTPUT
-        echo "EOF"               >> $env:GITHUB_OUTPUT
-
+        echo "$log"          >> $env:GITHUB_OUTPUT
+        echo "EOF"          >> $env:GITHUB_OUTPUT
     - name: Zip package
       shell: pwsh
       run: |
@@ -91,18 +75,15 @@ jobs:
         Copy-Item "Certs\Cert.cer" "$($folder.FullName)\Cert.cer"
         Compress-Archive -Path "$($folder.FullName)\*" `
             -DestinationPath "Xdows-Security-Signed.zip"
-
     - name: Create prerelease
       uses: softprops/action-gh-release@v2
       with:
         tag_name: nightly
         name: Nightly
         prerelease: true
-        update: true
+        make_latest: true
         files: Xdows-Security-Signed.zip
         body: |
-          # Nightly ${{ github.run_number }}
-
           ## 最近更改
           ${{ steps.changelog.outputs.CHANGELOG }}
 

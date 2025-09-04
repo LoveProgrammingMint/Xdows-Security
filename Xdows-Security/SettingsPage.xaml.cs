@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using Microsoft.Windows.BadgeNotifications;
 using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
 using Windows.Storage;
@@ -173,6 +174,9 @@ namespace Xdows_Security
             if (result == ContentDialogResult.Primary)
             {
                 App.RestartApplication();
+            }
+            else {
+                BadgeNotificationManager.Current.SetBadgeAsGlyph(BadgeNotificationGlyph.Activity);
             }
         }
 

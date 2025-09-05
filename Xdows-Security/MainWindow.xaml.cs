@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using WinUIEx;
+using Microsoft.Windows.BadgeNotifications;
 // using Windows.ApplicationModel.Resources;//多语言调用
 using Windows.Storage;
 using Windows.UI;
@@ -68,6 +69,7 @@ namespace Xdows_Security
             {
                 TitleText.Text += " (受限模式)";
             }
+            BadgeNotificationManager.Current.ClearBadge();
         }
         public void UpdateTheme(ElementTheme selectedTheme)
         {

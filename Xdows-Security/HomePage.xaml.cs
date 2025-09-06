@@ -229,34 +229,63 @@ namespace Xdows_Security
             }
         }
 
-        private void LogLevelFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void LogLevelFilter_MenuClick(object sender, RoutedEventArgs e)
         {
-            string filter = (LogLevelFilter.SelectedItem as ComboBoxItem)?.Tag.ToString() ?? "All";
-
-            if (filter == "All")
+            var item = sender as ToggleMenuFlyoutItem;
+            if (item == null) return;
+            var flyout = LogLevelFilter.Flyout as MenuFlyout;
+            if (flyout == null) return;
+            var allLevelItems = flyout.Items
+                                      .OfType<ToggleMenuFlyoutItem>()
+                                      .Where(t => t.Tag.ToString() != "All")
+                                      .ToList();
+            var allItem = flyout.Items
+                                .OfType<ToggleMenuFlyoutItem>()
+                                .First(t => t.Tag.ToString() == "All");
+            if (item.Tag.ToString() == "All")
             {
-                if (LogTextBox != null)
+                if (item.IsChecked == true)
                 {
-                    LogTextBox.Text = LogText.Text;
+                    bool check = item.IsChecked;
+                    foreach (var lvl in allLevelItems)
+                        lvl.IsChecked = check;
                 }
             }
             else
             {
-                var lines = LogText.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-                var filteredLines = lines.Where(line =>
-                {
-                    if (filter == "UNKNOWN") return line.Contains("[UNKNOWN]");
-                    if (filter == "DEBUG") return line.Contains("[DEBUG]");
-                    if (filter == "INFO") return line.Contains("[INFO]");
-                    if (filter == "WARN") return line.Contains("[WARN]");
-                    if (filter == "ERROR") return line.Contains("[ERROR]");
-                    if (filter == "FATAL") return line.Contains("[FATAL]");
-                    return true;
-                });
-                LogTextBox.Text = string.Join(Environment.NewLine, filteredLines);
-            }
-        }
+                bool allChecked = allLevelItems.All(t => t.IsChecked == true);
+                bool noneChecked = allLevelItems.All(t => t.IsChecked == false);
 
+                if (allChecked) allItem.IsChecked = true;
+                else if (noneChecked) allItem.IsChecked = false;
+                else allItem.IsChecked = false;
+            }
+
+            RefreshLogFilter();
+        }
+        private void RefreshLogFilter()
+        {
+            var flyout = LogLevelFilter.Flyout as MenuFlyout;
+            if (flyout == null) return;
+            var selectedTags = flyout.Items
+                .OfType<ToggleMenuFlyoutItem>()
+                .Where(t => t.IsChecked == true && t.Tag.ToString() != "All")
+                .Select(t => t.Tag.ToString())
+                .ToList();
+
+            if (selectedTags.Count == 0)
+            {
+                LogTextBox.Text = LogText.Text;
+                return;
+            }
+
+            var lines = LogText.Text
+                               .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            var filteredLines = lines.Where(line =>
+                selectedTags.Any(tag => line.Contains($"[{tag}]")));
+
+            LogTextBox.Text = string.Join(Environment.NewLine, filteredLines);
+        }
         private void LogText_TextChanged(object? sender, EventArgs e)
         {
             UpdateData();

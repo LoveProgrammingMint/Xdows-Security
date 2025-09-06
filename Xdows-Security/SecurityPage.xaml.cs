@@ -73,6 +73,8 @@ namespace Xdows_Security
         {
             _dispatcherQueue.TryEnqueue(() =>
             {
+                if (RadarScanLine == null) return;
+                RadarLineAppearStoryboard.Begin();
                 RadarScanStoryboard.Begin();
             });
         }
@@ -81,6 +83,8 @@ namespace Xdows_Security
         {
             _dispatcherQueue.TryEnqueue(() =>
             {
+                if (RadarScanLine == null) return;
+                RadarLineDisappearStoryboard.Begin();
                 RadarScanStoryboard.Stop();
             });
         }

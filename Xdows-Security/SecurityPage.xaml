@@ -9,24 +9,22 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-        <!-- 雷达扫描动画 -->
         <Storyboard x:Name="RadarScanStoryboard">
-            <DoubleAnimation 
-                Storyboard.TargetName="RadarScanLine"
-                Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
-                From="0" To="360" Duration="0:0:3" RepeatBehavior="Forever" />
-            <DoubleAnimation 
-                Storyboard.TargetName="RadarPulse"
-                Storyboard.TargetProperty="Opacity"
-                From="0.8" To="0" Duration="0:0:1.5" RepeatBehavior="Forever" AutoReverse="True" />
-            <DoubleAnimation 
-                Storyboard.TargetName="RadarPulse"
-                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
-                From="0.5" To="1.5" Duration="0:0:1.5" RepeatBehavior="Forever" AutoReverse="True" />
-            <DoubleAnimation 
-                Storyboard.TargetName="RadarPulse"
-                Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)"
-                From="0.5" To="1.5" Duration="0:0:1.5" RepeatBehavior="Forever" AutoReverse="True" />
+            <DoubleAnimation Storyboard.TargetName="RadarScanLine"
+                         Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                         From="0" To="360" Duration="0:0:3" RepeatBehavior="Forever"/>
+        </Storyboard>
+
+        <Storyboard x:Name="RadarLineAppearStoryboard">
+            <DoubleAnimation Storyboard.TargetName="RadarScanLine"
+                     Storyboard.TargetProperty="Opacity"
+                     From="0" To="0.8" Duration="0:0:0.3"/>
+        </Storyboard>
+
+        <Storyboard x:Name="RadarLineDisappearStoryboard">
+            <DoubleAnimation Storyboard.TargetName="RadarScanLine"
+                         Storyboard.TargetProperty="Opacity"
+                         From="0.8" To="0" Duration="0:0:0.2"/>
         </Storyboard>
     </Page.Resources>
     <ScrollViewer>
@@ -109,7 +107,7 @@
                         <Ellipse Width="40" Height="40" Stroke="{ThemeResource AccentTextFillColorTertiaryBrush}" StrokeThickness="1" Opacity="0.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                         <!-- 雷达扫描线 -->
-                        <Line x:Name="RadarScanLine" X1="30" Y1="130" X2="0" Y2="0" Stroke="{ThemeResource AccentTextFillColorTertiaryBrush}" StrokeThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.8">
+                        <Line x:Name="RadarScanLine" X1="30" Y1="130" X2="0" Y2="0" Stroke="{ThemeResource AccentTextFillColorTertiaryBrush}" StrokeThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0">
                             <Line.RenderTransform>
                                 <RotateTransform CenterX="15" CenterY="65"/>
                             </Line.RenderTransform>

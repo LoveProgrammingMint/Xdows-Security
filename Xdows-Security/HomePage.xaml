@@ -22,278 +22,116 @@
                    Margin="0,8,0,0" />
             </StackPanel>
         </StackPanel>
-        <TabView Grid.Row="1" IsAddTabButtonVisible="False" TabWidthMode="Equal">
-            <TabViewItem x:Uid="HomePage_Tab1_Title" IsClosable="False">
-                <TabViewItem.IconSource>
-                    <FontIconSource Glyph="&#xE770;"/>
-                </TabViewItem.IconSource>
-
-                <TabViewItem.HeaderTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="14"/>
-                    </DataTemplate>
-                </TabViewItem.HeaderTemplate>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
-                        <StackPanel Spacing="10" Margin="0,16,0,0">
-                            <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
-                                <StackPanel>
-                                    <TextBlock x:Uid="HomePage_Tab1_SystemInfo" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock x:Uid="HomePage_Tab1_OSName" Grid.Column="0" Margin="0,0,10,0"/>
-                                        <TextBlock x:Name="OSNameText" Grid.Column="1" x:Uid="AllPage_Loading" />
-                                    </Grid>
-                                    <Grid Margin="0,5,0,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock x:Uid="HomePage_Tab1_OSVersion"  Grid.Column="0" Margin="0,0,10,0"/>
-                                        <TextBlock x:Name="OSVersionText" Grid.Column="1" x:Uid="AllPage_Loading" />
-                                    </Grid>
-                                    <Grid Margin="0,5,0,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock x:Uid="HomePage_Tab1_OSMemory" Grid.Column="0" Margin="0,0,10,0"/>
-                                        <TextBlock x:Name="MemoryUsageText" Grid.Column="1" x:Uid="AllPage_Loading" />
-                                    </Grid>
-                                    <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                                        <Button x:Uid="HomePage_Tab1_RefreshSystemInfo" Click="RefreshSystemInfo_Click" Margin="0,16,0,0" HorizontalAlignment="Left" Width="140" Height="50" FontSize="14"/>
-                                    </StackPanel>
-                                </StackPanel>
-                            </Border>
-
-                            <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
-                                <StackPanel>
-                                    <TextBlock x:Uid="HomePage_Tab1_ProtectionStatus" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock x:Uid="HomePage_Tab1_Protection" Grid.Column="0" Margin="0,0,10,0"/>
-                                        <TextBlock x:Name="ProtectionStatusText" Grid.Column="1" x:Uid="AllPage_Loading" />
-                                    </Grid>
-                                    <Grid Margin="0,5,0,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock x:Uid="HomePage_Tab1_LastScan" Grid.Column="0" Margin="0,0,10,0"/>
-                                        <TextBlock x:Name="LastScanText" Grid.Column="1" x:Uid="AllPage_Undefined"/>
-                                    </Grid>
-                                    <Grid Margin="0,5,0,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock x:Uid="HomePage_Tab1_NumberOfThreats" Grid.Column="0" Margin="0,0,10,0"/>
-                                        <TextBlock x:Name="ThreatCountText" Grid.Column="1" Text="0"/>
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
-                    </ScrollViewer>
-                </Grid>
-            </TabViewItem>
-
-            <TabViewItem Header="快速扫描" IsClosable="False">
-                <TabViewItem.IconSource>
-                    <FontIconSource Glyph="&#xE721;"/>
-                </TabViewItem.IconSource>
-                <TabViewItem.HeaderTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="14"/>
-                    </DataTemplate>
-                </TabViewItem.HeaderTemplate>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <StackPanel Grid.Row="0" Spacing="10" Margin="0,8,0,8">
-                        <Button Content="开始快速扫描" Click="StartQuickScan_Click" Style="{ThemeResource AccentButtonStyle}" HorizontalAlignment="Left" IsEnabled="True"/>
-                        <TextBlock Text="选择扫描类型：" FontSize="14" FontWeight="SemiBold"/>
-                        <ComboBox x:Name="QuickScanTypeCombo" SelectedIndex="0">
-                            <ComboBoxItem Content="系统关键目录"/>
-                            <ComboBoxItem Content="启动项"/>
-                            <ComboBoxItem Content="进程目录"/>
-                            <ComboBoxItem Content="用户文档"/>
-                        </ComboBox>
-                    </StackPanel>
-
-                    <ProgressBar x:Name="QuickScanProgress" Grid.Row="1" IsIndeterminate="False" Visibility="Collapsed" Margin="0,-15,0,10"/>
-                    <TextBlock x:Name="QuickScanStatusText" Grid.Row="1" Text="准备扫描" Margin="0,10,0,10"/>
-
-                    <ListView x:Name="QuickScanResults" Grid.Row="2" Visibility="Collapsed">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Padding="12,6">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="2*" MinWidth="300"/>
-                                        <ColumnDefinition Width="*" MinWidth="150"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding FilePath}" TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding Status}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </Grid>
-            </TabViewItem>
-
-            <TabViewItem Header="安全统计" IsClosable="False">
-                <TabViewItem.IconSource>
-                    <FontIconSource Glyph="&#xE9D2;"/>
-                </TabViewItem.IconSource>
-                <TabViewItem.HeaderTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="14"/>
-                    </DataTemplate>
-                </TabViewItem.HeaderTemplate>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <Button Grid.Row="0" Content="刷新统计信息" Click="RefreshStatistics_Click" Margin="0,8,0,8" HorizontalAlignment="Left"/>
-
-                    <ScrollViewer Grid.Row="1">
-                        <StackPanel Spacing="10">
-                            <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
-                                <StackPanel>
-                                    <TextBlock Text="扫描统计" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid Grid.Column="0">
-                                            <TextBlock Text="总扫描数" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                                            <TextBlock x:Name="TotalScansText" Text="0" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,20,0,0"/>
-                                        </Grid>
-                                        <Grid Grid.Column="1">
-                                            <TextBlock Text="发现威胁" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                                            <TextBlock x:Name="TotalThreatsText" Text="0" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,20,0,0"/>
-                                        </Grid>
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
-                    </ScrollViewer>
-                </Grid>
-            </TabViewItem>
-
-            <TabViewItem Header="实时防护" IsClosable="False">
-                <TabViewItem.IconSource>
-                    <FontIconSource Glyph="&#xEA18;"/>
-                </TabViewItem.IconSource>
-                <TabViewItem.HeaderTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="14"/>
-                    </DataTemplate>
-                </TabViewItem.HeaderTemplate>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <StackPanel Grid.Row="0" Spacing="10" Margin="16,8,0,0">
-                        <TextBlock Text="防护中心" FontSize="18" FontWeight="Bold"/>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
+            <StackPanel Spacing="10">
+                <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="扫描统计" FontSize="18" FontWeight="Bold" Margin="0,0,0,8"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="进程防护" VerticalAlignment="Center"/>
-                            <ToggleSwitch x:Name="ProcessProtectionToggle" Grid.Column="1" IsEnabled="False" Toggled="ProcessProtectionToggle_Toggled"/>
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="文件防护" VerticalAlignment="Center"/>
-                            <ToggleSwitch x:Name="FileProtectionToggle" Grid.Column="1" IsEnabled="False"/>
+                            <Grid Grid.Column="0">
+                                <TextBlock Text="总扫描数" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="TotalScansText" Text="0" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,20,0,0"/>
+                            </Grid>
+                            <Grid Grid.Column="1">
+                                <TextBlock Text="发现威胁" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="TotalThreatsText" Text="0" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,20,0,0"/>
+                            </Grid>
                         </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="网络防护" VerticalAlignment="Center"/>
-                            <ToggleSwitch x:Name="NetworkProtectionToggle" Grid.Column="1" IsEnabled="False"/>
-                        </Grid>
-                    </StackPanel>
-
-                    <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Grid.Row="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
-                        <StackPanel>
-                            <TextBlock Text="防护日志" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
-                            <ListView x:Name="ProtectionLogList" Height="250" Margin="-15,0,0,0">
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Padding="8,4">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <FontIcon Grid.Column="0" Glyph="{Binding Icon}" Foreground="{Binding Color}" Margin="0,0,10,0"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding Message}" TextTrimming="CharacterEllipsis"/>
-                                            <TextBlock Grid.Column="2" Text="{Binding Time}" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
+                        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <Button Grid.Row="0" Content="刷新统计信息" Click="RefreshStatistics_Click" HorizontalAlignment="Left"/>
                         </StackPanel>
-                    </Border>
-                </Grid>
-            </TabViewItem>
-
-            <TabViewItem Header="系统日志" IsClosable="False">
-                <TabViewItem.IconSource>
-                    <FontIconSource Glyph="&#xF738;"/>
-                </TabViewItem.IconSource>
-                <TabViewItem.HeaderTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="14"/>
-                    </DataTemplate>
-                </TabViewItem.HeaderTemplate>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,8,0,8">
-                        <Button Content="清空日志" Click="ClearLog_Click"/>
-                        <Button Content="导出日志" Click="ExportLog_Click"/>
-                        <ComboBox x:Name="LogLevelFilter" SelectedIndex="0" SelectionChanged="LogLevelFilter_SelectionChanged">
-                            <ComboBoxItem Tag ="All" Content="所有级别"/>
-                            <ComboBoxItem Tag ="UNKNOWN" Content="仅未定义"/>
-                            <ComboBoxItem Tag ="DEBUG" Content="仅调试"/>
-                            <ComboBoxItem Tag ="INFO" Content="仅信息"/>
-                            <ComboBoxItem Tag ="WARN" Content="仅警告"/>
-                            <ComboBoxItem Tag ="ERROR" Content="仅错误"/>
-                            <ComboBoxItem Tag ="FATAL" Content="仅失败"/>
-                        </ComboBox>
                     </StackPanel>
+                </Border>
 
-                    <TextBox Grid.Row="1"
+                <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
+                    <StackPanel>
+                        <TextBlock x:Uid="HomePage_ProtectionStatus" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Uid="HomePage_Protection" Grid.Column="0" Margin="0,0,10,0"/>
+                            <TextBlock x:Name="ProtectionStatusText" Grid.Column="1" x:Uid="AllPage_Loading" />
+                        </Grid>
+                        <Grid Margin="0,5,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Uid="HomePage_LastScan" Grid.Column="0" Margin="0,0,10,0"/>
+                            <TextBlock x:Name="LastScanText" Grid.Column="1" x:Uid="AllPage_Undefined"/>
+                        </Grid>
+                        <Grid Margin="0,5,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Uid="HomePage_NumberOfThreats" Grid.Column="0" Margin="0,0,10,0"/>
+                            <TextBlock x:Name="ThreatCountText" Grid.Column="1" Text="0"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
+                    <StackPanel>
+                        <TextBlock x:Uid="HomePage_SystemInfo" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Uid="HomePage_OSName" Grid.Column="0" Margin="0,0,10,0"/>
+                            <TextBlock x:Name="OSNameText" Grid.Column="1" x:Uid="AllPage_Loading" />
+                        </Grid>
+                        <Grid Margin="0,5,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Uid="HomePage_OSVersion"  Grid.Column="0" Margin="0,0,10,0"/>
+                            <TextBlock x:Name="OSVersionText" Grid.Column="1" x:Uid="AllPage_Loading" />
+                        </Grid>
+                        <Grid Margin="0,5,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Uid="HomePage_OSMemory" Grid.Column="0" Margin="0,0,10,0"/>
+                            <TextBlock x:Name="MemoryUsageText" Grid.Column="1" x:Uid="AllPage_Loading" />
+                        </Grid>
+                        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <Button x:Uid="HomePage_RefreshSystemInfo" Click="RefreshSystemInfo_Click" Margin="0,16,0,0" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <Border Margin="0,0,0,16" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="运行日志" FontSize="18" FontWeight="Bold"/>
+
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,32,0,8">
+                            <Button Content="清空日志" Click="ClearLog_Click"/>
+                            <Button Content="导出日志" Click="ExportLog_Click"/>
+                            <ComboBox x:Name="LogLevelFilter" SelectedIndex="0" SelectionChanged="LogLevelFilter_SelectionChanged">
+                                <ComboBoxItem Tag ="All" Content="所有级别"/>
+                                <ComboBoxItem Tag ="UNKNOWN" Content="仅未定义"/>
+                                <ComboBoxItem Tag ="DEBUG" Content="仅调试"/>
+                                <ComboBoxItem Tag ="INFO" Content="仅信息"/>
+                                <ComboBoxItem Tag ="WARN" Content="仅警告"/>
+                                <ComboBoxItem Tag ="ERROR" Content="仅错误"/>
+                                <ComboBoxItem Tag ="FATAL" Content="仅失败"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <TextBox Grid.Row="1"
                             x:Name="LogTextBox"
                             IsReadOnly="True"
                             AcceptsReturn="True"
@@ -301,8 +139,9 @@
                             Margin="0,0,0,0"
                             MinHeight="216"
                             FontSize="13"/>
-                </Grid>
-            </TabViewItem>
-        </TabView>
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>

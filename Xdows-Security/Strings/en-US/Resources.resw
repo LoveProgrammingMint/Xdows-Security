@@ -392,37 +392,34 @@ If light’s a cipher, moonlight is its whisper.
 Rain is no glitch; it’s light self-filtering.
 If the end is light’s riddle, who sets the riddle past the end?</value>
   </data>
-  <data name="HomePage_Tab1_RefreshSystemInfo.Content" xml:space="preserve">
+  <data name="HomePage_RefreshSystemInfo.Content" xml:space="preserve">
     <value>Refresh System Info</value>
   </data>
-  <data name="HomePage_Tab1_SystemInfo.Text" xml:space="preserve">
+  <data name="HomePage_SystemInfo.Text" xml:space="preserve">
     <value>System Info</value>
   </data>
-  <data name="HomePage_Tab1_OSName.Text" xml:space="preserve">
+  <data name="HomePage_OSName.Text" xml:space="preserve">
     <value>OS Name: </value>
   </data>
-  <data name="HomePage_Tab1_OSVersion.Text" xml:space="preserve">
+  <data name="HomePage_OSVersion.Text" xml:space="preserve">
     <value>OS Version: </value>
   </data>
-  <data name="HomePage_Tab1_OSMemory.Text" xml:space="preserve">
+  <data name="HomePage_OSMemory.Text" xml:space="preserve">
     <value>OS Memory: </value>
   </data>
   <data name="AllPage_Loading" xml:space="preserve">
     <value>Loading...</value>
   </data>
-  <data name="HomePage_Tab1_Title.Header" xml:space="preserve">
-    <value>System Status</value>
-  </data>
-  <data name="HomePage_Tab1_ProtectionStatus.Text" xml:space="preserve">
+  <data name="HomePage_ProtectionStatus.Text" xml:space="preserve">
     <value>Protection Status</value>
   </data>
-  <data name="HomePage_Tab1_Protection.Text" xml:space="preserve">
+  <data name="HomePage_Protection.Text" xml:space="preserve">
     <value>Protection: </value>
   </data>
-  <data name="HomePage_Tab1_LastScan.Text" xml:space="preserve">
+  <data name="HomePage_LastScan.Text" xml:space="preserve">
     <value>Last Scan: </value>
   </data>
-  <data name="HomePage_Tab1_NumberOfThreats.Text" xml:space="preserve">
+  <data name="HomePage_NumberOfThreats.Text" xml:space="preserve">
     <value>Number of Threats: </value>
   </data>
   <data name="AllPage_Status" xml:space="preserve">

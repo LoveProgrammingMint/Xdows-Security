@@ -25,9 +25,6 @@ namespace Xdows_Security
 
         private DispatcherTimer _systemInfoTimer = new();
         private DispatcherTimer _protectionTimer = new();
-        private ObservableCollection<ScanResult> _quickScanResults = new();
-        private ObservableCollection<ActivityItem> _recentActivities = new();
-        private ObservableCollection<ProtectionLogItem> _protectionLogs = new();
         private CancellationTokenSource? _scanCancellationTokenSource;
 
         public HomePage()
@@ -57,14 +54,9 @@ namespace Xdows_Security
 
         private void InitializeData()
         {
-            QuickScanResults.ItemsSource = _quickScanResults;
-            ProtectionLogList.ItemsSource = _protectionLogs;
-
             LoadSystemInfo();
             LoadStatistics();
             LoadProtectionStatus();
-            LoadRecentActivities();
-            LoadProtectionLogs();
         }
 
         private void LoadSystemInfo()
@@ -173,44 +165,6 @@ namespace Xdows_Security
             TotalThreatsText.Text = Statistics.VirusQuantity.ToString() ?? "0";
         }
 
-        private void LoadRecentActivities()
-        {
-            _recentActivities.Clear();
-            var settings = ApplicationData.Current.LocalSettings;
-            if (settings.Values.TryGetValue("RecentActivities", out var activitiesObj))
-            {
-                var activities = activitiesObj as string;
-                if (!string.IsNullOrEmpty(activities))
-                {
-                    var activityList = activities.Split('|');
-                    foreach (var activity in activityList)
-                    {
-                        var parts = activity.Split(';');
-                        if (parts.Length >= 2)
-                        {
-                            _recentActivities.Add(new ActivityItem
-                            {
-                                Activity = parts[0],
-                                Time = parts[1]
-                            });
-                        }
-                    }
-                }
-            }
-        }
-
-        private void LoadProtectionLogs()
-        {
-            _protectionLogs.Clear();
-            _protectionLogs.Add(new ProtectionLogItem
-            {
-                Icon = "\uE73E",
-                Color = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green),
-                Message = "实时防护已启动，你的设备很安全",
-                Time = DateTime.Now.ToString("HH:mm:ss")
-            });
-        }
-
         private void SystemInfoTimer_Tick(object? sender, object e)
         {
             UpdateMemoryUsage();
@@ -224,145 +178,7 @@ namespace Xdows_Security
             LoadProtectionStatus();
         }
 
-        private async void StartQuickScan_Click(object sender, RoutedEventArgs e)
-        {
-            if (_scanCancellationTokenSource != null)
-            {
-                _scanCancellationTokenSource.Cancel();
-                _scanCancellationTokenSource = null;
-                QuickScanStatusText.Text = "扫描已取消";
-                return;
-            }
 
-            _scanCancellationTokenSource = new CancellationTokenSource();
-            var token = _scanCancellationTokenSource.Token;
-
-            _quickScanResults.Clear();
-            QuickScanResults.Visibility = Visibility.Visible;
-            QuickScanProgress.Visibility = Visibility.Visible;
-            QuickScanProgress.IsIndeterminate = true;
-            QuickScanStatusText.Text = "正在扫描...";
-
-            var scanType = (QuickScanTypeCombo.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "系统关键目录";
-            try { QuickScanProgress.IsIndeterminate = false; } catch { return; }
-
-            await Task.Run(async () =>
-            {
-                try
-                {
-                    var scanPaths = GetScanPaths(scanType);
-                    int total = scanPaths.Count;
-                    int completed = 0;
-
-
-                    foreach (var path in scanPaths)
-                    {
-                        if (token.IsCancellationRequested) break;
-
-                        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                        {
-                            QuickScanStatusText.Text = $"正在扫描: {path}";
-                        });
-
-                        await Task.Delay(100, token);
-
-                        var result = new ScanResult
-                        {
-                            FilePath = path,
-                            Status = "安全"
-                        };
-
-                        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                        {
-                            _quickScanResults.Add(result);
-                        });
-
-                        completed++;
-                        var progress = (double)completed / total * 100;
-                        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                        {
-                            QuickScanProgress.Value = progress;
-                        });
-                    }
-
-                    try {
-                        await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                        {
-                            try
-                            {
-                                QuickScanStatusText.Text = $"扫描完成，共检查 {total} 个项目";
-                                QuickScanProgress.Visibility = Visibility.Collapsed;
-                                _scanCancellationTokenSource = null;
-                            }
-                            catch { }
-                        });
-                    } catch { }
-
-                    UpdateScanStatistics(total, 0);
-                }
-                catch (OperationCanceledException)
-                {
-                    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                    {
-                        QuickScanStatusText.Text = "扫描已取消";
-                        QuickScanProgress.Visibility = Visibility.Collapsed;
-                        _scanCancellationTokenSource = null;
-                    });
-                }
-                catch // (Exception ex)
-                {
-                    //await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                    //{
-                    //QuickScanStatusText.Text = $"扫描失败: {ex.Message}";
-                    //QuickScanProgress.Visibility = Visibility.Collapsed;
-                    // _scanCancellationTokenSource = null;
-                    //});
-                }
-            });
-        }
-
-        private List<string> GetScanPaths(string scanType)
-        {
-            var paths = new List<string>();
-
-            switch (scanType)
-            {
-                case "系统关键目录":
-                    paths.Add(Environment.GetFolderPath(Environment.SpecialFolder.Windows));
-                    paths.Add(Environment.GetFolderPath(Environment.SpecialFolder.System));
-                    paths.Add(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
-                    break;
-                case "启动项":
-                    paths.Add(Environment.GetFolderPath(Environment.SpecialFolder.Startup));
-                    paths.Add(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup));
-                    break;
-                case "进程目录":
-                    try
-                    {
-                        var processes = Process.GetProcesses();
-                        foreach (var proc in processes.Take(10)) // 限制数量
-                        {
-                            try
-                            {
-                                if (!string.IsNullOrEmpty(proc.MainModule?.FileName))
-                                {
-                                    paths.Add(proc.MainModule.FileName);
-                                }
-                            }
-                            catch { }
-                        }
-                    }
-                    catch { }
-                    break;
-                case "用户文档":
-                    paths.Add(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
-                    paths.Add(Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
-                    paths.Add(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
-                    break;
-            }
-
-            return paths.Distinct().Where(File.Exists).ToList();
-        }
 
         private void UpdateScanStatistics(int totalScans, int threatsFound)
         {
@@ -381,22 +197,6 @@ namespace Xdows_Security
         private void RefreshStatistics_Click(object sender, RoutedEventArgs e)
         {
             LoadStatistics();
-            LoadRecentActivities();
-        }
-
-        private void ProcessProtectionToggle_Toggled(object sender, RoutedEventArgs e)
-        {
-            var isOn = (sender as ToggleSwitch)?.IsOn ?? false;
-            var result = Protection.Run(0); // 进程防护
-
-            _protectionLogs.Insert(0, new ProtectionLogItem
-            {
-                Icon = result ? "\uE73E" : "\uE711",
-                Color = result ? new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green) : new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Red),
-                Message = result ? "进程防护已启用" : "进程防护已禁用",
-                Time = DateTime.Now.ToString("HH:mm:ss")
-            });
-
         }
 
         private void ClearLog_Click(object sender, RoutedEventArgs e)
@@ -476,33 +276,5 @@ namespace Xdows_Security
                 Icon.Glyph = "\uE711";
             }
         }
-
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            base.OnNavigatedFrom(e);
-            _systemInfoTimer?.Stop();
-            _protectionTimer?.Stop();
-            _scanCancellationTokenSource?.Cancel();
-        }
-    }
-
-    public class ScanResult
-    {
-        public string FilePath { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
-    }
-
-    public class ActivityItem
-    {
-        public string Activity { get; set; } = string.Empty;
-        public string Time { get; set; } = string.Empty;
-    }
-
-    public class ProtectionLogItem
-    {
-        public string Icon { get; set; } = string.Empty;
-        public Microsoft.UI.Xaml.Media.SolidColorBrush Color { get; set; } = new(Microsoft.UI.Colors.Green);
-        public string Message { get; set; } = string.Empty;
-        public string Time { get; set; } = string.Empty;
     }
 }

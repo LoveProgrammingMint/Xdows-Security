@@ -58,7 +58,6 @@ namespace Xdows_Security
         private void InitializeData()
         {
             QuickScanResults.ItemsSource = _quickScanResults;
-            RecentActivityList.ItemsSource = _recentActivities;
             ProtectionLogList.ItemsSource = _protectionLogs;
 
             LoadSystemInfo();
@@ -223,7 +222,6 @@ namespace Xdows_Security
         {
             LoadSystemInfo();
             LoadProtectionStatus();
-            AddActivity("刷新系统信息");
         }
 
         private async void StartQuickScan_Click(object sender, RoutedEventArgs e)
@@ -301,7 +299,6 @@ namespace Xdows_Security
                     } catch { }
 
                     UpdateScanStatistics(total, 0);
-                    AddActivity($"完成{scanType}扫描");
                 }
                 catch (OperationCanceledException)
                 {
@@ -381,32 +378,10 @@ namespace Xdows_Security
             LoadProtectionStatus();
         }
 
-        private void AddActivity(string activity)
-        {
-            var activityItem = new ActivityItem
-            {
-                Activity = activity,
-                Time = DateTime.Now.ToString("HH:mm:ss")
-            };
-
-            _recentActivities.Insert(0, activityItem);
-
-            if (_recentActivities.Count > 20)
-            {
-                _recentActivities.RemoveAt(_recentActivities.Count - 1);
-            }
-
-            // 保存到设置
-            var activities = string.Join("|", _recentActivities.Select(a => $"{a.Activity};{a.Time}"));
-            var settings = ApplicationData.Current.LocalSettings;
-            settings.Values["RecentActivities"] = activities;
-        }
-
         private void RefreshStatistics_Click(object sender, RoutedEventArgs e)
         {
             LoadStatistics();
             LoadRecentActivities();
-            AddActivity("刷新统计数据");
         }
 
         private void ProcessProtectionToggle_Toggled(object sender, RoutedEventArgs e)
@@ -422,7 +397,6 @@ namespace Xdows_Security
                 Time = DateTime.Now.ToString("HH:mm:ss")
             });
 
-            AddActivity(result ? "启用进程防护" : "禁用进程防护");
         }
 
         private void ClearLog_Click(object sender, RoutedEventArgs e)
@@ -447,11 +421,10 @@ namespace Xdows_Security
                 try
                 {
                     await FileIO.WriteTextAsync(file, LogText.Text);
-                    AddActivity("导出日志成功");
                 }
                 catch (Exception ex)
                 {
-                    AddActivity($"导出日志失败: {ex.Message}");
+                    LogText.AddNewLog(3, "HomePage - ExportLog", $"Cannot export log,because: {ex.Message}");
                 }
             }
         }
@@ -481,15 +454,6 @@ namespace Xdows_Security
                     return true;
                 });
                 LogTextBox.Text = string.Join(Environment.NewLine, filteredLines);
-            }
-        }
-
-        private void TabView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var selectedTab = e.AddedItems.FirstOrDefault() as TabViewItem;
-            if (selectedTab != null)
-            {
-                AddActivity($"切换到{selectedTab.Header}选项卡");
             }
         }
 

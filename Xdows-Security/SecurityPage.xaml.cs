@@ -66,8 +66,6 @@ namespace Xdows_Security
                 new ScanItem { ItemName = "启动扫描", IconGlyph = "&#xE812;" },
                 new ScanItem { ItemName = "用户文档", IconGlyph = "&#xE8A5;" }
             };
-
-
         }
 
         private void StartRadarAnimation()
@@ -397,7 +395,11 @@ namespace Xdows_Security
                                 Statistics.VirusQuantity += 1;
                                 try
                                 {
-                                    _dispatcherQueue.TryEnqueue(() => _currentResults!.Add(new VirusRow(file, Result)));
+                                    _dispatcherQueue.TryEnqueue(() =>
+                                    {
+                                        _currentResults!.Add(new VirusRow(file, Result));
+                                        BackToVirusListButton.Visibility = Visibility.Visible;
+                                    });
                                     _threatsFound++;
                                     UpdateScanItemStatus(currentItemIndex, "发现威胁", true, _threatsFound);
                                 }
@@ -451,11 +453,6 @@ namespace Xdows_Security
                         ResumeScanButton.Visibility = Visibility.Collapsed;
 
                         StopRadarAnimation();
-
-                        if (_currentResults.Count > 0)
-                        {
-                            BackToVirusListButton.Visibility = Visibility.Visible;
-                        }
                     });
                 }
                 catch (OperationCanceledException)
@@ -490,8 +487,10 @@ namespace Xdows_Security
         // 返回病毒列表按钮事件
         private void OnBackToVirusListClick(object sender, RoutedEventArgs e)
         {
-            VirusList.Visibility = Visibility.Visible;
-            BackToVirusListButton.Visibility = Visibility.Collapsed;
+            bool show = VirusList.Visibility != Visibility.Visible;
+            VirusList.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
+            BackToVirusListButtonText.Text = show ? "隐藏列表" : "显示列表";
+            BackToVirusListButtonIcon.Glyph = show ? "\uED1A" : "\uE890";
         }
 
         // 暂停扫描按钮事件

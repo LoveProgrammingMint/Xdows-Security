@@ -3,6 +3,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -586,7 +587,24 @@ namespace Xdows_Security
                         {
                             Children =
                             {
-                                new TextBlock { Text = $"文件路径：{row.FilePath}", TextWrapping = TextWrapping.Wrap },
+                                new TextBlock { Text = $"文件路径：", Margin = new Thickness(0, 8, 0, 0) },
+                                new RichTextBlock
+                                {
+                                    IsTextSelectionEnabled = true,
+                                    TextWrapping = TextWrapping.Wrap,
+                                    FontSize = 14,
+                                    FontFamily = new FontFamily("Segoe UI"),
+                                    Blocks =
+                                    {
+                                        new Paragraph
+                                        {
+                                            Inlines =
+                                            {
+                                                new Run { Text = row.FilePath},
+                                            }
+                                        }
+                                    }
+                                },
                                 new TextBlock { Text = $"威胁名称：{row.VirusName}", Margin = new Thickness(0, 8, 0, 0) },
                                 new TextBlock { Text = $"文件大小：{fileInfo.Length / 1024:F2} KB", Margin = new Thickness(0, 8, 0, 0) },
                                 new TextBlock { Text = $"创建时间：{fileInfo.CreationTime}", Margin = new Thickness(0, 8, 0, 0) },

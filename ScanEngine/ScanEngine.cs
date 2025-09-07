@@ -111,7 +111,6 @@ namespace Xdows.ScanEngine
             public (bool IsVirus,string Result) ScanFile(string path)
             {
                 try {
-                    System.Diagnostics.Debug.WriteLine(engineV3Apis.V3Ex_API_GetLibState());
                     var result = engineV3Apis.V3Ex_API_ScanFile(path);
                     return (result.Item1, result.Item2.ToString());
                 }

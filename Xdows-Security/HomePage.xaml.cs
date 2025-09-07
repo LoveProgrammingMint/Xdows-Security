@@ -25,8 +25,6 @@ namespace Xdows_Security
 
         private DispatcherTimer _systemInfoTimer = new();
         private DispatcherTimer _protectionTimer = new();
-        private CancellationTokenSource? _scanCancellationTokenSource;
-
         public HomePage()
         {
             this.InitializeComponent();

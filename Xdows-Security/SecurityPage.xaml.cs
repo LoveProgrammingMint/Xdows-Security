@@ -431,6 +431,11 @@ namespace Xdows_Security
                             UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
                         }
                         catch { }
+                        // 检测是否已经退出这个页面
+                        if (MainWindow.NowPage != "Security")
+                        {
+                            break;
+                        }
                         await Task.Delay(1, token);
                     }
 

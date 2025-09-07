@@ -200,7 +200,7 @@ namespace Xdows_Security
 
             _ = StartScanAsync(((MenuFlyoutItem)sender).Text, mode);
         }
-
+        private int ScanId = 0;
         private async Task StartScanAsync(string displayName, ScanMode mode)
         {
             _cts?.Cancel();
@@ -294,21 +294,21 @@ namespace Xdows_Security
                 ProgressPercentText.Text = showScanProgress? "0%":String.Empty;
                 PathText.Text = $"扫描模式：{displayName}";
                 PauseScanButton.Visibility = Visibility.Visible;
+                PauseScanButton.IsEnabled = false;
                 ResumeScanButton.Visibility = Visibility.Collapsed;
                 StatusText.Text = "正在处理文件...";
                 StartRadarAnimation();
             });
-
+            ScanId += 1;
             await Task.Run(async () =>
             {
                 try
                 {
                     var files = EnumerateFiles(mode, userPath);
-
+                    int ThisId = ScanId;
                     int total = files.Count();
                     int finished = 0;
                     int currentItemIndex = 0;
-
                     switch (mode)
                     {
                         case ScanMode.Quick:
@@ -331,6 +331,11 @@ namespace Xdows_Security
 
                     // 激活当前扫描项目
                     UpdateScanItemStatus(currentItemIndex, "正在扫描", true);
+
+                    _dispatcherQueue.TryEnqueue(() =>
+                    {
+                        PauseScanButton.IsEnabled = true;
+                    });
 
                     foreach (var file in files)
                     {
@@ -435,7 +440,7 @@ namespace Xdows_Security
                         }
                         catch { }
                         // 检测是否已经退出这个页面
-                        if (MainWindow.NowPage != "Security")
+                        if (MainWindow.NowPage != "Security" | ThisId != ScanId)
                         {
                             break;
                         }
@@ -497,6 +502,7 @@ namespace Xdows_Security
         private void OnPauseScanClick(object sender, RoutedEventArgs e)
         {
             _isPaused = true;
+            ScanButton.IsEnabled = true;
             PauseScanButton.Visibility = Visibility.Collapsed;
             ResumeScanButton.Visibility = Visibility.Visible;
             UpdateScanAreaInfo("扫描已暂停", "请点击继续扫描按钮恢复扫描");
@@ -508,6 +514,7 @@ namespace Xdows_Security
         private void OnResumeScanClick(object sender, RoutedEventArgs e)
         {
             _isPaused = false;
+            ScanButton.IsEnabled = false;
             PauseScanButton.Visibility = Visibility.Visible;
             ResumeScanButton.Visibility = Visibility.Collapsed;
             UpdateScanAreaInfo("正在继续扫描", "扫描进程已恢复");

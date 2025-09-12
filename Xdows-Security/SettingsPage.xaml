@@ -33,13 +33,13 @@
             <controls:SettingsCard
                             x:Uid="SettingsPage_Scan_ScanProgress"
                             HeaderIcon="{ui:FontIcon Glyph=&#xF0B5;}">
-                <ToggleSwitch x:Name="ScanProgressToggle" Toggled="ScanProgressToggle_Toggled" />
+                <ToggleSwitch x:Name="ScanProgressToggle" Tag="ShowScanProgress" Toggled="Toggled_SaveToggleData" />
             </controls:SettingsCard>
             <controls:SettingsExpander
                             VerticalAlignment="Top"
                             x:Uid="SettingsPage_Scan_SouXiao"
                             HeaderIcon="{ui:FontIcon Glyph=&#xF22C;}">
-                <ToggleSwitch x:Name="SouXiaoScanToggle" Toggled="SouXiaoScanToggle_Toggled"  />
+                <ToggleSwitch x:Name="SouXiaoScanToggle" Tag="SouXiaoScan" Toggled="Toggled_SaveToggleData"  />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                             x:Uid="SettingsPage_Scan_SouXiao_Develop"
@@ -51,17 +51,17 @@
                             VerticalAlignment="Top"
                             x:Uid="SettingsPage_Scan_Local"
                             HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
-                <ToggleSwitch x:Name="LocalScanToggle" Toggled="LocalScanToggle_Toggled" />
+                <ToggleSwitch x:Name="LocalScanToggle" Tag="LocalScan" Toggled="Toggled_SaveToggleData" />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                             x:Uid="SettingsPage_Scan_Local_DeepScan"
                             HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
-                        <ToggleSwitch x:Name="DeepScanToggle" Toggled="DeepScanToggle_Toggled"  />
+                        <ToggleSwitch x:Name="DeepScanToggle" Tag="DeepScan" Toggled="Toggled_SaveToggleData"  />
                     </controls:SettingsCard>
                     <controls:SettingsCard
                             x:Uid="SettingsPage_Scan_Local_ExtraData"
                             HeaderIcon="{ui:FontIcon Glyph=&#xF211;}">
-                        <ToggleSwitch x:Name="ExtraDataToggle" Toggled="ExtraDataToggle_Toggled"  />
+                        <ToggleSwitch x:Name="ExtraDataToggle" Tag="ExtraData" Toggled="Toggled_SaveToggleData"  />
                     </controls:SettingsCard>
                 </controls:SettingsExpander.Items>
             </controls:SettingsExpander>
@@ -69,7 +69,7 @@
                             VerticalAlignment="Top"
                             x:Uid="SettingsPage_Scan_Cloud"
                             HeaderIcon="{ui:FontIcon Glyph=&#xE753;}">
-                <ToggleSwitch x:Name="CloudScanToggle" Toggled="CloudScanToggle_Toggled"  />
+                <ToggleSwitch x:Name="CloudScanToggle" Toggled="Toggled_SaveToggleData"  />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                             x:Uid="SettingsPage_Scan_Cloud_Develop"

@@ -25,7 +25,8 @@ namespace Xdows_Security
             LoadBackdropSetting();
             LoadScanSetting();
             Settings_About_Version.Text = _resourceLoader.GetString("APP_Version");
-            if (App.GetCloudApiKey() == string.Empty) {
+            if (App.GetCloudApiKey() == string.Empty)
+            {
                 CloudScanToggle.IsOn = false;
                 CloudScanToggle.IsEnabled = false;
             }
@@ -61,6 +62,7 @@ namespace Xdows_Security
         private void RunProtection(object sender, RoutedEventArgs e)
         {
             if (sender is not ToggleSwitch toggle) return;
+            if (ProcessToggle.IsOn == ProcessProtection.IsEnabled()) return;
             int runId = toggle.Tag switch
             {
                 "Progress" => 0,
@@ -70,54 +72,39 @@ namespace Xdows_Security
             };
             RunProtectionWithToggle(toggle, runId);
         }
-        private void ScanProgressToggle_Toggled(object sender, RoutedEventArgs e)
+        private void Toggled_SaveToggleData(object sender, RoutedEventArgs e)
         {
+            if (sender is not ToggleSwitch toggle) return;
+
+            string key = toggle.Tag as string ?? toggle.Name;
+            if (string.IsNullOrWhiteSpace(key)) return;
+
             var settings = ApplicationData.Current.LocalSettings;
-            settings.Values["ShowScanProgress"] = ScanProgressToggle.IsOn;
-        }
-        private void DeepScanToggle_Toggled(object sender, RoutedEventArgs e)
-        {
-            var settings = ApplicationData.Current.LocalSettings;
-            settings.Values["DeepScan"] = DeepScanToggle.IsOn;
-        }
-        private void ExtraDataToggle_Toggled(object sender, RoutedEventArgs e)
-        {
-            var settings = ApplicationData.Current.LocalSettings;
-            settings.Values["ExtraData"] = ExtraDataToggle.IsOn;
-        }
-        private void SouXiaoScanToggle_Toggled(object sender, RoutedEventArgs e)
-        {
-            var settings = ApplicationData.Current.LocalSettings;
-            settings.Values["SouXiaoScan"] = SouXiaoScanToggle.IsOn;
-        }
-        private void LocalScanToggle_Toggled(object sender, RoutedEventArgs e)
-        {
-            var settings = ApplicationData.Current.LocalSettings;
-            settings.Values["LocalScan"] = LocalScanToggle.IsOn;
-        }
-        private void CloudScanToggle_Toggled(object sender, RoutedEventArgs e)
-        {
-            var settings = ApplicationData.Current.LocalSettings;
-            settings.Values["CloudScan"] = CloudScanToggle.IsOn;
+            settings.Values[key] = toggle.IsOn;
         }
         private void LoadScanSetting()
         {
             var settings = ApplicationData.Current.LocalSettings;
-            var toggleSettings = new Dictionary<string, ToggleSwitch>
+            var toggles = new List<ToggleSwitch>
             {
-                ["ShowScanProgress"] = ScanProgressToggle,
-                ["DeepScan"] = DeepScanToggle,
-                ["ExtraData"] = ExtraDataToggle,
-                ["LocalScan"] = LocalScanToggle,
-                ["CloudScan"] = CloudScanToggle,
-                ["SouXiaoScan"] = SouXiaoScanToggle
+                ScanProgressToggle,
+                DeepScanToggle,
+                ExtraDataToggle,
+                LocalScanToggle,
+                CloudScanToggle,
+                SouXiaoScanToggle
             };
 
-            foreach (var setting in toggleSettings)
+            foreach (var setting in toggles)
             {
-                if (settings.Values.TryGetValue(setting.Key, out object? value))
+                if (setting == null) continue;
+
+                if (setting.Tag is string key && !string.IsNullOrWhiteSpace(key))
                 {
-                    setting.Value.IsOn = value is bool boolValue && boolValue;
+                    if (settings.Values.TryGetValue(key, out object? value))
+                    {
+                        setting.IsOn = value is bool boolValue && boolValue;
+                    }
                 }
             }
             ProcessToggle.IsOn = ProcessProtection.IsEnabled();
@@ -175,7 +162,8 @@ namespace Xdows_Security
             {
                 App.RestartApplication();
             }
-            else {
+            else
+            {
                 BadgeNotificationManager.Current.SetBadgeAsGlyph(BadgeNotificationGlyph.Activity);
             }
         }

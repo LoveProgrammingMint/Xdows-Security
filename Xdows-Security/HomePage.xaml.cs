@@ -186,7 +186,6 @@ namespace Xdows_Security
 
             settings.Values["TotalScans"] = currentTotal + 1;
             settings.Values["TotalThreats"] = currentThreats + threatsFound;
-            settings.Values["LastScanTime"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
             LoadStatistics();
             LoadProtectionStatus();

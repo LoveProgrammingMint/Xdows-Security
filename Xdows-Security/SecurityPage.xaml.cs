@@ -452,6 +452,9 @@ namespace Xdows_Security
 
                     _dispatcherQueue.TryEnqueue(() =>
                     {
+                        var settings = ApplicationData.Current.LocalSettings;
+                        settings.Values["LastScanTime"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
                         StatusText.Text = $"扫描完成，发现 {_currentResults.Count} 个威胁";
                         ScanProgress.Visibility = Visibility.Collapsed;
                         PauseScanButton.Visibility = Visibility.Collapsed;

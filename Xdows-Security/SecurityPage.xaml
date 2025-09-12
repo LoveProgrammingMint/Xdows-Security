@@ -62,7 +62,7 @@
             </Border>
             <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Grid.Row="3" Grid.ColumnSpan="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,8">
                 <StackPanel>
-                    <Grid Margin="0,0,0,8">
+                    <Grid Margin="0,0,0,2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>

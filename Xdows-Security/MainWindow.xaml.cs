@@ -1,20 +1,23 @@
 using Microsoft.UI;
+using Microsoft.UI.Composition;
+using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.Windows.BadgeNotifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using WinUIEx;
-using Microsoft.Windows.BadgeNotifications;
 // using Windows.ApplicationModel.Resources;//∂‡”Ô—‘µ˜”√
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
+using WinRT;
+using WinUIEx;
 
 namespace Xdows_Security
 {
@@ -199,55 +202,90 @@ namespace Xdows_Security
             var systemBackground = settings.GetColorValue(UIColorType.Background);
             return IsLightColor(systemBackground) ? ElementTheme.Light : ElementTheme.Dark;
         }
-
+        private string LastBackdrop = "";
+        private double LastOpacity = 100;
+        private ISystemBackdropControllerWithTargets backdropController;
+        private ICompositionSupportsSystemBackdrop backdropTarget;
+        private static readonly SystemBackdropConfiguration backdropConfig = new()
+        {
+            IsInputActive = true,
+        };
         public void ApplyBackdrop(string backdropType)
         {
-            if (RootGrid == null) return;
-
-            RootGrid.Background = new SolidColorBrush(Colors.Transparent);
-
-            if (backdropType == "Solid")
-            {
-                this.SystemBackdrop = null;
-
-                var currentTheme = GetCurrentTheme();
-                if (currentTheme == ElementTheme.Dark)
+            try {
+                if (RootGrid == null) return;
+                var settings = ApplicationData.Current.LocalSettings;
+                if (LastBackdrop == backdropType && LastOpacity == (Double)settings.Values["AppBackdropOpacity"])
                 {
-                    RootGrid.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x20, 0x20));
+                    return;
                 }
                 else
                 {
-                    RootGrid.Background = new SolidColorBrush(Colors.White);
+                    LastOpacity = (Double)settings.Values["AppBackdropOpacity"];
+                    LastBackdrop = backdropType;
                 }
-                return; 
-            }
 
-            if (!App.CheckWindowsVersion() &&
-                (backdropType == "Mica" || backdropType == "MicaAlt"))
-            {
-                backdropType = "Acrylic";
-            }
-
-            switch (backdropType)
-            {
-                case "Mica":
-                    this.SystemBackdrop = new MicaBackdrop();
-                    break;
-                case "MicaAlt":
-                    this.SystemBackdrop = new MicaBackdrop()
+                if (backdropType == "Solid")
+                {
+                    try
                     {
-                        Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt
-                    };
-                    break;
-                case "Acrylic":
-                    this.SystemBackdrop = new DesktopAcrylicBackdrop();
-                    break;
-                default:
-                    this.SystemBackdrop = App.CheckWindowsVersion() ?
-                        new MicaBackdrop() :
-                        new DesktopAcrylicBackdrop();
-                    break;
+                        this.SystemBackdrop = null;
+                        var currentTheme = GetCurrentTheme();
+                        if (currentTheme == ElementTheme.Dark)
+                        {
+                            RootGrid.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x20, 0x20));
+                        }
+                        else
+                        {
+                            RootGrid.Background = new SolidColorBrush(Colors.White);
+                        }
+                    }
+                    catch { }
+                    return;
+                }
+                if (!MicaController.IsSupported() &&
+                    (backdropType == "Mica" || backdropType == "MicaAlt"))
+                {
+                    backdropType = "Acrylic";
+                }
+                try
+                {
+                    RootGrid.Background = new SolidColorBrush(Colors.Transparent);
+                    Microsoft.UI.Xaml.Media.SystemBackdrop? changeSystemBackdrop = null;
+                    backdropTarget = this.As<ICompositionSupportsSystemBackdrop>();
+                    switch (backdropType)
+                    {
+                        case "Mica":
+                            backdropController = new MicaController()
+                            {
+                                LuminosityOpacity = (float)LastOpacity / 100
+                            };
+                            break;
+                        case "MicaAlt":
+                            changeSystemBackdrop = new MicaBackdrop()
+                            {
+                                Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt
+                            };
+                            if (this.SystemBackdrop == changeSystemBackdrop) return;
+                            this.SystemBackdrop = changeSystemBackdrop;
+                            return;
+                        case "Acrylic":
+                            backdropController = new DesktopAcrylicController()
+                            {
+                                LuminosityOpacity = (float)LastOpacity / 100
+                            };
+                            break;
+                        default:
+                            ApplyBackdrop("Solid");
+                            return;
+                    }
+                    backdropController.AddSystemBackdropTarget(backdropTarget);
+                    backdropController.SetSystemBackdropConfiguration(backdropConfig);
+                }
+                catch { }
             }
+            catch { }
+
         }
         private void OnThemeChanged(FrameworkElement sender, object args)
         {

@@ -19,7 +19,7 @@
                     <ComboBoxItem x:Uid="SettingsPage_Appearance_Theme_ComboBox_Dark" />
                 </ComboBox>
             </controls:SettingsCard>
-            <controls:SettingsCard
+            <controls:SettingsExpander
                     x:Uid="SettingsPage_Appearance_Backdrop"
                     HeaderIcon="{ui:FontIcon Glyph=&#xEF1F;}">
                 <ComboBox x:Name="BackdropComboBox" SelectionChanged="BackdropComboBox_SelectionChanged">
@@ -28,7 +28,14 @@
                     <ComboBoxItem x:Uid="SettingsPage_Appearance_Backdrop_MicaAlt" Tag="MicaAlt" x:Name="MicaAltOption"/>
                     <ComboBoxItem x:Uid="SettingsPage_Appearance_Backdrop_Acrylic" Tag="Acrylic"/>
                 </ComboBox>
-            </controls:SettingsCard>
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard
+                            x:Uid="SettingsPage_Appearance_Backdrop_Opacity"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xF5ED;}">
+                        <Slider x:Name="Appearance_Backdrop_Opacity" Value="100" ValueChanged="OpacitySlider_ValueChanged"/>
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
             <TextBlock Margin="0,8,0,8" x:Uid="SettingsPage_Scan"/>
             <controls:SettingsCard
                             x:Uid="SettingsPage_Scan_ScanProgress"

@@ -1,11 +1,13 @@
+using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.Windows.BadgeNotifications;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Microsoft.Windows.BadgeNotifications;
+using System.Xml.Schema;
 using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
 using Windows.Storage;
@@ -16,7 +18,7 @@ namespace Xdows_Security
     public sealed partial class SettingsPage : Page
     {
         private readonly ResourceLoader _resourceLoader = ResourceLoader.GetForViewIndependentUse();
-
+        private bool IsInitialize = true;
         public SettingsPage()
         {
             this.InitializeComponent();
@@ -44,6 +46,7 @@ namespace Xdows_Security
                 RegistryToggle.IsEnabled = false;
                 RegistryToggle.IsOn = false;
             }
+            IsInitialize = false;
         }
         private void RunProtectionWithToggle(ToggleSwitch toggle, int runId)
         {
@@ -74,7 +77,7 @@ namespace Xdows_Security
         }
         private void Toggled_SaveToggleData(object sender, RoutedEventArgs e)
         {
-            if (sender is not ToggleSwitch toggle) return;
+            if (sender is not ToggleSwitch toggle || IsInitialize) return;
 
             string key = toggle.Tag as string ?? toggle.Name;
             if (string.IsNullOrWhiteSpace(key)) return;
@@ -107,6 +110,8 @@ namespace Xdows_Security
                     }
                 }
             }
+            System.Diagnostics.Debug.WriteLine(settings.Values["AppBackdropOpacity"]);
+            Appearance_Backdrop_Opacity.Value = (double)settings.Values["AppBackdropOpacity"];
             ProcessToggle.IsOn = ProcessProtection.IsEnabled();
             FilesToggle.IsOn = FilesProtection.IsEnabled();
             RegistryToggle.IsOn = RegistryProtection.IsEnabled();
@@ -242,8 +247,9 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             var savedBackdrop = settings.Values["AppBackdrop"] as string;
 
-            MicaOption.IsEnabled = App.CheckWindowsVersion();
-            MicaAltOption.IsEnabled = App.CheckWindowsVersion();
+            Appearance_Backdrop_Opacity.IsEnabled = !(savedBackdrop == "Solid" || savedBackdrop == "MicaAlt");
+            MicaOption.IsEnabled = MicaController.IsSupported();
+            MicaAltOption.IsEnabled = MicaController.IsSupported();
 
             bool found = false;
 
@@ -258,7 +264,7 @@ namespace Xdows_Security
             }
             if (!found)
             {
-                BackdropComboBox.SelectedIndex = App.CheckWindowsVersion() ? 1 : 3;
+                BackdropComboBox.SelectedIndex = MicaController.IsSupported() ? 1 : 3;
             }
 
             BackdropComboBox.SelectionChanged += BackdropComboBox_SelectionChanged;
@@ -266,18 +272,31 @@ namespace Xdows_Security
 
         private void BackdropComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (IsInitialize) return;
             if (BackdropComboBox.SelectedItem is ComboBoxItem selected)
             {
-                string backdropType = selected.Tag as string ?? ElementTheme.Default.ToString();
-                var settings = ApplicationData.Current.LocalSettings;
-                settings.Values["AppBackdrop"] = backdropType;
+                try {
+                    string backdropType = selected.Tag as string ?? ElementTheme.Default.ToString();
+                    var settings = ApplicationData.Current.LocalSettings;
+                    settings.Values["AppBackdrop"] = backdropType;
 
-                // 应用新背景
-                if (App.MainWindow != null)
-                {
-                    App.MainWindow.ApplyBackdrop(backdropType);
+                    // 应用新背景
+                    if (App.MainWindow != null)
+                    {
+                        App.MainWindow.ApplyBackdrop(backdropType);
+                    }
+                    Appearance_Backdrop_Opacity.IsEnabled = !(backdropType == "Solid" || backdropType == "MicaAlt");
                 }
+                catch { }
             }
+        }
+
+        private void OpacitySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            if (sender is not Slider slider || IsInitialize) return;
+            var settings = ApplicationData.Current.LocalSettings;
+            settings.Values["AppBackdropOpacity"] = slider.Value;
+            App.MainWindow.ApplyBackdrop(settings.Values["AppBackdrop"] as string ?? "Mica");
         }
     }
 }

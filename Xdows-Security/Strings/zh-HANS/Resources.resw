@@ -440,4 +440,10 @@
   <data name="SettingsPage_Scan_SouXiao_Develop.Header" xml:space="preserve">
     <value>关于引擎</value>
   </data>
+  <data name="SettingsPage_Appearance_Backdrop_Opacity.Description" xml:space="preserve">
+    <value>修改主窗口的不透明度</value>
+  </data>
+  <data name="SettingsPage_Appearance_Backdrop_Opacity.Header" xml:space="preserve">
+    <value>不透明度</value>
+  </data>
 </root>

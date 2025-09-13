@@ -440,4 +440,10 @@ If the end is light’s riddle, who sets the riddle past the end?</value>
   <data name="SettingsPage_Scan_SouXiao_Develop.Header" xml:space="preserve">
     <value>About this Engine</value>
   </data>
+  <data name="SettingsPage_Appearance_Backdrop_Opacity.Description" xml:space="preserve">
+    <value>Modify the opacity of the main window</value>
+  </data>
+  <data name="SettingsPage_Appearance_Backdrop_Opacity.Header" xml:space="preserve">
+    <value>Opacity</value>
+  </data>
 </root>

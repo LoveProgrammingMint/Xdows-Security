@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Dispatching;
+﻿using Microsoft.UI.Composition.SystemBackdrops;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.VisualBasic;
@@ -278,7 +279,7 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             if (!settings.Values.ContainsKey("AppBackdrop"))
             {
-                settings.Values["AppBackdrop"] = CheckWindowsVersion() ?
+                settings.Values["AppBackdrop"] = MicaController.IsSupported() ?
                     DefaultBackdrop : "Acrylic";
             }
         }

@@ -41,6 +41,7 @@ namespace Xdows_Security
             var manager = WinUIEx.WindowManager.Get(window);
             manager.MinWidth = 650;
             manager.MinHeight = 530;
+            Closed += delegate { Window_Closed(); };
             LogText.AddNewLog(1, "UI Interface", "主窗口加载成功");
         }
         private void MainWindow_Activated_FirstTime(object sender, WindowActivatedEventArgs args)
@@ -204,8 +205,8 @@ namespace Xdows_Security
         }
         private string LastBackdrop = "";
         private double LastOpacity = 100;
-        private ISystemBackdropControllerWithTargets backdropController;
-        private ICompositionSupportsSystemBackdrop backdropTarget;
+        private ISystemBackdropControllerWithTargets? backdropController;
+        private ICompositionSupportsSystemBackdrop? backdropTarget;
         private static readonly SystemBackdropConfiguration backdropConfig = new()
         {
             IsInputActive = true,
@@ -295,6 +296,13 @@ namespace Xdows_Security
             {
                 ApplyBackdrop(backdrop);
             }
+        }
+
+        private void Window_Closed()
+        {
+            if (backdropController == null) return;
+            backdropController.Dispose();
+            backdropController = null;
         }
     }
 }

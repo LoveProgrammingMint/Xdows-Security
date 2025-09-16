@@ -180,23 +180,11 @@
   <data name="SettingsPage_Scan_Local.Description" xml:space="preserve">
     <value>本地综合引擎速度相对较快，但是可能无法及时发现新的威胁</value>
   </data>
-  <data name="SettingsPage_Scan_Cloud.Header" xml:space="preserve">
-    <value>CzkCloud 云端引擎</value>
-  </data>
-  <data name="SettingsPage_Scan_Cloud.Description" xml:space="preserve">
-    <value>云端引擎来自第三方且需要连接至互联网，但是能提高查杀率</value>
-  </data>
   <data name="SettingsPage_Scan_Local_DeepScan.Header" xml:space="preserve">
     <value>深度扫描</value>
   </data>
   <data name="SettingsPage_Scan_Local_DeepScan.Description" xml:space="preserve">
     <value>更深度的分析文件，误报可能较高</value>
-  </data>
-  <data name="SettingsPage_Scan_Cloud_Develop.Header" xml:space="preserve">
-    <value>关于引擎</value>
-  </data>
-  <data name="SettingsPage_Scan_Cloud_Develop.Description" xml:space="preserve">
-    <value>天启星图网络科技 是这个扫描引擎的开发者和维护者</value>
   </data>
   <data name="SettingsPage_Protection.Text" xml:space="preserve">
     <value>防护</value>
@@ -445,5 +433,29 @@
   </data>
   <data name="SettingsPage_Appearance_Backdrop_Opacity.Header" xml:space="preserve">
     <value>不透明度</value>
+  </data>
+  <data name="SettingsPage_Scan_CzkCloud.Header" xml:space="preserve">
+    <value>CzkCloud 云端引擎</value>
+  </data>
+  <data name="SettingsPage_Scan_CzkCloud.Description" xml:space="preserve">
+    <value>云端引擎来自第三方且需要连接至互联网，但是能提高查杀率</value>
+  </data>
+  <data name="SettingsPage_Scan_CzkCloud_Develop.Header" xml:space="preserve">
+    <value>关于引擎</value>
+  </data>
+  <data name="SettingsPage_Scan_CzkCloud_Develop.Description" xml:space="preserve">
+    <value>天启星图网络科技 是这个扫描引擎的开发者和维护者</value>
+  </data>
+  <data name="SettingsPage_Scan_Cloud.Header" xml:space="preserve">
+    <value>基于云的扫描引擎</value>
+  </data>
+  <data name="SettingsPage_Scan_Cloud_AutoUpload.Header" xml:space="preserve">
+    <value>自动上报</value>
+  </data>
+  <data name="SettingsPage_Scan_Cloud.Description" xml:space="preserve">
+    <value>云端引擎需要连接至互联网，但是能及时最新的威胁并采取措施</value>
+  </data>
+  <data name="SettingsPage_Scan_Cloud_AutoUpload.Description" xml:space="preserve">
+    <value>在测试阶段中，这个选项为必选项</value>
   </data>
 </root>

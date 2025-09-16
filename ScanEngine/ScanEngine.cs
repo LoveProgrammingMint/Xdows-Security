@@ -66,7 +66,7 @@ namespace Xdows.ScanEngine
             }
             return string.Empty;
         }
-        public static async Task<(int statusCode, string? result)> CloudScanAsync(string path, string apiKey)
+        public static async Task<(int statusCode, string? result)> CzkCloudScanAsync(string path, string apiKey)
         {
             using var client = new HttpClient();
             string hash = await GetFileMD5Async(path);
@@ -76,6 +76,25 @@ namespace Xdows.ScanEngine
                 string json = await client.GetStringAsync(url);
                 using JsonDocument doc = JsonDocument.Parse(json);
                 if (doc.RootElement.TryGetProperty("result", out JsonElement prop))
+                    return (200, prop.GetString());
+            }
+            catch (HttpRequestException ex)
+            {
+                return ((int?)ex.StatusCode ?? -1, string.Empty);
+            }
+
+            return (-1, string.Empty);
+        }
+        public static async Task<(int statusCode, string? result)> CloudScanAsync(string path)
+        {
+            using var client = new HttpClient();
+            string hash = await GetFileMD5Async(path);
+            string url = $"http://103.118.245.82:5000/scan/md5?key=my_virus_key_2024&md5={hash}";
+            try
+            {
+                string json = await client.GetStringAsync(url);
+                using JsonDocument doc = JsonDocument.Parse(json);
+                if (doc.RootElement.TryGetProperty("scan_result", out JsonElement prop))
                     return (200, prop.GetString());
             }
             catch (HttpRequestException ex)

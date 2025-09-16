@@ -76,10 +76,23 @@
                             VerticalAlignment="Top"
                             x:Uid="SettingsPage_Scan_Cloud"
                             HeaderIcon="{ui:FontIcon Glyph=&#xE753;}">
-                <ToggleSwitch x:Name="CloudScanToggle" Toggled="Toggled_SaveToggleData"  />
+                <ToggleSwitch x:Name="CloudScanToggle" Tag="CloudScan" Toggled="Toggled_SaveToggleData"  />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
-                            x:Uid="SettingsPage_Scan_Cloud_Develop"
+                            x:Uid="SettingsPage_Scan_Cloud_AutoUpload"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xE898;}">
+                        <ToggleSwitch IsEnabled="False" IsOn="True" />
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
+            <controls:SettingsExpander
+                            VerticalAlignment="Top"
+                            x:Uid="SettingsPage_Scan_CzkCloud"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xEDE4;}">
+                <ToggleSwitch x:Name="CzkCloudScanToggle" Tag="CzkCloudScan" Toggled="Toggled_SaveToggleData"  />
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard
+                            x:Uid="SettingsPage_Scan_CzkCloud_Develop"
                             HeaderIcon="{ui:FontIcon Glyph=&#xEC7A;}">
                         <HyperlinkButton x:Uid="AllPage_OpenLink" NavigateUri="https://www.szczk.top/" />
                     </controls:SettingsCard>

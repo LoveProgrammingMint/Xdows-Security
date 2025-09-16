@@ -147,7 +147,7 @@ namespace Xdows_Security
     public partial class App : Application
     {
         public static MainWindow MainWindow { get; private set; } = new();
-        public static string GetCloudApiKey() { return ""; }//想盗用 ApiKey ? 没门
+        public static string GetCzkCloudApiKey() { return ""; }
         public static bool IsRunAsAdmin()
         {
             WindowsIdentity identity = WindowsIdentity.GetCurrent();

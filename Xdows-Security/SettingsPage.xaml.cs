@@ -27,10 +27,10 @@ namespace Xdows_Security
             LoadBackdropSetting();
             LoadScanSetting();
             Settings_About_Version.Text = _resourceLoader.GetString("APP_Version");
-            if (App.GetCloudApiKey() == string.Empty)
+            if (App.GetCzkCloudApiKey() == string.Empty)
             {
-                CloudScanToggle.IsOn = false;
-                CloudScanToggle.IsEnabled = false;
+                CzkCloudScanToggle.IsOn = false;
+                CzkCloudScanToggle.IsEnabled = false;
             }
 
             //if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "model.onnx")) {
@@ -94,8 +94,9 @@ namespace Xdows_Security
                 DeepScanToggle,
                 ExtraDataToggle,
                 LocalScanToggle,
-                CloudScanToggle,
-                SouXiaoScanToggle
+                CzkCloudScanToggle,
+                SouXiaoScanToggle,
+                CloudScanToggle
             };
 
             foreach (var setting in toggles)

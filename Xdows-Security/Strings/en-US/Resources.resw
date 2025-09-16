@@ -180,23 +180,11 @@
   <data name="SettingsPage_Scan_Local.Description" xml:space="preserve">
     <value>The local integrated engine is relatively fast but may not promptly detect new threats</value>
   </data>
-  <data name="SettingsPage_Scan_Cloud.Header" xml:space="preserve">
-    <value>CzkCloud Engine</value>
-  </data>
-  <data name="SettingsPage_Scan_Cloud.Description" xml:space="preserve">
-    <value>Connecting to the cloud engine improves detection and accuracy but requires internet access</value>
-  </data>
   <data name="SettingsPage_Scan_Local_DeepScan.Header" xml:space="preserve">
     <value>Deep Scan</value>
   </data>
   <data name="SettingsPage_Scan_Local_DeepScan.Description" xml:space="preserve">
     <value>Deeper file analysis may increase false positives</value>
-  </data>
-  <data name="SettingsPage_Scan_Cloud_Develop.Header" xml:space="preserve">
-    <value>About this Engine</value>
-  </data>
-  <data name="SettingsPage_Scan_Cloud_Develop.Description" xml:space="preserve">
-    <value>天启星图网络科技 is the developer and maintainer of this scanning engine</value>
   </data>
   <data name="SettingsPage_Protection.Text" xml:space="preserve">
     <value>Protection</value>
@@ -445,5 +433,29 @@ If the end is light’s riddle, who sets the riddle past the end?</value>
   </data>
   <data name="SettingsPage_Appearance_Backdrop_Opacity.Header" xml:space="preserve">
     <value>Opacity</value>
+  </data>
+  <data name="SettingsPage_Scan_CzkCloud.Header" xml:space="preserve">
+    <value>CzkCloud Engine</value>
+  </data>
+  <data name="SettingsPage_Scan_CzkCloud.Description" xml:space="preserve">
+    <value>Connecting to the cloud engine improves detection and accuracy but requires internet access</value>
+  </data>
+  <data name="SettingsPage_Scan_CzkCloud_Develop.Header" xml:space="preserve">
+    <value>About this Engine</value>
+  </data>
+  <data name="SettingsPage_Scan_CzkCloud_Develop.Description" xml:space="preserve">
+    <value>天启星图网络科技 is the developer and maintainer of this scanning engine</value>
+  </data>
+  <data name="SettingsPage_Scan_Cloud.Header" xml:space="preserve">
+    <value>Cloud-based scanning</value>
+  </data>
+  <data name="SettingsPage_Scan_Cloud_AutoUpload.Header" xml:space="preserve">
+    <value>Automatic reporting</value>
+  </data>
+  <data name="SettingsPage_Scan_Cloud.Description" xml:space="preserve">
+    <value>The cloud engine needs to be connected to the Internet, but it can detect the latest threats and take measures in a timely manner.</value>
+  </data>
+  <data name="SettingsPage_Scan_Cloud_AutoUpload.Description" xml:space="preserve">
+    <value>During the testing phase, this option is required</value>
   </data>
 </root>

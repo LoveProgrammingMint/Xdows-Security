@@ -157,10 +157,11 @@ namespace Xdows_Security
         {
             var settings = ApplicationData.Current.LocalSettings;
             bool UseLocalScan = settings.Values["LocalScan"] is bool && (bool)settings.Values["LocalScan"];
+            bool UseCzkCloudScan = settings.Values["CzkCloudScan"] is bool && (bool)settings.Values["CzkCloudScan"];
             bool UseCloudScan = settings.Values["CloudScan"] is bool && (bool)settings.Values["CloudScan"];
             bool UseSouXiaoScan = settings.Values["SouXiaoScan"] is bool && (bool)settings.Values["SouXiaoScan"];
 
-            if (!UseLocalScan && !UseCloudScan && !UseSouXiaoScan)
+            if (!UseLocalScan && !UseCzkCloudScan && !UseSouXiaoScan && !UseCloudScan)
             {
                 var dialog = new ContentDialog
                 {
@@ -213,6 +214,7 @@ namespace Xdows_Security
             bool DeepScan = settings.Values["DeepScan"] is bool && (bool)settings.Values["DeepScan"];
             bool ExtraData = settings.Values["ExtraData"] is bool && (bool)settings.Values["ExtraData"];
             bool UseLocalScan = settings.Values["LocalScan"] is bool && (bool)settings.Values["LocalScan"];
+            bool UseCzkCloudScan = settings.Values["CzkCloudScan"] is bool && (bool)settings.Values["CzkCloudScan"];
             bool UseCloudScan = settings.Values["CloudScan"] is bool && (bool)settings.Values["CloudScan"];
             bool UseSouXiaoScan = settings.Values["SouXiaoScan"] is bool && (bool)settings.Values["SouXiaoScan"];
 
@@ -241,6 +243,10 @@ namespace Xdows_Security
             {
                 Log += " LocalScan";
                 if (DeepScan) { Log += "-DeepScan"; }
+            }
+            if (UseCzkCloudScan)
+            {
+                Log += " CzkCloudScan";
             }
             if (UseCloudScan)
             {
@@ -370,26 +376,39 @@ namespace Xdows_Security
                                     Result = SouXiaoEngineResult.IsVirus ? SouXiaoEngineResult.Result : string.Empty;
                                 }
                             }
-                            
-                            if (!string.IsNullOrEmpty(Result))
+                            if (string.IsNullOrEmpty(Result))
                             {
                                 if (UseLocalScan)
                                 {
                                     string localResult = await Xdows.ScanEngine.ScanEngine.LocalScanAsync(file, DeepScan, ExtraData);
+
                                     if (!string.IsNullOrEmpty(localResult))
                                     {
                                         Result = DeepScan ? $"{localResult} with DeepScan" : localResult;
                                     }
                                 }
                             }
-                            if (!string.IsNullOrEmpty(Result))
+
+                            if (string.IsNullOrEmpty(Result))
                             {
                                 if (UseCloudScan)
                                 {
-                                    var cloudResult = await Xdows.ScanEngine.ScanEngine.CloudScanAsync(file, App.GetCloudApiKey());
-                                    if (cloudResult.result != "safe")
+                                    var cloudResult = await Xdows.ScanEngine.ScanEngine.CloudScanAsync(file);
+                                    System.Diagnostics.Debug.WriteLine(cloudResult.result);
+                                    if (cloudResult.result == "virus_file")
                                     {
-                                        Result = cloudResult.result??string.Empty;
+                                        Result = "MEMZUAC.Cloud.VirusFile" ?? string.Empty;
+                                    }
+                                }
+                            }
+                            if (string.IsNullOrEmpty(Result))
+                            {
+                                if (UseCzkCloudScan)
+                                {
+                                    var czkCloudResult = await Xdows.ScanEngine.ScanEngine.CzkCloudScanAsync(file, App.GetCzkCloudApiKey());
+                                    if (czkCloudResult.result != "safe")
+                                    {
+                                        Result = czkCloudResult.result??string.Empty;
                                     }
                                 }
                             }

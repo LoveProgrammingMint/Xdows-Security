@@ -43,10 +43,8 @@ namespace Xdows.ScanEngine
 
             if (fileExtension == ".exe" || fileExtension == ".dll")
             {
-                if (IsFileDigitallySignedAndValid(path))
-                {
-                    score -= 5;
-                }
+                score -= FileDigitallySignedAndValid(path);
+                
                 if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "LoadLibrary" }))
                 {
                     if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "GetProcAddress" }))
@@ -252,23 +250,56 @@ namespace Xdows.ScanEngine
                    content.Contains("Shutdown");
         }
 
-        public static bool IsFileDigitallySignedAndValid(string filePath)
+        public static int FileDigitallySignedAndValid(string filePath)
         {
+            X509Certificate2? cert = null;
             try
             {
-                X509Certificate2 cert = new X509Certificate2(X509Certificate.CreateFromSignedFile(filePath));
+                cert = new X509Certificate2(X509Certificate.CreateFromSignedFile(filePath));
 
-                X509Chain chain = new X509Chain();
-                chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
-                chain.ChainPolicy.RevocationFlag = X509RevocationFlag.ExcludeRoot;
-                chain.ChainPolicy.UrlRetrievalTimeout = TimeSpan.FromSeconds(30);
-                chain.ChainPolicy.VerificationFlags = X509VerificationFlags.NoFlag;
+                if (cert.NotAfter <= DateTime.Now)
+                    return -10;
 
-                return chain.Build(cert);
+                X509Chain chain = new X509Chain
+                {
+                    ChainPolicy =
+                    {
+                       RevocationMode = X509RevocationMode.Online,
+                       RevocationFlag = X509RevocationFlag.ExcludeRoot,
+                       UrlRetrievalTimeout = TimeSpan.FromSeconds(30),
+                       VerificationFlags = X509VerificationFlags.NoFlag
+                    }
+                };
+
+                bool chainOk = chain.Build(cert);
+
+                foreach (X509ChainElement el in chain.ChainElements)
+                {
+                    if (el.ChainElementStatus.Any(s =>
+                            s.Status == X509ChainStatusFlags.Revoked))
+                        return -10;
+                }
+
+                bool isTrustedCertificate = false;
+                foreach (X509ChainElement el in chain.ChainElements)
+                {
+                    string fp = cert.Thumbprint;
+                    if (fp == "3B77DB29AC72AA6B5880ECB2ED5EC1EC6601D847")
+                    {
+                        isTrustedCertificate = true;
+                        break;
+                    }
+                }
+
+                return chainOk ? (isTrustedCertificate ? 50 : 5) : 0;
             }
             catch
             {
-                return false;
+                return 0;
+            }
+            finally
+            {
+                cert?.Dispose();
             }
         }
 

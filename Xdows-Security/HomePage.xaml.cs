@@ -31,12 +31,7 @@ namespace Xdows_Security
             InitializeTimers();
             InitializeData();
             LogText.TextChanged += LogText_TextChanged;
-            string Pomes = _resourceLoader.GetString("HomePage_Pomes");
-            var randomLine = Pomes
-                .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                .OrderBy(_ => Guid.NewGuid())
-                .FirstOrDefault();
-            HomePage_Pomes.Text = randomLine;
+            RefreshPomes();
             UpdateData();
         }
 
@@ -55,6 +50,19 @@ namespace Xdows_Security
             LoadSystemInfo();
             LoadStatistics();
             LoadProtectionStatus();
+        }
+        private void RefreshPomes_Click(object sender, RoutedEventArgs e) {
+            RefreshPomes();
+        }
+        private void RefreshPomes()
+        {
+            string Pomes = _resourceLoader.GetString("HomePage_Pomes");
+            var randomLine = Pomes
+                .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                .OrderBy(_ => Guid.NewGuid())
+                .FirstOrDefault();
+            HomePage_Pomes.Text = randomLine;
+
         }
 
         private void LoadSystemInfo()

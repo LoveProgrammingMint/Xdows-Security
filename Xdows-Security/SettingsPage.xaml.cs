@@ -111,7 +111,6 @@ namespace Xdows_Security
                     }
                 }
             }
-            System.Diagnostics.Debug.WriteLine(settings.Values["AppBackdropOpacity"]);
             Appearance_Backdrop_Opacity.Value = (double)settings.Values["AppBackdropOpacity"];
             ProcessToggle.IsOn = ProcessProtection.IsEnabled();
             FilesToggle.IsOn = FilesProtection.IsEnabled();

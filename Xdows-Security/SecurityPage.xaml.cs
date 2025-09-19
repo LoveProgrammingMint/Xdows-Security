@@ -293,8 +293,6 @@ namespace Xdows_Security
             {
                 ScanProgress.IsIndeterminate = !showScanProgress;
                 VirusList.ItemsSource = _currentResults;
-                VirusList.Visibility = Visibility.Collapsed;
-                BackToVirusListButton.Visibility = Visibility.Collapsed;
                 ScanProgress.Value = 0;
                 ScanProgress.Visibility = Visibility.Visible;
                 ProgressPercentText.Text = showScanProgress? "0%":String.Empty;
@@ -303,6 +301,7 @@ namespace Xdows_Security
                 PauseScanButton.IsEnabled = false;
                 ResumeScanButton.Visibility = Visibility.Collapsed;
                 StatusText.Text = "正在处理文件...";
+                OnBackList(false);
                 StartRadarAnimation();
             });
             ScanId += 1;
@@ -488,7 +487,6 @@ namespace Xdows_Security
                     {
                         StatusText.Text = "扫描已取消";
                         ScanProgress.Visibility = Visibility.Collapsed;
-                        PauseScanButton.Visibility = Visibility.Collapsed;
                         ResumeScanButton.Visibility = Visibility.Collapsed;
 
                         StopRadarAnimation();
@@ -514,12 +512,14 @@ namespace Xdows_Security
         // 返回病毒列表按钮事件
         private void OnBackToVirusListClick(object sender, RoutedEventArgs e)
         {
-            bool show = VirusList.Visibility != Visibility.Visible;
-            VirusList.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
-            BackToVirusListButtonText.Text = show ? "隐藏列表" : "显示列表";
-            BackToVirusListButtonIcon.Glyph = show ? "\uED1A" : "\uE890";
+            OnBackList(VirusList.Visibility != Visibility.Visible);
         }
-
+        private void OnBackList(bool isShow)
+        {
+            VirusList.Visibility = isShow ? Visibility.Visible : Visibility.Collapsed;
+            BackToVirusListButtonText.Text = isShow ? "隐藏列表" : "显示列表";
+            BackToVirusListButtonIcon.Glyph = isShow ? "\uED1A" : "\uE890";
+        }
         // 暂停扫描按钮事件
         private void OnPauseScanClick(object sender, RoutedEventArgs e)
         {

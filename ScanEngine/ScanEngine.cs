@@ -40,8 +40,6 @@ namespace Xdows.ScanEngine
                 {
                     fileInfo.ExportsName = Array.Empty<string>();
                 }
-                if (DllScan.Scan(path, fileInfo))
-                    return "Xdows.local.DllVirus";
             }
             var importedFunctions = peFile.ImportedFunctions;
             if (importedFunctions != null)

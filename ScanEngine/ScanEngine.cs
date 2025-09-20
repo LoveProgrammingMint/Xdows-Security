@@ -64,6 +64,8 @@ namespace Xdows.ScanEngine
             }
             return string.Empty;
         }
+        //public static string SignedAndValid = string.Empty;
+
         public static async Task<(int statusCode, string? result)> CzkCloudScanAsync(string path, string apiKey)
         {
             using var client = new HttpClient();

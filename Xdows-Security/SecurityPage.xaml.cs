@@ -266,7 +266,6 @@ namespace Xdows_Security
                 {
                     _dispatcherQueue.TryEnqueue(() =>
                     {
-                        ScanProgress.Visibility = Visibility.Collapsed;
                         StatusText.Text = "取消选择";
                         StopRadarAnimation();
                     });
@@ -297,6 +296,7 @@ namespace Xdows_Security
                 ScanProgress.Visibility = Visibility.Visible;
                 ProgressPercentText.Text = showScanProgress? "0%":String.Empty;
                 PathText.Text = $"扫描模式：{displayName}";
+                BackToVirusListButton.Visibility = Visibility.Collapsed;
                 PauseScanButton.Visibility = Visibility.Visible;
                 PauseScanButton.IsEnabled = false;
                 ResumeScanButton.Visibility = Visibility.Collapsed;
@@ -472,6 +472,8 @@ namespace Xdows_Security
                     {
                         var settings = ApplicationData.Current.LocalSettings;
                         settings.Values["LastScanTime"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                        //System.Diagnostics.Debug.WriteLine(Xdows.ScanEngine.ScanEngine.SignedAndValid);
 
                         StatusText.Text = $"扫描完成，发现 {_currentResults.Count} 个威胁";
                         ScanProgress.Visibility = Visibility.Collapsed;

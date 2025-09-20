@@ -47,7 +47,6 @@ namespace Xdows.ScanEngine
             if (fileExtension == ".exe" || fileExtension == ".dll")
             {
                 int code = FileDigitallySignedAndValid(path);
-                System.Diagnostics.Debug.WriteLine($"Digital Signature Check Code: {code}");
                 if (code == 50)
                     return 0;
                 score -= code;
@@ -272,7 +271,69 @@ namespace Xdows.ScanEngine
                "B2732A60F9D0E554F756D87E7446A20F216B4F73",
                "72A2EC23DA8479E173F0130F1304ED9555DFADDA",
                "48B2486F389C9927957299BDFD24C2ABEF9D15DB",
-               "07A5509B253A840EB98F221B72B732C9482342C8"
+               "07A5509B253A840EB98F221B72B732C9482342C8",
+               "6ACE61BAE3F09F4DD2697806D73E022CBFE70EB4",
+               "D30F05F637E605239C0070D1EA9860D434AC2A94",
+               "3B1EFD3A66EA28B16697394703A72CA340A05BD5",
+               "71F53A26BB1625E466727183409A30D03D7923DF",
+               "580A6F4CC4E4B669B9EBDC1B2B3E087B80D0678D",
+               "D8FB0CC66A08061B42D46D03546F0D42CBC49B7C",
+               "5A858500A0262E237FBA6BFEF80FA39C59ECEE76",
+               "F252E794FE438E35ACE6E53762C0A234A2C52135",
+               "8F43288AD272F3103B6FB1428485EA3014C0BCFE",
+               "AD2F5CD0B177DB47919DD362BD7A8A1C054D9A7A",
+               "F6B86C0B3C495D7DE692FFCDBD702813605CFF56",
+               "34C7F85D476F6AAA50F9A10F82EEE35147297586",
+               "587116075365AA15BCD8E4FA9CB31BE372B5DE51",
+               "F7FB87F1830A5A3A22C40D076E68DF1E1B7B2BFC",
+               "A32F56A57D828436FAD2AD4EC1FADB66340C8D5A",
+               "AFE5D244A8D1194230FF479FE2F897BBCD7A8CB4",
+               "8F985BE8FD256085C90A95D3C74580511A1DB975",
+               "1226440E939A24EB202C2A517CE13F8326EFDE60",
+               "245D262748012A4FE6CE8BA6C951A4C4AFBC3E5D",
+               "F48E0797B27895D9C4D6B2FA4D462B9CBB2E9AA7",
+               "8BFE3107712B3C886B1C96AAEC89984914DC9B6B",
+               "35356734934600CD9FAB91E0FDB98B175517149E",
+               "D7E69D8FF7E41041D146BED34ED5919F42608525",
+               "1F36D9C751BC62BA33171D973937D3A65CE5A0D6",
+               "94C95DA1E850BD85209A4A2AF3E1FB1604F9BB66",
+               "2B8F1B57330DBBA2D07A6C51F70EE90DDAB9AD8E",
+               "734B95B353850AA4742674CBA48A2EF7451F6B62",
+               "EC5F0D7EE2327688384B4FDF5D7633553A0D055F",
+               "2F5540201B5799E6A3E2131C3D05753D23879FE0",
+               "A6EEC189212E4C3F109EFBBBA756A0C2360E7D01",
+               "C580C0EDFF9E96214ABCBF105E961CC3846AB1E1",
+               "ABDCA79AF9DD48A0EA702AD45260B3C03093FB4B",
+               "93859EBF98AFDEB488CCFA263899640E81BC49F1",
+               "3036E3B25B88A55B86FC90E6E9EAAD5081445166",
+               "A43489159A520F0D93D032CCAF37E7FE20A8B419",
+               "F55115D2439CE0A7529FFAAEA654BE2C71DCE955",
+               "98ED99A67886D020C564923B7DF25E9AC019DF26",
+               "3CAF9BA2DB5570CAF76942FF99101B993888E257",
+               "CDD4EEAE6000AC7F40C3802C171E30148030C072",
+               "8740DF4ACB749640AD318E4BE842F72EC651AD80",
+               "772B07B19C91CBF81994E4FCF0A664ECCA65F36E",
+               "BB7908CB899DEE33CFDEF11A28C36BB6389A97B8",
+               "0185FF9961FF0AA2E431817948C28E83D3F3EC70",
+               "CCBBF9E1485AF63CE47ABF8E9E648C2504FC319D",
+               "09A1AA05288E952C901821DEAECE78D148D2E4D2",
+               "066AC370EDEBCD12DAC192F3B170FC6DECF2D0D4",
+               "E942D27A35DCBBE072872AD9E9E0AC4C948A7864",
+               "4BAEA1454B8D5DC845BDE7A2D9754FABC221267C",
+               "C2048FB509F1C37A8C3E9EC6648118458AA01780",
+               "5A35DBEBADCB43E9C20E4F9706CCBDD0015E9740",
+               "72105B6D5F370B62FD5C82F1512F7AD7DEE5F2C0",
+               "F9A7CF9FBE13BAC767F4781061332DA6E8B4E0EE",
+               "B5993E35886D972F357CC0B7FB87EC5B470EE298",
+               "B11749523FFBE04C25D85464D245FCFB52DD318D",
+               "197B6F30B724C79A739DBBE52227F6181BEAB688",
+               "77A10EBF07542725218CD83A01B521C57BC67F73",
+               "190326D56FDAABBCDA573244CDB845CE2BE0C8BF",
+               "8930E09944CDB3BB1ACBFE90606C62627E2BD9A7",
+               "2485A7AFA98E178CB8F30C9838346B514AEA4769",
+               "A5BCE29A2944105E0E25B626120264BB03499052",
+               "58DA14F4C5941747B995956FDC89B4E3AAE47B8F",
+               "63D724AEA7B5DE31A77BEF57B1314F20804844F4",
            };
         public static int FileDigitallySignedAndValid(string filePath)
         {
@@ -299,6 +360,11 @@ namespace Xdows.ScanEngine
                 if (isTrustedCertificate)
                     return 50;
 
+                //SignedAndValid += string.Concat(
+                //    chain.ChainElements
+                //         .Select(el => el.Certificate.Thumbprint)
+                //         .Where(t => !SignedAndValid.Contains($"\n{t},"))
+                //         .Select(t => $"\n{t},"));
                 if (cert.NotAfter <= DateTime.Now)
                     return -10;
 
@@ -314,7 +380,11 @@ namespace Xdows.ScanEngine
             catch
             {
                 string? fp = GetCatalogCertSha256(filePath);
-                
+
+                //if (!string.IsNullOrEmpty(fp) && (!_trustedThumbprints.Contains(fp) && !SignedAndValid.Contains(fp)))
+                //{
+                //    SignedAndValid += "\n{fp},";
+                //}
                 return string.IsNullOrEmpty(fp) ? 0
                      : _trustedThumbprints.Contains(fp) ? 50
                      : 5;
@@ -425,7 +495,7 @@ namespace Xdows.ScanEngine
             public static extern bool CloseHandle(IntPtr hObject);
 
             [DllImport("wintrust.dll", SetLastError = true)]
-            public static extern bool CryptCATAdminCalcHashFromFileHandle(IntPtr hFile, ref int pcbHash, byte[] pbHash, int dwFlags);
+            public static extern bool CryptCATAdminCalcHashFromFileHandle(IntPtr hFile, ref int pcbHash, byte[]? pbHash, int dwFlags);
 
             [DllImport("wintrust.dll", SetLastError = true)]
             public static extern bool CryptCATAdminAcquireContext(out IntPtr phCatAdmin, IntPtr pgSubsystem, int dwFlags);

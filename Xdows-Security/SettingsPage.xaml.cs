@@ -64,7 +64,7 @@ namespace Xdows_Security
 
         private void RunProtection(object sender, RoutedEventArgs e)
         {
-            if (sender is not ToggleSwitch toggle) return;
+            if (sender is not ToggleSwitch toggle || IsInitialize) return;
             if (ProcessToggle.IsOn == ProcessProtection.IsEnabled()) return;
             int runId = toggle.Tag switch
             {
@@ -105,13 +105,20 @@ namespace Xdows_Security
 
                 if (setting.Tag is string key && !string.IsNullOrWhiteSpace(key))
                 {
-                    if (settings.Values.TryGetValue(key, out object? value))
+                    if (settings.Values.TryGetValue(key, out object? toggleValue))
                     {
-                        setting.IsOn = value is bool boolValue && boolValue;
+                        setting.IsOn = toggleValue is bool boolValue && boolValue;
                     }
                 }
             }
-            Appearance_Backdrop_Opacity.Value = (double)settings.Values["AppBackdropOpacity"];
+            if (settings.Values.TryGetValue("AppBackdropOpacity", out object? opacityValue))
+            {
+                Appearance_Backdrop_Opacity.Value = (double)opacityValue;
+            }
+            else
+            {
+                Appearance_Backdrop_Opacity.Value = 100;
+            }
             ProcessToggle.IsOn = ProcessProtection.IsEnabled();
             FilesToggle.IsOn = FilesProtection.IsEnabled();
             RegistryToggle.IsOn = RegistryProtection.IsEnabled();
@@ -133,6 +140,7 @@ namespace Xdows_Security
 
         private void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (IsInitialize) return;
             if (LanguageComboBox.SelectedItem is ComboBoxItem selectedItem)
             {
                 var newLanguage = selectedItem.Tag as string;
@@ -214,7 +222,7 @@ namespace Xdows_Security
 
         private void ThemeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ThemeComboBox.SelectedIndex == -1) return;
+            if (IsInitialize || ThemeComboBox.SelectedIndex == -1) return;
 
             ElementTheme selectedTheme = ElementTheme.Default;
             switch (ThemeComboBox.SelectedIndex)
@@ -242,8 +250,6 @@ namespace Xdows_Security
 
         private void LoadBackdropSetting()
         {
-            BackdropComboBox.SelectionChanged -= BackdropComboBox_SelectionChanged;
-
             var settings = ApplicationData.Current.LocalSettings;
             var savedBackdrop = settings.Values["AppBackdrop"] as string;
 
@@ -266,8 +272,6 @@ namespace Xdows_Security
             {
                 BackdropComboBox.SelectedIndex = MicaController.IsSupported() ? 1 : 3;
             }
-
-            BackdropComboBox.SelectionChanged += BackdropComboBox_SelectionChanged;
         }
 
         private void BackdropComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -275,7 +279,8 @@ namespace Xdows_Security
             if (IsInitialize) return;
             if (BackdropComboBox.SelectedItem is ComboBoxItem selected)
             {
-                try {
+                try
+                {
                     string backdropType = selected.Tag as string ?? ElementTheme.Default.ToString();
                     var settings = ApplicationData.Current.LocalSettings;
                     settings.Values["AppBackdrop"] = backdropType;
@@ -293,7 +298,7 @@ namespace Xdows_Security
 
         private void OpacitySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            if (sender is not Slider slider || IsInitialize) return;
+            if (IsInitialize || sender is not Slider slider) return;
             var settings = ApplicationData.Current.LocalSettings;
             settings.Values["AppBackdropOpacity"] = slider.Value;
             App.MainWindow.ApplyBackdrop(settings.Values["AppBackdrop"] as string ?? "Mica");

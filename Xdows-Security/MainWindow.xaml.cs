@@ -222,7 +222,14 @@ namespace Xdows_Security
                 }
                 else
                 {
-                    LastOpacity = (Double)settings.Values["AppBackdropOpacity"];
+                    if (settings.Values.TryGetValue("AppBackdropOpacity", out object? opacityValue))
+                    {
+                        LastOpacity = (Double)settings.Values["AppBackdropOpacity"];
+                    }
+                    else
+                    {
+                        LastOpacity = 100;
+                    }
                     LastBackdrop = backdropType;
                 }
 

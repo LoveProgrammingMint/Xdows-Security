@@ -20,6 +20,7 @@ using Windows.Globalization;
 using Windows.Storage;
 using Windows.System.UserProfile;
 using Xdows.Protection;
+using System.Text.Json;
 using static Xdows.Protection.CallBack;
 using static Xdows.Protection.FilesProtection;
 using static Xdows.Protection.ProcessProtection;
@@ -64,7 +65,8 @@ namespace Xdows_Security
                 Text += logEntry;
             }
 
-            if (MainWindow.NowPage == "Home")
+            // NowPage is a static field on MainWindow; check it directly
+            if (Xdows_Security.MainWindow.NowPage == "Home")
             {
                 TextChanged?.Invoke(null, EventArgs.Empty);
             }
@@ -78,14 +80,25 @@ namespace Xdows_Security
     {
         public static void ShowNotification(string title, string content)
         {
-            AppNotification notification = new AppNotificationBuilder()
-                .AddText (title)
+            var builder = new AppNotificationBuilder()
+                .AddText(title)
                 .AddText(content)
-                .BuildNotification();
+                .AddArgument("action", "openIntercept");
+
+            AppNotification notification = builder.BuildNotification();
+            try
+            {
+                var markerDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Xdows-Security");
+                Directory.CreateDirectory(markerDir);
+                var markerPath = Path.Combine(markerDir, "lastNotification.json");
+                var markerObj = new { action = "openIntercept", time = DateTime.UtcNow.ToString("o"), content = content };
+                File.WriteAllText(markerPath, JsonSerializer.Serialize(markerObj));
+            }
+            catch { }
             AppNotificationManager.Default.Show(notification);
         }
 
-    } 
+    }
     public static class Protection
     {        public static bool IsOpen()
         {
@@ -96,9 +109,8 @@ namespace Xdows_Security
             LogText.AddNewLog(2, "Protection", isSucceed
                 ? $"InterceptProcess：{Path.GetFileName(path)}"
                 : $"Cannot InterceptProcess：{Path.GetFileName(path)}");
-            string content = isSucceed
-                ? $"Xdows Security 已发现威胁.{Environment.NewLine}相关数据：{Path.GetFileName(path)}"
-                : $"Xdows Security 无法处理威胁.{Environment.NewLine}相关数据：{Path.GetFileName(path)}";
+            string content = isSucceed ? "已发现威胁" : "无法处理威胁";
+            content = $"Xdows Security {content}.{Environment.NewLine}相关数据：{Path.GetFileName(path)}{Environment.NewLine}单击此通知以查看详细信息";
             Notifications.ShowNotification("发现威胁", content);
         };
         public static bool Run(int RunID)
@@ -146,7 +158,8 @@ namespace Xdows_Security
 
     public partial class App : Application
     {
-        public static MainWindow MainWindow { get; private set; } = new();
+    public static MainWindow? MainWindow { get; private set; }
+        private static int _mainWindowCreating = 0;
         public static string GetCzkCloudApiKey() { return ""; }
         public static bool IsRunAsAdmin()
         {
@@ -163,27 +176,137 @@ namespace Xdows_Security
         //        Verb = "runas",
         //        UseShellExecute = true,
         //        WorkingDirectory = Path.GetDirectoryName(exePath)
-        //    };
         //    Process.Start(startInfo);
         //    Application.Current.Exit();
         //}
         public App()
         {
             LogText.AddNewLog(1, "UI Interface", "尝试加载主窗口");
-            this.InitializeComponent();
+            try
+            {
+                AppNotificationManager mgr = AppNotificationManager.Default;
+                mgr.NotificationInvoked += OnAppNotificationInvoked;
+            } catch {}
+        }
+
+    private async void OnAppNotificationInvoked(object? sender, AppNotificationActivatedEventArgs e)
+        {
+            try
+            {
+                if (e.Arguments is System.Collections.Generic.IDictionary<string, string> argsDict)
+                {
+                    if (argsDict.TryGetValue("action", out var action) && action == "openIntercept")
+                    {
+                        LogText.AddNewLog(1, "Notifications", $"Notification invoked with action={action}");
+                        if (MainWindow == null)
+                        {
+                            if (System.Threading.Interlocked.CompareExchange(ref _mainWindowCreating, 1, 0) == 0)
+                            {
+                                try
+                                {
+                                    MainWindow = new MainWindow();
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogText.AddNewLog(3, "Notifications", $"Failed to create MainWindow: {ex.Message}");
+                                }
+                                finally
+                                {
+                                    System.Threading.Interlocked.Exchange(ref _mainWindowCreating, 0);
+                                }
+                            }
+                            else
+                            {
+                                await System.Threading.Tasks.Task.Delay(100);
+                            }
+                        }
+
+                        if (MainWindow != null)
+                        {
+                            var dq = MainWindow.DispatcherQueue;
+                            dq?.TryEnqueue(() =>
+                            {
+                                try { MainWindow.Activate(); } catch { }
+                                try
+                                {
+                                    InterceptWindow.ShowOrActivate();
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogText.AddNewLog(3, "Notifications", $"Failed to open InterceptWindow: {ex.Message}");
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            catch { }
         }
 
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            try
+            {
+                LogText.AddNewLog(1, "App", $"OnLaunched args: '{args.Arguments}'");
+                if (!string.IsNullOrEmpty(args.Arguments) && args.Arguments.Contains("openIntercept"))
+                {
+                    try { MainWindow?.Activate(); } catch { }
+                    try
+                    {
+                        InterceptWindow.ShowOrActivate();
+                    }
+                    catch { }
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(args.Arguments))
+                {
+                    if (TryConsumeNotificationMarker())
+                    {
+                        try { MainWindow?.Activate(); } catch { }
+                        try { InterceptWindow.ShowOrActivate(); } catch { }
+                        return;
+                    }
+                }
+            }
+            catch { }
             InitializeLanguage();
             InitializeTheme();
             InitializeBackdrop();
+            // 确保 MainWindow 已创建后再访问
+            if (MainWindow == null)
+            {
+                MainWindow = new MainWindow();
+            }
             // 设置主窗口主题
             if (MainWindow.Content is FrameworkElement rootElement)
             {
                 rootElement.RequestedTheme = Theme;
             }
             MainWindow.Activate();
+
+            // InterceptWindow.ShowOrActivate();// 仅供测试使用，提交前请移除
+
+        }
+
+        private static bool TryConsumeNotificationMarker()
+        {
+            try
+            {
+                var markerDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Xdows-Security");
+                var markerPath = Path.Combine(markerDir, "lastNotification.json");
+                if (!File.Exists(markerPath)) return false;
+                var txt = File.ReadAllText(markerPath);
+                var doc = JsonDocument.Parse(txt);
+                if (doc.RootElement.TryGetProperty("action", out var action) && action.GetString() == "openIntercept")
+                {
+                    // 删除标记文件以防重复触发
+                    try { File.Delete(markerPath); } catch { }
+                    return true;
+                }
+            }
+            catch { }
+            return false;
         }
 
         private static void InitializeLanguage()
@@ -283,5 +406,7 @@ namespace Xdows_Security
                     DefaultBackdrop : "Acrylic";
             }
         }
+
+    // Note: InitializeComponent 由 XAML 生成的部分提供，源码中不应重复定义。
     }
 }

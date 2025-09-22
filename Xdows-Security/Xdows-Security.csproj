@@ -6,7 +6,11 @@
     <RootNamespace>Xdows_Security</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64;ARM64</Platforms>
-    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+  <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+  <!-- 指定默认运行时标识，避免打包时 ProcessorArchitecture neutral 错误。根据你的目标机器选择 win-x64 或其它。 -->
+  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  <!-- 指定 PlatformTarget 以避免 AnyCPU 导致的 AppHost 打包限制 -->
+  <PlatformTarget>x64</PlatformTarget>
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>

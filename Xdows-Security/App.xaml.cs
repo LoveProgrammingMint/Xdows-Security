@@ -72,18 +72,20 @@ namespace Xdows_Security
             }
         }
     }
-    class Statistics {
+    class Statistics
+    {
         public static int ScansQuantity { get; set; } = 0;
         public static int VirusQuantity { get; set; } = 0;
     }
     public static class Notifications
     {
-        public static void ShowNotification(string title, string content)
+        public static void ShowNotification(string title, string content, string path)
         {
             var builder = new AppNotificationBuilder()
                 .AddText(title)
                 .AddText(content)
-                .AddArgument("action", "openIntercept");
+                .AddArgument("action", "openIntercept")
+                .AddArgument("path", path);
 
             AppNotification notification = builder.BuildNotification();
             try
@@ -91,7 +93,13 @@ namespace Xdows_Security
                 var markerDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Xdows-Security");
                 Directory.CreateDirectory(markerDir);
                 var markerPath = Path.Combine(markerDir, "lastNotification.json");
-                var markerObj = new { action = "openIntercept", time = DateTime.UtcNow.ToString("o"), content = content };
+                var markerObj = new
+                {
+                    action = "openIntercept",
+                    path = path,
+                    time = DateTime.UtcNow.ToString("o"),
+                    content = content
+                };
                 File.WriteAllText(markerPath, JsonSerializer.Serialize(markerObj));
             }
             catch { }
@@ -100,7 +108,8 @@ namespace Xdows_Security
 
     }
     public static class Protection
-    {        public static bool IsOpen()
+    {
+        public static bool IsOpen()
         {
             return true;
         }
@@ -111,7 +120,7 @@ namespace Xdows_Security
                 : $"Cannot InterceptProcess：{Path.GetFileName(path)}");
             string content = isSucceed ? "已发现威胁" : "无法处理威胁";
             content = $"Xdows Security {content}.{Environment.NewLine}相关数据：{Path.GetFileName(path)}{Environment.NewLine}单击此通知以查看详细信息";
-            Notifications.ShowNotification("发现威胁", content);
+            Notifications.ShowNotification("发现威胁", content, path);
         };
         public static bool Run(int RunID)
         {
@@ -158,7 +167,7 @@ namespace Xdows_Security
 
     public partial class App : Application
     {
-    public static MainWindow? MainWindow { get; private set; }
+        public static MainWindow? MainWindow { get; private set; }
         private static int _mainWindowCreating = 0;
         public static string GetCzkCloudApiKey() { return ""; }
         public static bool IsRunAsAdmin()
@@ -186,10 +195,11 @@ namespace Xdows_Security
             {
                 AppNotificationManager mgr = AppNotificationManager.Default;
                 mgr.NotificationInvoked += OnAppNotificationInvoked;
-            } catch {}
+            }
+            catch { }
         }
 
-    private async void OnAppNotificationInvoked(object? sender, AppNotificationActivatedEventArgs e)
+        private async void OnAppNotificationInvoked(object? sender, AppNotificationActivatedEventArgs e)
         {
             try
             {
@@ -197,7 +207,9 @@ namespace Xdows_Security
                 {
                     if (argsDict.TryGetValue("action", out var action) && action == "openIntercept")
                     {
-                        LogText.AddNewLog(1, "Notifications", $"Notification invoked with action={action}");
+                        string interceptedPath = argsDict.TryGetValue("path", out var path) ? path : string.Empty;
+                        LogText.AddNewLog(1, "Notifications", $"Notification invoked with action={action}, path={interceptedPath}");
+
                         if (MainWindow == null)
                         {
                             if (System.Threading.Interlocked.CompareExchange(ref _mainWindowCreating, 1, 0) == 0)
@@ -229,7 +241,7 @@ namespace Xdows_Security
                                 try { MainWindow.Activate(); } catch { }
                                 try
                                 {
-                                    InterceptWindow.ShowOrActivate();
+                                    InterceptWindow.ShowOrActivate(interceptedPath);
                                 }
                                 catch (Exception ex)
                                 {
@@ -253,7 +265,14 @@ namespace Xdows_Security
                     try { MainWindow?.Activate(); } catch { }
                     try
                     {
-                        InterceptWindow.ShowOrActivate();
+                        // 从启动参数中解析路径
+                        string interceptedPath = string.Empty;
+                        var markerResult = TryConsumeNotificationMarker();
+                        if (markerResult.exists)
+                        {
+                            interceptedPath = markerResult.path;
+                        }
+                        InterceptWindow.ShowOrActivate(interceptedPath);
                     }
                     catch { }
                     return;
@@ -261,10 +280,11 @@ namespace Xdows_Security
 
                 if (string.IsNullOrEmpty(args.Arguments))
                 {
-                    if (TryConsumeNotificationMarker())
+                    var markerResult = TryConsumeNotificationMarker();
+                    if (markerResult.exists)
                     {
                         try { MainWindow?.Activate(); } catch { }
-                        try { InterceptWindow.ShowOrActivate(); } catch { }
+                        try { InterceptWindow.ShowOrActivate(markerResult.path); } catch { }
                         return;
                     }
                 }
@@ -285,28 +305,40 @@ namespace Xdows_Security
             }
             MainWindow.Activate();
 
-            // InterceptWindow.ShowOrActivate();// 仅供测试使用，提交前请移除
+            // InterceptWindow.ShowOrActivate(@"C:\Users\a1b2c\Downloads\MEMZ\MEMZ.exe");// 仅供测试使用，提交前请移除
 
         }
 
-        private static bool TryConsumeNotificationMarker()
+        private static (bool exists, string path) TryConsumeNotificationMarker()
         {
             try
             {
                 var markerDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Xdows-Security");
                 var markerPath = Path.Combine(markerDir, "lastNotification.json");
-                if (!File.Exists(markerPath)) return false;
+                if (!File.Exists(markerPath)) return (false, string.Empty);
+
                 var txt = File.ReadAllText(markerPath);
                 var doc = JsonDocument.Parse(txt);
+                string path = string.Empty;
+                bool hasAction = false;
+
                 if (doc.RootElement.TryGetProperty("action", out var action) && action.GetString() == "openIntercept")
                 {
-                    // 删除标记文件以防重复触发
-                    try { File.Delete(markerPath); } catch { }
-                    return true;
+                    hasAction = true;
                 }
+
+                if (doc.RootElement.TryGetProperty("path", out var pathElement))
+                {
+                    path = pathElement.GetString() ?? string.Empty;
+                }
+
+                // 删除标记文件以防重复触发
+                try { File.Delete(markerPath); } catch { }
+
+                return (hasAction, path);
             }
             catch { }
-            return false;
+            return (false, string.Empty);
         }
 
         private static void InitializeLanguage()
@@ -407,6 +439,5 @@ namespace Xdows_Security
             }
         }
 
-    // Note: InitializeComponent 由 XAML 生成的部分提供，源码中不应重复定义。
     }
 }

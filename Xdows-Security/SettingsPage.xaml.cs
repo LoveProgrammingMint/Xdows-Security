@@ -234,7 +234,7 @@ namespace Xdows_Security
 
             var settings = ApplicationData.Current.LocalSettings;
             settings.Values["AppTheme"] = selectedTheme.ToString();
-
+            if (App.MainWindow == null) return;
             if (App.MainWindow.Content is FrameworkElement rootElement)
             {
                 rootElement.RequestedTheme = selectedTheme;
@@ -301,6 +301,7 @@ namespace Xdows_Security
             if (IsInitialize || sender is not Slider slider) return;
             var settings = ApplicationData.Current.LocalSettings;
             settings.Values["AppBackdropOpacity"] = slider.Value;
+            if (App.MainWindow == null) return;
             App.MainWindow.ApplyBackdrop(settings.Values["AppBackdrop"] as string ?? "Mica");
         }
     }

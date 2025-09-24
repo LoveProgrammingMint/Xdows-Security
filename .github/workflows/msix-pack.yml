@@ -31,62 +31,36 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
         
-    - name: Install build tools
+    - name: Prepare signing certificate
       shell: pwsh
       run: |
-        # 确保Windows SDK工具可用
-        $sdkPath = "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*"
-        if (Test-Path $sdkPath) {
-            Write-Host "Windows SDK found"
-        } else {
-            Write-Host "Windows SDK not found, will rely on dotnet tools"
-        }
-        
-    - name: Restore dependencies
-      run: dotnet restore ${{ env.CSPROJ_PATH }} -r ${{ env.RID }}
-      
-    - name: Build solution
-      run: |
-        dotnet build ${{ env.CSPROJ_PATH }} \
-          -c ${{ env.CONFIGURATION }} \
-          -r ${{ env.RID }} \
-          --no-restore \
-          -p:PublishReadyToRun=false \
-          -p:WarningLevel=1
-          
-    - name: Install signing certificate
-      shell: pwsh
-      run: |
-        Write-Host "Installing certificate..."
+        Write-Host "Preparing certificate..."
         $certPath = "$env:RUNNER_TEMP\cert.pfx"
         
         # 解码并保存证书
         $bytes = [Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
         [IO.File]::WriteAllBytes($certPath, $bytes)
         
-        # 导入证书到系统存储（解决新版本MSIX工具的要求）
-        try {
-            Import-PfxCertificate -FilePath $certPath \
-                -CertStoreLocation Cert:\LocalMachine\My \
-                -Password (ConvertTo-SecureString -String "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" -Force -AsPlainText)
-            Write-Host "Certificate installed successfully"
-        } catch {
-            Write-Host "Warning: Could not import certificate to store: $($_.Exception.Message)"
-        }
+        # 获取证书指纹（用于直接签名）
+        $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+        $cert.Import($certPath, "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}", "PersistKeySet")
+        $thumbprint = $cert.Thumbprint
+        Write-Host "Certificate thumbprint: $thumbprint"
+        echo "CERT_THUMBPRINT=$thumbprint" >> $env:GITHUB_ENV
         
-    - name: Create MSIX package (Unsigned)
+    - name: Build and create signed MSIX package
       shell: pwsh
       run: |
-        Write-Host "Creating MSIX package..."
+        Write-Host "Building and creating signed MSIX package..."
         
-        # 使用详细的参数确保不尝试自动签名
         dotnet publish ${{ env.CSPROJ_PATH }} `
           -c ${{ env.CONFIGURATION }} `
           -r ${{ env.RID }} `
           --self-contained true `
           -p:PublishAppxPackage=true `
-          -p:AppxPackageSigningEnabled=false `
-          -p:PackageCertificateThumbprint= `
+          -p:AppxPackageSigningEnabled=true `
+          -p:PackageCertificateThumbprint=${{ env.CERT_THUMBPRINT }} `
+          -p:PackageCertificatePassword="${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" `
           -p:GenerateAppxPackageOnBuild=true `
           -p:AppxBundle=Never `
           -p:UapAppxPackageBuildMode=CI `
@@ -99,7 +73,7 @@ jobs:
             exit 1
         }
         
-        Write-Host "MSIX package created successfully"
+        Write-Host "Signed MSIX package created successfully"
         
     - name: Locate MSIX package
       id: locate-msix
@@ -124,56 +98,21 @@ jobs:
         echo "MSIX_PATH=$($msixFile.FullName)" >> $env:GITHUB_ENV
         echo "MSIX_DIR=$($msixFolder.FullName)" >> $env:GITHUB_ENV
         
-    - name: Sign MSIX package
-      shell: pwsh
-      run: |
-        Write-Host "Signing MSIX package..."
-        
-        $signtool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe" |
-                    Sort-Object LastWriteTime -Descending |
-                    Select-Object -First 1 -ExpandProperty FullName
-        
-        if (-not $signtool) {
-            throw "signtool.exe not found"
-        }
-        
-        $certPath = "$env:RUNNER_TEMP\cert.pfx"
-        $msixPath = "${{ env.MSIX_PATH }}"
-        $tsUrl = "http://timestamp.digicert.com"
-        
-        Write-Host "Using signtool: $signtool"
-        Write-Host "Signing: $msixPath"
-        
-        & $signtool sign `
-          /fd SHA256 `
-          /a `
-          /f "$certPath" `
-          /p "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" `
-          /tr $tsUrl `
-          /td SHA256 `
-          "$msixPath"
-          
-        if ($LASTEXITCODE -ne 0) {
-            throw "Signing failed"
-        }
-        
-        Write-Host "MSIX package signed successfully"
-        
     - name: Generate changelog
       id: changelog
       shell: pwsh
       run: |
         $log = (git log --oneline -20 --format="%h %s (%an)") -join "`n"
         $changelog = @"
-            ## 最近更改
-            $log
+## 最近更改 (最近20次提交)
+$log
 
-            ## 预发布版本说明
-            - **CzkCloud 扫描引擎暂不可用**
-            - 仅供测试，随时可能回滚
-            - 构建时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
-            - 提交: ${{ github.sha }}
-            "@
+## 预发布版本说明
+- **CzkCloud 扫描引擎暂不可用**
+- 仅供测试，随时可能回滚
+- 构建时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+- 提交: ${{ github.sha }}
+"@
         echo "CHANGELOG<<EOF" >> $env:GITHUB_OUTPUT
         echo "$changelog" >> $env:GITHUB_OUTPUT
         echo "EOF" >> $env:GITHUB_OUTPUT

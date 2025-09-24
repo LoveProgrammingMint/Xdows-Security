@@ -106,7 +106,8 @@ jobs:
       shell: pwsh
       run: |
         # 查找生成的MSIX包
-        $outDir = "${{ github.workspace }}/${{ env.CSPROJ_PATH | Split-Path -Parent }}/bin/${{ env.CONFIGURATION }}/${{ env.TARGET_FRAMEWORK }}/${{ env.RID }}/AppPackages"
+        $csprojDir = [System.IO.Path]::GetDirectoryName("${{ env.CSPROJ_PATH }}")
+        $outDir = "${{ github.workspace }}/$csprojDir/bin/${{ env.CONFIGURATION }}/${{ env.TARGET_FRAMEWORK }}/${{ env.RID }}/AppPackages"
         Write-Host "Looking for MSIX in: $outDir"
         
         $msixFolder = Get-ChildItem $outDir -Directory -Filter "*_Test" | Select-Object -First 1
@@ -164,7 +165,7 @@ jobs:
       run: |
         $log = (git log --oneline -20 --format="%h %s (%an)") -join "`n"
         $changelog = @"
-            ## 最近更改 (最近20次提交)
+            ## 最近更改
             $log
 
             ## 预发布版本说明
@@ -183,8 +184,8 @@ jobs:
         Write-Host "Preparing release assets..."
         
         # 复制证书文件
-        if (Test-Path "Certs\Cert.cer") {
-            Copy-Item "Certs\Cert.cer" "${{ env.MSIX_DIR }}/Cert.cer"
+        if (Test-Path "Certs/Cert.cer") {
+            Copy-Item "Certs/Cert.cer" "${{ env.MSIX_DIR }}/Cert.cer"
             Write-Host "Certificate copied"
         }
         

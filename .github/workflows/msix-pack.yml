@@ -1,92 +1,221 @@
 name: Build & Prerelease MSIX
+
 permissions:
   contents: write
+
 on:
   push:
-    branches: [ master, main ]
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
 env:
   DOTNET_VERSION: '8.0.x'
   CSPROJ_PATH: 'Xdows-Security/Xdows-Security.csproj'
   RID: 'win-x64'
-  OUT_DIR: 'Xdows-Security/bin/Release/net8.0-windows10.0.19041.0/win-x64/AppPackages'
+  CONFIGURATION: 'Release'
+  TARGET_FRAMEWORK: 'net8.0-windows10.0.19041.0'
+
 jobs:
-  build:
+  build-and-pack:
     runs-on: windows-latest
+    
     steps:
-    - name: Checkout
+    - name: Checkout code
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
+        
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-    - name: Restore & Build
-      run: |
-        dotnet restore ${{ env.CSPROJ_PATH }} -r ${{ env.RID }} -p:PublishReadyToRun=false
-        dotnet build   ${{ env.CSPROJ_PATH }} -c Release -r ${{ env.RID }} --no-restore -p:PublishReadyToRun=false
-    - name: Publish MSIX (Unsigned)
-      run: >
-        dotnet publish ${{ env.CSPROJ_PATH }}
-        -c Release
-        -r ${{ env.RID }}
-        --self-contained true
-        -p:PublishAppxPackage=true
-        -p:AppxPackageSigningEnabled=false
-        -p:PublishReadyToRun=false
-        -p:PublishTrimmed=false
-        -p:PublishProfile=
-    - name: Install certificate
+        
+    - name: Install build tools
       shell: pwsh
       run: |
+        # 确保Windows SDK工具可用
+        $sdkPath = "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*"
+        if (Test-Path $sdkPath) {
+            Write-Host "Windows SDK found"
+        } else {
+            Write-Host "Windows SDK not found, will rely on dotnet tools"
+        }
+        
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.CSPROJ_PATH }} -r ${{ env.RID }}
+      
+    - name: Build solution
+      run: |
+        dotnet build ${{ env.CSPROJ_PATH }} \
+          -c ${{ env.CONFIGURATION }} \
+          -r ${{ env.RID }} \
+          --no-restore \
+          -p:PublishReadyToRun=false \
+          -p:WarningLevel=1
+          
+    - name: Install signing certificate
+      shell: pwsh
+      run: |
+        Write-Host "Installing certificate..."
         $certPath = "$env:RUNNER_TEMP\cert.pfx"
+        
+        # 解码并保存证书
         $bytes = [Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
         [IO.File]::WriteAllBytes($certPath, $bytes)
+        
+        # 导入证书到系统存储（解决新版本MSIX工具的要求）
+        try {
+            Import-PfxCertificate -FilePath $certPath \
+                -CertStoreLocation Cert:\LocalMachine\My \
+                -Password (ConvertTo-SecureString -String "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" -Force -AsPlainText)
+            Write-Host "Certificate installed successfully"
+        } catch {
+            Write-Host "Warning: Could not import certificate to store: $($_.Exception.Message)"
+        }
+        
+    - name: Create MSIX package (Unsigned)
+      shell: pwsh
+      run: |
+        Write-Host "Creating MSIX package..."
+        
+        # 使用详细的参数确保不尝试自动签名
+        dotnet publish ${{ env.CSPROJ_PATH }} `
+          -c ${{ env.CONFIGURATION }} `
+          -r ${{ env.RID }} `
+          --self-contained true `
+          -p:PublishAppxPackage=true `
+          -p:AppxPackageSigningEnabled=false `
+          -p:PackageCertificateThumbprint= `
+          -p:GenerateAppxPackageOnBuild=true `
+          -p:AppxBundle=Never `
+          -p:UapAppxPackageBuildMode=CI `
+          -p:PublishReadyToRun=false `
+          -p:PublishTrimmed=false `
+          --verbosity normal
+          
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "MSIX package creation failed"
+            exit 1
+        }
+        
+        Write-Host "MSIX package created successfully"
+        
+    - name: Locate MSIX package
+      id: locate-msix
+      shell: pwsh
+      run: |
+        # 查找生成的MSIX包
+        $outDir = "${{ github.workspace }}/${{ env.CSPROJ_PATH | Split-Path -Parent }}/bin/${{ env.CONFIGURATION }}/${{ env.TARGET_FRAMEWORK }}/${{ env.RID }}/AppPackages"
+        Write-Host "Looking for MSIX in: $outDir"
+        
+        $msixFolder = Get-ChildItem $outDir -Directory -Filter "*_Test" | Select-Object -First 1
+        if (-not $msixFolder) {
+            throw "No MSIX output folder found"
+        }
+        
+        $msixFile = Get-ChildItem $msixFolder.FullName -Filter "*.msix" | Select-Object -First 1
+        if (-not $msixFile) {
+            throw "No .msix file found"
+        }
+        
+        Write-Host "Found MSIX: $($msixFile.FullName)"
+        echo "MSIX_PATH=$($msixFile.FullName)" >> $env:GITHUB_ENV
+        echo "MSIX_DIR=$($msixFolder.FullName)" >> $env:GITHUB_ENV
+        
     - name: Sign MSIX package
       shell: pwsh
       run: |
-        $signtool = (Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe" |
-                     Sort-Object LastWriteTime -Descending |
-                     Select-Object -First 1).FullName
+        Write-Host "Signing MSIX package..."
+        
+        $signtool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe" |
+                    Sort-Object LastWriteTime -Descending |
+                    Select-Object -First 1 -ExpandProperty FullName
+        
         if (-not $signtool) {
             throw "signtool.exe not found"
         }
-        $msixFolder = Get-ChildItem "${{ env.OUT_DIR }}" -Directory -Filter "*_Test"
-        $msixPath   = Get-ChildItem "$($msixFolder.FullName)" -Filter "*.msix" |
-                      Select-Object -First 1 -ExpandProperty FullName
-        if (-not $msixPath) {
-            throw "No .msix file found to sign"
-        }
+        
         $certPath = "$env:RUNNER_TEMP\cert.pfx"
-        $tsUrl    = "http://timestamp.digicert.com"
-        & $signtool sign /fd SHA256 /a /f "$certPath" /p "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" /tr $tsUrl /td SHA256 "$msixPath"
+        $msixPath = "${{ env.MSIX_PATH }}"
+        $tsUrl = "http://timestamp.digicert.com"
+        
+        Write-Host "Using signtool: $signtool"
+        Write-Host "Signing: $msixPath"
+        
+        & $signtool sign `
+          /fd SHA256 `
+          /a `
+          /f "$certPath" `
+          /p "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" `
+          /tr $tsUrl `
+          /td SHA256 `
+          "$msixPath"
+          
+        if ($LASTEXITCODE -ne 0) {
+            throw "Signing failed"
+        }
+        
+        Write-Host "MSIX package signed successfully"
+        
     - name: Generate changelog
       id: changelog
       shell: pwsh
       run: |
-        $log = (git log --oneline -10) -join "`n"
+        $log = (git log --oneline -20 --format="%h %s (%an)") -join "`n"
+        $changelog = @"
+            ## 最近更改 (最近20次提交)
+            $log
+
+            ## 预发布版本说明
+            - **CzkCloud 扫描引擎暂不可用**
+            - 仅供测试，随时可能回滚
+            - 构建时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+            - 提交: ${{ github.sha }}
+            "@
         echo "CHANGELOG<<EOF" >> $env:GITHUB_OUTPUT
-        echo "$log"          >> $env:GITHUB_OUTPUT
-        echo "EOF"          >> $env:GITHUB_OUTPUT
-    - name: Zip package
+        echo "$changelog" >> $env:GITHUB_OUTPUT
+        echo "EOF" >> $env:GITHUB_OUTPUT
+        
+    - name: Prepare release assets
       shell: pwsh
       run: |
-        $folder = Get-ChildItem "${{ env.OUT_DIR }}" -Directory -Filter "*_Test"
-        Copy-Item "Certs\Cert.cer" "$($folder.FullName)\Cert.cer"
-        Compress-Archive -Path "$($folder.FullName)\*" `
-            -DestinationPath "Xdows-Security-Signed.zip"
+        Write-Host "Preparing release assets..."
+        
+        # 复制证书文件
+        if (Test-Path "Certs\Cert.cer") {
+            Copy-Item "Certs\Cert.cer" "${{ env.MSIX_DIR }}/Cert.cer"
+            Write-Host "Certificate copied"
+        }
+        
+        # 创建ZIP包
+        $zipName = "Xdows-Security-$(Get-Date -Format 'yyyyMMdd-HHmm')-Signed.zip"
+        Compress-Archive -Path "${{ env.MSIX_DIR }}\*" -DestinationPath $zipName
+        
+        # 验证ZIP文件
+        if (Test-Path $zipName) {
+            $zipInfo = Get-Item $zipName
+            Write-Host "ZIP created: $($zipInfo.Name) ($([math]::Round($zipInfo.Length/1MB, 2)) MB)"
+            echo "ZIP_PATH=$zipName" >> $env:GITHUB_ENV
+        } else {
+            throw "ZIP file creation failed"
+        }
+        
     - name: Create prerelease
+      if: github.event_name == 'push'
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: nightly
-        name: Nightly
+        tag_name: nightly-$(date +'%Y%m%d-%H%M%S')
+        name: Nightly Build $(date +'%Y-%m-%d %H:%M')
         prerelease: true
-        make_latest: true
-        files: Xdows-Security-Signed.zip
-        body: |
-          ## 最近更改
-          ${{ steps.changelog.outputs.CHANGELOG }}
-
-          ## 预发布版本说明
-          - **CzkCloud 扫描引擎暂不可用**
-          - 仅供测试，随时可能回滚
+        make_latest: false
+        files: ${{ env.ZIP_PATH }}
+        body: ${{ steps.changelog.outputs.CHANGELOG }}
+        
+    - name: Upload artifact (for PRs)
+      if: github.event_name == 'pull_request'
+      uses: actions/upload-artifact@v4
+      with:
+        name: msix-package
+        path: ${{ env.ZIP_PATH }}
+        retention-days: 1

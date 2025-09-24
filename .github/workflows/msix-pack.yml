@@ -41,12 +41,25 @@ jobs:
         $bytes = [Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
         [IO.File]::WriteAllBytes($certPath, $bytes)
         
-        # 获取证书指纹（用于直接签名）
-        $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
-        $cert.Import($certPath, "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}", "PersistKeySet")
+        # 使用构造函数而不是Import方法
+        $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2(
+            $certPath, 
+            "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}",
+            [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::DefaultKeySet
+        )
         $thumbprint = $cert.Thumbprint
         Write-Host "Certificate thumbprint: $thumbprint"
         echo "CERT_THUMBPRINT=$thumbprint" >> $env:GITHUB_ENV
+        
+        # 同时将证书导入到证书存储（确保dotnet publish能找到）
+        try {
+            Import-PfxCertificate -FilePath $certPath `
+                -CertStoreLocation Cert:\LocalMachine\My `
+                -Password (ConvertTo-SecureString -String "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" -Force -AsPlainText)
+            Write-Host "Certificate imported to store successfully"
+        } catch {
+            Write-Host "Warning: Could not import certificate to store: $($_.Exception.Message)"
+        }
         
     - name: Build and create signed MSIX package
       shell: pwsh

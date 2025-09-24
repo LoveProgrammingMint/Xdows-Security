@@ -104,15 +104,15 @@ jobs:
       run: |
         $log = (git log --oneline -20 --format="%h %s (%an)") -join "`n"
         $changelog = @"
-## 最近更改 (最近20次提交)
-$log
+        ## 最近更改 (最近20次提交)
+        $log
 
-## 预发布版本说明
-- **CzkCloud 扫描引擎暂不可用**
-- 仅供测试，随时可能回滚
-- 构建时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
-- 提交: ${{ github.sha }}
-"@
+        ## 预发布版本说明
+        - **CzkCloud 扫描引擎暂不可用**
+        - 仅供测试，随时可能回滚
+        - 构建时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+        - 提交: ${{ github.sha }}
+        "@
         echo "CHANGELOG<<EOF" >> $env:GITHUB_OUTPUT
         echo "$changelog" >> $env:GITHUB_OUTPUT
         echo "EOF" >> $env:GITHUB_OUTPUT

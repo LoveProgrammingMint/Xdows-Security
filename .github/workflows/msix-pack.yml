@@ -180,7 +180,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ env.TAG }}
-        name: Nightly Build $(Get-Date -Format 'yyyy-MM-dd HH:mm')
+        name: Nightly Build
         prerelease: true
         make_latest: false
         files: ${{ env.ZIP_PATH }}

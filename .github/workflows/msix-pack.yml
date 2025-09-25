@@ -102,25 +102,25 @@ jobs:
       id: locate-msix
       shell: pwsh
       run: |
-        # 查找生成的MSIX包
-        $csprojDir = [System.IO.Path]::GetDirectoryName("${{ env.CSPROJ_PATH }}")
-        $outDir = "${{ github.workspace }}/$csprojDir/bin/${{ env.CONFIGURATION }}/${{ env.TARGET_FRAMEWORK }}/${{ env.RID }}/AppPackages"
+        $outDir = "${{ github.workspace }}/Xdows-Security/bin/${{ env.CONFIGURATION }}/${{ env.TARGET_FRAMEWORK }}/${{ env.RID }}/AppPackages"
         Write-Host "Looking for MSIX in: $outDir"
-        
+
         $msixFolder = Get-ChildItem $outDir -Directory -Filter "*_Test" | Select-Object -First 1
+        if (-not $msixFolder) {
+            $msixFolder = Get-ChildItem $outDir -Directory | Select-Object -First 1
+        }
         if (-not $msixFolder) {
             throw "No MSIX output folder found"
         }
-        
+
         $msixFile = Get-ChildItem $msixFolder.FullName -Filter "*.msix" | Select-Object -First 1
         if (-not $msixFile) {
             throw "No .msix file found"
         }
-        
+
         Write-Host "Found MSIX: $($msixFile.FullName)"
-        echo "MSIX_PATH=$($msixFile.FullName)" >> $env:GITHUB_ENV
+        echo "MSIX_PATH=$($msixFile.FullName)"   >> $env:GITHUB_ENV
         echo "MSIX_DIR=$($msixFolder.FullName)" >> $env:GITHUB_ENV
-        
     - name: Generate changelog
       id: changelog
       shell: pwsh

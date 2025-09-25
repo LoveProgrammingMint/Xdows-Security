@@ -28,13 +28,14 @@ jobs:
     - name: Patch System.Security.Permissions for BuildTools 1.7
       shell: pwsh
       run: |
-        $sdkRoot = (dotnet --list-sdks | Where-Object { $_ -like '8.0.*' } | ForEach-Object {
-            $p = $_ -split ' ';
-            Join-Path $p[1] $p[0]
-        } | Select-Object -First 1)
-        if (-not $sdkRoot) { throw ".NET 8 SDK not found" }
-        $targetDir = Join-Path $sdkRoot "Microsoft"
+        # 正则提取 .NET 8 SDK 安装根
+        $sdkLine = dotnet --list-sdks | Where-Object { $_ -match '^8\.0\.\d+\s+\[(.+)\]' }
+        if (-not $sdkLine) { throw ".NET 8 SDK not found" }
+        $sdkRoot = $Matches[1]   # 捕获组 1 就是路径
+        $targetDir = Join-Path $sdkRoot 'Microsoft'
         New-Item -ItemType Directory -Force $targetDir | Out-Null
+
+        # 下载并复制 dll
         dotnet add package System.Security.Permissions --version 8.0.0 --package-directory $env:RUNNER_TEMP
         $dll = Get-ChildItem $env:RUNNER_TEMP -Recurse -Filter System.Security.Permissions.dll | Select-Object -First 1
         Copy-Item $dll.FullName $targetDir -Force

@@ -158,17 +158,24 @@ jobs:
             throw "ZIP file creation failed"
         }
         
+    - name: Set nightly tag
+      id: nightly
+      run: |
+        echo "TAG=nightly-$(date -u +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
+        echo "NAME=Nightly Build $(date -u +'%Y-%m-%d %H:%M UTC')" >> $GITHUB_ENV
+
     - name: Create prerelease
       if: github.event_name == 'push'
       uses: softprops/action-gh-release@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: nightly-$(date +'%Y%m%d-%H%M%S')
-        name: Nightly Build $(date +'%Y-%m-%d %H:%M')
+        tag_name: ${{ env.TAG }}
+        name: ${{ env.NAME }}
         prerelease: true
         make_latest: false
         files: ${{ env.ZIP_PATH }}
         body: ${{ steps.changelog.outputs.CHANGELOG }}
-        
     - name: Upload artifact (for PRs)
       if: github.event_name == 'pull_request'
       uses: actions/upload-artifact@v4

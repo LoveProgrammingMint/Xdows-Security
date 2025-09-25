@@ -122,7 +122,7 @@ jobs:
       id: changelog
       shell: pwsh
       run: |
-        $log = (git log --oneline -20 --format="%h %s (%an)") -join "`n"
+        $log = (git log --oneline -20 --format="%h %s") -join "`n"
         $changelog = @"
         ## 最近更改 (最近20次提交)
         $log
@@ -131,7 +131,7 @@ jobs:
         - **CzkCloud 扫描引擎暂不可用**
         - 仅供测试，随时可能回滚
         - 构建时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
-        - 提交: ${{ github.sha }}
+        - 本次提交: ${{ github.sha }}
         "@
         echo "CHANGELOG<<EOF" >> $env:GITHUB_OUTPUT
         echo "$changelog" >> $env:GITHUB_OUTPUT
@@ -167,7 +167,7 @@ jobs:
       run: |
         git config user.name  "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
-        git tag -f Nightly -m "Nightly Build $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+        git tag -f Nightly -m "Nightly"
         git push origin -f Nightly
         echo "TAG=Nightly" >> $env:GITHUB_ENV
         

@@ -34,16 +34,13 @@ jobs:
         $sdkRoot = $Matches[1]
         $targetDir = Join-Path $sdkRoot 'Microsoft'
         New-Item -ItemType Directory -Force $targetDir | Out-Null
-    
-        # 2. 手动把包下到临时文件夹（不依赖项目）
+
+        # 2. 用 NuGet CLI 下载包（不依赖项目）
         $tmpPkg = "$env:RUNNER_TEMP\patchPkg"
-        dotnet add package System.Security.Permissions `
-                --version 8.0.0 `
-                --package-directory $tmpPkg
-        $dll = Get-ChildItem $tmpPkg -Recurse -Filter System.Security.Permissions.dll |
-               Select-Object -First 1
-        if (-not $dll) { throw "DLL not found after restore" }
-    
+        nuget install System.Security.Permissions -Version 8.0.0 -OutputDirectory $tmpPkg
+        $dll = Get-ChildItem $tmpPkg -Recurse -Filter System.Security.Permissions.dll | Select-Object -First 1
+        if (-not $dll) { throw "DLL still not found" }
+
         # 3. 复制到 SDK 目录
         Copy-Item $dll.FullName $targetDir -Force
         Write-Host "Patched -> $targetDir"

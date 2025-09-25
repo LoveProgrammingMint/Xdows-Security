@@ -6,16 +6,22 @@
     <RootNamespace>Xdows_Security</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64;ARM64</Platforms>
-  <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-  <!-- 指定默认运行时标识，避免打包时 ProcessorArchitecture neutral 错误。根据你的目标机器选择 win-x64 或其它。 -->
-  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-  <!-- 指定 PlatformTarget 以避免 AnyCPU 导致的 AppHost 打包限制 -->
-  <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <!-- 指定默认运行时标识，避免打包时 ProcessorArchitecture neutral 错误 -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <!-- 指定 PlatformTarget 以避免 AnyCPU 导致的 AppHost 打包限制 -->
+    <PlatformTarget>x64</PlatformTarget>
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
+
+    <!-- 签名 & 打包 -->
+    <PackageCertificateThumbprint>41BF188590482F6C104121F20CDC8DF583D2CA5F</PackageCertificateThumbprint>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
   </PropertyGroup>
+
+  <!-- 资源 -->
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
@@ -31,99 +37,77 @@
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
-  <!--
-    Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
-    Tools extension to be activated for this project even if the Windows App SDK Nuget
-    package has not yet been restored.
-  -->
+  <!-- MSIX 能力 -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
   </ItemGroup>
+
+  <!-- 关键：锁定 1.6 兼容版本 -->
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.250402" />
     <PackageReference Include="CXuesong.Shims.VisualBasic.Devices" Version="0.3.0" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4654" />
+    <!-- 主包降级 -->
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
+    <!-- 子包双重保险 -->
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="1.6.240923003" PrivateAssets="all" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.250916003" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.9" />
     <PackageReference Include="WinUIEx" Version="2.8.0" />
   </ItemGroup>
+
+  <!-- 项目引用 -->
   <ItemGroup>
     <ProjectReference Include="..\Protection\Protection.csproj" />
     <ProjectReference Include="..\ScanEngine\ScanEngine.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <Folder Include="Resources\" />
   </ItemGroup>
+
+  <!-- 原生 DLL -->
   <ItemGroup>
     <Reference Include="SouXiaoEngine">
       <HintPath>..\SouXiaoEngine\SouXiaoEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <!-- 内容文件 -->
   <ItemGroup>
-    <None Update="IceZero.rules">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="IceZero.yar">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="MalwareMd5.bin">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="model.onnx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SouXiao.engine">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="XLin.engine">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Yara.engine">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="yara64.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Update="IceZero.rules" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="IceZero.yar" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="MalwareMd5.bin" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="model.onnx" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="SouXiao.engine" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="XLin.engine" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Yara.engine" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="yara64.exe" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+
   <PropertyGroup Label="Globals">
     <WebView2EnableCsWinRTProjection>False</WebView2EnableCsWinRTProjection>
   </PropertyGroup>
 
-  <!--
-    Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
-    Explorer "Package and Publish" context menu entry to be enabled for this project even if
-    the Windows App SDK Nuget package has not yet been restored.
-  -->
+  <!-- 打包菜单 -->
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
 
-  <!-- Publish Properties -->
+  <!-- 发布参数 -->
   <PropertyGroup>
-    <PublishReadyToRun Condition="'$(Configuration)' == 'Debug'">False</PublishReadyToRun>
-    <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">False</PublishReadyToRun>
-    <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
-    <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">False</PublishTrimmed>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <PublishTrimmed>false</PublishTrimmed>
     <ApplicationIcon>logo.ico</ApplicationIcon>
-    <PackageCertificateThumbprint>41BF188590482F6C104121F20CDC8DF583D2CA5F</PackageCertificateThumbprint>
-    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
   </PropertyGroup>
+
+  <!-- Release 优化 -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-    <Optimize>True</Optimize>
+    <Optimize>true</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Optimize>True</Optimize>
+    <Optimize>true</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-    <Optimize>True</Optimize>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <Optimize>True</Optimize>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Optimize>True</Optimize>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-    <Optimize>True</Optimize>
+    <Optimize>true</Optimize>
   </PropertyGroup>
 </Project>

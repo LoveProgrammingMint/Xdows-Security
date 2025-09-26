@@ -1,3 +1,4 @@
+# .github/workflows/nightly-release.yml
 name: Nightly Release
 
 on:
@@ -6,26 +7,30 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write   # 创建 release 需要
+  contents: write   # 创建/删除 release 需要
 
 jobs:
-  # 1. Windows 只做：构建、签名、打包、上传 artifact
-  build-pack-sign:
+  nightly:
     runs-on: windows-latest
     steps:
+      # 1. 只检出最新一次提交，不需要拉 tag
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false   # 关键：不拉任何 tag，避免锁文件
 
+      # 2. 安装 .NET
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
+      # 3. 构建 & 打包
       - run: dotnet restore
       - run: dotnet build --no-restore -c Release
       - run: dotnet publish --no-build -c Release -p:Platform=x64 -p:AppxPackageDir=MsixOutput -p:UapAppxPackageBuildMode=StoreUpload -p:AppxBundle=Never
 
-      - name: Prepare .pfx
+      # 4. 证书解码 + 签名
+      - name: Prepare certificate
         shell: pwsh
         run: |
           $b = [System.Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
@@ -38,11 +43,13 @@ jobs:
           & "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /fd SHA256 /a /f "$env:RUNNER_TEMP\cert.pfx" /p "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" "$msix"
           if ($LASTEXITCODE -ne 0) { throw "Sign failed" }
 
-      - name: Generate changelog
+      # 5. 生成 changelog
+      - name: Changelog
         shell: pwsh
         run: |
+          # 取最近 20 条提交
           $log = (git log --oneline -20 --format="%h %s") -join "`n"
-          @"
+          $body = @"
           ## 最近更改 (最近20次提交)
           $log
 
@@ -51,61 +58,29 @@ jobs:
           - 仅供测试，随时可能回滚
           - 构建时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
           - 本次提交: ${{ github.sha }}
-          "@ | Out-File -FilePath CHANGELOG.md -Encoding UTF8
+          "@
+          $body | Out-File -FilePath release_notes.md -Encoding UTF8
 
+      # 6. 打包成 Xdows-Security.zip
       - name: Create zip
         shell: pwsh
         run: |
-          $dir = Get-ChildItem MsixOutput -Directory | Select -First 1 -Exp FullName
-          Compress-Archive -Path "$dir\*" -DestinationPath Xdows-Security.zip
+          $pkgDir = Get-ChildItem MsixOutput -Directory | Select -First 1 -Exp FullName
+          Compress-Archive -Path "$pkgDir\*" -DestinationPath Xdows-Security.zip
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: msix-zip
-          path: Xdows-Security.zip
-
-      - name: Upload changelog artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: changelog
-          path: CHANGELOG.md
-
-  # 2. Linux 统一管 tag & release（无锁）
-  release:
-    needs: build-pack-sign
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ github.token }}
-          fetch-depth: 0
-
-      - name: Download zip
-        uses: actions/download-artifact@v4
-        with:
-          name: msix-zip
-      - name: Download changelog
-        uses: actions/download-artifact@v4
-        with:
-          name: changelog
-
-      - name: Force recreate nightly tag
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -f nightly ${{ github.sha }}
-          git push -f origin nightly
-
-      - name: Create / overwrite nightly release
+      # 7. 纯 API 方式发布 / 覆盖 Release（不执行本地 git tag）
+      - name: Publish Release
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: pwsh
         run: |
-          # 如果已存在就删
-          gh release view nightly >/dev/null 2>&1 && gh release delete nightly --yes
-          # 新建
-          gh release create nightly Xdows-Security.zip \
-            --title "Nightly" \
-            --notes-file CHANGELOG.md \
-            --prerelease \
+          # 如果已存在就删除
+          gh api repos/${{ github.repository }}/releases/tags/Nightly `
+            --silent -X DELETE 2>$null
+
+          # 新建 release（GitHub 会自动创建 lightweight tag Nightly 指向当前 SHA）
+          gh release create Nightly Xdows-Security.zip `
+            --title "Nightly" `
+            --notes-file release_notes.md `
+            --prerelease `
             --target ${{ github.sha }}

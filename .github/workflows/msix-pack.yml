@@ -10,14 +10,20 @@ permissions:
 
 jobs:
   build-and-release:
-    runs-on: windows-latest     # 需要 Windows 环境做签名
+    runs-on: windows-latest
     steps:
-      # 1. 拉代码
-      - name: Checkout
-        uses: actions/checkout@v4
+      # 0. 清掉可能存在的锁文件
+      - name: Clean leftover git locks
+        run: |
+          Remove-Item -Force -ErrorAction SilentlyContinue `
+            "$env:GITHUB_WORKSPACE\.git\refs\tags\*.lock"
+          Remove-Item -Force -ErrorAction SilentlyContinue `
+            "$env:GITHUB_WORKSPACE\.git\*.lock"
+
+      # 1. 再正常 checkout
+      - uses: actions/checkout@v4
         with:
-          submodules: recursive   # 如果你的项目含子模块
-          fetch-depth: 0          # 拉全历史，方便 git log
+          fetch-depth: 0
 
       # 2. 把证书从 Secret 还原出来
       - name: Prepare certificate

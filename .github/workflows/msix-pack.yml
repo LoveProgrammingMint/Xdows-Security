@@ -1,33 +1,16 @@
-# .github/workflows/nightly-release.yml
 name: Nightly Release
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: write   # 创建 release 需要
 
 jobs:
-  # 1. 在 Linux 上强制覆盖 nightly tag（无文件锁）
-  retag:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ github.token }}
-          fetch-depth: 0
-      - name: Force recreate nightly tag
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -f nightly ${{ github.sha }}
-          git push -f origin nightly
-
-  # 2. 在 Windows 上构建、签名、打包、上传 Release
-  build-pack-sign-release:
-    needs: retag          # 等 tag 重建完成再执行
+  # 1. Windows 只做：构建、签名、打包、上传 artifact
+  build-pack-sign:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,20 +21,15 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Restore
-        run: dotnet restore
+      - run: dotnet restore
+      - run: dotnet build --no-restore -c Release
+      - run: dotnet publish --no-build -c Release -p:Platform=x64 -p:AppxPackageDir=MsixOutput -p:UapAppxPackageBuildMode=StoreUpload -p:AppxBundle=Never
 
-      - name: Build
-        run: dotnet build --no-restore -c Release
-
-      - name: Package MSIX
-        run: dotnet publish --no-build -c Release -p:Platform=x64 -p:AppxPackageDir=MsixOutput -p:UapAppxPackageBuildMode=StoreUpload -p:AppxBundle=Never
-
-      - name: Prepare certificate
+      - name: Prepare .pfx
         shell: pwsh
         run: |
-          $certBytes = [System.Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
-          [System.IO.File]::WriteAllBytes("$env:RUNNER_TEMP\cert.pfx", $certBytes)
+          $b = [System.Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
+          [System.IO.File]::WriteAllBytes("$env:RUNNER_TEMP\cert.pfx", $b)
 
       - name: Sign MSIX
         shell: pwsh
@@ -61,7 +39,6 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Sign failed" }
 
       - name: Generate changelog
-        id: cl
         shell: pwsh
         run: |
           $log = (git log --oneline -20 --format="%h %s") -join "`n"
@@ -79,21 +56,56 @@ jobs:
       - name: Create zip
         shell: pwsh
         run: |
-          $pkgDir = Get-ChildItem MsixOutput -Directory | Select -First 1 -Exp FullName
-          Compress-Archive -Path "$pkgDir\*" -DestinationPath Xdows-Security.zip
+          $dir = Get-ChildItem MsixOutput -Directory | Select -First 1 -Exp FullName
+          Compress-Archive -Path "$dir\*" -DestinationPath Xdows-Security.zip
 
-      # 直接利用 gh cli 上传（tag 已存在，无需再创建）
-      - name: Upload nightly release
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: msix-zip
+          path: Xdows-Security.zip
+
+      - name: Upload changelog artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: changelog
+          path: CHANGELOG.md
+
+  # 2. Linux 统一管 tag & release（无锁）
+  release:
+    needs: build-pack-sign
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+          fetch-depth: 0
+
+      - name: Download zip
+        uses: actions/download-artifact@v4
+        with:
+          name: msix-zip
+      - name: Download changelog
+        uses: actions/download-artifact@v4
+        with:
+          name: changelog
+
+      - name: Force recreate nightly tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -f nightly ${{ github.sha }}
+          git push -f origin nightly
+
+      - name: Create / overwrite nightly release
         env:
           GH_TOKEN: ${{ github.token }}
-        shell: pwsh
         run: |
-          gh release view nightly --json url | Out-Null
-          if ($LASTEXITCODE -eq 0) {
-            gh release delete nightly --yes          # 删除旧 release（保留 tag）
-          }
-          gh release create nightly Xdows-Security.zip `
-            --title "Nightly" `
-            --notes-file CHANGELOG.md `
-            --prerelease `
+          # 如果已存在就删
+          gh release view nightly >/dev/null 2>&1 && gh release delete nightly --yes
+          # 新建
+          gh release create nightly Xdows-Security.zip \
+            --title "Nightly" \
+            --notes-file CHANGELOG.md \
+            --prerelease \
             --target ${{ github.sha }}

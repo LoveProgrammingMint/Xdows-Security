@@ -27,36 +27,32 @@ jobs:
       # 3. 构建 & 打包
       - run: dotnet restore
       - run: dotnet build --no-restore -c Release
-      - name: Publish & Pack MSIX
+      # 5. 打包时关闭签名 → 生成未签名 msix
+      - name: Publish & Pack (unsigned)
         shell: pwsh
         run: |
-          # 1. 解码 pfx
-          $cert = [System.Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
-          [System.IO.File]::WriteAllBytes("$env:RUNNER_TEMP\ci.pfx", $cert)
-
-          # 2. 就地清空 PackageCertificateThumbprint
-          $proj = Get-Item *.wapproj,*.csproj | Where-Object { Select-String -Path $_ -Pattern "PackageCertificateThumbprint" } | Select -First 1
-          [xml]$xml = Get-Content $proj
-          $ns = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
-          $ns.AddNamespace("msb", "http://schemas.microsoft.com/developer/msbuild/2003")
-          $node = $xml.SelectSingleNode("//msb:PackageCertificateThumbprint", $ns)
-          if ($node) { $node.'#text' = '' }
-          $xml.Save($proj.FullName)
-
-          # 3. 打包（此时项目里指纹为空，只能走 KeyFile）
           dotnet publish --no-build -c Release `
             -p:Platform=x64 `
             -p:AppxPackageDir=MsixOutput `
             -p:UapAppxPackageBuildMode=StoreUpload `
             -p:AppxBundle=Never `
-            -p:PackageCertificateKeyFile="$env:RUNNER_TEMP\ci.pfx" `
-            -p:PackageCertificatePassword="${{ secrets.MSIX_CERTIFICATE_PASSWORD }}"
-      # 4. 证书解码 + 签名
+            -p:AppxPackageSigningEnabled=false
+
+      # 6. 解码我们自己的证书
       - name: Prepare certificate
         shell: pwsh
         run: |
-          $b = [System.Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
-          [System.IO.File]::WriteAllBytes("$env:RUNNER_TEMP\cert.pfx", $b)
+          $cert = [System.Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
+          [System.IO.File]::WriteAllBytes("$env:RUNNER_TEMP\ci.pfx", $cert)
+
+      # 7. 对打包好的 msix 二次签名
+      - name: Sign MSIX
+        shell: pwsh
+        run: |
+          $msix = Get-ChildItem MsixOutput -Recurse -Filter *.msix | Select -First 1 -Exp FullName
+          & "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign `
+            /fd SHA256 /a /f "$env:RUNNER_TEMP\ci.pfx" /p "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" "$msix"
+          if ($LASTEXITCODE -ne 0) { throw "Sign failed" }
 
       - name: Sign MSIX
         shell: pwsh

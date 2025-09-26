@@ -27,8 +27,22 @@ jobs:
       # 3. 构建 & 打包
       - run: dotnet restore
       - run: dotnet build --no-restore -c Release
-      - run: dotnet publish --no-build -c Release -p:Platform=x64 -p:AppxPackageDir=MsixOutput -p:UapAppxPackageBuildMode=StoreUpload -p:AppxBundle=Never
+      - name: Publish & Pack MSIX
+        shell: pwsh
+        run: |
+          # 把 Secret 里的 base64 证书写成临时文件
+          $cert = [System.Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
+          [System.IO.File]::WriteAllBytes("$env:RUNNER_TEMP\ci.pfx", $cert)
 
+          # 打包并指定证书文件、密码，同时清空项目里的指纹
+          dotnet publish --no-build -c Release `
+            -p:Platform=x64 `
+            -p:AppxPackageDir=MsixOutput `
+            -p:UapAppxPackageBuildMode=StoreUpload `
+            -p:AppxBundle=Never `
+            -p:PackageCertificateKeyFile="$env:RUNNER_TEMP\ci.pfx" `
+            -p:PackageCertificatePassword="${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" `
+            -p:PackageCertificateThumbprint=""
       # 4. 证书解码 + 签名
       - name: Prepare certificate
         shell: pwsh

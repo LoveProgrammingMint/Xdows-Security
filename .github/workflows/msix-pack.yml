@@ -30,19 +30,27 @@ jobs:
       - name: Publish & Pack MSIX
         shell: pwsh
         run: |
-          # 把 Secret 里的 base64 证书写成临时文件
+          # 1. 解码 pfx
           $cert = [System.Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
           [System.IO.File]::WriteAllBytes("$env:RUNNER_TEMP\ci.pfx", $cert)
 
-          # 打包并指定证书文件、密码，同时清空项目里的指纹
+          # 2. 就地清空 PackageCertificateThumbprint
+          $proj = Get-Item *.wapproj,*.csproj | Where-Object { Select-String -Path $_ -Pattern "PackageCertificateThumbprint" } | Select -First 1
+          [xml]$xml = Get-Content $proj
+          $ns = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
+          $ns.AddNamespace("msb", "http://schemas.microsoft.com/developer/msbuild/2003")
+          $node = $xml.SelectSingleNode("//msb:PackageCertificateThumbprint", $ns)
+          if ($node) { $node.'#text' = '' }
+          $xml.Save($proj.FullName)
+
+          # 3. 打包（此时项目里指纹为空，只能走 KeyFile）
           dotnet publish --no-build -c Release `
             -p:Platform=x64 `
             -p:AppxPackageDir=MsixOutput `
             -p:UapAppxPackageBuildMode=StoreUpload `
             -p:AppxBundle=Never `
             -p:PackageCertificateKeyFile="$env:RUNNER_TEMP\ci.pfx" `
-            -p:PackageCertificatePassword="${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" `
-            -p:PackageCertificateThumbprint=""
+            -p:PackageCertificatePassword="${{ secrets.MSIX_CERTIFICATE_PASSWORD }}"
       # 4. 证书解码 + 签名
       - name: Prepare certificate
         shell: pwsh

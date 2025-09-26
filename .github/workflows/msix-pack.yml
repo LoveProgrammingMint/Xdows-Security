@@ -1,73 +1,56 @@
-# .github/workflows/nightly-release.yml
 name: Nightly Release
 
 on:
   push:
-    branches: [ master ]
-  workflow_dispatch:
+    branches: [ main, master ]   # 需要触发签名的分支
+  workflow_dispatch:             # 也可手动触发
 
 permissions:
-  contents: write   # 创建/删除 release 需要
+  contents: write               # 必须有写权限才能创建/覆盖 Release
 
 jobs:
-  nightly:
-    runs-on: windows-latest
+  build-and-release:
+    runs-on: windows-latest     # 需要 Windows 环境做签名
     steps:
-      # 1. 只检出最新一次提交，不需要拉 tag
-      - uses: actions/checkout@v4
+      # 1. 拉代码
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 1
-          fetch-tags: false   # 关键：不拉任何 tag，避免锁文件
+          submodules: recursive   # 如果你的项目含子模块
+          fetch-depth: 0          # 拉全历史，方便 git log
 
-      # 2. 安装 .NET
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
-      # 3. 构建 & 打包
-      - run: dotnet restore
-      - run: dotnet build --no-restore -c Release
-      # 5. 打包时关闭签名 → 生成未签名 msix
-      - name: Publish & Pack (unsigned)
-        shell: pwsh
-        run: |
-          dotnet publish --no-build -c Release `
-            -p:Platform=x64 `
-            -p:AppxPackageDir=MsixOutput `
-            -p:UapAppxPackageBuildMode=StoreUpload `
-            -p:AppxBundle=Never `
-            -p:AppxPackageSigningEnabled=false
-
-      # 6. 解码我们自己的证书
+      # 2. 把证书从 Secret 还原出来
       - name: Prepare certificate
         shell: pwsh
         run: |
-          $cert = [System.Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
-          [System.IO.File]::WriteAllBytes("$env:RUNNER_TEMP\ci.pfx", $cert)
+          $certBytes = [Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
+          $certPath = "$env:RUNNER_TEMP\cert.pfx"
+          [IO.File]::WriteAllBytes($certPath, $certBytes)
+          Write-Output "CERT_PATH=$certPath" >> $env:GITHUB_ENV
 
-      # 7. 对打包好的 msix 二次签名
-      - name: Sign MSIX
+      # 3. 签名（示例：对根目录下所有 .msix/.appx/.exe 做签名，可按需改）
+      - name: Sign artifacts
         shell: pwsh
         run: |
-          $msix = Get-ChildItem MsixOutput -Recurse -Filter *.msix | Select -First 1 -Exp FullName
-          & "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign `
-            /fd SHA256 /a /f "$env:RUNNER_TEMP\ci.pfx" /p "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" "$msix"
-          if ($LASTEXITCODE -ne 0) { throw "Sign failed" }
+          $files = Get-ChildItem -Recurse -Include *.msix,*.appx,*.exe
+          foreach ($f in $files) {
+            Write-Host "Signing $f"
+            signtool sign /f "$env:CERT_PATH" /p "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" /t http://timestamp.digicert.com /v $f
+          }
 
-      - name: Sign MSIX
+      # 4. 打包仓库为 zip（含子模块）
+      - name: Create source zip
         shell: pwsh
         run: |
-          $msix = Get-ChildItem MsixOutput -Recurse -Filter *.msix | Select -First 1 -Exp FullName
-          & "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /fd SHA256 /a /f "$env:RUNNER_TEMP\cert.pfx" /p "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" "$msix"
-          if ($LASTEXITCODE -ne 0) { throw "Sign failed" }
+          7z a nightly.zip ${{ github.workspace }} -xr'!.git' -xr'!.github'
 
-      # 5. 生成 changelog
-      - name: Changelog
+      # 5. 生成 Release Note
+      - name: Build changelog
+        id: changelog
         shell: pwsh
         run: |
-          # 取最近 20 条提交
           $log = (git log --oneline -20 --format="%h %s") -join "`n"
-          $body = @"
+          $note = @"
           ## 最近更改 (最近20次提交)
           $log
 
@@ -77,28 +60,19 @@ jobs:
           - 构建时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
           - 本次提交: ${{ github.sha }}
           "@
-          $body | Out-File -FilePath release_notes.md -Encoding UTF8
+          # 多行文本输出到 GITHUB_OUTPUT
+          $note = $note -replace '%','%25' -replace "`n",'%0A' -replace "`r",'%0D'
+          "BODY=$note" >> $env:GITHUB_OUTPUT
 
-      # 6. 打包成 Xdows-Security.zip
-      - name: Create zip
-        shell: pwsh
-        run: |
-          $pkgDir = Get-ChildItem MsixOutput -Directory | Select -First 1 -Exp FullName
-          Compress-Archive -Path "$pkgDir\*" -DestinationPath Xdows-Security.zip
-
-      # 7. 纯 API 方式发布 / 覆盖 Release（不执行本地 git tag）
-      - name: Publish Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: pwsh
-        run: |
-          # 如果已存在就删除
-          gh api repos/${{ github.repository }}/releases/tags/Nightly `
-            --silent -X DELETE 2>$null
-
-          # 新建 release（GitHub 会自动创建 lightweight tag Nightly 指向当前 SHA）
-          gh release create Nightly Xdows-Security.zip `
-            --title "Nightly" `
-            --notes-file release_notes.md `
-            --prerelease `
-            --target ${{ github.sha }}
+      # 6. 强制更新/覆盖 Nightly Tag 并发布
+      - name: Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: Nightly
+          name: Nightly
+          body: ${{ steps.changelog.outputs.BODY }}
+          artifacts: nightly.zip
+          artifactContentType: application/zip
+          prerelease: true
+          allowUpdates: true          # 关键：存在则覆盖
+          removeArtifacts: true       # 先删旧文件

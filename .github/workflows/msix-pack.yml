@@ -1,84 +1,138 @@
-name: Nightly Release
+name: Build & Prerelease MSIX
+
+permissions:
+  contents: write
 
 on:
   push:
-    branches: [ main, master ]   # 需要触发签名的分支
-  workflow_dispatch:             # 也可手动触发
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
 
-permissions:
-  contents: write               # 必须有写权限才能创建/覆盖 Release
+env:
+  DOTNET_VERSION: '8.0.x'
+  CSPROJ_PATH: 'Xdows-Security/Xdows-Security.csproj'
+  RID: 'win-x64'
+  CONFIGURATION: 'Release'
+  TARGET_FRAMEWORK: 'net8.0-windows10.0.19041.0'
 
 jobs:
-  build-and-release:
+  build-and-pack:
     runs-on: windows-latest
+    
     steps:
-      # 0. 清掉可能存在的锁文件
-      - name: Clean leftover git locks
-        run: |
-          Remove-Item -Force -ErrorAction SilentlyContinue `
-            "$env:GITHUB_WORKSPACE\.git\refs\tags\*.lock"
-          Remove-Item -Force -ErrorAction SilentlyContinue `
-            "$env:GITHUB_WORKSPACE\.git\*.lock"
+    - name: 检出代码
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: 修补 .NET SDK
+      shell: pwsh
+      run: |
+        # 查找 .NET 8 SDK 根目录
+        $sdkLine = dotnet --list-sdks | Where-Object { $_ -match '^8\.0\.\d+\s+\[(.+)\]' }
+        if (-not $sdkLine) { throw ".NET 8 SDK not found" }
+        $sdkRoot = $Matches[1]
+        $targetDir = Join-Path $sdkRoot 'Microsoft'
+        New-Item -ItemType Directory -Force $targetDir | Out-Null
+        
+        # 使用 NuGet CLI 下载必要的程序集
+        $tmpPkg = "$env:RUNNER_TEMP\patchPkg"
+        nuget install System.Security.Permissions -Version 8.0.0 -OutputDirectory $tmpPkg
+        $dll = Get-ChildItem $tmpPkg -Recurse -Filter System.Security.Permissions.dll | Select-Object -First 1
+        
+        # 复制到 SDK 目录
+        Copy-Item $dll.FullName $targetDir -Force
+        Write-Host "✅ 已修补 -> $targetDir"
+        
+    - name: 设置 .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: 导入签名证书
+      shell: pwsh
+      run: |
+        # 设置错误处理
+        $ErrorActionPreference = 'Stop'
+        $certPath = "$env:RUNNER_TEMP\cert.pfx"
+        
+        # 从 Base64 字符串创建证书文件
+        $bytes = [Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
+        Set-Content -Path $certPath -Value $bytes -AsByteStream
+        
+        # 转换密码为安全字符串
+        $securePwd = ConvertTo-SecureString -String "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" -Force -AsPlainText
+        
+        # 导入 PFX 证书到当前用户存储区
+        $cert = Import-PfxCertificate -FilePath $certPath `
+                                  -CertStoreLocation Cert:\CurrentUser\My `
+                                  -Password $securePwd `
+                                  -Exportable
+        
+        # 验证证书包含代码签名 EKU
+        $eku = $cert.Extensions | Where-Object { $_ -is [System.Security.Cryptography.X509Certificates.X509EnhancedKeyUsageExtension] }
+        if ($eku.EnhancedKeyUsages['1.3.6.1.5.5.7.3.3'] -eq $null) {
+            throw "证书缺少代码签名 EKU (1.3.6.1.5.5.7.3.3)"
+        }
+        
+        # 导出证书缩略名到环境变量
+        Add-Content -Path $Env:GITHUB_ENV -Value "CERT_THUMBPRINT=$($cert.Thumbprint)"
+        
+    - name: 构建并签名 MSIX 包
+      shell: pwsh
+      run: |
+        # 调用 dotnet publish 构建和签名 MSIX
+        dotnet publish ${{ env.CSPROJ_PATH }} `
+          -c ${{ env.CONFIGURATION }} `
+          -r ${{ env.RID }} `
+          --self-contained true `
+          -p:PublishAppxPackage=true `
+          -p:AppxPackageSigningEnabled=true `
+          -p:PackageCertificateThumbprint=${{ env.CERT_THUMBPRINT }} `
+          -p:PackageCertificatePassword="${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" `
+          -p:GenerateAppxPackageOnBuild=true `
+          -p:AppxBundle=Never `
+          -p:UapAppxPackageBuildMode=CI `
+          -p:PublishReadyToRun=false `
+          -p:PublishTrimmed=false `
+          --verbosity normal
+          
+    - name: 定位 MSIX 包
+      id: locate-msix
+      shell: pwsh
+      run: |
+        # 查找生成的 MSIX 文件
+        $root = Split-Path ${{ env.CSPROJ_PATH }}
+        $appPkg = Get-ChildItem $root -Recurse -Directory -Filter "*AppPackages*" | Select-Object -First 1
+        
+        if (-not $appPkg) { throw "AppPackages 文件夹未找到" }
+        
+        $msixFolder = Get-ChildItem $appPkg.FullName -Directory -Filter "*_Test" | Select-Object -First 1
+        if (-not $msixFolder) { $msixFolder = $appPkg }
+        
+        $msixFile = Get-ChildItem $msixFolder.FullName -Filter *.msix | Select-Object -First 1
+        if (-not $msixFile) { throw "未找到 .msix 文件" }
+        
+        # 设置环境变量供后续步骤使用
+        Add-Content -Path $Env:GITHUB_ENV -Value "MSIX_PATH=$($msixFile.FullName)"
+        Add-Content -Path $Env:GITHUB_ENV -Value "MSIX_DIR=$($msixFolder.FullName)"
+        
+    - name: 生成变更日志
+      id: changelog
+      shell: pwsh
+      run: |
+        # 生成最近 20 次提交的变更日志
+        $log = (git log --oneline -20 --format="%h %s") -join "`n"
+        $changelog = @"
+        ## 最近更改 (最近20次提交)
+        $log
 
-      # 1. 再正常 checkout
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      # 2. 把证书从 Secret 还原出来
-      - name: Prepare certificate
-        shell: pwsh
-        run: |
-          $certBytes = [Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
-          $certPath = "$env:RUNNER_TEMP\cert.pfx"
-          [IO.File]::WriteAllBytes($certPath, $certBytes)
-          Write-Output "CERT_PATH=$certPath" >> $env:GITHUB_ENV
-
-      # 3. 签名（示例：对根目录下所有 .msix/.appx/.exe 做签名，可按需改）
-      - name: Sign artifacts
-        shell: pwsh
-        run: |
-          $files = Get-ChildItem -Recurse -Include *.msix,*.appx,*.exe
-          foreach ($f in $files) {
-            Write-Host "Signing $f"
-            signtool sign /f "$env:CERT_PATH" /p "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" /t http://timestamp.digicert.com /v $f
-          }
-
-      # 4. 打包仓库为 zip（含子模块）
-      - name: Create source zip
-        shell: pwsh
-        run: |
-          7z a nightly.zip ${{ github.workspace }} -xr'!.git' -xr'!.github'
-
-      # 5. 生成 Release Note
-      - name: Build changelog
-        id: changelog
-        shell: pwsh
-        run: |
-          $log = (git log --oneline -20 --format="%h %s") -join "`n"
-          $note = @"
-          ## 最近更改 (最近20次提交)
-          $log
-
-          ## 预发布版本说明
-          - **CzkCloud 扫描引擎暂不可用**
-          - 仅供测试，随时可能回滚
-          - 构建时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
-          - 本次提交: ${{ github.sha }}
-          "@
-          # 多行文本输出到 GITHUB_OUTPUT
-          $note = $note -replace '%','%25' -replace "`n",'%0A' -replace "`r",'%0D'
-          "BODY=$note" >> $env:GITHUB_OUTPUT
-
-      # 6. 强制更新/覆盖 Nightly Tag 并发布
-      - name: Release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: Nightly
-          name: Nightly
-          body: ${{ steps.changelog.outputs.BODY }}
-          artifacts: nightly.zip
-          artifactContentType: application/zip
-          prerelease: true
-          allowUpdates: true          # 关键：存在则覆盖
-          removeArtifacts: true       # 先删旧文件
+        ## 预发布版本说明
+        - **CzkCloud 扫描引擎暂不可用**
+        - 仅供测试，随时可能回滚
+        - 构建时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+        - 本次提交: ${{ github.sha }}
+        "@
+        
+        Add-Content -Path $Env:GITHUB_OUTPUT -Value "CHANGELOG<

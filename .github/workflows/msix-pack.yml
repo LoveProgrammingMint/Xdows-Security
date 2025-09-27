@@ -13,13 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Delete Nightly tag
-        run: |
-          $tagExists = git rev-parse --verify Nightly 2>&1
-          if ($tagExists -notmatch "fatal: Needed a single revision") {
-            git tag -d Nightly || true
-            git push origin :Nightly || true
-          }
+
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v3

@@ -15,10 +15,11 @@ jobs:
 
       - name: Delete existing Nightly tag
         run: |
-          if git rev-parse Nightly >/dev/null 2>&1; then
+          $tagExists = git rev-parse --verify Nightly >/dev/null 2>&1
+          if ($tagExists -eq $null) {
             git tag -d Nightly
             git push origin :Nightly
-          fi
+          }
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v3

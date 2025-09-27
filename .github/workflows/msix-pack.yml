@@ -1,75 +1,93 @@
-name: Nightly Release
+name: Nightly Build
 
 on:
   push:
-    branches: [ main, master ]
-  workflow_dispatch:
-
-concurrency:
-  group: nightly-release
-  cancel-in-progress: true
-
-permissions:
-  contents: write
+    branches:
+      - master
 
 jobs:
-  build-and-release:
+  build:
     runs-on: windows-latest
+
     steps:
-      - name: Clean Git locks
-        run: |
-          Remove-Item -Force -ErrorAction SilentlyContinue "$env:GITHUB_WORKSPACE\.git\refs\tags\*.lock"
-          Remove-Item -Force -ErrorAction SilentlyContinue "$env:GITHUB_WORKSPACE\.git\*.lock"
-        continue-on-error: true
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Prepare certificate
-        shell: pwsh
+      - name: Delete existing Nightly tag
         run: |
-          $certBytes = [Convert]::FromBase64String("${{ secrets.MSIX_CERTIFICATE }}")
-          $certPath = "$env:RUNNER_TEMP\cert.pfx"
-          [IO.File]::WriteAllBytes($certPath, $certBytes)
-          Write-Output "CERT_PATH=$certPath" >> $env:GITHUB_ENV
+          git tag -d Nightly
+          git push origin :Nightly
 
-      - name: Sign artifacts
-        shell: pwsh
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build project
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Pack project
+        run: dotnet pack --no-build --configuration Release -o ./artifacts
+
+      - name: Sign package
+        env:
+          MSIX_CERTIFICATE: ${{ secrets.MSIX_CERTIFICATE }}
+          MSIX_CERTIFICATE_PASSWORD: ${{ secrets.MSIX_CERTIFICATE_PASSWORD }}
         run: |
-          $files = Get-ChildItem -Recurse -Include *.msix,*.appx,*.exe
-          foreach ($f in $files) {
-            Write-Host "Signing $f"
-            signtool sign /f "$env:CERT_PATH" /p "${{ secrets.MSIX_CERTIFICATE_PASSWORD }}" /t http://timestamp.digicert.com /v $f
-          }
+          $certificateBytes = [System.Convert]::FromBase64String($env:MSIX_CERTIFICATE)
+          $certificatePath = "certificate.pfx"
+          [System.IO.File]::WriteAllBytes($certificatePath, $certificateBytes)
+          dotnet sign ./artifacts/*.nupkg --certificate $certificatePath --password $env:MSIX_CERTIFICATE_PASSWORD
 
-      - name: Create source zip
-        shell: pwsh
+      - name: Create release directory
         run: |
-          7z a nightly.zip ${{ github.workspace }} -xr'!.git' -xr'!.github'
+          New-Item -ItemType Directory -Path "release"
+          Copy-Item -Path "./artifacts/*" -Destination "release"
 
-      - name: Build changelog
-        id: changelog
-        shell: pwsh
+      - name: Create changelog
         run: |
           $log = (git log --oneline -20 --format="%h %s") -join "`n"
-          $note = @"
+          $changelog = @"
           ## 最近更改 (最近20次提交)
+
           $log
 
           ## 预发布版本说明
+
           - **CzkCloud 扫描引擎暂不可用**
           - 仅供测试，随时可能回滚
           - 构建时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
           - 本次提交: ${{ github.sha }}
           "@
-          $note = $note -replace '%','%25' -replace "`n",'%0A' -replace "`r",'%0D'
-          "BODY=$note" >> $env:GITHUB_OUTPUT
+          $changelog | Out-File -FilePath "release/changelog.txt" -Encoding utf8
 
-      - name: Release
-        uses: ncipollo/release-action@v1
+      - name: Create zip file
+        run: |
+          Compress-Archive -Path "release/*" -DestinationPath "release.zip"
+
+      - name: Create or update Nightly release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag: Nightly
-          name: Nightly
-          body: ${{ steps.changelog.outputs.BODY }}
-          artifacts: nightly.zip
-          artifactContentType: application/zip
+          tag_name: Nightly
+          release_name: Nightly
+          body_path: release/changelog.txt
+          draft: false
           prerelease: true
-          allowUpdates: true
-          removeArtifacts: true
+          overwrite: true
+
+      - name: Upload release asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: release.zip
+          asset_name: release.zip
+          asset_content_type: application/zip

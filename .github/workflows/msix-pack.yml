@@ -17,8 +17,8 @@ jobs:
         run: |
           $tagExists = git rev-parse --verify Nightly 2>&1
           if ($tagExists -notmatch "fatal: Needed a single revision") {
-            git tag -d Nightly
-            git push origin :Nightly
+            git tag -d Nightly || true
+            git push origin :Nightly || true
           }
 
       - name: Set up .NET

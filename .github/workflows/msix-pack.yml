@@ -13,9 +13,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Delete existing Nightly tag
+      - name: Delete Nightly tag
         run: |
-          $tagExists = git rev-parse --verify Nightly >/dev/null 2>&1
+          $tagExists = git rev-parse --verify Nightly 2>&1
           if ($tagExists -eq $null) {
             git tag -d Nightly
             git push origin :Nightly

@@ -16,7 +16,7 @@ jobs:
       - name: Delete Nightly tag
         run: |
           $tagExists = git rev-parse --verify Nightly 2>&1
-          if ($tagExists -ne $null -and $tagExists -notmatch "fatal: Needed a single revision") {
+          if ($tagExists -notmatch "fatal: Needed a single revision") {
             git tag -d Nightly
             git push origin :Nightly
           }

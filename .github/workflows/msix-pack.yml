@@ -22,12 +22,6 @@ jobs:
           Remove-Item -Force -ErrorAction SilentlyContinue "$env:GITHUB_WORKSPACE\.git\*.lock"
         continue-on-error: true
 
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Prepare certificate
         shell: pwsh
         run: |

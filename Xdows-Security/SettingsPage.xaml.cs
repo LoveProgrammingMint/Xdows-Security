@@ -41,11 +41,11 @@ namespace Xdows_Security
             //    FilesToggle.IsOn = false;
             //    FilesToggle.IsEnabled = false;
             //}
-            if (!App.IsRunAsAdmin())
-            {
+            //if (!App.IsRunAsAdmin())
+            //{
                 RegistryToggle.IsEnabled = false;
                 RegistryToggle.IsOn = false;
-            }
+            //}
             IsInitialize = false;
         }
         private void RunProtectionWithToggle(ToggleSwitch toggle, int runId)
@@ -65,7 +65,6 @@ namespace Xdows_Security
         private void RunProtection(object sender, RoutedEventArgs e)
         {
             if (sender is not ToggleSwitch toggle || IsInitialize) return;
-            if (ProcessToggle.IsOn == ProcessProtection.IsEnabled()) return;
             int runId = toggle.Tag switch
             {
                 "Progress" => 0,

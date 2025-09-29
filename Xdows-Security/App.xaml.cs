@@ -259,7 +259,6 @@ namespace Xdows_Security
         {
             try
             {
-                LogText.AddNewLog(1, "App", $"OnLaunched args: '{args.Arguments}'");
                 if (!string.IsNullOrEmpty(args.Arguments) && args.Arguments.Contains("openIntercept"))
                 {
                     try { MainWindow?.Activate(); } catch { }

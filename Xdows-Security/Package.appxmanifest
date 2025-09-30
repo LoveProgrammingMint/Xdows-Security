@@ -11,13 +11,13 @@
   <Identity
     Name="4ebcd650-ae47-4c69-81d3-f2d976ececea"
     Publisher="CN=Xdows Software"
-    Version="1.0.0.0" />
+    Version="4.1.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="4ebcd650-ae47-4c69-81d3-f2d976ececea" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>Xdows-Security</DisplayName>
-    <PublisherDisplayName>XTY64XTY</PublisherDisplayName>
+    <PublisherDisplayName>Xdows Software</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 

@@ -48,8 +48,7 @@
   <!-- 官方最新依赖（1.7） -->
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.250402" />
-    <PackageReference Include="CXuesong.Shims.VisualBasic.Devices" Version="0.3.0" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4654" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.6584" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.250916003" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.9" />
     <PackageReference Include="WinUIEx" Version="2.8.0" />
@@ -115,4 +114,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <Optimize>true</Optimize>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="C:\Users\a1b2c\.nuget\packages\microsoft.windowsappsdk.runtime\1.8.250916003\buildTransitive\..\include\WindowsAppSDK-VersionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="C:\Users\a1b2c\.nuget\packages\microsoft.windowsappsdk.foundation\1.8.250906002\buildTransitive\..\include\DeploymentManagerAutoInitializer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="C:\Users\a1b2c\.nuget\packages\microsoft.windowsappsdk.foundation\1.8.250906002\buildTransitive\..\include\DeploymentManagerAutoInitializer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="C:\Users\a1b2c\.nuget\packages\microsoft.windowsappsdk.foundation\1.8.250906002\buildTransitive\..\include\DeploymentManagerAutoInitializer.cs" />
+  </ItemGroup>
 </Project>

@@ -8,14 +8,13 @@ namespace Xdows.Protection
 {
     public static class RegistryProtection
     {
-        // 回调委托
-        public static CallBack.InterceptCallBack InterceptCallback;
+        public static CallBack.InterceptCallBack? InterceptCallback;
 
         // 监控状态
         private static bool _isEnabled = false;
         private static IntPtr _hRegistryKey = IntPtr.Zero;
-        private static Thread _monitorThread;
-        private static CancellationTokenSource _cancellationTokenSource;
+        private static Thread? _monitorThread = null;
+        private static CancellationTokenSource? _cancellationTokenSource = null;
 
         // Windows API 常量
         private const uint KEY_NOTIFY = 0x0010;
@@ -51,7 +50,7 @@ namespace Xdows.Protection
             IntPtr lpEventAttributes,
             bool bManualReset,
             bool bInitialState,
-            string lpName);
+            string? lpName);
 
         [DllImport("kernel32.dll")]
         private static extern bool CloseHandle(IntPtr hObject);
@@ -60,11 +59,11 @@ namespace Xdows.Protection
         private static extern uint WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
 
         // 注册表根键常量
-        private static readonly IntPtr HKEY_LOCAL_MACHINE = (IntPtr)0x80000002;
-        private static readonly IntPtr HKEY_CURRENT_USER = (IntPtr)0x80000001;
-        private static readonly IntPtr HKEY_CLASSES_ROOT = (IntPtr)0x80000000;
-        private static readonly IntPtr HKEY_USERS = (IntPtr)0x80000003;
-        private static readonly IntPtr HKEY_CURRENT_CONFIG = (IntPtr)0x80000005;
+        private static readonly IntPtr HKEY_LOCAL_MACHINE = unchecked((IntPtr)0x80000002);
+        private static readonly IntPtr HKEY_CURRENT_USER = unchecked((IntPtr)0x80000001);
+        private static readonly IntPtr HKEY_CLASSES_ROOT = unchecked((IntPtr)0x80000000);
+        private static readonly IntPtr HKEY_USERS = unchecked((IntPtr)0x80000003);
+        private static readonly IntPtr HKEY_CURRENT_CONFIG = unchecked((IntPtr)0x80000005);
 
         // 要监控的注册表路径
         private static readonly List<string> _monitoredPaths = new List<string>
@@ -72,7 +71,6 @@ namespace Xdows.Protection
             @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
             @"SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce",
             @"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies",
-            @"SYSTEM\CurrentControlSet\Services",
             @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options"
         };
 
@@ -126,11 +124,7 @@ namespace Xdows.Protection
             // 等待监控线程结束
             if (_monitorThread != null && _monitorThread.IsAlive)
             {
-                _monitorThread.Join(3000);
-                if (_monitorThread.IsAlive)
-                {
-                    try { _monitorThread.Abort(); } catch { }
-                }
+                _monitorThread.Join(3000); // 等待线程结束
             }
 
             // 关闭注册表句柄
@@ -163,6 +157,8 @@ namespace Xdows.Protection
         {
             try
             {
+                if (_cancellationTokenSource == null)
+                    _cancellationTokenSource = new CancellationTokenSource();
                 while (_isEnabled && !_cancellationTokenSource.Token.IsCancellationRequested)
                 {
                     foreach (var path in _monitoredPaths)
@@ -257,6 +253,12 @@ namespace Xdows.Protection
                     string fullPath = GetRootKeyName(hKey) + "\\" + subKey;
                     OnRegistryChanged(fullPath);
                 }
+                else if (waitResult == ERROR_NO_MORE_ITEMS) // 错误处理，事件未触发
+                {
+                    Console.WriteLine($"监控到 {subKey} 键发生删除或其他错误，正在重新尝试...");
+                    // 尝试重新注册
+                    MonitorSingleRegistryKey(hKey, subKey);
+                }
             }
             finally
             {
@@ -270,6 +272,7 @@ namespace Xdows.Protection
                 }
             }
         }
+
 
         /// <summary>
         /// 获取根键名称

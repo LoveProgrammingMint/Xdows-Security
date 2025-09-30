@@ -18,8 +18,10 @@
                 <TextBlock Margin="0,12,0,0" x:Name="HomePage_TextBlock" FontSize="28" FontWeight="Bold"/>
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                     <TextBlock x:Name="HomePage_Pomes"
-                   Style="{StaticResource BodyTextBlockStyle}"
-                   VerticalAlignment="Center"/>
+                      Style="{StaticResource BodyTextBlockStyle}"
+                      VerticalAlignment="Center"
+                      IsTextSelectionEnabled="True" />
+
                     <Button Content="刷新"
                 Click="RefreshPomes_Click"
                             Height="32"

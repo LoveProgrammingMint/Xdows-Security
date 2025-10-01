@@ -643,12 +643,40 @@ namespace Xdows_Security
                         },
                         MaxHeight = 400
                     },
+                    PrimaryButtonText = "定位文件",
                     CloseButtonText = "确定",
                     XamlRoot = this.XamlRoot,
                     RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                     CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 };
-                await dialog.ShowAsync();
+                if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+                {
+                    try
+                    {
+                        string filePath = row.FilePath;
+                        string? directoryPath = Path.GetDirectoryName(filePath);
+                        string fileName = Path.GetFileName(filePath);
+
+                        var psi = new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = "explorer.exe",
+                            Arguments = $"/select,\"{filePath}\""
+                        };
+                        System.Diagnostics.Process.Start(psi);
+                    }
+                    catch (Exception ex)
+                    {
+                        await new ContentDialog
+                        {
+                            Title = "无法定位文件",
+                            Content = $"无法定位文件，因为{ex.Message}",
+                            CloseButtonText = "确定",
+                            RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                            XamlRoot = this.XamlRoot,
+                            CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                        }.ShowAsync();
+                    }
+                }
             }
             catch (Exception ex)
             {

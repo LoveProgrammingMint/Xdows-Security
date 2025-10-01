@@ -289,7 +289,7 @@ namespace Xdows_Security
                     {
                         App.MainWindow.ApplyBackdrop(backdropType);
                     }
-                    Appearance_Backdrop_Opacity.IsEnabled = !(backdropType == "Solid" || backdropType == "MicaAlt");
+                    Appearance_Backdrop_Opacity.IsEnabled = !(backdropType == "Solid");
                 }
                 catch { }
             }

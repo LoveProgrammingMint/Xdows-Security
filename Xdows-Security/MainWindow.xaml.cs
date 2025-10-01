@@ -259,24 +259,22 @@ namespace Xdows_Security
                 try
                 {
                     RootGrid.Background = new SolidColorBrush(Colors.Transparent);
-                    Microsoft.UI.Xaml.Media.SystemBackdrop? changeSystemBackdrop = null;
                     backdropTarget = this.As<ICompositionSupportsSystemBackdrop>();
                     switch (backdropType)
                     {
                         case "Mica":
                             backdropController = new MicaController()
                             {
-                                LuminosityOpacity = (float)LastOpacity / 100
+                                LuminosityOpacity = (float)LastOpacity / 100,
                             };
                             break;
                         case "MicaAlt":
-                            changeSystemBackdrop = new MicaBackdrop()
+                            backdropController = new MicaController()
                             {
+                                LuminosityOpacity = (float)LastOpacity / 100,
                                 Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt
                             };
-                            if (this.SystemBackdrop == changeSystemBackdrop) return;
-                            this.SystemBackdrop = changeSystemBackdrop;
-                            return;
+                            break;
                         case "Acrylic":
                             backdropController = new DesktopAcrylicController()
                             {
@@ -293,7 +291,6 @@ namespace Xdows_Security
                 catch { }
             }
             catch { }
-
         }
         private void OnThemeChanged(FrameworkElement sender, object args)
         {

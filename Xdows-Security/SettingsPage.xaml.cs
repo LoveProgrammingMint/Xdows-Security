@@ -252,7 +252,7 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             var savedBackdrop = settings.Values["AppBackdrop"] as string;
 
-            Appearance_Backdrop_Opacity.IsEnabled = !(savedBackdrop == "Solid" || savedBackdrop == "MicaAlt");
+            Appearance_Backdrop_Opacity.IsEnabled = !(savedBackdrop == "Solid");
             MicaOption.IsEnabled = MicaController.IsSupported();
             MicaAltOption.IsEnabled = MicaController.IsSupported();
 

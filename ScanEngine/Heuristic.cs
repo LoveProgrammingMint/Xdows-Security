@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using static Xdows.ScanEngine.ScanEngine;
@@ -46,7 +47,7 @@ namespace Xdows.ScanEngine
 
             if (fileExtension == ".exe" || fileExtension == ".dll")
             {
-                int code = FileDigitallySignedAndValid(path);
+                int code = FileDigitallySignedAndValid(path,deepScan);
                 if (code == 50)
                     return 0;
                 score -= code;
@@ -335,7 +336,7 @@ namespace Xdows.ScanEngine
                "58DA14F4C5941747B995956FDC89B4E3AAE47B8F",
                "63D724AEA7B5DE31A77BEF57B1314F20804844F4",
            };
-        public static int FileDigitallySignedAndValid(string filePath)
+        public static int FileDigitallySignedAndValid(string filePath,bool isDeepScan)
         {
             X509Certificate2? cert = null;
             try
@@ -354,7 +355,7 @@ namespace Xdows.ScanEngine
                 };
 
                 bool chainOk = chain.Build(cert);
-
+                if (isDeepScan && !AuthenticodeHashMatch(filePath)) return -10;
                 bool isTrustedCertificate = chain.ChainElements
                                             .Any(el => _trustedThumbprints.Contains(el.Certificate.Thumbprint));
                 if (isTrustedCertificate)
@@ -372,7 +373,6 @@ namespace Xdows.ScanEngine
                 {
                     if (el.ChainElementStatus.Any(s =>
                             s.Status == X509ChainStatusFlags.Revoked))
-                        System.Diagnostics.Debug.WriteLine(el.ToString());
                         return -10;
                 }
                 return chainOk ? 5 : 0;
@@ -393,6 +393,74 @@ namespace Xdows.ScanEngine
             {
                 cert?.Dispose();
             }
+        }
+        private static bool AuthenticodeHashMatch(string filePath)
+        {
+            var fi = new Native.WINTRUST_FILE_INFO
+            {
+                cbStruct = (uint)Marshal.SizeOf(typeof(Native.WINTRUST_FILE_INFO)),
+                pcwszFilePath = filePath,
+                hFile = IntPtr.Zero,
+                pgKnownSubject = IntPtr.Zero
+            };
+
+            var wd = new Native.WINTRUST_DATA
+            {
+                cbStruct = (uint)Marshal.SizeOf(typeof(Native.WINTRUST_DATA)),
+                dwUIChoice = 2,
+                fdwRevocationChecks = Native.WTD_REVOKE_NONE,
+                dwUnionChoice = Native.WTD_CHOICE_FILE,
+                pFile = Marshal.AllocHGlobal(Marshal.SizeOf(fi)),
+                dwProvFlags = Native.WTD_VERIFY_FILE_HASH_ONLY,
+                dwStateAction = 1
+            };
+            Marshal.StructureToPtr(fi, wd.pFile, false);
+
+            int hr = Native.WinVerifyTrust(IntPtr.Zero, Native.WINTRUST_ACTION_GENERIC_VERIFY_V2, ref wd);
+
+            wd.dwStateAction = 2;
+            Native.WinVerifyTrust(IntPtr.Zero, Native.WINTRUST_ACTION_GENERIC_VERIFY_V2, ref wd);
+            Marshal.FreeHGlobal(wd.pFile);
+
+            return hr == 0; // 0 = 哈希正确
+        }
+        private static class Native
+        {
+            public const uint WTD_VERIFY_FILE_HASH_ONLY = 0x0200;
+            public const uint WTD_REVOKE_NONE = 0x0000;
+            public const uint WTD_CHOICE_FILE = 1;
+
+            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+            public struct WINTRUST_DATA
+            {
+                public uint cbStruct;
+                public IntPtr pPolicyCallbackData;
+                public IntPtr pSIPClientData;
+                public uint dwUIChoice;
+                public uint fdwRevocationChecks;
+                public uint dwUnionChoice;
+                public IntPtr pFile;
+                public uint dwStateAction;
+                public IntPtr hWVTStateData;
+                public IntPtr pwszURLReference;
+                public uint dwProvFlags;
+                public uint dwUIContext;
+            }
+
+            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+            public struct WINTRUST_FILE_INFO
+            {
+                public uint cbStruct;
+                public string pcwszFilePath;
+                public IntPtr hFile;
+                public IntPtr pgKnownSubject;
+            }
+
+            [DllImport("wintrust.dll", CharSet = CharSet.Unicode)]
+            public static extern int WinVerifyTrust(IntPtr hwnd, [MarshalAs(UnmanagedType.LPStruct)] Guid pgActionID,
+                                                    ref WINTRUST_DATA pWVTData);
+
+            public static readonly Guid WINTRUST_ACTION_GENERIC_VERIFY_V2 = new Guid("00AAC56B-CD44-11d0-8CC2-00C04FC295EE");
         }
         public static string? GetCatalogCertSha256(string filePath)
         {

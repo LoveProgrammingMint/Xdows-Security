@@ -23,9 +23,7 @@ namespace Xdows.ScanEngine
                 return score;
             }
             var fileContent = File.ReadAllBytes(path);
-
             var fileExtension = Path.GetExtension(path).ToLower();
-
             var suspiciousData = new List<string>();
 
             if (fileExtension == ".bat" || fileExtension == ".cmd")
@@ -47,16 +45,18 @@ namespace Xdows.ScanEngine
 
             if (fileExtension == ".exe" || fileExtension == ".dll")
             {
-                int code = FileDigitallySignedAndValid(path,deepScan);
+                int code = FileDigitallySignedAndValid(path, deepScan);
                 if (code == 50)
                     return 0;
                 score -= code;
+
                 if (peInfo.ExportsName != null)
                 {
                     if (DllScan.Scan(path, peInfo))
                         suspiciousData.Add("DllVirus");
-                        score += 20;
+                    score += 20;
                 }
+
                 if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "LoadLibrary" }))
                 {
                     if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "GetProcAddress" }))
@@ -197,9 +197,28 @@ namespace Xdows.ScanEngine
                     suspiciousData.Add("LikeSandboxBypass");
                     score += 15;
                 }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "AdjustTokenPrivileges" }))
+                {
+                    score += 10;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "CreateRemoteThread" }))
+                {
+                    score += 10;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "InternetOpen", "InternetConnect", "HttpSendRequest" }))
+                {
+                    score += 5;
+                }
+
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "RegCreateKey", "RegSetValue" }))
+                {
+                    score += 5;
+                }
             }
 
-            // 深度扫描
             if (deepScan)
             {
                 if (ContainsSuspiciousContent(fileContent, new[] { ".sys" }))
@@ -220,10 +239,10 @@ namespace Xdows.ScanEngine
                 }
 
                 if (ContainsSuspiciousContent(fileContent, new[] {
-                    "wsctrlsvc", "ESET", "zhudongfangyu", "avp", "avconsol",
-                    "ASWSCAN", "KWatch", "QQPCTray", "360tray", "360sd", "ccSvcHst",
-                    "f-secure", "KvMonXP", "RavMonD", "Mcshield", "ekrn", "kxetray",
-                    "avcenter", "avguard", "Sophos", "safedog"}))
+            "wsctrlsvc", "ESET", "zhudongfangyu", "avp", "avconsol",
+            "ASWSCAN", "KWatch", "QQPCTray", "360tray", "360sd", "ccSvcHst",
+            "f-secure", "KvMonXP", "RavMonD", "Mcshield", "ekrn", "kxetray",
+            "avcenter", "avguard", "Sophos", "safedog"}))
                 {
                     suspiciousData.Add("AVKiller");
                     score += 20;

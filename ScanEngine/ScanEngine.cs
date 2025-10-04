@@ -57,10 +57,10 @@ namespace Xdows.ScanEngine
                 fileInfo.ImportsName = Array.Empty<string>();
             }
 
-            var score = Heuristic.Evaluate(path, fileInfo, deep, out var extra);
-            if (score >= 75)
+            var score = await Heuristic.Evaluate(path, fileInfo, deep);
+            if (score.score >= 75)
             {
-                return ExtraData ? $"Xdows.local.code{score} {extra}" : $"Xdows.local.code{score}";
+                return ExtraData ? $"Xdows.local.code{score.score} {score.extra}" : $"Xdows.local.code{score.score}";
             }
             return string.Empty;
         }

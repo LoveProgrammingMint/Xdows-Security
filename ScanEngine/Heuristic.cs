@@ -14,13 +14,13 @@ namespace Xdows.ScanEngine
 {
     public static class Heuristic
     {
-        public static int Evaluate(string path, PEInfo peInfo, bool deepScan, out string extra)
+        public static async Task<(int score, string extra)> Evaluate(string path, PEInfo peInfo, bool deepScan)
         {
-            extra = string.Empty;
+            var extra = string.Empty;
             var score = 0;
             if (peInfo.ImportsName == null)
             {
-                return score;
+                return (score, extra);
             }
             var fileContent = File.ReadAllBytes(path);
             var fileExtension = Path.GetExtension(path).ToLower();
@@ -45,9 +45,10 @@ namespace Xdows.ScanEngine
 
             if (fileExtension == ".exe" || fileExtension == ".dll")
             {
-                int code = FileDigitallySignedAndValid(path, deepScan);
+                int code = await Task.Run(() => FileDigitallySignedAndValid(path, deepScan))
+                                    .ConfigureAwait(false);
                 if (code == 50)
-                    return 0;
+                    return (0, string.Empty);
                 score -= code;
 
                 if (peInfo.ExportsName != null)
@@ -221,50 +222,33 @@ namespace Xdows.ScanEngine
 
             if (deepScan)
             {
-                if (ContainsSuspiciousContent(fileContent, new[] { ".sys" }))
-                {
-                    suspiciousData.Add("UseDriver");
-                    score += 10;
-                }
+                var t1 = Task.Run(() => ContainsSuspiciousContent(fileContent, new[] { ".sys" }));
+                var t2 = Task.Run(() => ContainsSuspiciousContent(fileContent, new[] { "Virtual" }));
+                var t3 = Task.Run(() => ContainsSuspiciousContent(fileContent, new[] { "BlackMoon" }));
+                var t4 = Task.Run(() => ContainsSuspiciousContent(fileContent, new[] {
+                    "wsctrlsvc", "ESET", "zhudongfangyu", "avp", "avconsol",
+                    "ASWSCAN", "KWatch", "QQPCTray", "360tray", "360sd", "ccSvcHst",
+                    "f-secure", "KvMonXP", "RavMonD", "Mcshield", "ekrn", "kxetray",
+                    "avcenter", "avguard", "Sophos", "safedog"
+                }));
+                var t5 = Task.Run(() => ContainsSuspiciousContent(fileContent, new[] { "DelegateExecute", "fodhelper.exe" }));
+                var t6 = Task.Run(() => ContainsSuspiciousContent(fileContent, new[] { "sandboxie", "vmware - tray", "Detonate", "Vmware", "VMWARE", "Sandbox", "SANDBOX" }));
 
-                if (ContainsSuspiciousContent(fileContent, new[] { "Virtual" }))
-                {
-                    score += 20;
-                }
+                await Task.WhenAll(t1, t2, t3, t4, t5, t6);
 
-                if (ContainsSuspiciousContent(fileContent, new[] { "BlackMoon" }))
-                {
-                    suspiciousData.Add("BlackMoon");
-                    score += 15;
-                }
-
-                if (ContainsSuspiciousContent(fileContent, new[] {
-            "wsctrlsvc", "ESET", "zhudongfangyu", "avp", "avconsol",
-            "ASWSCAN", "KWatch", "QQPCTray", "360tray", "360sd", "ccSvcHst",
-            "f-secure", "KvMonXP", "RavMonD", "Mcshield", "ekrn", "kxetray",
-            "avcenter", "avguard", "Sophos", "safedog"}))
-                {
-                    suspiciousData.Add("AVKiller");
-                    score += 20;
-                }
-
-                if (ContainsSuspiciousContent(fileContent, new[] { "DelegateExecute", "fodhelper.exe" }))
-                {
-                    suspiciousData.Add("UACBypass");
-                    score += 20;
-                }
-
-                if (ContainsSuspiciousContent(fileContent, new[] { "sandboxie", "vmware - tray", "Detonate", "Vmware", "VMWARE", "Sandbox", "SANDBOX" }))
-                {
-                    suspiciousData.Add("SandboxBypass");
-                    score += 20;
-                }
+                // 合并结果
+                if (t1.Result) { suspiciousData.Add("UseDriver"); score += 10; }
+                if (t2.Result) { score += 20; }
+                if (t3.Result) { suspiciousData.Add("BlackMoon"); score += 15; }
+                if (t4.Result) { suspiciousData.Add("AVKiller"); score += 20; }
+                if (t5.Result) { suspiciousData.Add("UACBypass"); score += 20; }
+                if (t6.Result) { suspiciousData.Add("SandboxBypass"); score += 20; }
             }
 
             // 将附加数据拼接到extra变量
             extra = string.Join(" ", suspiciousData);
 
-            return score >= 50 ? score : 0;
+            return (score >= 50 ? score : 0,extra);
         }
 
         private static bool IsSuspiciousBat(byte[] fileContent)
@@ -366,7 +350,7 @@ namespace Xdows.ScanEngine
                 {
                     ChainPolicy =
                     {
-                       RevocationMode = X509RevocationMode.Online,
+                       RevocationMode = X509RevocationMode.Offline,
                        RevocationFlag = X509RevocationFlag.ExcludeRoot,
                        UrlRetrievalTimeout = TimeSpan.FromSeconds(30),
                        VerificationFlags = X509VerificationFlags.NoFlag
@@ -599,7 +583,7 @@ namespace Xdows.ScanEngine
             [DllImport("wintrust.dll", SetLastError = true)]
             public static extern bool CryptCATAdminReleaseContext(IntPtr hCatAdmin, int dwFlags);
 
-            public static extern long WinVerifyTrust(IntPtr hwnd, ref Guid pgActionID, ref WINTRUST_DATA pWVTData);
+            public static extern int WinVerifyTrust(IntPtr hwnd, ref Guid pgActionID, ref WINTRUST_DATA pWVTData);
 
             [DllImport("wintrust.dll", SetLastError = true)]
             public static extern IntPtr WTHelperProvDataFromStateData(IntPtr hStateData);

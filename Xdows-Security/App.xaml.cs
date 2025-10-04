@@ -1,118 +1,28 @@
-﻿using Microsoft.UI.Composition.SystemBackdrops;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.VisualBasic;
-using Microsoft.Win32;
 using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
 using System;
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Security.Principal;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Resources;
-using Windows.Globalization;
-using Windows.Storage;
-using Windows.System.UserProfile;
-using Xdows.Protection;
+using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
+using Windows.Storage;
+using Xdows.Protection;
 using static Xdows.Protection.CallBack;
-using static Xdows.Protection.FilesProtection;
-using static Xdows.Protection.ProcessProtection;
-using static Xdows.Protection.RegistryProtection;
 
 namespace Xdows_Security
 {
-    public static class LogText
-    {
-        private static string? _Text;
-        public static string Text { get => _Text ??= String.Empty; set => _Text = value; }
-
-        public static event EventHandler? TextChanged;
-
-        private static readonly int MAXLONG = 8000;
-
-        public static void ClearLog()
-        {
-            Text = String.Empty;
-            AddNewLog(1, "LogSystem", "Log is Clear");
-        }
-
-        public static void AddNewLog(int Level, string Source, string Info)
-        {
-            string currentTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            string LevelText = Level switch
-            {
-                0 => "DEBUG",
-                1 => "INFO",
-                2 => "WARN",
-                3 => "ERROR",
-                4 => "FATAL",
-                _ => "UNKNOWN",
-            };
-            string logEntry = $"[{currentTime}][{LevelText}][{Source}]: {Info}{Environment.NewLine}";
-            if ((Text + logEntry).Length > MAXLONG)
-            {
-                Text = logEntry;
-            }
-            else
-            {
-                Text += logEntry;
-            }
-
-            // NowPage is a static field on MainWindow; check it directly
-            if (Xdows_Security.MainWindow.NowPage == "Home")
-            {
-                TextChanged?.Invoke(null, EventArgs.Empty);
-            }
-        }
-    }
-    class Statistics
-    {
-        public static int ScansQuantity { get; set; } = 0;
-        public static int VirusQuantity { get; set; } = 0;
-    }
-    public static class Notifications
-    {
-        public static void ShowNotification(string title, string content, string path)
-        {
-            var builder = new AppNotificationBuilder()
-                .AddText(title)
-                .AddText(content)
-                .AddArgument("action", "openIntercept")
-                .AddArgument("path", path);
-
-            AppNotification notification = builder.BuildNotification();
-            try
-            {
-                var markerDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Xdows-Security");
-                Directory.CreateDirectory(markerDir);
-                var markerPath = Path.Combine(markerDir, "lastNotification.json");
-                var markerObj = new
-                {
-                    action = "openIntercept",
-                    path = path,
-                    time = DateTime.UtcNow.ToString("o"),
-                    content = content
-                };
-                File.WriteAllText(markerPath, JsonSerializer.Serialize(markerObj));
-            }
-            catch { }
-            AppNotificationManager.Default.Show(notification);
-        }
-
-    }
     public static class Protection
     {
         public static bool IsOpen()
         {
             return true;
         }
+
         public static InterceptCallBack interceptCallBack = (bool isSucceed, string path) =>
         {
             LogText.AddNewLog(2, "Protection", isSucceed
@@ -122,6 +32,7 @@ namespace Xdows_Security
             content = $"Xdows Security {content}.{Environment.NewLine}相关数据：{Path.GetFileName(path)}{Environment.NewLine}单击此通知以查看详细信息";
             Notifications.ShowNotification("发现威胁", content, path);
         };
+
         public static bool Run(int RunID)
         {
             switch (RunID)
@@ -165,150 +76,274 @@ namespace Xdows_Security
         }
     }
 
+    public static class Statistics
+    {
+        public static int ScansQuantity { get; set; } = 0;
+        public static int VirusQuantity { get; set; } = 0;
+    }
+
+    public static class Notifications
+    {
+        /// <summary>
+        /// 显示通知
+        /// </summary>
+        public static void ShowNotification(string title, string content, string path)
+        {
+            var builder = new AppNotificationBuilder()
+                .AddText(title)
+                .AddText(content)
+                .AddArgument("action", "openIntercept")
+                .AddArgument("path", path);
+
+            AppNotification notification = builder.BuildNotification();
+            try
+            {
+                var markerDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Xdows-Security");
+                Directory.CreateDirectory(markerDir);
+                var markerPath = Path.Combine(markerDir, "lastNotification.json");
+                var markerObj = new
+                {
+                    action = "openIntercept",
+                    path = path,
+                    time = DateTime.UtcNow.ToString("o"),
+                    content = content
+                };
+                File.WriteAllText(markerPath, JsonSerializer.Serialize(markerObj));
+            }
+            catch { }
+            AppNotificationManager.Default.Show(notification);
+        }
+    }
+    /// <summary>
+    /// 日志级别的枚举类型，定义了不同的日志级别。
+    /// </summary>
+    public enum LogLevel
+    {
+        DEBUG,  // 调试日志
+        INFO,   // 信息日志
+        WARN,   // 警告日志
+        ERROR,  // 错误日志
+        FATAL   // 致命错误日志
+    }
+
+    /// <summary>
+    /// 日志管理类，负责收集并输出应用程序的日志信息。
+    /// </summary>
+    public static class LogText
+    {
+        private static StringBuilder _logText = new StringBuilder(); // 存储日志的 StringBuilder 对象
+        private const int MAX_LOG_SIZE = 8000; // 最大日志大小
+        private static readonly string LogFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Xdows-Security", "logs.txt"); // 日志文件路径
+
+        public static event EventHandler? TextChanged; // 日志内容变更时的事件
+
+        /// <summary>
+        /// 获取当前日志的全部内容。
+        /// </summary>
+        public static string Text => _logText.ToString();
+
+        /// <summary>
+        /// 清空当前日志内容，并记录一条清空日志的操作。
+        /// </summary>
+        public static void ClearLog()
+        {
+            _logText.Clear();
+            AddNewLog(1, "LogSystem", "Log is cleared");
+        }
+
+        /// <summary>
+        /// 添加新的日志信息。
+        /// </summary>
+        /// <param name="level">日志级别</param>
+        /// <param name="source">日志来源</param>
+        /// <param name="info">日志内容</param>
+        public static void AddNewLog(int level, string source, string info)
+        {
+            string currentTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            string levelText = level switch
+            {
+                0 => "DEBUG",
+                1 => "INFO",
+                2 => "WARN",
+                3 => "ERROR",
+                4 => "FATAL",
+                _ => "UNKNOWN",
+            };
+            string logEntry = $"[{currentTime}][{levelText}][{source}]: {info}{Environment.NewLine}";
+
+            // 如果日志大小超过限制，清空日志
+            if (_logText.Length + logEntry.Length > MAX_LOG_SIZE)
+            {
+                _logText.Clear();
+            }
+
+            _logText.Append(logEntry);
+
+            // 如果当前页面是 Home 页面，触发 TextChanged 事件
+            if (Xdows_Security.MainWindow.NowPage == "Home")
+            {
+                TextChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 应用程序的主入口类，负责启动和管理应用程序。
+    /// </summary>
     public partial class App : Application
     {
-        public static MainWindow? MainWindow { get; private set; }
-        private static int _mainWindowCreating = 0;
-        public static string GetCzkCloudApiKey() { return ""; }
-        public static bool IsRunAsAdmin()
-        {
-            WindowsIdentity identity = WindowsIdentity.GetCurrent();
-            WindowsPrincipal principal = new WindowsPrincipal(identity);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-        //public static void RestartAsAdmin()
-        //{
-        //    var exePath = Process.GetCurrentProcess().MainModule.FileName;
-        //    var startInfo = new ProcessStartInfo
-        //    {
-        //        FileName = exePath,
-        //        Verb = "runas",
-        //        UseShellExecute = true,
-        //        WorkingDirectory = Path.GetDirectoryName(exePath)
-        //    Process.Start(startInfo);
-        //    Application.Current.Exit();
-        //}
+        private static int _mainWindowCreating = 0; // 标志位，防止多个线程同时创建 MainWindow
+        public static MainWindow? MainWindow { get; private set; } // 主窗口实例
+
         public App()
         {
+            // 在启动时尝试初始化通知管理器
             LogText.AddNewLog(1, "UI Interface", "尝试加载主窗口");
             try
             {
-                AppNotificationManager mgr = AppNotificationManager.Default;
-                mgr.NotificationInvoked += OnAppNotificationInvoked;
+                InitializeAppNotificationManager();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                LogText.AddNewLog(3, "UI Interface", $"Error initializing notifications: {ex.Message}");
+            }
         }
 
+        /// <summary>
+        /// 初始化应用的通知管理器。
+        /// </summary>
+        private void InitializeAppNotificationManager()
+        {
+            AppNotificationManager mgr = AppNotificationManager.Default;
+            mgr.NotificationInvoked += OnAppNotificationInvoked;
+        }
+
+        /// <summary>
+        /// 处理通知激活事件。
+        /// </summary>
         private async void OnAppNotificationInvoked(object? sender, AppNotificationActivatedEventArgs e)
         {
             try
             {
-                if (e.Arguments is System.Collections.Generic.IDictionary<string, string> argsDict)
+                var argsDict = e.Arguments as IDictionary<string, string>;
+                if (argsDict != null && argsDict.TryGetValue("action", out var action) && action == "openIntercept")
                 {
-                    if (argsDict.TryGetValue("action", out var action) && action == "openIntercept")
-                    {
-                        string interceptedPath = argsDict.TryGetValue("path", out var path) ? path : string.Empty;
-                        LogText.AddNewLog(1, "Notifications", $"Notification invoked with action={action}, path={interceptedPath}");
-
-                        if (MainWindow == null)
-                        {
-                            if (System.Threading.Interlocked.CompareExchange(ref _mainWindowCreating, 1, 0) == 0)
-                            {
-                                try
-                                {
-                                    MainWindow = new MainWindow();
-                                }
-                                catch (Exception ex)
-                                {
-                                    LogText.AddNewLog(3, "Notifications", $"Failed to create MainWindow: {ex.Message}");
-                                }
-                                finally
-                                {
-                                    System.Threading.Interlocked.Exchange(ref _mainWindowCreating, 0);
-                                }
-                            }
-                            else
-                            {
-                                await System.Threading.Tasks.Task.Delay(100);
-                            }
-                        }
-
-                        if (MainWindow != null)
-                        {
-                            var dq = MainWindow.DispatcherQueue;
-                            dq?.TryEnqueue(() =>
-                            {
-                                try { MainWindow.Activate(); } catch { }
-                                try
-                                {
-                                    InterceptWindow.ShowOrActivate(interceptedPath);
-                                }
-                                catch (Exception ex)
-                                {
-                                    LogText.AddNewLog(3, "Notifications", $"Failed to open InterceptWindow: {ex.Message}");
-                                }
-                            });
-                        }
-                    }
+                    string interceptedPath = argsDict.TryGetValue("path", out var path) ? path : string.Empty;
+                    LogText.AddNewLog(1, "Notifications", $"Notification invoked with action={action}, path={interceptedPath}");
+                    await HandleNotification(invokedAction: action, interceptedPath: interceptedPath);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                LogText.AddNewLog(3, "Notifications", $"Error processing notification: {ex.Message}");
+            }
         }
 
+        /// <summary>
+        /// 处理通知中的具体操作。
+        /// </summary>
+        private async Task HandleNotification(string invokedAction, string interceptedPath)
+        {
+            if (MainWindow == null)
+            {
+                if (System.Threading.Interlocked.CompareExchange(ref _mainWindowCreating, 1, 0) == 0)
+                {
+                    try
+                    {
+                        MainWindow = new MainWindow();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogText.AddNewLog(3, "MainWindow", $"Failed to create MainWindow: {ex.Message}");
+                    }
+                    finally
+                    {
+                        System.Threading.Interlocked.Exchange(ref _mainWindowCreating, 0);
+                    }
+                }
+                else
+                {
+                    await Task.Delay(100); // Wait before trying again
+                }
+            }
+
+            if (MainWindow != null)
+            {
+                var dq = MainWindow.DispatcherQueue;
+                dq?.TryEnqueue(() =>
+                {
+                    try
+                    {
+                        MainWindow.Activate();
+                        InterceptWindow.ShowOrActivate(interceptedPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogText.AddNewLog(3, "MainWindow", $"Failed to activate MainWindow or InterceptWindow: {ex.Message}");
+                    }
+                });
+            }
+        }
+
+        /// <summary>
+        /// 应用程序启动时调用，处理启动参数。
+        /// </summary>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             try
             {
-                if (!string.IsNullOrEmpty(args.Arguments) && args.Arguments.Contains("openIntercept"))
+                if (args.Arguments.Contains("openIntercept"))
                 {
-                    try { MainWindow?.Activate(); } catch { }
-                    try
-                    {
-                        // 从启动参数中解析路径
-                        string interceptedPath = string.Empty;
-                        var markerResult = TryConsumeNotificationMarker();
-                        if (markerResult.exists)
-                        {
-                            interceptedPath = markerResult.path;
-                        }
-                        InterceptWindow.ShowOrActivate(interceptedPath);
-                    }
-                    catch { }
-                    return;
+                    HandleInterceptLaunch(args);
                 }
-
-                if (string.IsNullOrEmpty(args.Arguments))
+                else
                 {
-                    var markerResult = TryConsumeNotificationMarker();
-                    if (markerResult.exists)
-                    {
-                        try { MainWindow?.Activate(); } catch { }
-                        try { InterceptWindow.ShowOrActivate(markerResult.path); } catch { }
-                        return;
-                    }
+                    InitializeMainWindow();
                 }
             }
-            catch { }
-            InitializeLanguage();
-            InitializeTheme();
-            InitializeBackdrop();
-            // 确保 MainWindow 已创建后再访问
-            if (MainWindow == null)
+            catch (Exception ex)
             {
-                MainWindow = new MainWindow();
+                LogText.AddNewLog(3, "App", $"Error in OnLaunched: {ex.Message}");
             }
-            // 设置主窗口主题
-            if (MainWindow.Content is FrameworkElement rootElement)
-            {
-                rootElement.RequestedTheme = Theme;
-            }
-            MainWindow.Activate();
-
-            // InterceptWindow.ShowOrActivate(@"C:\Users\a1b2c\Downloads\MEMZ\MEMZ.exe");// 仅供测试使用，提交前请移除
-
         }
 
-        private static (bool exists, string path) TryConsumeNotificationMarker()
+        /// <summary>
+        /// 处理拦截启动的参数。
+        /// </summary>
+        private void HandleInterceptLaunch(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        {
+            try
+            {
+                MainWindow?.Activate();
+                string interceptedPath = TryConsumeNotificationMarker().path;
+                InterceptWindow.ShowOrActivate(interceptedPath);
+            }
+            catch (Exception ex)
+            {
+                LogText.AddNewLog(3, "App", $"Error launching intercept: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 初始化主窗口并显示。
+        /// </summary>
+        private void InitializeMainWindow()
+        {
+            try
+            {
+                MainWindow = MainWindow ?? new MainWindow();
+                MainWindow.Activate();
+            }
+            catch (Exception ex)
+            {
+                LogText.AddNewLog(3, "App", $"Error initializing MainWindow: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 尝试消费通知标记，获取拦截的路径。
+        /// </summary>
+        private (bool exists, string path) TryConsumeNotificationMarker()
         {
             try
             {
@@ -339,23 +374,24 @@ namespace Xdows_Security
             catch { }
             return (false, string.Empty);
         }
+        // 定义主题属性
+        public static ElementTheme Theme { get; set; } = ElementTheme.Default;
 
-        private static void InitializeLanguage()
+        // 获取云API密钥
+        public static string GetCzkCloudApiKey()
         {
-            var settings = ApplicationData.Current.LocalSettings;
-            if (settings.Values.TryGetValue("AppLanguage", out object? language))
-            {
-                ApplicationLanguages.PrimaryLanguageOverride = language as string;
-            }
-            else
-            {
-                var systemLanguage = GlobalizationPreferences.Languages.FirstOrDefault();
-                var defaultLanguage = systemLanguage?.StartsWith("zh") ?? false ? "zh-HANS" : "en-US";
-                ApplicationLanguages.PrimaryLanguageOverride = defaultLanguage;
-                settings.Values["AppLanguage"] = defaultLanguage;
-            }
+            return "YourApiKeyHere";  // 实际的 API 密钥
         }
 
+        // 检查是否以管理员身份运行
+        public static bool IsRunAsAdmin()
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
+        // 重新启动应用程序
         public static void RestartApplication()
         {
             try
@@ -370,52 +406,12 @@ namespace Xdows_Security
             }
             catch (Exception ex)
             {
-                ShowErrorDialog("RestartFailedTitle", $"{_resourceLoader.GetString("RestartFailedMessage")}{ex.Message}");
+                LogText.AddNewLog(3, "App", $"Failed to restart application: {ex.Message}");
             }
         }
 
-        private static ResourceLoader _resourceLoader = ResourceLoader.GetForViewIndependentUse();
-
-        private static async void ShowErrorDialog(string titleKey, string message)
-        {
-            if (MainWindow?.Content?.XamlRoot == null) return;
-
-            ContentDialog dialog = new ContentDialog
-            {
-                Title = _resourceLoader.GetString(titleKey),
-                Content = message,
-                PrimaryButtonText = _resourceLoader.GetString("RetryButtonText"),
-                CloseButtonText = _resourceLoader.GetString("CloseButtonText"),
-                RequestedTheme = ((FrameworkElement)MainWindow.Content).RequestedTheme,
-                XamlRoot = MainWindow.Content.XamlRoot
-            };
-            await dialog.ShowAsync().AsTask();
-        }
-        public static ElementTheme Theme { get; set; } = ElementTheme.Default;
-
-        private static void InitializeTheme()
-        {
-            var settings = ApplicationData.Current.LocalSettings;
-            if (settings.Values.TryGetValue("AppTheme", out object? theme))
-            {
-                string themeString = theme as string ?? ElementTheme.Default.ToString();
-                if (Enum.TryParse(themeString, out ElementTheme themeValue))
-                {
-                    Theme = themeValue;
-                }
-            }
-            else
-            {
-                Theme = ElementTheme.Default;
-                settings.Values["AppTheme"] = Theme.ToString();
-            }
-        }
-
-
-        // 背景材质
-        private const string DefaultBackdrop = "Mica";
-
-        protected internal static bool CheckWindowsVersion()
+        // 检查 Windows 版本
+        public static bool CheckWindowsVersion()
         {
             var version = Environment.OSVersion.Version;
             if (version.Major == 10 && version.Build >= 22000)
@@ -427,16 +423,5 @@ namespace Xdows_Security
                 return false;
             }
         }
-
-        private static void InitializeBackdrop()
-        {
-            var settings = ApplicationData.Current.LocalSettings;
-            if (!settings.Values.ContainsKey("AppBackdrop"))
-            {
-                settings.Values["AppBackdrop"] = MicaController.IsSupported() ?
-                    DefaultBackdrop : "Acrylic";
-            }
-        }
-
     }
 }

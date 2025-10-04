@@ -23,7 +23,7 @@ namespace Xdows.ScanEngine
                 return (score, extra);
             }
             var fileContent = File.ReadAllBytes(path);
-            var fileExtension = Path.GetExtension(path).ToLower();
+            var fileExtension = GetExtString(path);
             var suspiciousData = new List<string>();
 
             if (fileExtension == ".bat" || fileExtension == ".cmd")
@@ -250,7 +250,30 @@ namespace Xdows.ScanEngine
 
             return (score >= 50 ? score : 0,extra);
         }
+        unsafe static string GetExtString(string path)
+        {
+            if (string.IsNullOrEmpty(path)) return string.Empty;
 
+            fixed (char* p = path)
+            {
+                char* dot = null, slash = p;
+                for (char* c = p + path.Length - 1; c >= p; c--)
+                {
+                    if (*c == '.') { dot = c; break; }
+                    if (*c == '\\' || *c == '/') slash = c;
+                }
+                if (dot == null || dot < slash) return string.Empty;
+
+                int len = (int)(p + path.Length - dot);   // 含 "." 的长度
+                Span<char> buf = stackalloc char[len];    // 栈缓冲区
+                ReadOnlySpan<char> src = new ReadOnlySpan<char>(dot, len);
+
+                // 把转小写结果写进 buf
+                src.ToLowerInvariant(buf);
+                // 唯一一次堆分配：把 buf 变成 string
+                return buf.ToString();
+            }
+        }
         private static bool IsSuspiciousBat(byte[] fileContent)
         {
             var content = Encoding.UTF8.GetString(fileContent);

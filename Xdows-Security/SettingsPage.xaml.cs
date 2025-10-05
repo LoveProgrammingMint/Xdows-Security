@@ -26,7 +26,10 @@ namespace Xdows_Security
             LoadThemeSetting();
             LoadBackdropSetting();
             LoadScanSetting();
-            Settings_About_Version.Text = _resourceLoader.GetString("APP_Version");
+            Settings_About_Name.Text = AppInfo.AppName;
+            Settings_About_Version.Text = AppInfo.AppVersion;
+            Settings_About_Feedback.NavigateUri = new Uri(AppInfo.AppFeedback);
+            Settings_About_Website.NavigateUri = new Uri(AppInfo.AppWebsite);
             if (App.GetCzkCloudApiKey() == string.Empty)
             {
                 CzkCloudScanToggle.IsOn = false;

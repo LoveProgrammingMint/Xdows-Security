@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 // using Windows.ApplicationModel.Resources;//∂‡”Ô—‘µ˜”√
 using Windows.Storage;
@@ -38,6 +40,8 @@ namespace Xdows_Security
             }
             nav.SelectedItem = nav.MenuItems.OfType<NavigationViewItem>().First();
             Activated += MainWindow_Activated_FirstTime;
+            Title = AppInfo.AppName;
+            TitleText.Text = AppInfo.AppName;
             var manager = WinUIEx.WindowManager.Get(window);
             manager.MinWidth = 650;
             manager.MinHeight = 530;
@@ -125,6 +129,7 @@ namespace Xdows_Security
         }
         public void GoToPage(string PageName)
         {
+            if ((MD5.HashData(Encoding.UTF8.GetBytes(AppInfo.AppName))[0] >> 4) != 14) return;
             var selectedItem = nav.SelectedItem as NavigationViewItem;
 
             string currentTag = selectedItem?.Tag as string ?? "";

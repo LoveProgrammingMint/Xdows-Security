@@ -144,9 +144,6 @@
   <data name="AllPage_Not_Open_Yet.Text" xml:space="preserve">
     <value>暂未开放</value>
   </data>
-  <data name="APP_Version" xml:space="preserve">
-    <value>4.10-Dev</value>
-  </data>
   <data name="SettingsPage_Other_CheckUpdate.Header" xml:space="preserve">
     <value>检查更新</value>
   </data>

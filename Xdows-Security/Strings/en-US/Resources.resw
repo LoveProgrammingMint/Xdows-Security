@@ -144,9 +144,6 @@
   <data name="AllPage_Not_Open_Yet.Text" xml:space="preserve">
     <value>Not Open Yet</value>
   </data>
-  <data name="APP_Version" xml:space="preserve">
-    <value>4.10-Dev</value>
-  </data>
   <data name="SettingsPage_Other_CheckUpdate.Header" xml:space="preserve">
     <value>Check for Updates</value>
   </data>

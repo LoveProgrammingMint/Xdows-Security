@@ -209,16 +209,16 @@
                             HeaderIcon="{ui:FontIcon Glyph=&#xE946;}">
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard x:Uid="SettingsPage_Other_About_Name" HeaderIcon="{ui:FontIcon Glyph=&#xE8AC;}">
-                        <TextBlock Text="Xdows-Security &amp; XIGUASecurity" />
+                        <TextBlock x:Name="Settings_About_Name"/>
                     </controls:SettingsCard>
                     <controls:SettingsCard x:Uid="SettingsPage_Other_About_Version" HeaderIcon="{ui:FontIcon Glyph=&#xE7B8;}">
-                        <TextBlock x:Name="Settings_About_Version" />
+                        <TextBlock x:Name="Settings_About_Version"/>
                     </controls:SettingsCard>
                     <controls:SettingsCard x:Uid="SettingsPage_Other_About_Feedback" HeaderIcon="{ui:FontIcon Glyph=&#xED15;}">
-                        <HyperlinkButton x:Uid="AllPage_OpenLink" NavigateUri="https://github.com/XTY64XTY12345/Xdows-Security/issues/new/choose" />
+                        <HyperlinkButton x:Uid="AllPage_OpenLink" x:Name="Settings_About_Feedback"/>
                     </controls:SettingsCard>
                     <controls:SettingsCard x:Uid="SettingsPage_Other_About_Website" HeaderIcon="{ui:FontIcon Glyph=&#xE774;}">
-                        <HyperlinkButton x:Uid="AllPage_OpenLink" NavigateUri="https://xty64xty.netlify.app/" />
+                        <HyperlinkButton x:Uid="AllPage_OpenLink" x:Name="Settings_About_Website" />
                     </controls:SettingsCard>
                 </controls:SettingsExpander.Items>
             </controls:SettingsExpander>

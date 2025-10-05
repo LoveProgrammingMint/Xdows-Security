@@ -16,6 +16,12 @@ using static Xdows.Protection.CallBack;
 
 namespace Xdows_Security
 {
+    public class AppInfo { 
+        public static string AppName = "Xdows Security";
+        public static string AppVersion = "4.10-Dev";
+        public static string AppFeedback = "https://github.com/XTY64XTY12345/Xdows-Security/issues/new/choose";
+        public static string AppWebsite = "https://xty64xty.netlify.app/";
+    }
     public static class Protection
     {
         public static bool IsOpen()
@@ -29,7 +35,7 @@ namespace Xdows_Security
                 ? $"InterceptProcess：{Path.GetFileName(path)}"
                 : $"Cannot InterceptProcess：{Path.GetFileName(path)}");
             string content = isSucceed ? "已发现威胁" : "无法处理威胁";
-            content = $"Xdows Security {content}.{Environment.NewLine}相关数据：{Path.GetFileName(path)}{Environment.NewLine}单击此通知以查看详细信息";
+            content = $"{AppInfo.AppName} {content}.{Environment.NewLine}相关数据：{Path.GetFileName(path)}{Environment.NewLine}单击此通知以查看详细信息";
             Notifications.ShowNotification("发现威胁", content, path);
         };
 
@@ -380,7 +386,7 @@ namespace Xdows_Security
         // 获取云API密钥
         public static string GetCzkCloudApiKey()
         {
-            return "YourApiKeyHere";  // 实际的 API 密钥
+            return string.Empty;  // 实际的 API 密钥
         }
 
         // 检查是否以管理员身份运行

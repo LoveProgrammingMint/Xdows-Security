@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Page
+    x:Class="Xdows_Security.BugReportPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Chat -->
+        <Border Grid.Row="0"
+                CornerRadius="8" Padding="12">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <ScrollViewer x:Name="ChatScroll"
+                              Grid.Row="0"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="MessagesPanel"/>
+                </ScrollViewer>
+
+                <Grid Grid.Row="1" Margin="0,12,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="InputBox"
+                             Grid.Column="0"
+                             PlaceholderText="输入消息…"
+                             KeyDown="InputBox_KeyDown"/>
+                    <Button x:Name="SendBtn"
+                            Grid.Column="1"
+                            Margin="8,0,0,0"
+                            Content="发送"
+							Style="{StaticResource AccentButtonStyle}"
+                            Click="SendBtn_Click"/>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- Status -->
+        <Grid Grid.Row="1" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="StatusTxt"
+                       Grid.Column="0"
+                       Text="未连接"
+                       VerticalAlignment="Center"/>
+            <Button x:Name="ReconnectBtn"
+                    Grid.Column="1"
+                    Content="重新连接"
+                    Click="ReconnectBtn_Click"/>
+        </Grid>
+    </Grid>
+</Page>

@@ -456,4 +456,10 @@ Why not try XIGUA Security?</value>
   <data name="SettingsPage_Scan_Cloud_AutoUpload.Description" xml:space="preserve">
     <value>During the testing phase, this option is required</value>
   </data>
+  <data name="SettingsPage_Other_Feedback.Header" xml:space="preserve">
+    <value>Feedback Channel</value>
+  </data>
+  <data name="SettingsPage_Other_Feedback.Description" xml:space="preserve">
+    <value>Provide feedback on related issues or offer suggestions</value>
+  </data>
 </root>

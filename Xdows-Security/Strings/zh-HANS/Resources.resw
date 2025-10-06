@@ -456,4 +456,10 @@
   <data name="SettingsPage_Scan_Cloud_AutoUpload.Description" xml:space="preserve">
     <value>在测试阶段中，这个选项为必选项</value>
   </data>
+  <data name="SettingsPage_Other_Feedback.Header" xml:space="preserve">
+    <value>反馈频道</value>
+  </data>
+  <data name="SettingsPage_Other_Feedback.Description" xml:space="preserve">
+    <value>反馈相关问题或提出建议</value>
+  </data>
 </root>

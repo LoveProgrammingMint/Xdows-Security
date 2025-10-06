@@ -197,6 +197,9 @@
                     <ComboBoxItem Tag="zh-HANS">简体中文</ComboBoxItem>
                 </ComboBox>
             </controls:SettingsCard>
+            <controls:SettingsCard x:Uid="SettingsPage_Other_Feedback" x:Name="SettingsPage_Other_Feedback" HeaderIcon="{ui:FontIcon Glyph=&#xED15;}">
+                <Button x:Uid="AllPage_OpenLink" Click="Settings_Feedback_Click"/>
+            </controls:SettingsCard>
             <controls:SettingsCard 
                     x:Uid="SettingsPage_Other_CheckUpdate"
                     HeaderIcon="{ui:FontIcon Glyph=&#xE895;}">

@@ -64,7 +64,11 @@ namespace Xdows_Security
                 toggle.IsOn = RegistryProtection.IsEnabled();
             toggle.Toggled += RunProtection;
         }
-
+        private void Settings_Feedback_Click(object sender, RoutedEventArgs e)
+        {
+            if(App.MainWindow != null)
+                App.MainWindow.GoToBugReportPage(SettingsPage_Other_Feedback.Header.ToString());
+        }
         private void RunProtection(object sender, RoutedEventArgs e)
         {
             if (sender is not ToggleSwitch toggle || IsInitialize) return;

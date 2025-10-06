@@ -56,8 +56,13 @@
                         </CommandBar.Content>
                         <AppBarButton Icon="Refresh" Label="刷新列表" Click="Refresh_Click"/>
                         <AppBarButton Icon="Cancel" Label="结束进程" Click="Kill_Click"/>
+                        <AppBarButton Label="详细信息" Click="ShowProcessDetail_Click">
+                            <AppBarButton.Icon>
+                                <FontIcon Glyph="&#xE946;"/>
+                            </AppBarButton.Icon>
+                        </AppBarButton>
                     </CommandBar>
-                    <ListView x:Name="ProcessList" Grid.Row="1" SelectionMode="Single">
+                    <ListView x:Name="ProcessList" Grid.Row="1" SelectionMode="Single" DoubleTapped="ShowProcessDetail_Click">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -77,6 +82,11 @@
                                                 </MenuFlyoutItem.Icon>
                                             </MenuFlyoutItem>
                                             <MenuFlyoutSeparator/>
+                                            <MenuFlyoutItem Text="详细信息" Click="ShowProcessDetail_Click">
+                                                <MenuFlyoutItem.Icon>
+                                                    <FontIcon Glyph="&#xE946;"/>
+                                                </MenuFlyoutItem.Icon>
+                                            </MenuFlyoutItem>
                                             <MenuFlyoutItem Text="终止进程" Click="Kill_Click">
                                                 <MenuFlyoutItem.Icon>
                                                     <FontIcon Glyph="&#xF140;"/>

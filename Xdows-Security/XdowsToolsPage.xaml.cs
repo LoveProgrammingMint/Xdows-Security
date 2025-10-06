@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -77,7 +78,94 @@ namespace Xdows_Security
 
             ProcessList.ItemsSource = ApplySort(filtered).ToList();
         }
+        private async void ShowProcessDetail_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProcessList.SelectedItem is not ProcessInfo info) return;
 
+            string filePath = string.Empty;
+            try
+            {
+                using var p = System.Diagnostics.Process.GetProcessById(info.Id);
+                filePath = p.MainModule?.FileName ?? string.Empty;
+            }
+            catch {}
+
+            // 创建对话框内容
+            var sp = new StackPanel { Spacing = 8 };
+            void AddLine(string key, string value)
+            {
+                sp.Children.Add(new TextBlock
+                {
+                    Text = $"{key}: {value}",
+                    IsTextSelectionEnabled = true,
+                    TextWrapping = TextWrapping.Wrap
+                });
+            }
+
+            AddLine("进程名称", info.Name);
+            AddLine("进程编号", info.Id.ToString());
+            AddLine("使用内存", info.Memory);
+
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                try
+                {
+                    var fi = new System.IO.FileInfo(filePath);
+                    AddLine("创建时间", fi.CreationTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                    AddLine("修改时间", fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                    AddLine("文件版本", System.Diagnostics.FileVersionInfo.GetVersionInfo(fi.FullName).FileVersion ?? "-");
+                    AddLine("文件路径", fi.FullName);
+                }
+                catch { }
+            }
+            else
+            {
+                AddLine("文件路径", "拒绝访问或已退出");
+            }
+
+            var dialog = new ContentDialog
+            {
+                Title = "详细信息",
+                Content = new ScrollViewer
+                {
+                    Content = sp,
+                    VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+                },
+                CloseButtonText = "关闭",
+                XamlRoot = XamlRoot,
+                PrimaryButtonText = "定位文件",
+                RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+            };
+
+            if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+            {
+                try
+                {
+                    string? directoryPath = Path.GetDirectoryName(filePath);
+                    string fileName = Path.GetFileName(filePath);
+
+                    var psi = new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "explorer.exe",
+                        Arguments = $"/select,\"{filePath}\""
+                    };
+                    System.Diagnostics.Process.Start(psi);
+                }
+                catch (Exception ex)
+                {
+                    await new ContentDialog
+                    {
+                        Title = "无法定位文件",
+                        Content = $"无法定位文件，因为{ex.Message}",
+                        CloseButtonText = "确定",
+                        RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                        XamlRoot = this.XamlRoot,
+                        CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                    }.ShowAsync();
+                }
+            }
+        }
         private IEnumerable<ProcessInfo> ApplySort(IEnumerable<ProcessInfo> src)
         {
             var tag = (SortCombo.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Name";

@@ -17,10 +17,10 @@ using static Xdows.Protection.CallBack;
 namespace Xdows_Security
 {
     public class AppInfo { 
-        public static string AppName = "Xdows Security";
-        public static string AppVersion = "4.10-Dev";
-        public static string AppFeedback = "https://github.com/XTY64XTY12345/Xdows-Security/issues/new/choose";
-        public static string AppWebsite = "https://xty64xty.netlify.app/";
+        public static readonly string AppName = "Xdows Security";
+        public static readonly string AppVersion = "4.10-Dev";
+        public static readonly string AppFeedback = "https://github.com/XTY64XTY12345/Xdows-Security/issues/new/choose";
+        public static readonly string AppWebsite = "https://xty64xty.netlify.app/";
     }
     public static class Protection
     {

@@ -14,8 +14,8 @@ namespace Xdows_Security
 {
     public sealed partial class BugReportPage : Page
     {
-        private ClientWebSocket _ws;
-        private CancellationTokenSource _cts;
+        private ClientWebSocket? _ws;
+        private CancellationTokenSource? _cts;
 
         public BugReportPage()
         {
@@ -47,6 +47,7 @@ namespace Xdows_Security
         {
             await using var ms = new MemoryStream();
             var buffer = new ArraySegment<byte>(new byte[4 * 1024]);
+            if (_ws == null) return;
             while (!token.IsCancellationRequested && _ws.State == WebSocketState.Open)
             {
                 var result = await _ws.ReceiveAsync(buffer, token);
@@ -84,7 +85,7 @@ namespace Xdows_Security
                     return;
                 bool isHistory = root.TryGetProperty("type", out var t) &&
                                  t.ValueKind == JsonValueKind.String &&
-                                 t.GetString().Equals("history", StringComparison.OrdinalIgnoreCase);
+                                 string.Equals(t.GetString(), "history", StringComparison.OrdinalIgnoreCase);
 
                 if (!isHistory)
                 {
@@ -125,7 +126,7 @@ namespace Xdows_Security
         #endregion
 
         #region UI 事件
-        private async void SendBtn_Click(object sender, RoutedEventArgs e)
+        private async void SendBtn_Click(object? sender, RoutedEventArgs? e)
         {
             var txt = InputBox.Text.Trim();
             if (string.IsNullOrEmpty(txt) || _ws?.State != WebSocketState.Open) return;
@@ -133,6 +134,7 @@ namespace Xdows_Security
             try
             {
                 var payload = JsonSerializer.Serialize(new { type = "user", content = txt });
+                if (_cts == null) return;
                 await _ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(payload)),
                                     WebSocketMessageType.Text, true, _cts.Token);
                 AddMessage(txt, true);

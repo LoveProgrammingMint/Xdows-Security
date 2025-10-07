@@ -134,7 +134,7 @@ namespace Xdows_Security
 
             string currentTag = selectedItem?.Tag as string ?? "";
 
-            if (currentTag != PageName || NowPage == "BugReport")
+            if (currentTag != PageName)
             {
                 var targetItem = FindNavigationItemByTag(nav.MenuItems, PageName);
 
@@ -175,6 +175,7 @@ namespace Xdows_Security
         {
             NowPage = "BugReport";
             nav.Header = PageName;
+            nav.SelectedItem = null;
             navContainer.Navigate(typeof(BugReportPage));
         }
         private NavigationViewItem FindNavigationItemByTag(IList<object> items, string targetTag)

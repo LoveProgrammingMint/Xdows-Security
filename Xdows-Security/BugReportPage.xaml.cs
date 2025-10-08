@@ -1,14 +1,19 @@
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 using System;
 using System.IO;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.System;
 
 namespace Xdows_Security
 {
@@ -48,6 +53,7 @@ namespace Xdows_Security
             await using var ms = new MemoryStream();
             var buffer = new ArraySegment<byte>(new byte[4 * 1024]);
             if (_ws == null) return;
+
             while (!token.IsCancellationRequested && _ws.State == WebSocketState.Open)
             {
                 var result = await _ws.ReceiveAsync(buffer, token);
@@ -58,10 +64,15 @@ namespace Xdows_Security
                     {
                         ms.Position = 0;
                         string json = Encoding.UTF8.GetString(ms.ToArray());
+
                         DispatcherQueue.TryEnqueue(() =>
-                            ExtractAndAddHistory(json,
-                                                (msg, isMe) => AddMessage(msg, isMe),
-                                                () => ScrollToBottom(force: true)));
+                        {
+                            if (!TryHandleFileMessage(json))
+                                ExtractAndAddHistory(json,
+                                                    (msg, isMe) => AddMessage(msg, isMe),
+                                                    () => ScrollToBottom(force: true));
+                        });
+
                         ms.SetLength(0);
                         ScrollToBottom(force: true);
                     }
@@ -72,19 +83,186 @@ namespace Xdows_Security
                 }
             }
         }
+        #endregion
 
+        #region 文件消息（发送+接收）
+        private async void FileBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var picker = new Windows.Storage.Pickers.FileOpenPicker();
+            picker.FileTypeFilter.Add("*");
+            WinRT.Interop.InitializeWithWindow.Initialize(picker,
+                WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow));
+            var file = await picker.PickSingleFileAsync();
+            if (file == null) return;
+
+            var props = await file.GetBasicPropertiesAsync();
+            if (props.Size > 20480)
+            {
+                AddMessage("文件超过 20 KB，已拒绝", true);
+                return;
+            }
+
+            byte[] bytes = File.ReadAllBytes(file.Path);
+            string b64 = Convert.ToBase64String(bytes);
+
+            string fileJson = JsonSerializer.Serialize(new
+            {
+                type = "file",
+                name = file.Name,
+                sizeKB = Math.Ceiling((double)props.Size / 1024),
+                fileB64 = b64
+            });
+            string payload = JsonSerializer.Serialize(new { type = "user", content = fileJson });
+
+            if (_ws == null || _ws.State != WebSocketState.Open || _cts == null) return;
+            await _ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(payload)),
+                                WebSocketMessageType.Text, true, _cts.Token);
+            AddMessage($"[已发送文件] {file.Name}", true);
+        }
+
+        /// <summary>
+        /// 安全尝试把一段文本当作“文件JSON”处理。
+        /// 合法且保存成功后返回 true，否则 false（调用方应继续当普通文本）。
+        /// </summary>
+        private bool TryHandleFileMessage(string json)
+        {
+            if (string.IsNullOrWhiteSpace(json) || !json.TrimStart().StartsWith('{'))
+                return false;
+
+            try
+            {
+                using var doc = JsonDocument.Parse(json);
+                var root = doc.RootElement;
+
+                if (root.TryGetProperty("type", out var t) && t.GetString() == "user" &&
+                    root.TryGetProperty("content", out var c))
+                {
+                    return TryHandleFileMessage(c.GetString()!);
+                }
+
+                if (!root.TryGetProperty("type", out t) || t.GetString() != "file")
+                    return false;
+                if (!root.TryGetProperty("name", out var nameProp) ||
+                    !root.TryGetProperty("fileB64", out var b64Prop))
+                    return false;
+
+                string name = nameProp.GetString()!;
+                string b64 = b64Prop.GetString()!;
+                byte[] data = Convert.FromBase64String(b64);
+
+                double sizeKB = 0;
+                if (root.TryGetProperty("sizeKB", out var sizeProp))
+                    sizeKB = sizeProp.GetDouble();
+
+                var card = new Border
+                {
+                    CornerRadius = new CornerRadius(12),
+                    Padding = new Thickness(10, 8, 10, 8),
+                    Margin = new Thickness(8, 4, 8, 4),
+                    MaxWidth = 280,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    Background = (Brush)Application.Current.Resources["CardBackgroundFillColorDefaultBrush"],
+                    BorderBrush = (Brush)Application.Current.Resources["ControlElevationBorderBrush"],
+                    BorderThickness = new Thickness(1)
+                };
+
+                var rootGrid = new Grid();
+                rootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                rootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+                var topGrid = new Grid { ColumnSpacing = 8 };
+                topGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                topGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+                var icon = new FontIcon
+                {
+                    Glyph = "\uE8A5",
+                    FontSize = 32,
+                    VerticalAlignment = VerticalAlignment.Center,
+                };
+
+                var stack = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Spacing = 2 };
+                var tbName = new TextBlock
+                {
+                    Text = name,
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    FontSize = 14
+                };
+                var tbSize = new TextBlock
+                {
+                    Text = $"{sizeKB:0.##} KB",
+                    FontSize = 12,
+                    Opacity = 0.7
+                };
+                stack.Children.Add(tbName);
+                stack.Children.Add(tbSize);
+
+                Grid.SetColumn(icon, 0);
+                Grid.SetColumn(stack, 1);
+                topGrid.Children.Add(icon);
+                topGrid.Children.Add(stack);
+
+                var btn = new Button
+                {
+                    Content = "下载并定位",
+                    Padding = new Thickness(8, 4, 8, 4),
+                    FontSize = 12,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    Margin = new Thickness(0, 6, 0, 0)
+                };
+
+                async void OpenFileHandler()
+                {
+                    string folder = Path.Combine(
+                                        Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                                        "Downloads");
+                    Directory.CreateDirectory(folder);
+                    string target = Path.Combine(folder, name);
+                    File.WriteAllBytes(target, data);
+                    var psi = new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "explorer.exe",
+                        Arguments = $"/select,\"{target}\""
+                    };
+                    System.Diagnostics.Process.Start(psi);
+                }
+
+                btn.Click += (_, _) => OpenFileHandler();
+
+                Grid.SetRow(topGrid, 0);
+                Grid.SetRow(btn, 1);
+                rootGrid.Children.Add(topGrid);
+                rootGrid.Children.Add(btn);
+
+                card.Child = rootGrid;
+                card.PointerPressed += (_, _) => OpenFileHandler();
+
+                MessagesPanel.Children.Add(card);
+                ScrollToBottom();
+                return true;
+            }
+            catch (JsonException)
+            {
+                return false;
+            }
+        }
+        #endregion
+
+        #region 普通聊天
         private void ExtractAndAddHistory(string json,
-                                                 Action<string, bool> add,
-                                                 Action scrollToBottom)
+                                          Action<string, bool> add,
+                                          Action scrollToBottom)
         {
             try
             {
                 using var doc = JsonDocument.Parse(json);
                 var root = doc.RootElement;
-                if (root.TryGetProperty("total_messages", out var v))
+
+                if (!root.TryGetProperty("type", out var t) ||
+                    string.Equals(t.GetString(), "status", StringComparison.OrdinalIgnoreCase))
                     return;
-                bool isHistory = root.TryGetProperty("type", out var t) &&
-                                 t.ValueKind == JsonValueKind.String &&
+
+                bool isHistory = t.ValueKind == JsonValueKind.String &&
                                  string.Equals(t.GetString(), "history", StringComparison.OrdinalIgnoreCase);
 
                 if (!isHistory)
@@ -101,31 +279,92 @@ namespace Xdows_Security
                     int total = hist.GetArrayLength(), count = 0;
                     foreach (var item in hist.EnumerateArray())
                     {
+                        string innerText;
                         if (item.TryGetProperty("content", out var inner))
-                            add(inner.ToString(), false);
+                            innerText = inner.ToString();
                         else
-                            add(item.ToString(), false);
+                            innerText = item.ToString();
+                        if (!TryHandleFileMessage(innerText))
+                            add(innerText, false);
 
                         if (++count == total)
-                            ScrollToBottom(force: true);
+                            scrollToBottom();
                     }
                 }
                 else
                 {
                     add(json, false);
-                    ScrollToBottom(force: true);
+                    scrollToBottom();
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[HistoryParseError] {ex.Message}\nRaw: {json}");
                 add(json, false);
-                ScrollToBottom(force: true);
+                scrollToBottom();
             }
+        }
+
+        private void AddMessage(string text, bool isMe)
+        {
+            var b = new Border
+            {
+                CornerRadius = new CornerRadius(6),
+                Padding = new Thickness(12),
+                Margin = new Thickness(8, 0, 0, 4),
+                MaxWidth = 300,
+                HorizontalAlignment = isMe ? HorizontalAlignment.Right : HorizontalAlignment.Left,
+                BorderThickness = new Thickness(1),
+                BorderBrush = (Brush)Application.Current.Resources["ControlElevationBorderBrush"],
+                Background = (Brush)Application.Current.Resources[isMe
+                                ? "SystemFillColorAttentionBrush"
+                                : "CardBackgroundFillColorDefaultBrush"]
+            };
+
+            var richText = new RichTextBlock
+            {
+                TextWrapping = TextWrapping.Wrap,
+                IsTextSelectionEnabled = true,
+                Foreground = isMe
+                    ? new SolidColorBrush(Microsoft.UI.Colors.White)
+                    : (Brush)Application.Current.Resources["TextFillColorPrimaryBrush"]
+            };
+
+            var paragraph = new Paragraph();
+            var parts = Regex.Split(text, @"((?:https?|ftp)://[^\s]+)");
+            foreach (var part in parts)
+            {
+                if (Regex.IsMatch(part, @"^https?://"))
+                {
+                    var link = new Hyperlink
+                    {
+                        NavigateUri = null,
+                        UnderlineStyle = UnderlineStyle.Single,
+                        Foreground = new SolidColorBrush(isMe
+                                        ? Microsoft.UI.Colors.White
+                                        : Microsoft.UI.Colors.DodgerBlue),
+                    };
+                    link.Inlines.Add(new Run { Text = part });
+                    link.Click += async (s, e) =>
+                    {
+                        await Launcher.LaunchUriAsync(new Uri(part));
+                    };
+                    paragraph.Inlines.Add(link);
+                }
+                else
+                {
+                    paragraph.Inlines.Add(new Run { Text = part });
+                }
+            }
+
+            richText.Blocks.Add(paragraph);
+            b.Child = richText;
+            MessagesPanel.Children.Add(b);
+            ScrollToBottom();
         }
         #endregion
 
-        #region UI 事件
+        #region 输入与重连
         private async void SendBtn_Click(object? sender, RoutedEventArgs? e)
         {
             var txt = InputBox.Text.Trim();
@@ -162,48 +401,13 @@ namespace Xdows_Security
         }
         #endregion
 
-        #region 消息处理
-        private void AddMessage(string text, bool isMe)
-        {
-            var b = new Border
-            {
-                CornerRadius = new CornerRadius(6),
-                Padding = new Thickness(12),
-                Margin = new Thickness(8, 0, 0, 4),
-                MaxWidth = 300,
-                HorizontalAlignment = isMe ? HorizontalAlignment.Right : HorizontalAlignment.Left,
-                BorderThickness = new Thickness(1),
-                BorderBrush = (Brush)Application.Current.Resources["ControlElevationBorderBrush"],
-                Background = (Brush)Application.Current.Resources[isMe
-                                ? "SystemFillColorAttentionBrush"
-                                : "CardBackgroundFillColorDefaultBrush"]
-            };
-            b.Child = new TextBlock
-            {
-                Text = text,
-                TextWrapping = TextWrapping.Wrap,
-                IsTextSelectionEnabled = true,
-                Foreground = isMe
-                    ? new SolidColorBrush(Microsoft.UI.Colors.White)
-                    : (Brush)Application.Current.Resources["TextFillColorPrimaryBrush"]
-            };
-            MessagesPanel.Children.Add(b);
-
-            // 普通消息实时滚动
-            ScrollToBottom();
-        }
-
-        /// <summary>
-        /// 滚动到底部。force=true 时强制立即执行，解决历史消息加载后未滚动问题。
-        /// </summary>
+        #region 滚动与清理
         private void ScrollToBottom(bool force = false)
         {
             DispatcherQueue.TryEnqueue(() =>
                 ChatScroll.ChangeView(null, ChatScroll.ScrollableHeight, null, !force));
         }
-        #endregion
 
-        #region 清理
         private void Cleanup()
         {
             _cts?.Cancel();

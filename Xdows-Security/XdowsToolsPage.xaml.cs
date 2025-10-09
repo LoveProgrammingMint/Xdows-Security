@@ -27,26 +27,33 @@ namespace Xdows_Security
             InitializePopupRules();
         }
 
-        private void RefreshProcesses()
+        private async void RefreshProcesses()
         {
             try
             {
-                _allProcesses = Process.GetProcesses()
-                                       .Select(p => new ProcessInfo(p))
-                                       .OrderBy(p => p.Name)
-                                       .ToList();
+                var list = await Task.Run(() =>
+                {
+                    return Process.GetProcesses()
+                                  .Select(p => new ProcessInfo(p))
+                                  .OrderBy(p => p.Name)
+                                  .ToList();
+                });
+
+                _allProcesses = list;
                 ApplyFilterAndSort();
             }
             catch (Exception ex)
             {
-                _ = new ContentDialog
+                var dialog = new ContentDialog
                 {
                     Title = "刷新失败",
                     Content = ex.Message,
                     CloseButtonText = "确定",
                     RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
                     XamlRoot = XamlRoot
-                }.ShowAsync();
+                };
+
+                await dialog.ShowAsync();
             }
         }
 

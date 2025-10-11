@@ -607,6 +607,10 @@ namespace Xdows_Security
         {
             try
             {
+                bool isDetailsPause = false;
+                if (PauseScanButton.Visibility != Visibility.Collapsed)
+                    isDetailsPause = true;
+                    OnPauseScanClick(new object(), new RoutedEventArgs());
                 var fileInfo = new FileInfo(row.FilePath);
                 var dialog = new ContentDialog
                 {
@@ -677,6 +681,8 @@ namespace Xdows_Security
                         }.ShowAsync();
                     }
                 }
+                if (isDetailsPause)
+                    OnResumeScanClick(new object(), new RoutedEventArgs());
             }
             catch (Exception ex)
             {

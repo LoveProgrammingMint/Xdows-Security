@@ -109,16 +109,21 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                            <FontIcon Glyph="&#xE916;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
+                            <TextBlock x:Name="ScanSpeedText" Text="0 文件/秒" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" HorizontalAlignment="Center">
                             <FontIcon Glyph="&#xE8B7;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
                             <TextBlock x:Name="FilesScannedText" Text="0 个文件" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
                         </StackPanel>
-                        <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                        <StackPanel Grid.Column="2" HorizontalAlignment="Center">
                             <FontIcon Glyph="&#xE7C9;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
                             <TextBlock x:Name="FilesSafeText" Text="0 个安全" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
                         </StackPanel>
-                        <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                        <StackPanel Grid.Column="3" HorizontalAlignment="Center">
                             <FontIcon Glyph="&#xE783;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
                             <TextBlock x:Name="ThreatsFoundText" Text="0 个威胁" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
                         </StackPanel>

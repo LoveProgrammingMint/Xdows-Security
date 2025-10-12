@@ -312,6 +312,7 @@ namespace Xdows_Security
                     var files = EnumerateFiles(mode, userPath);
                     int ThisId = ScanId;
                     int total = files.Count();
+                    var startTime = DateTime.Now;
                     int finished = 0;
                     int currentItemIndex = 0;
                     switch (mode)
@@ -341,7 +342,6 @@ namespace Xdows_Security
                     {
                         PauseScanButton.IsEnabled = true;
                     });
-
                     foreach (var file in files)
                     {
                         while (_isPaused && !token.IsCancellationRequested)
@@ -442,7 +442,12 @@ namespace Xdows_Security
 
                         finished++;
                         _filesScanned = finished;
-
+                        var elapsedTime = DateTime.Now - startTime;
+                        var scanSpeed = finished / elapsedTime.TotalSeconds;
+                        _dispatcherQueue.TryEnqueue(() =>
+                        {
+                            ScanSpeedText.Text = $"{scanSpeed:F2} 文件/秒";
+                        });
                         if (showScanProgress)
                         {
                             var percent = total == 0 ? 100 : (double)finished / total * 100;

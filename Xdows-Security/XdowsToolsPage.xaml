@@ -116,7 +116,7 @@
                         <RowDefinition Height="300"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <CommandBar Grid.Row="0" DefaultLabelPosition="Right">
+                    <CommandBar Grid.Row="0">
                         <CommandBar.Content>
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
                                 <Grid.ColumnDefinitions>

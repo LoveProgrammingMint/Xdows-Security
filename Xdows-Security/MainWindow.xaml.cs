@@ -215,92 +215,69 @@ namespace Xdows_Security
             var systemBackground = settings.GetColorValue(UIColorType.Background);
             return IsLightColor(systemBackground) ? ElementTheme.Light : ElementTheme.Dark;
         }
-        private string LastBackdrop = "";
-        private double LastOpacity = 100;
-        private ISystemBackdropControllerWithTargets? backdropController;
-        private ICompositionSupportsSystemBackdrop? backdropTarget;
-        private static readonly SystemBackdropConfiguration backdropConfig = new()
+
+        private string _lastBackdrop = "";
+        private double _lastOpacity = 100;
+        private ISystemBackdropControllerWithTargets? _controller;
+        private ICompositionSupportsSystemBackdrop? _target;
+
+        private static readonly SystemBackdropConfiguration _config = new()
         {
-            IsInputActive = true,
+            IsInputActive = true
         };
+
         public void ApplyBackdrop(string backdropType)
         {
             try {
                 if (RootGrid == null) return;
-                var settings = ApplicationData.Current.LocalSettings;
-                if (LastBackdrop == backdropType && LastOpacity == (Double)settings.Values["AppBackdropOpacity"])
-                {
-                    return;
-                }
-                else
-                {
-                    if (settings.Values.TryGetValue("AppBackdropOpacity", out object? opacityValue))
-                    {
-                        LastOpacity = (Double)settings.Values["AppBackdropOpacity"];
-                    }
-                    else
-                    {
-                        LastOpacity = 100;
-                    }
-                    LastBackdrop = backdropType;
-                }
 
+                var settings = ApplicationData.Current.LocalSettings;
+                double opacity = settings.Values["AppBackdropOpacity"] is double v ? v : 100;
+
+                if (_lastBackdrop == backdropType && _lastOpacity.Equals(opacity)) return;
+
+                _lastBackdrop = backdropType;
+                _lastOpacity = opacity;
+                _lastBackdrop = "";
                 if (backdropType == "Solid")
                 {
-                    try
-                    {
-                        this.SystemBackdrop = null;
-                        var currentTheme = GetCurrentTheme();
-                        if (currentTheme == ElementTheme.Dark)
-                        {
-                            RootGrid.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x20, 0x20));
-                        }
-                        else
-                        {
-                            RootGrid.Background = new SolidColorBrush(Colors.White);
-                        }
-                    }
-                    catch { }
+                    this.SystemBackdrop = null;
+                    RootGrid.Background = GetCurrentTheme() == ElementTheme.Dark
+                        ? new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x20, 0x20))
+                        : new SolidColorBrush(Colors.White);
                     return;
                 }
-                if (!MicaController.IsSupported() &&
-                    (backdropType == "Mica" || backdropType == "MicaAlt"))
-                {
+                if (!MicaController.IsSupported() && (backdropType is "Mica" or "MicaAlt"))
                     backdropType = "Acrylic";
-                }
-                try
+                RootGrid.Background = new SolidColorBrush(Colors.Transparent);
+                _target = this.As<ICompositionSupportsSystemBackdrop>();
+
+                _controller = backdropType switch
                 {
-                    RootGrid.Background = new SolidColorBrush(Colors.Transparent);
-                    backdropTarget = this.As<ICompositionSupportsSystemBackdrop>();
-                    switch (backdropType)
+                    "Mica" => new MicaController()
                     {
-                        case "Mica":
-                            backdropController = new MicaController()
-                            {
-                                LuminosityOpacity = (float)LastOpacity / 100,
-                            };
-                            break;
-                        case "MicaAlt":
-                            backdropController = new MicaController()
-                            {
-                                LuminosityOpacity = (float)LastOpacity / 100,
-                                Kind = Microsoft.UI.Composition.SystemBackdrops.MicaKind.BaseAlt
-                            };
-                            break;
-                        case "Acrylic":
-                            backdropController = new DesktopAcrylicController()
-                            {
-                                LuminosityOpacity = (float)LastOpacity / 100
-                            };
-                            break;
-                        default:
-                            ApplyBackdrop("Solid");
-                            return;
-                    }
-                    backdropController.AddSystemBackdropTarget(backdropTarget);
-                    backdropController.SetSystemBackdropConfiguration(backdropConfig);
+                        LuminosityOpacity = (float)opacity / 100
+                    },
+                    "MicaAlt" => new MicaController()
+                    {
+                        LuminosityOpacity = (float)opacity / 100,
+                        Kind = MicaKind.BaseAlt
+                    },
+                    "Acrylic" => new DesktopAcrylicController()
+                    {
+                        LuminosityOpacity = (float)opacity / 100
+                    },
+                    _ => null
+                };
+
+                if (_controller == null)
+                {
+                    ApplyBackdrop("Solid");
+                    return;
                 }
-                catch { }
+
+                _controller.AddSystemBackdropTarget(_target);
+                _controller.SetSystemBackdropConfiguration(_config);
             }
             catch { }
         }
@@ -316,9 +293,9 @@ namespace Xdows_Security
 
         private void Window_Closed()
         {
-            if (backdropController == null) return;
-            backdropController.Dispose();
-            backdropController = null;
+            if (_controller == null) return;
+            _controller.Dispose();
+            _controller = null;
         }
     }
 }

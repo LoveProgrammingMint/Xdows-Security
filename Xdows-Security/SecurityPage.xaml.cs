@@ -156,10 +156,10 @@ namespace Xdows_Security
         private void OnScanMenuClick(object sender, RoutedEventArgs e)
         {
             var settings = ApplicationData.Current.LocalSettings;
-            bool UseLocalScan = settings.Values["LocalScan"] is bool && (bool)settings.Values["LocalScan"];
-            bool UseCzkCloudScan = settings.Values["CzkCloudScan"] is bool && (bool)settings.Values["CzkCloudScan"];
-            bool UseCloudScan = settings.Values["CloudScan"] is bool && (bool)settings.Values["CloudScan"];
-            bool UseSouXiaoScan = settings.Values["SouXiaoScan"] is bool && (bool)settings.Values["SouXiaoScan"];
+            bool UseLocalScan = (settings.Values["LocalScan"] as bool?).GetValueOrDefault();
+            bool UseCzkCloudScan = (settings.Values["CzkCloudScan"] as bool?).GetValueOrDefault();
+            bool UseCloudScan = (settings.Values["CloudScan"] as bool?).GetValueOrDefault();
+            bool UseSouXiaoScan = (settings.Values["SouXiaoScan"] as bool?).GetValueOrDefault();
 
             if (!UseLocalScan && !UseCzkCloudScan && !UseSouXiaoScan && !UseCloudScan)
             {
@@ -210,13 +210,13 @@ namespace Xdows_Security
             _isPaused = false;
 
             var settings = ApplicationData.Current.LocalSettings;
-            bool showScanProgress = settings.Values["ShowScanProgress"] is bool && (bool)settings.Values["ShowScanProgress"];
-            bool DeepScan = settings.Values["DeepScan"] is bool && (bool)settings.Values["DeepScan"];
-            bool ExtraData = settings.Values["ExtraData"] is bool && (bool)settings.Values["ExtraData"];
-            bool UseLocalScan = settings.Values["LocalScan"] is bool && (bool)settings.Values["LocalScan"];
-            bool UseCzkCloudScan = settings.Values["CzkCloudScan"] is bool && (bool)settings.Values["CzkCloudScan"];
-            bool UseCloudScan = settings.Values["CloudScan"] is bool && (bool)settings.Values["CloudScan"];
-            bool UseSouXiaoScan = settings.Values["SouXiaoScan"] is bool && (bool)settings.Values["SouXiaoScan"];
+            bool showScanProgress = settings.Values["ShowScanProgress"] as bool? ?? false;
+            bool DeepScan = settings.Values["DeepScan"] as bool? ?? false;
+            bool ExtraData = settings.Values["ExtraData"] as bool? ?? false;
+            bool UseLocalScan = settings.Values["LocalScan"] as bool? ?? false;
+            bool UseCzkCloudScan = settings.Values["CzkCloudScan"] as bool? ?? false;
+            bool UseCloudScan = settings.Values["CloudScan"] as bool? ?? false;
+            bool UseSouXiaoScan = settings.Values["SouXiaoScan"] as bool? ?? false;
 
             var SouXiaoEngine = new Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan();
             if (UseSouXiaoScan)

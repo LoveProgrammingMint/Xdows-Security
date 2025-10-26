@@ -42,7 +42,6 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.250402" />
-    <PackageReference Include="DevWinUI" Version="9.3.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.6901" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251003001" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.10" />
@@ -149,6 +148,9 @@
     <PRIResource Update="Strings\zh-HANS\Resources.resw">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </PRIResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="C:\Users\a1b2c\.nuget\packages\microsoft.windowsappsdk.runtime\1.8.251003001\buildTransitive\..\include\WindowsAppSDK-VersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="C:\Users\a1b2c\.nuget\packages\microsoft.windowsappsdk.runtime\1.8.251003001\buildTransitive\..\include\WindowsAppSDK-VersionInfo.cs" />

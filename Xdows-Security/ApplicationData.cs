@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using IO = System.IO;
 
-#pragma warning disable CS8601, CS8603, CS8766, CS1998, CS0114
+#pragma warning disable CS8601, CS8603, CS8766, CS1998, CS0114, CS8643, CS8613, CS8619, CS8767
 
 namespace Compatibility.Windows.Storage
 {
@@ -32,7 +32,6 @@ namespace Compatibility.Windows.Storage
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "Xdows-Security", "LocalState", "Settings", "settings.dat");
 
-        // 关键修复：改为存储 JsonElement
         internal readonly Dictionary<string, JsonElement> _dict = new(StringComparer.Ordinal);
 
         static ApplicationDataContainer()
@@ -124,10 +123,10 @@ namespace Compatibility.Windows.Storage
         }
 
         public bool ContainsKey(string key) => Dict.ContainsKey(key);
-        public bool TryGetValue(string key, out object? value)
+        public bool TryGetValue(string key, out object value)
         {
             var r = Dict.TryGetValue(key, out var v);
-            value = r ? ParseJsonElement(v) : null;
+            value = r ? ParseJsonElement(v) : new object();
             return r;
         }
 

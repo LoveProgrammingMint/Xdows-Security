@@ -12,7 +12,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Xdows.Protection;
+using WinUI3Localizer;
 using static Xdows.Protection.CallBack;
+using Windows.Globalization;
 
 namespace Xdows_Security
 {
@@ -294,10 +296,11 @@ namespace Xdows_Security
         /// <summary>
         /// 应用程序启动时调用，处理启动参数。
         /// </summary>
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             try
             {
+                await InitializeLocalizer();
                 if (args.Arguments.Contains("openIntercept"))
                 {
                     HandleInterceptLaunch(args);
@@ -396,7 +399,34 @@ namespace Xdows_Security
             WindowsPrincipal principal = new WindowsPrincipal(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
+        private async Task InitializeLocalizer()
+        {
+            StorageFolder localFolder = ApplicationData.Current.LocalFolder;
+            StorageFolder stringsFolder = await localFolder.CreateFolderAsync(
+                "Strings", CreationCollisionOption.OpenIfExists);
 
+            await EnsureLangResw(stringsFolder, "en-US");
+            await EnsureLangResw(stringsFolder, "zh-HANS");
+
+            var settings = ApplicationData.Current.LocalSettings;
+            string lastLang = settings.Values["AppLanguage"] as string ?? "en-US";
+
+            ILocalizer localizer = await new LocalizerBuilder()
+                .AddStringResourcesFolderForLanguageDictionaries(stringsFolder.Path)
+                .SetOptions(o => o.DefaultLanguage = lastLang)
+                .Build();
+            ApplicationLanguages.PrimaryLanguageOverride = "en-US";
+            await localizer.SetLanguage(lastLang);
+        }
+        private async Task EnsureLangResw(StorageFolder stringsFolder, string lang)
+        {
+            StorageFolder langFolder = await stringsFolder.CreateFolderAsync(
+                lang, CreationCollisionOption.OpenIfExists);
+            var src = await StorageFile.GetFileFromApplicationUriAsync(
+                new Uri($"ms-appx:///Strings/{lang}/Resources.resw"));
+            await src.CopyAsync(langFolder, "Resources.resw",
+                                NameCollisionOption.ReplaceExisting);
+        }
         // 重新启动应用程序
         public static void RestartApplication()
         {

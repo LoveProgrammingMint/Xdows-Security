@@ -14,15 +14,13 @@ using Windows.ApplicationModel.Resources;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.System;
-using WinRT.Interop;
+using WinUI3Localizer;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace Xdows_Security
 {
     public sealed partial class HomePage : Page
     {
-        private readonly ResourceLoader _resourceLoader = ResourceLoader.GetForViewIndependentUse();
-
         private DispatcherTimer _systemInfoTimer = new();
         private DispatcherTimer _protectionTimer = new();
         public HomePage()
@@ -56,7 +54,7 @@ namespace Xdows_Security
         }
         private void RefreshPomes()
         {
-            string Pomes = _resourceLoader.GetString("HomePage_Pomes");
+            string Pomes = Localizer.Get().GetLocalizedString("HomePage_Pomes");
             var randomLine = Pomes
                 .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
                 .OrderBy(_ => Guid.NewGuid())
@@ -146,7 +144,7 @@ namespace Xdows_Security
         private void LoadProtectionStatus()
         {
             var isProtected = Protection.IsOpen();
-            string[] DisplayText = _resourceLoader.GetString("AllPage_Status").Split(',');
+            string[] DisplayText = Localizer.Get().GetLocalizedString("AllPage_Status").Split(',');
             ProtectionStatusText.Text = isProtected ? DisplayText[0] : DisplayText[1];
             ProtectionStatusText.Foreground = isProtected ?
                 new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Green) :
@@ -301,12 +299,12 @@ namespace Xdows_Security
             this.LogTextBox.Text = LogText.Text;
             if (Protection.IsOpen())
             {
-                HomePage_TextBlock.Text = _resourceLoader.GetString("HomePage_TextBlock_Open");
+                HomePage_TextBlock.Text = Localizer.Get().GetLocalizedString("HomePage_TextBlock_Open");
                 Icon.Glyph = "\uE73E";
             }
             else
             {
-                HomePage_TextBlock.Text = _resourceLoader.GetString("HomePage_TextBlock_Close");
+                HomePage_TextBlock.Text = Localizer.Get().GetLocalizedString("HomePage_TextBlock_Close");
                 Icon.Glyph = "\uE711";
             }
         }

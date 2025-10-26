@@ -19,6 +19,7 @@ using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
 using WinRT;
+using WinUI3Localizer;
 using WinUIEx;
 
 namespace Xdows_Security
@@ -46,6 +47,7 @@ namespace Xdows_Security
             manager.MinWidth = 650;
             manager.MinHeight = 530;
             Closed += delegate { Window_Closed(); };
+            Localizer.Get().LanguageChanged += OnLangChanged;
             LogText.AddNewLog(1, "UI Interface", "主窗口加载成功");
         }
         private void MainWindow_Activated_FirstTime(object sender, WindowActivatedEventArgs args)
@@ -77,8 +79,18 @@ namespace Xdows_Security
             {
                 TitleText.Text += " (受限模式)";
             }
-            BadgeNotificationManager.Current.ClearBadge();
         }
+
+        private void OnLangChanged(object? sender, LanguageChangedEventArgs e) => LoadLocalizerData();
+        private void LoadLocalizerData()
+        {
+                        
+            if (nav.SettingsItem is NavigationViewItem setting)
+            {
+                setting.Content = Localizer.Get().GetLocalizedString("MainWindow_Nav_Settings");
+                nav.Header = (nav.SelectedItem as NavigationViewItem)?.Content ?? string.Empty;
+            }
+}
         public void UpdateTheme(ElementTheme selectedTheme)
         {
             App.Theme = selectedTheme;
@@ -296,6 +308,11 @@ namespace Xdows_Security
             if (_controller == null) return;
             _controller.Dispose();
             _controller = null;
+        }
+
+        private void nav_Loaded(object sender, RoutedEventArgs e)
+        {
+            LoadLocalizerData();
         }
     }
 }

@@ -117,12 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Restart_Message" xml:space="preserve">
-    <value>语言更改将在重启后生效，是否立即重启？</value>
-  </data>
-  <data name="Restart_Title" xml:space="preserve">
-    <value>需要重启</value>
-  </data>
   <data name="MainWindow_Nav_Home.Content" xml:space="preserve">
     <value>主页</value>
   </data>
@@ -461,5 +455,8 @@
   </data>
   <data name="SettingsPage_Other_Feedback.Description" xml:space="preserve">
     <value>反馈相关问题或提出建议</value>
+  </data>
+  <data name="MainWindow_Nav_Settings" xml:space="preserve">
+    <value>设置</value>
   </data>
 </root>

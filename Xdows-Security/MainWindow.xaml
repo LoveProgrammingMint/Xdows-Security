@@ -6,6 +6,7 @@
     xmlns:local="using:Xdows_Security"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:l="using:WinUI3Localizer"
     mc:Ignorable="d">
 
     <Grid x:Name="RootGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -34,19 +35,20 @@
                     SelectionChanged="{x:Bind NavigationSelectionChanged}"
                     IsBackButtonVisible="Collapsed"
                     IsBackEnabled="False"
+                    Loaded="nav_Loaded"
                     Margin="0,48,0,0">
             <NavigationView.MenuItems>
-                <NavigationViewItem x:Uid="MainWindow_Nav_Home" Tag="Home">
+                <NavigationViewItem l:Uids.Uid="MainWindow_Nav_Home" Tag="Home">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE80F;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="MainWindow_Nav_Security" Tag="Security">
+                <NavigationViewItem l:Uids.Uid="MainWindow_Nav_Security" Tag="Security">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xEA18;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="MainWindow_Nav_Xdows-Tools" Tag="Xdows-Tools">
+                <NavigationViewItem l:Uids.Uid="MainWindow_Nav_Xdows-Tools" Tag="Xdows-Tools">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xEA86;" />
                     </NavigationViewItem.Icon>

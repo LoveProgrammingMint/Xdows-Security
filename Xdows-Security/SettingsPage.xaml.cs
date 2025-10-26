@@ -11,13 +11,13 @@ using System.Xml.Schema;
 using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
 using Windows.Storage;
+using WinUI3Localizer;
 using Xdows.Protection;
 
 namespace Xdows_Security
 {
     public sealed partial class SettingsPage : Page
     {
-        private readonly ResourceLoader _resourceLoader = ResourceLoader.GetForViewIndependentUse();
         private bool IsInitialize = true;
         public SettingsPage()
         {
@@ -144,52 +144,25 @@ namespace Xdows_Security
             }
         }
 
-        private void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (IsInitialize) return;
             if (LanguageComboBox.SelectedItem is ComboBoxItem selectedItem)
             {
                 var newLanguage = selectedItem.Tag as string;
-                var currentLanguage = ApplicationLanguages.PrimaryLanguageOverride;
-
+                var currentLanguage = Localizer.Get().GetCurrentLanguage();
+                if (newLanguage == null) return;
                 if (newLanguage != currentLanguage)
                 {
-                    var settings = ApplicationData.Current.LocalSettings;
-                    settings.Values["AppLanguage"] = newLanguage;
-                    ApplicationLanguages.PrimaryLanguageOverride = newLanguage;
-
-                    ShowRestartMessage();
+                    ApplicationData.Current.LocalSettings.Values["AppLanguage"] = newLanguage;
+                    await Localizer.Get().SetLanguage(newLanguage);
                 }
-            }
-        }
-
-        private async void ShowRestartMessage()
-        {
-            if (this.XamlRoot == null) return;
-            ContentDialog dialog = new ContentDialog
-            {
-                Title = _resourceLoader.GetString("Restart_Title"),
-                Content = _resourceLoader.GetString("Restart_Message"),
-                PrimaryButtonText = _resourceLoader.GetString("Button_Yes"),
-                SecondaryButtonText = _resourceLoader.GetString("Button_No"),
-                RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
-                XamlRoot = this.XamlRoot,
-                PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
-            };
-            var result = await dialog.ShowAsync();
-            if (result == ContentDialogResult.Primary)
-            {
-                App.RestartApplication();
-            }
-            else
-            {
-                BadgeNotificationManager.Current.SetBadgeAsGlyph(BadgeNotificationGlyph.Activity);
             }
         }
 
         private void UpdateButtonClick(object sender, RoutedEventArgs e)
         {
-            UpdateTeachingTip.ActionButtonContent = _resourceLoader.GetString("Button_Confirm");
+            UpdateTeachingTip.ActionButtonContent = Localizer.Get().GetLocalizedString("Button_Confirm");
             UpdateTeachingTip.IsOpen = !UpdateTeachingTip.IsOpen;
         }
 

@@ -41,10 +41,11 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.250402" />
-    <PackageReference Include="DevWinUI" Version="9.2.0" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.6584" />
+    <PackageReference Include="DevWinUI" Version="9.3.0" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.6901" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251003001" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.10" />
+    <PackageReference Include="WinUI3Localizer" Version="2.3.0" />
     <PackageReference Include="WinUIEx" Version="2.9.0" />
   </ItemGroup>
 
@@ -53,9 +54,9 @@
     <ProjectReference Include="..\ScanEngine\ScanEngine.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="Strings\**\*.resw" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
 
   <ItemGroup>
     <Reference Include="SouXiaoEngine">
@@ -130,5 +131,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="C:\Users\a1b2c\.nuget\packages\microsoft.windowsappsdk.foundation\1.8.250906002\buildTransitive\..\include\DeploymentManagerAutoInitializer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Remove="Resources\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Update="Strings\en-US\Resources.resw">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </PRIResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Remove="Strings\zh-HANS\Resources.resw" />
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Update="Strings\zh-HANS\Resources.resw">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </PRIResource>
   </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:l="using:WinUI3Localizer"
     mc:Ignorable="d">
 
     <Grid Margin="64,0,64,0">
@@ -57,62 +58,62 @@
 
                 <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
                     <StackPanel>
-                        <TextBlock x:Uid="HomePage_ProtectionStatus" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <TextBlock l:Uids.Uid="HomePage_ProtectionStatus" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Uid="HomePage_Protection" Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock x:Name="ProtectionStatusText" Grid.Column="1" x:Uid="AllPage_Loading" />
+                            <TextBlock l:Uids.Uid="HomePage_Protection" Grid.Column="0" Margin="0,0,10,0"/>
+                            <TextBlock x:Name="ProtectionStatusText" Grid.Column="1" l:Uids.Uid="AllPage_Loading" />
                         </Grid>
                         <Grid Margin="0,5,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Uid="HomePage_LastScan" Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock x:Name="LastScanText" Grid.Column="1" x:Uid="AllPage_Undefined"/>
+                            <TextBlock l:Uids.Uid="HomePage_LastScan" Grid.Column="0" Margin="0,0,10,0"/>
+                            <TextBlock x:Name="LastScanText" Grid.Column="1" l:Uids.Uid="AllPage_Undefined"/>
                         </Grid>
                         <Grid Margin="0,5,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Uid="HomePage_NumberOfThreats" Grid.Column="0" Margin="0,0,10,0"/>
+                            <TextBlock l:Uids.Uid="HomePage_NumberOfThreats" Grid.Column="0" Margin="0,0,10,0"/>
                             <TextBlock x:Name="ThreatCountText" Grid.Column="1" Text="0"/>
                         </Grid>
                     </StackPanel>
                 </Border>
                 <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
                     <StackPanel>
-                        <TextBlock x:Uid="HomePage_SystemInfo" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <TextBlock l:Uids.Uid="HomePage_SystemInfo" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Uid="HomePage_OSName" Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock x:Name="OSNameText" Grid.Column="1" x:Uid="AllPage_Loading" />
+                            <TextBlock l:Uids.Uid="HomePage_OSName" Grid.Column="0" Margin="0,0,10,0"/>
+                            <TextBlock x:Name="OSNameText" Grid.Column="1" l:Uids.Uid="AllPage_Loading" />
                         </Grid>
                         <Grid Margin="0,5,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Uid="HomePage_OSVersion"  Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock x:Name="OSVersionText" Grid.Column="1" x:Uid="AllPage_Loading" />
+                            <TextBlock l:Uids.Uid="HomePage_OSVersion"  Grid.Column="0" Margin="0,0,10,0"/>
+                            <TextBlock x:Name="OSVersionText" Grid.Column="1" l:Uids.Uid="AllPage_Loading" />
                         </Grid>
                         <Grid Margin="0,5,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Uid="HomePage_OSMemory" Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock x:Name="MemoryUsageText" Grid.Column="1" x:Uid="AllPage_Loading" />
+                            <TextBlock l:Uids.Uid="HomePage_OSMemory" Grid.Column="0" Margin="0,0,10,0"/>
+                            <TextBlock x:Name="MemoryUsageText" Grid.Column="1" l:Uids.Uid="AllPage_Loading" />
                         </Grid>
                         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                            <Button x:Uid="HomePage_RefreshSystemInfo" Click="RefreshSystemInfo_Click" Margin="0,16,0,0" HorizontalAlignment="Left"/>
+                            <Button l:Uids.Uid="HomePage_RefreshSystemInfo" Click="RefreshSystemInfo_Click" Margin="0,16,0,0" HorizontalAlignment="Left"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>

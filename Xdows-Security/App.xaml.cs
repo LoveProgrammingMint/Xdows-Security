@@ -10,7 +10,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Windows.Storage;
+using Compatibility.Windows.Storage;
 using Xdows.Protection;
 using WinUI3Localizer;
 using static Xdows.Protection.CallBack;
@@ -401,31 +401,17 @@ namespace Xdows_Security
         }
         private async Task InitializeLocalizer()
         {
-            StorageFolder localFolder = ApplicationData.Current.LocalFolder;
-            StorageFolder stringsFolder = await localFolder.CreateFolderAsync(
-                "Strings", CreationCollisionOption.OpenIfExists);
-
-            await EnsureLangResw(stringsFolder, "en-US");
-            await EnsureLangResw(stringsFolder, "zh-HANS");
+            string stringsPath = Path.Combine(AppContext.BaseDirectory, "Strings");
 
             var settings = ApplicationData.Current.LocalSettings;
             string lastLang = settings.Values["AppLanguage"] as string ?? "en-US";
 
             ILocalizer localizer = await new LocalizerBuilder()
-                .AddStringResourcesFolderForLanguageDictionaries(stringsFolder.Path)
+                .AddStringResourcesFolderForLanguageDictionaries(stringsPath)
                 .SetOptions(o => o.DefaultLanguage = lastLang)
                 .Build();
-            ApplicationLanguages.PrimaryLanguageOverride = "en-US";
+            // ApplicationLanguages.PrimaryLanguageOverride = "en-US";
             await localizer.SetLanguage(lastLang);
-        }
-        private async Task EnsureLangResw(StorageFolder stringsFolder, string lang)
-        {
-            StorageFolder langFolder = await stringsFolder.CreateFolderAsync(
-                lang, CreationCollisionOption.OpenIfExists);
-            var src = await StorageFile.GetFileFromApplicationUriAsync(
-                new Uri($"ms-appx:///Strings/{lang}/Resources.resw"));
-            await src.CopyAsync(langFolder, "Resources.resw",
-                                NameCollisionOption.ReplaceExisting);
         }
         // 重新启动应用程序
         public static void RestartApplication()

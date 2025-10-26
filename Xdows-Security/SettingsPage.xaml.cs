@@ -10,7 +10,7 @@ using System.IO;
 using System.Xml.Schema;
 using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
-using Windows.Storage;
+using Compatibility.Windows.Storage;
 using WinUI3Localizer;
 using Xdows.Protection;
 
@@ -91,48 +91,57 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             settings.Values[key] = toggle.IsOn;
         }
+        // 仅展示需要修改的三个方法，其余代码保持不变
         private void LoadScanSetting()
         {
             var settings = ApplicationData.Current.LocalSettings;
+
             var toggles = new List<ToggleSwitch>
-            {
-                ScanProgressToggle,
-                DeepScanToggle,
-                ExtraDataToggle,
-                LocalScanToggle,
-                CzkCloudScanToggle,
-                SouXiaoScanToggle,
-                CloudScanToggle
-            };
+    {
+        ScanProgressToggle,
+        DeepScanToggle,
+        ExtraDataToggle,
+        LocalScanToggle,
+        CzkCloudScanToggle,
+        SouXiaoScanToggle,
+        CloudScanToggle
+    };
 
-            foreach (var setting in toggles)
+            foreach (var toggle in toggles)
             {
-                if (setting == null) continue;
+                if (toggle == null) continue;
 
-                if (setting.Tag is string key && !string.IsNullOrWhiteSpace(key))
+                if (toggle.Tag is string key && !string.IsNullOrWhiteSpace(key) &&
+                    settings.Values.TryGetValue(key, out object raw) && raw is bool isOn)
                 {
-                    if (settings.Values.TryGetValue(key, out object? toggleValue))
-                    {
-                        setting.IsOn = toggleValue is bool boolValue && boolValue;
-                    }
+                    toggle.IsOn = isOn;
                 }
             }
-            if (settings.Values.TryGetValue("AppBackdropOpacity", out object? opacityValue))
+
+            if (settings.Values.TryGetValue("AppBackdropOpacity", out object opacityRaw) &&
+                opacityRaw is double opacity)
             {
-                Appearance_Backdrop_Opacity.Value = (double)opacityValue;
+                Appearance_Backdrop_Opacity.Value = opacity;
             }
             else
             {
                 Appearance_Backdrop_Opacity.Value = 100;
             }
+
             ProcessToggle.IsOn = ProcessProtection.IsEnabled();
             FilesToggle.IsOn = FilesProtection.IsEnabled();
             RegistryToggle.IsOn = RegistryProtection.IsEnabled();
         }
+
         private void LoadLanguageSetting()
         {
             var settings = ApplicationData.Current.LocalSettings;
-            var savedLanguage = settings.Values["AppLanguage"] as string ?? "zh-HANS";
+
+            if (!settings.Values.TryGetValue("AppLanguage", out object langRaw) ||
+                langRaw is not string savedLanguage)
+            {
+                savedLanguage = "en-US";
+            }
 
             foreach (ComboBoxItem item in LanguageComboBox.Items)
             {
@@ -143,7 +152,24 @@ namespace Xdows_Security
                 }
             }
         }
+        private void LoadThemeSetting()
+        {
+            var settings = ApplicationData.Current.LocalSettings;
 
+            if (!settings.Values.TryGetValue("AppTheme", out object themeRaw) ||
+                themeRaw is not string themeString ||
+                !Enum.TryParse(themeString, out ElementTheme themeValue))
+            {
+                themeValue = ElementTheme.Default;
+            }
+
+            ThemeComboBox.SelectedIndex = themeValue switch
+            {
+                ElementTheme.Light => 1,
+                ElementTheme.Dark => 2,
+                _ => 0
+            };
+        }
         private async void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (IsInitialize) return;
@@ -170,35 +196,6 @@ namespace Xdows_Security
         {
             sender.IsOpen = false;
         }
-        private void LoadThemeSetting()
-        {
-            var settings = ApplicationData.Current.LocalSettings;
-            if (settings.Values.TryGetValue("AppTheme", out object? theme))
-            {
-                string themeString = theme as string ?? ElementTheme.Default.ToString();
-                if (Enum.TryParse(themeString, out ElementTheme themeValue))
-                {
-                    switch (themeValue)
-                    {
-                        case ElementTheme.Default:
-                            ThemeComboBox.SelectedIndex = 0;
-                            break;
-                        case ElementTheme.Light:
-                            ThemeComboBox.SelectedIndex = 1;
-                            break;
-                        case ElementTheme.Dark:
-                            ThemeComboBox.SelectedIndex = 2;
-                            break;
-                    }
-                }
-            }
-            else
-            {
-                ThemeComboBox.SelectedIndex = 0;
-            }
-        }
-
-
         private void ThemeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (IsInitialize || ThemeComboBox.SelectedIndex == -1) return;

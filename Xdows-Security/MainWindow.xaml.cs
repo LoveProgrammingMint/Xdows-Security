@@ -14,7 +14,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 // using Windows.ApplicationModel.Resources;//∂‡”Ô—‘µ˜”√
-using Windows.Storage;
+using Compatibility.Windows.Storage;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;

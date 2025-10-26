@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
-using Windows.Storage;
+using Compatibility.Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.System;
 using WinUI3Localizer;
@@ -223,7 +223,7 @@ namespace Xdows_Security
             {
                 try
                 {
-                    await FileIO.WriteTextAsync(file, LogText.Text);
+                    await Windows.Storage.FileIO.WriteTextAsync(file, LogText.Text);
                 }
                 catch (Exception ex)
                 {

@@ -19,6 +19,7 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishTrimmed>true</PublishTrimmed>
+    <WindowsPackageType>None</WindowsPackageType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -99,6 +100,7 @@
     <AppxBundlePlatforms>x86|x64|arm64</AppxBundlePlatforms>
     <AppInstallerUri>C:\Users\a1b2c\Downloads</AppInstallerUri>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <WindowsPackageType>None</WindowsPackageType>
   </PropertyGroup>
 
   <!-- Release 优化 -->
@@ -147,5 +149,20 @@
     <PRIResource Update="Strings\zh-HANS\Resources.resw">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </PRIResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="C:\Users\a1b2c\.nuget\packages\microsoft.windowsappsdk.runtime\1.8.251003001\buildTransitive\..\include\WindowsAppSDK-VersionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="C:\Users\a1b2c\.nuget\packages\microsoft.windowsappsdk.runtime\1.8.251003001\buildTransitive\..\include\WindowsAppSDK-VersionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="C:\Users\a1b2c\.nuget\packages\microsoft.windowsappsdk.runtime\1.8.251003001\buildTransitive\..\include\WindowsAppSDK-VersionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="C:\Users\a1b2c\.nuget\packages\microsoft.windowsappsdk.runtime\1.8.251003001\buildTransitive\..\include\WindowsAppSDK-VersionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="C:\Users\a1b2c\.nuget\packages\microsoft.windowsappsdk.runtime\1.8.251003001\buildTransitive\..\include\WindowsAppSDK-VersionInfo.cs" />
   </ItemGroup>
 </Project>

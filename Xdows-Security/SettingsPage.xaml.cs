@@ -91,21 +91,20 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             settings.Values[key] = toggle.IsOn;
         }
-        // 仅展示需要修改的三个方法，其余代码保持不变
         private void LoadScanSetting()
         {
             var settings = ApplicationData.Current.LocalSettings;
 
             var toggles = new List<ToggleSwitch>
-    {
-        ScanProgressToggle,
-        DeepScanToggle,
-        ExtraDataToggle,
-        LocalScanToggle,
-        CzkCloudScanToggle,
-        SouXiaoScanToggle,
-        CloudScanToggle
-    };
+              {
+                 ScanProgressToggle,
+                 DeepScanToggle,
+                 ExtraDataToggle,
+                 LocalScanToggle,
+                 CzkCloudScanToggle,
+                 SouXiaoScanToggle,
+                 CloudScanToggle
+               };
 
             foreach (var toggle in toggles)
             {

@@ -363,82 +363,87 @@ namespace Xdows_Security
                             }
                         });
 
-                        try
+#pragma warning disable CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
+                        Task.Run(async () =>
                         {
-                            string Result = string.Empty;
-
-                            if (UseSouXiaoScan)
+                            try
                             {
-                                if (SouXiaoEngine != null)
-                                {
-                                    var SouXiaoEngineResult = SouXiaoEngine.ScanFile(file);
-                                    Result = SouXiaoEngineResult.IsVirus ? SouXiaoEngineResult.Result : string.Empty;
-                                }
-                            }
-                            if (string.IsNullOrEmpty(Result))
-                            {
-                                if (UseLocalScan)
-                                {
-                                    string localResult = await Xdows.ScanEngine.ScanEngine.LocalScanAsync(file, DeepScan, ExtraData);
+                                string Result = string.Empty;
 
-                                    if (!string.IsNullOrEmpty(localResult))
+                                if (UseSouXiaoScan)
+                                {
+                                    if (SouXiaoEngine != null)
                                     {
-                                        Result = DeepScan ? $"{localResult} with DeepScan" : localResult;
+                                        var SouXiaoEngineResult = SouXiaoEngine.ScanFile(file);
+                                        Result = SouXiaoEngineResult.IsVirus ? SouXiaoEngineResult.Result : string.Empty;
                                     }
                                 }
-                            }
-
-                            if (string.IsNullOrEmpty(Result))
-                            {
-                                if (UseCloudScan)
+                                if (string.IsNullOrEmpty(Result))
                                 {
-                                    var cloudResult = await Xdows.ScanEngine.ScanEngine.CloudScanAsync(file);
-                                    System.Diagnostics.Debug.WriteLine(cloudResult.result);
-                                    if (cloudResult.result == "virus_file")
+                                    if (UseLocalScan)
                                     {
-                                        Result = "MEMZUAC.Cloud.VirusFile" ?? string.Empty;
+                                        string localResult = await Xdows.ScanEngine.ScanEngine.LocalScanAsync(file, DeepScan, ExtraData);
+
+                                        if (!string.IsNullOrEmpty(localResult))
+                                        {
+                                            Result = DeepScan ? $"{localResult} with DeepScan" : localResult;
+                                        }
                                     }
                                 }
-                            }
-                            if (string.IsNullOrEmpty(Result))
-                            {
-                                if (UseCzkCloudScan)
+
+                                if (string.IsNullOrEmpty(Result))
                                 {
-                                    var czkCloudResult = await Xdows.ScanEngine.ScanEngine.CzkCloudScanAsync(file, App.GetCzkCloudApiKey());
-                                    if (czkCloudResult.result != "safe")
+                                    if (UseCloudScan)
                                     {
-                                        Result = czkCloudResult.result??string.Empty;
+                                        var cloudResult = await Xdows.ScanEngine.ScanEngine.CloudScanAsync(file);
+                                        System.Diagnostics.Debug.WriteLine(cloudResult.result);
+                                        if (cloudResult.result == "virus_file")
+                                        {
+                                            Result = "MEMZUAC.Cloud.VirusFile" ?? string.Empty;
+                                        }
                                     }
                                 }
-                            }
-                            Statistics.ScansQuantity += 1;
-                            if (!string.IsNullOrEmpty(Result))
-                            {
-                                LogText.AddNewLog(1, "Security - Find", Result);
-                                Statistics.VirusQuantity += 1;
-                                try
+                                if (string.IsNullOrEmpty(Result))
                                 {
-                                    _dispatcherQueue.TryEnqueue(() =>
+                                    if (UseCzkCloudScan)
                                     {
-                                        _currentResults!.Add(new VirusRow(file, Result));
-                                        BackToVirusListButton.Visibility = Visibility.Visible;
-                                    });
-                                    _threatsFound++;
-                                    UpdateScanItemStatus(currentItemIndex, "发现威胁", true, _threatsFound);
+                                        var czkCloudResult = await Xdows.ScanEngine.ScanEngine.CzkCloudScanAsync(file, App.GetCzkCloudApiKey());
+                                        if (czkCloudResult.result != "safe")
+                                        {
+                                            Result = czkCloudResult.result ?? string.Empty;
+                                        }
+                                    }
                                 }
-                                catch { }
-                            }
-                            else
-                            {
-                                LogText.AddNewLog(1, "Security - Find", "Is Safe");
-                                _filesSafe++;
-                            }
+                                Statistics.ScansQuantity += 1;
+                                if (!string.IsNullOrEmpty(Result))
+                                {
+                                    LogText.AddNewLog(1, "Security - Find", Result);
+                                    Statistics.VirusQuantity += 1;
+                                    try
+                                    {
+                                        _dispatcherQueue.TryEnqueue(() =>
+                                        {
+                                            _currentResults!.Add(new VirusRow(file, Result));
+                                            BackToVirusListButton.Visibility = Visibility.Visible;
+                                        });
+                                        _threatsFound++;
+                                        UpdateScanItemStatus(currentItemIndex, "发现威胁", true, _threatsFound);
+                                    }
+                                    catch { }
+                                }
+                                else
+                                {
+                                    LogText.AddNewLog(1, "Security - Find", "Is Safe");
+                                    _filesSafe++;
+                                }
 
-                        }
-                        catch
-                        {
-                            // 忽略无法访问的文件
-                        }
+                            }
+                            catch
+                            {
+                                // 忽略无法访问的文件
+                            }
+                        });
+#pragma warning restore CS4014 // 由于此调用不会等待，因此在调用完成前将继续执行当前方法
 
                         finished++;
                         _filesScanned = finished;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PeNet;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace Xdows.ScanEngine
 {
     public static class Heuristic
     {
-        public static async Task<(int score, string extra)> Evaluate(string path, PEInfo peInfo, bool deepScan)
+        public static async Task<(int score, string extra)> Evaluate(string path,PeFile peFile, PEInfo peInfo, bool deepScan)
         {
             var extra = string.Empty;
             var score = 0;
@@ -45,7 +46,7 @@ namespace Xdows.ScanEngine
 
             if (fileExtension == ".exe" || fileExtension == ".dll")
             {
-                int code = await Task.Run(() => FileDigitallySignedAndValid(path, deepScan))
+                int code = await Task.Run(() => FileDigitallySignedAndValid(path,peFile, deepScan))
                                     .ConfigureAwait(false);
                 if (code == 50)
                     return (0, string.Empty);
@@ -362,294 +363,284 @@ namespace Xdows.ScanEngine
                "58DA14F4C5941747B995956FDC89B4E3AAE47B8F",
                "63D724AEA7B5DE31A77BEF57B1314F20804844F4",
            };
-        public static int FileDigitallySignedAndValid(string filePath,bool isDeepScan)
+        public static int FileDigitallySignedAndValid(string filePath, PeFile pe, bool isDeepScan)
         {
-            X509Certificate2? cert = null;
             try
             {
-                cert = new X509Certificate2(X509Certificate.CreateFromSignedFile(filePath));
+                //try
+                //{
+                //    string? fp = WinTrustEx.GetCatalogCertSha256(filePath);
 
-                X509Chain chain = new X509Chain
+                //    if (!string.IsNullOrEmpty(fp))
+                //        return _trustedThumbprints.Contains(fp) ? 50 : 5;
+                //}
+                //catch { }
+                if (filePath.IndexOf(@":\Windows", StringComparison.OrdinalIgnoreCase) >= 0)
+                    return 30;
+                var auth = pe.SigningAuthenticodeCertificate;
+                if (auth == null) return 0;
+                
+                var chain = new X509Chain
                 {
-                    ChainPolicy =
-                    {
-                       RevocationMode = X509RevocationMode.Offline,
-                       RevocationFlag = X509RevocationFlag.ExcludeRoot,
-                       UrlRetrievalTimeout = TimeSpan.FromSeconds(30),
-                       VerificationFlags = X509VerificationFlags.NoFlag
+                    ChainPolicy = {
+                        RevocationMode = X509RevocationMode.Offline,
+                        RevocationFlag = X509RevocationFlag.ExcludeRoot,
+                        UrlRetrievalTimeout = TimeSpan.FromSeconds(30),
+                        VerificationFlags = X509VerificationFlags.NoFlag
                     }
                 };
 
-                bool chainOk = chain.Build(cert);
-                if (isDeepScan && !AuthenticodeHashMatch(filePath)) return -10;
-                bool isTrustedCertificate = chain.ChainElements
-                                            .Any(el => _trustedThumbprints.Contains(el.Certificate.Thumbprint));
-                if (isTrustedCertificate)
-                    return 50;
+                bool chainOk = chain.Build(auth);
+                //if (isDeepScan && !WinTrustEx.AuthenticodeHashMatch(filePath)) return -10;
+                bool isTrusted = chain.ChainElements
+                                      .Any(el => _trustedThumbprints.Contains(el.Certificate.Thumbprint));
+                if (isTrusted) return 50;
 
-                //SignedAndValid += string.Concat(
-                //    chain.ChainElements
-                //         .Select(el => el.Certificate.Thumbprint)
-                //         .Where(t => !SignedAndValid.Contains($"\n{t},"))
-                //         .Select(t => $"\n{t},"));
-                if (cert.NotAfter <= DateTime.Now)
-                    return -10;
+                if (auth.NotAfter <= DateTime.Now) return -10;
 
-                foreach (X509ChainElement el in chain.ChainElements)
-                {
-                    if (el.ChainElementStatus.Any(s =>
-                            s.Status == X509ChainStatusFlags.Revoked))
-                        return -10;
-                }
+                bool revoked = chain.ChainElements
+                                    .Any(el => el.ChainElementStatus.Any(s => s.Status == X509ChainStatusFlags.Revoked));
+                if (revoked) return -10;
+
                 return chainOk ? 5 : 0;
             }
-            catch
-            {
-                string? fp = GetCatalogCertSha256(filePath);
-
-                //if (!string.IsNullOrEmpty(fp) && (!_trustedThumbprints.Contains(fp) && !SignedAndValid.Contains(fp)))
-                //{
-                //    SignedAndValid += "\n{fp},";
-                //}
-                return string.IsNullOrEmpty(fp) ? 0
-                     : _trustedThumbprints.Contains(fp) ? 50
-                     : 5;
-            }
-            finally
-            {
-                cert?.Dispose();
-            }
+            catch{ return 0; }
         }
-        private static bool AuthenticodeHashMatch(string filePath)
-        {
-            var fi = new Native.WINTRUST_FILE_INFO
-            {
-                cbStruct = (uint)Marshal.SizeOf(typeof(Native.WINTRUST_FILE_INFO)),
-                pcwszFilePath = filePath,
-                hFile = IntPtr.Zero,
-                pgKnownSubject = IntPtr.Zero
-            };
+//        public static class WinTrustEx
+//        {
+//            public static bool AuthenticodeHashMatch(string filePath)
+//            {
+//                var fi = new Native.WINTRUST_FILE_INFO
+//                {
+//                    cbStruct = (uint)Marshal.SizeOf(typeof(Native.WINTRUST_FILE_INFO)),
+//                    pcwszFilePath = filePath,
+//                    hFile = IntPtr.Zero,
+//                    pgKnownSubject = IntPtr.Zero
+//                };
 
-            var wd = new Native.WINTRUST_DATA
-            {
-                cbStruct = (uint)Marshal.SizeOf(typeof(Native.WINTRUST_DATA)),
-                dwUIChoice = 2,
-                fdwRevocationChecks = Native.WTD_REVOKE_NONE,
-                dwUnionChoice = Native.WTD_CHOICE_FILE,
-                pFile = Marshal.AllocHGlobal(Marshal.SizeOf(fi)),
-                dwProvFlags = Native.WTD_VERIFY_FILE_HASH_ONLY,
-                dwStateAction = 1
-            };
-            Marshal.StructureToPtr(fi, wd.pFile, false);
+//                var wd = new Native.WINTRUST_DATA
+//                {
+//                    cbStruct = (uint)Marshal.SizeOf(typeof(Native.WINTRUST_DATA)),
+//                    dwUIChoice = 2,
+//                    fdwRevocationChecks = Native.WTD_REVOKE_NONE,
+//                    dwUnionChoice = Native.WTD_CHOICE_FILE,
+//                    pFile = Marshal.AllocHGlobal(Marshal.SizeOf(fi)),
+//                    dwProvFlags = Native.WTD_VERIFY_FILE_HASH_ONLY,
+//                    dwStateAction = 1
+//                };
+//                Marshal.StructureToPtr(fi, wd.pFile, false);
 
-            int hr = Native.WinVerifyTrust(IntPtr.Zero, Native.WINTRUST_ACTION_GENERIC_VERIFY_V2, ref wd);
+//                int hr = Native.WinVerifyTrust(IntPtr.Zero, Native.WINTRUST_ACTION_GENERIC_VERIFY_V2, ref wd);
 
-            wd.dwStateAction = 2;
-            Native.WinVerifyTrust(IntPtr.Zero, Native.WINTRUST_ACTION_GENERIC_VERIFY_V2, ref wd);
-            Marshal.FreeHGlobal(wd.pFile);
+//                wd.dwStateAction = 2;
+//                Native.WinVerifyTrust(IntPtr.Zero, Native.WINTRUST_ACTION_GENERIC_VERIFY_V2, ref wd);
+//                Marshal.FreeHGlobal(wd.pFile);
 
-            return hr == 0; // 0 = 哈希正确
-        }
-        private static class Native
-        {
-            public const uint WTD_VERIFY_FILE_HASH_ONLY = 0x0200;
-            public const uint WTD_REVOKE_NONE = 0x0000;
-            public const uint WTD_CHOICE_FILE = 1;
+//                return hr == 0; // 0 = 哈希正确
+//            }
+//            private static class Native
+//            {
+//                public const uint WTD_VERIFY_FILE_HASH_ONLY = 0x0200;
+//                public const uint WTD_REVOKE_NONE = 0x0000;
+//                public const uint WTD_CHOICE_FILE = 1;
 
-            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-            public struct WINTRUST_DATA
-            {
-                public uint cbStruct;
-                public IntPtr pPolicyCallbackData;
-                public IntPtr pSIPClientData;
-                public uint dwUIChoice;
-                public uint fdwRevocationChecks;
-                public uint dwUnionChoice;
-                public IntPtr pFile;
-                public uint dwStateAction;
-                public IntPtr hWVTStateData;
-                public IntPtr pwszURLReference;
-                public uint dwProvFlags;
-                public uint dwUIContext;
-            }
+//                [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+//                public struct WINTRUST_DATA
+//                {
+//                    public uint cbStruct;
+//                    public IntPtr pPolicyCallbackData;
+//                    public IntPtr pSIPClientData;
+//                    public uint dwUIChoice;
+//                    public uint fdwRevocationChecks;
+//                    public uint dwUnionChoice;
+//                    public IntPtr pFile;
+//                    public uint dwStateAction;
+//                    public IntPtr hWVTStateData;
+//                    public IntPtr pwszURLReference;
+//                    public uint dwProvFlags;
+//                    public uint dwUIContext;
+//                }
 
-            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-            public struct WINTRUST_FILE_INFO
-            {
-                public uint cbStruct;
-                public string pcwszFilePath;
-                public IntPtr hFile;
-                public IntPtr pgKnownSubject;
-            }
+//                [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+//                public struct WINTRUST_FILE_INFO
+//                {
+//                    public uint cbStruct;
+//                    public string pcwszFilePath;
+//                    public IntPtr hFile;
+//                    public IntPtr pgKnownSubject;
+//                }
 
-            [DllImport("wintrust.dll", CharSet = CharSet.Unicode)]
-            public static extern int WinVerifyTrust(IntPtr hwnd, [MarshalAs(UnmanagedType.LPStruct)] Guid pgActionID,
-                                                    ref WINTRUST_DATA pWVTData);
+//                [DllImport("wintrust.dll", CharSet = CharSet.Unicode)]
+//                public static extern int WinVerifyTrust(IntPtr hwnd, [MarshalAs(UnmanagedType.LPStruct)] Guid pgActionID,
+//                                                        ref WINTRUST_DATA pWVTData);
 
-            public static readonly Guid WINTRUST_ACTION_GENERIC_VERIFY_V2 = new Guid("00AAC56B-CD44-11d0-8CC2-00C04FC295EE");
-        }
-        public static string? GetCatalogCertSha256(string filePath)
-        {
-            IntPtr hFile = NativeMethods.CreateFile(filePath, NativeMethods.GENERIC_READ, NativeMethods.FILE_SHARE_READ, IntPtr.Zero, NativeMethods.OPEN_EXISTING, 0, IntPtr.Zero);
-            if (hFile == NativeMethods.INVALID_HANDLE_VALUE) return null;
+//                public static readonly Guid WINTRUST_ACTION_GENERIC_VERIFY_V2 = new Guid("00AAC56B-CD44-11d0-8CC2-00C04FC295EE");
+//            }
+//            public static string? GetCatalogCertSha256(string filePath)
+//            {
+//                IntPtr hFile = NativeMethods.CreateFile(filePath, NativeMethods.GENERIC_READ, NativeMethods.FILE_SHARE_READ, IntPtr.Zero, NativeMethods.OPEN_EXISTING, 0, IntPtr.Zero);
+//                if (hFile == NativeMethods.INVALID_HANDLE_VALUE) return null;
 
-            int hashSize = 0;
-            NativeMethods.CryptCATAdminCalcHashFromFileHandle(hFile, ref hashSize, null, 0);
-            byte[] hash = new byte[hashSize];
-            if (!NativeMethods.CryptCATAdminCalcHashFromFileHandle(hFile, ref hashSize, hash, 0))
-            {
-                NativeMethods.CloseHandle(hFile);
-                return null;
-            }
-            NativeMethods.CloseHandle(hFile);
+//                int hashSize = 0;
+//                NativeMethods.CryptCATAdminCalcHashFromFileHandle(hFile, ref hashSize, null, 0);
+//                byte[] hash = new byte[hashSize];
+//                if (!NativeMethods.CryptCATAdminCalcHashFromFileHandle(hFile, ref hashSize, hash, 0))
+//                {
+//                    NativeMethods.CloseHandle(hFile);
+//                    return null;
+//                }
+//                NativeMethods.CloseHandle(hFile);
 
-            IntPtr hCatAdmin = IntPtr.Zero;
-            if (!NativeMethods.CryptCATAdminAcquireContext(out hCatAdmin, IntPtr.Zero, 0)) return null;
+//                IntPtr hCatAdmin = IntPtr.Zero;
+//                if (!NativeMethods.CryptCATAdminAcquireContext(out hCatAdmin, IntPtr.Zero, 0)) return null;
 
-            IntPtr hCatInfo = NativeMethods.CryptCATAdminEnumCatalogFromHash(hCatAdmin, hash, hashSize, 0, IntPtr.Zero);
-            if (hCatInfo == IntPtr.Zero)
-            {
-                NativeMethods.CryptCATAdminReleaseContext(hCatAdmin, 0);
-                return null;
-            }
+//                IntPtr hCatInfo = NativeMethods.CryptCATAdminEnumCatalogFromHash(hCatAdmin, hash, hashSize, 0, IntPtr.Zero);
+//                if (hCatInfo == IntPtr.Zero)
+//                {
+//                    NativeMethods.CryptCATAdminReleaseContext(hCatAdmin, 0);
+//                    return null;
+//                }
 
-            var info = new NativeMethods.CATALOG_INFO { cbStruct = Marshal.SizeOf(typeof(NativeMethods.CATALOG_INFO)) };
-            if (!NativeMethods.CryptCATCatalogInfoFromContext(hCatInfo, ref info, 0))
-            {
-                NativeMethods.CryptCATAdminReleaseCatalogContext(hCatAdmin, hCatInfo, 0);
-                NativeMethods.CryptCATAdminReleaseContext(hCatAdmin, 0);
-                return null;
-            }
+//                var info = new NativeMethods.CATALOG_INFO { cbStruct = Marshal.SizeOf(typeof(NativeMethods.CATALOG_INFO)) };
+//                if (!NativeMethods.CryptCATCatalogInfoFromContext(hCatInfo, ref info, 0))
+//                {
+//                    NativeMethods.CryptCATAdminReleaseCatalogContext(hCatAdmin, hCatInfo, 0);
+//                    NativeMethods.CryptCATAdminReleaseContext(hCatAdmin, 0);
+//                    return null;
+//                }
 
-            string catPath = info.wszCatalogFile;
-            NativeMethods.CryptCATAdminReleaseCatalogContext(hCatAdmin, hCatInfo, 0);
-            NativeMethods.CryptCATAdminReleaseContext(hCatAdmin, 0);
+//                string catPath = info.wszCatalogFile;
+//                NativeMethods.CryptCATAdminReleaseCatalogContext(hCatAdmin, hCatInfo, 0);
+//                NativeMethods.CryptCATAdminReleaseContext(hCatAdmin, 0);
 
-            var guid = NativeMethods.WINTRUST_ACTION_GENERIC_VERIFY_V2;
-            var fileInfo = new NativeMethods.WINTRUST_FILE_INFO
-            {
-                cbStruct = Marshal.SizeOf(typeof(NativeMethods.WINTRUST_FILE_INFO)),
-                pcwszFilePath = catPath,
-                hFile = IntPtr.Zero,
-                pgKnownSubject = IntPtr.Zero
-            };
-            var data = new NativeMethods.WINTRUST_DATA
-            {
-                cbStruct = Marshal.SizeOf(typeof(NativeMethods.WINTRUST_DATA)),
-                dwUIChoice = NativeMethods.WTD_UI_NONE,
-                fdwRevocationChecks = NativeMethods.WTD_REVOKE_NONE,
-                dwUnionChoice = NativeMethods.WTD_CHOICE_FILE,
-                pFile = Marshal.AllocHGlobal(Marshal.SizeOf(fileInfo)),
-                dwStateAction = NativeMethods.WTD_STATEACTION_VERIFY,
-                hWVTStateData = IntPtr.Zero
-            };
-            Marshal.StructureToPtr(fileInfo, data.pFile, false);
+//                var guid = NativeMethods.WINTRUST_ACTION_GENERIC_VERIFY_V2;
+//                var fileInfo = new NativeMethods.WINTRUST_FILE_INFO
+//                {
+//                    cbStruct = Marshal.SizeOf(typeof(NativeMethods.WINTRUST_FILE_INFO)),
+//                    pcwszFilePath = catPath,
+//                    hFile = IntPtr.Zero,
+//                    pgKnownSubject = IntPtr.Zero
+//                };
+//                var data = new NativeMethods.WINTRUST_DATA
+//                {
+//                    cbStruct = Marshal.SizeOf(typeof(NativeMethods.WINTRUST_DATA)),
+//                    dwUIChoice = NativeMethods.WTD_UI_NONE,
+//                    fdwRevocationChecks = NativeMethods.WTD_REVOKE_NONE,
+//                    dwUnionChoice = NativeMethods.WTD_CHOICE_FILE,
+//                    pFile = Marshal.AllocHGlobal(Marshal.SizeOf(fileInfo)),
+//                    dwStateAction = NativeMethods.WTD_STATEACTION_VERIFY,
+//                    hWVTStateData = IntPtr.Zero
+//                };
+//                Marshal.StructureToPtr(fileInfo, data.pFile, false);
 
-            long ret = NativeMethods.WinVerifyTrust(NativeMethods.INVALID_HANDLE_VALUE, ref guid, ref data);
-            if (ret != 0) return null;
+//                long ret = NativeMethods.WinVerifyTrust(NativeMethods.INVALID_HANDLE_VALUE, ref guid, ref data);
+//                if (ret != 0) return null;
 
-            IntPtr provData = NativeMethods.WTHelperProvDataFromStateData(data.hWVTStateData);
-            if (provData == IntPtr.Zero) return null;
-            IntPtr signer = NativeMethods.WTHelperGetProvSignerFromChain(provData, 0, false, 0);
-            if (signer == IntPtr.Zero) return null;
+//                IntPtr provData = NativeMethods.WTHelperProvDataFromStateData(data.hWVTStateData);
+//                if (provData == IntPtr.Zero) return null;
+//                IntPtr signer = NativeMethods.WTHelperGetProvSignerFromChain(provData, 0, false, 0);
+//                if (signer == IntPtr.Zero) return null;
 
-            var sgnr = Marshal.PtrToStructure<NativeMethods.CRYPT_PROVIDER_SGNR>(signer);
-            if (sgnr.csCertChain == 0) return null;
-            var certCtx = Marshal.PtrToStructure<NativeMethods.CRYPT_PROVIDER_CERT>(sgnr.pasCertChain).pCert;
-            if (certCtx == IntPtr.Zero) return null;
+//                var sgnr = Marshal.PtrToStructure<NativeMethods.CRYPT_PROVIDER_SGNR>(signer);
+//                if (sgnr.csCertChain == 0) return null;
+//                var certCtx = Marshal.PtrToStructure<NativeMethods.CRYPT_PROVIDER_CERT>(sgnr.pasCertChain).pCert;
+//                if (certCtx == IntPtr.Zero) return null;
 
-            var cert = new X509Certificate2(certCtx);
-            byte[] sha256 = SHA256.Create().ComputeHash(cert.RawData);
-            string result = BitConverter.ToString(sha256).Replace("-", "");
+//                var cert = new X509Certificate2(certCtx);
+//                byte[] sha256 = SHA256.Create().ComputeHash(cert.RawData);
+//                string result = BitConverter.ToString(sha256).Replace("-", "");
 
-            data.dwStateAction = NativeMethods.WTD_STATEACTION_CLOSE;
-            NativeMethods.WinVerifyTrust(NativeMethods.INVALID_HANDLE_VALUE, ref guid, ref data);
-            Marshal.FreeHGlobal(data.pFile);
+//                data.dwStateAction = NativeMethods.WTD_STATEACTION_CLOSE;
+//                NativeMethods.WinVerifyTrust(NativeMethods.INVALID_HANDLE_VALUE, ref guid, ref data);
+//                Marshal.FreeHGlobal(data.pFile);
 
-            return result;
-        }
+//                return result;
+//            }
 
-        private static class NativeMethods
-        {
-            public const uint GENERIC_READ = 0x80000000;
-            public const uint FILE_SHARE_READ = 1;
-            public const uint OPEN_EXISTING = 3;
-            public static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
-            public const uint WTD_UI_NONE = 2;
-            public const uint WTD_REVOKE_NONE = 0;
-            public const uint WTD_CHOICE_FILE = 1;
-            public const uint WTD_STATEACTION_VERIFY = 1;
-            public const uint WTD_STATEACTION_CLOSE = 2;
-            public static readonly Guid WINTRUST_ACTION_GENERIC_VERIFY_V2 = new Guid("00AAC56B-CD44-11d0-8CC2-00C04FC295EE");
+//            private static class NativeMethods
+//            {
+//                public const uint GENERIC_READ = 0x80000000;
+//                public const uint FILE_SHARE_READ = 1;
+//                public const uint OPEN_EXISTING = 3;
+//                public static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
+//                public const uint WTD_UI_NONE = 2;
+//                public const uint WTD_REVOKE_NONE = 0;
+//                public const uint WTD_CHOICE_FILE = 1;
+//                public const uint WTD_STATEACTION_VERIFY = 1;
+//                public const uint WTD_STATEACTION_CLOSE = 2;
+//                public static readonly Guid WINTRUST_ACTION_GENERIC_VERIFY_V2 = new Guid("00AAC56B-CD44-11d0-8CC2-00C04FC295EE");
 
-            [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-            public static extern IntPtr CreateFile(string lpFileName, uint dwDesiredAccess, uint dwShareMode, IntPtr lpSecurityAttributes, uint dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFile);
+//                [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+//                public static extern IntPtr CreateFile(string lpFileName, uint dwDesiredAccess, uint dwShareMode, IntPtr lpSecurityAttributes, uint dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFile);
 
-            [DllImport("kernel32.dll", SetLastError = true)]
-            public static extern bool CloseHandle(IntPtr hObject);
+//                [DllImport("kernel32.dll", SetLastError = true)]
+//                public static extern bool CloseHandle(IntPtr hObject);
 
-            [DllImport("wintrust.dll", SetLastError = true)]
-            public static extern bool CryptCATAdminCalcHashFromFileHandle(IntPtr hFile, ref int pcbHash, byte[]? pbHash, int dwFlags);
+//                [DllImport("wintrust.dll", SetLastError = true)]
+//                public static extern bool CryptCATAdminCalcHashFromFileHandle(IntPtr hFile, ref int pcbHash, byte[]? pbHash, int dwFlags);
 
-            [DllImport("wintrust.dll", SetLastError = true)]
-            public static extern bool CryptCATAdminAcquireContext(out IntPtr phCatAdmin, IntPtr pgSubsystem, int dwFlags);
+//                [DllImport("wintrust.dll", SetLastError = true)]
+//                public static extern bool CryptCATAdminAcquireContext(out IntPtr phCatAdmin, IntPtr pgSubsystem, int dwFlags);
 
-            [DllImport("wintrust.dll", SetLastError = true)]
-            public static extern IntPtr CryptCATAdminEnumCatalogFromHash(IntPtr hCatAdmin, byte[] pbHash, int cbHash, int dwFlags, IntPtr phPrevCatInfo);
+//                [DllImport("wintrust.dll", SetLastError = true)]
+//                public static extern IntPtr CryptCATAdminEnumCatalogFromHash(IntPtr hCatAdmin, byte[] pbHash, int cbHash, int dwFlags, IntPtr phPrevCatInfo);
 
-            [DllImport("wintrust.dll", SetLastError = true)]
-            public static extern bool CryptCATCatalogInfoFromContext(IntPtr hCatInfo, ref CATALOG_INFO psCatInfo, int dwFlags);
+//                [DllImport("wintrust.dll", SetLastError = true)]
+//                public static extern bool CryptCATCatalogInfoFromContext(IntPtr hCatInfo, ref CATALOG_INFO psCatInfo, int dwFlags);
 
-            [DllImport("wintrust.dll", SetLastError = true)]
-            public static extern bool CryptCATAdminReleaseCatalogContext(IntPtr hCatAdmin, IntPtr hCatInfo, int dwFlags);
+//                [DllImport("wintrust.dll", SetLastError = true)]
+//                public static extern bool CryptCATAdminReleaseCatalogContext(IntPtr hCatAdmin, IntPtr hCatInfo, int dwFlags);
 
-            [DllImport("wintrust.dll", SetLastError = true)]
-            public static extern bool CryptCATAdminReleaseContext(IntPtr hCatAdmin, int dwFlags);
+//                [DllImport("wintrust.dll", SetLastError = true)]
+//                public static extern bool CryptCATAdminReleaseContext(IntPtr hCatAdmin, int dwFlags);
 
-            public static extern int WinVerifyTrust(IntPtr hwnd, ref Guid pgActionID, ref WINTRUST_DATA pWVTData);
+//#pragma warning disable CS0626 // 方法、运算符或访问器标记为外部对象并且上面没有任何特性
+//                public static extern int WinVerifyTrust(IntPtr hwnd, ref Guid pgActionID, ref WINTRUST_DATA pWVTData);
+//#pragma warning restore CS0626 // 方法、运算符或访问器标记为外部对象并且上面没有任何特性
 
-            [DllImport("wintrust.dll", SetLastError = true)]
-            public static extern IntPtr WTHelperProvDataFromStateData(IntPtr hStateData);
+//                [DllImport("wintrust.dll", SetLastError = true)]
+//                public static extern IntPtr WTHelperProvDataFromStateData(IntPtr hStateData);
 
-            [DllImport("wintrust.dll", SetLastError = true)]
-            public static extern IntPtr WTHelperGetProvSignerFromChain(IntPtr pProvData, int idxSigner, bool fCounterSigner, int idxCounterSigner);
+//                [DllImport("wintrust.dll", SetLastError = true)]
+//                public static extern IntPtr WTHelperGetProvSignerFromChain(IntPtr pProvData, int idxSigner, bool fCounterSigner, int idxCounterSigner);
 
-            [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-            public struct CATALOG_INFO { public int cbStruct; [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)] public string wszCatalogFile; }
+//                [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+//                public struct CATALOG_INFO { public int cbStruct; [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)] public string wszCatalogFile; }
 
-            [StructLayout(LayoutKind.Sequential)]
-            public struct WINTRUST_FILE_INFO
-            {
-                public int cbStruct;
-                [MarshalAs(UnmanagedType.LPWStr)] public string pcwszFilePath;
-                public IntPtr hFile;
-                public IntPtr pgKnownSubject;
-            }
+//                [StructLayout(LayoutKind.Sequential)]
+//                public struct WINTRUST_FILE_INFO
+//                {
+//                    public int cbStruct;
+//                    [MarshalAs(UnmanagedType.LPWStr)] public string pcwszFilePath;
+//                    public IntPtr hFile;
+//                    public IntPtr pgKnownSubject;
+//                }
 
-            [StructLayout(LayoutKind.Sequential)]
-            public struct WINTRUST_DATA
-            {
-                public int cbStruct;
-                public IntPtr pPolicyCallbackData;
-                public IntPtr pSIPClientData;
-                public uint dwUIChoice;
-                public uint fdwRevocationChecks;
-                public uint dwUnionChoice;
-                public IntPtr pFile;
-                public uint dwStateAction;
-                public IntPtr hWVTStateData;
-                public IntPtr pwszURLReference;
-                public uint dwProvFlags;
-                public uint dwUIContext;
-                public IntPtr pSignatureSettings;
-            }
+//                [StructLayout(LayoutKind.Sequential)]
+//                public struct WINTRUST_DATA
+//                {
+//                    public int cbStruct;
+//                    public IntPtr pPolicyCallbackData;
+//                    public IntPtr pSIPClientData;
+//                    public uint dwUIChoice;
+//                    public uint fdwRevocationChecks;
+//                    public uint dwUnionChoice;
+//                    public IntPtr pFile;
+//                    public uint dwStateAction;
+//                    public IntPtr hWVTStateData;
+//                    public IntPtr pwszURLReference;
+//                    public uint dwProvFlags;
+//                    public uint dwUIContext;
+//                    public IntPtr pSignatureSettings;
+//                }
 
-            [StructLayout(LayoutKind.Sequential)]
-            public struct CRYPT_PROVIDER_SGNR { public int cbStruct; public long sftVerifyAsOf; public int csCertChain; public IntPtr pasCertChain; public int dwSignerType; public IntPtr psSigner; public int dwError; public int csCounterSigners; public IntPtr pasCounterSigners; public IntPtr pChainContext; }
+//                [StructLayout(LayoutKind.Sequential)]
+//                public struct CRYPT_PROVIDER_SGNR { public int cbStruct; public long sftVerifyAsOf; public int csCertChain; public IntPtr pasCertChain; public int dwSignerType; public IntPtr psSigner; public int dwError; public int csCounterSigners; public IntPtr pasCounterSigners; public IntPtr pChainContext; }
 
-            [StructLayout(LayoutKind.Sequential)]
-            public struct CRYPT_PROVIDER_CERT { public int cbStruct; public IntPtr pCert; public int dwCertChoice; public IntPtr pCertStruct; public int dwFlags; public int dwError; }
-        }
+//                [StructLayout(LayoutKind.Sequential)]
+//                public struct CRYPT_PROVIDER_CERT { public int cbStruct; public IntPtr pCert; public int dwCertChoice; public IntPtr pCertStruct; public int dwFlags; public int dwError; }
+//            }
+//        }
         private static bool IsSuspiciousDoc(byte[] fileContent)
         {
             var content = Encoding.UTF8.GetString(fileContent);

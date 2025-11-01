@@ -10,10 +10,4 @@
     <ProjectReference Include="..\ScanEngine\ScanEngine.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="SouXiaoEngine">
-      <HintPath>..\SouXiaoEngine\SouXiaoEngine.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

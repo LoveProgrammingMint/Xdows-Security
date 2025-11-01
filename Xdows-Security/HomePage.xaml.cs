@@ -1,6 +1,8 @@
+using Compatibility.Windows.Storage;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,7 +13,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
-using Compatibility.Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.System;
 using WinUI3Localizer;
@@ -182,21 +183,6 @@ namespace Xdows_Security
             LoadProtectionStatus();
         }
 
-
-
-        private void UpdateScanStatistics(int totalScans, int threatsFound)
-        {
-            var settings = ApplicationData.Current.LocalSettings;
-            var currentTotal = settings.Values["TotalScans"] as int? ?? 0;
-            var currentThreats = settings.Values["TotalThreats"] as int? ?? 0;
-
-            settings.Values["TotalScans"] = currentTotal + 1;
-            settings.Values["TotalThreats"] = currentThreats + threatsFound;
-
-            LoadStatistics();
-            LoadProtectionStatus();
-        }
-
         private void RefreshStatistics_Click(object sender, RoutedEventArgs e)
         {
             LoadStatistics();
@@ -209,21 +195,22 @@ namespace Xdows_Security
 
         private async void ExportLog_Click(object sender, RoutedEventArgs e)
         {
-            var savePicker = new FileSavePicker();
-            savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-            savePicker.FileTypeChoices.Add("日志文件", new List<string> { ".log" });
-            savePicker.SuggestedFileName = $"XdowsSecurity_Log_{DateTime.Now:yyyyMMdd_HHmmss}.log";
+            var dlg = new CommonSaveFileDialog
+            {
+                Title = "保存日志",
+                DefaultFileName = $"XdowsSecurity_Log_{DateTime.Now:yyyyMMdd_HHmmss}.log",
+                DefaultExtension = "log",
+                OverwritePrompt = true,
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+            dlg.Filters.Add(new CommonFileDialogFilter("日志文件", "*.log"));
 
-            var window = new Window();
-            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-            WinRT.Interop.InitializeWithWindow.Initialize(savePicker, hWnd);
-
-            var file = await savePicker.PickSaveFileAsync();
-            if (file != null)
+            if (dlg.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 try
                 {
-                    await Windows.Storage.FileIO.WriteTextAsync(file, LogText.Text);
+                    string filePath = dlg.FileName;
+                    File.WriteAllText(filePath, LogText.Text);
                 }
                 catch (Exception ex)
                 {

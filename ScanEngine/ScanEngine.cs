@@ -1,6 +1,4 @@
 ﻿using PeNet;
-using SouXiaoEngine;
-using SouXiaoEngine.APIs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,9 +22,8 @@ namespace Xdows.ScanEngine
 
         public static async Task<string> LocalScanAsync(string path, bool deep, bool ExtraData)
         {
-            if (!File.Exists(path)) return string.Empty;
+            if (!File.Exists(path) || !PeFile.IsPeFile(path)) return string.Empty;
 
-            var md5 = await GetFileMD5Async(path);
             var peFile = new PeFile(path);
             var fileInfo = new PEInfo();
 
@@ -57,7 +54,7 @@ namespace Xdows.ScanEngine
                 fileInfo.ImportsName = Array.Empty<string>();
             }
 
-            var score = await Heuristic.Evaluate(path, fileInfo, deep);
+            var score = await Heuristic.Evaluate(path,peFile, fileInfo, deep);
             if (score.score >= 75)
             {
                 return ExtraData ? $"Xdows.local.code{score.score} {score.extra}" : $"Xdows.local.code{score.score}";
@@ -113,30 +110,13 @@ namespace Xdows.ScanEngine
         }
         public class SouXiaoEngineScan
         {
-            private readonly EngineV3Apis engineV3Apis = new(AppDomain.CurrentDomain.BaseDirectory);
             public bool Initialize()
             {
-                try
-                {
-                    engineV3Apis.V3Ex_API_SetSetting(true, true, true, true, true, false);
-                    engineV3Apis.V3Ex_API_LoadLib();
-                    return engineV3Apis.V3Ex_API_GetLibState() != MalwareMd5Check.States.NotInitialized;
-                }
-                catch
-                {
                     return false;
-                }
             }
             public (bool IsVirus,string Result) ScanFile(string path)
             {
-                try {
-                    var result = engineV3Apis.V3Ex_API_ScanFile(path);
-                    return (result.Item1, result.Item2.ToString());
-                }
-                catch 
-                {
-                    return (false, string.Empty);
-                }
+                return (false, string.Empty);
             }
         }
     }

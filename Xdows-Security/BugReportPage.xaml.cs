@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.IO;
 using System.Net.WebSockets;
@@ -88,36 +89,45 @@ namespace Xdows_Security
         #region 文件消息（发送+接收）
         private async void FileBtn_Click(object sender, RoutedEventArgs e)
         {
-            var picker = new Windows.Storage.Pickers.FileOpenPicker();
-            picker.FileTypeFilter.Add("*");
-            WinRT.Interop.InitializeWithWindow.Initialize(picker,
-                WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow));
-            var file = await picker.PickSingleFileAsync();
-            if (file == null) return;
+            // 1. 弹出原生打开对话框
+            using var dlg = new CommonOpenFileDialog
+            {
+                Title = "选择文件",
+                Filters = { new CommonFileDialogFilter("所有文件", "*") }
+            };
 
-            var props = await file.GetBasicPropertiesAsync();
-            if (props.Size > 20480)
+            if (dlg.ShowDialog() != CommonFileDialogResult.Ok) return;
+
+            string fullPath = dlg.FileName;
+            var info = new FileInfo(fullPath);
+
+            // 2. 大小检查
+            if (info.Length > 20 * 1024)          // 20 KB
             {
                 AddMessage("文件超过 20 KB，已拒绝", true);
                 return;
             }
 
-            byte[] bytes = File.ReadAllBytes(file.Path);
+            // 3. 读文件 → Base64
+            byte[] bytes = File.ReadAllBytes(fullPath);
             string b64 = Convert.ToBase64String(bytes);
 
+            // 4. 组装 JSON
             string fileJson = JsonSerializer.Serialize(new
             {
                 type = "file",
-                name = file.Name,
-                sizeKB = Math.Ceiling((double)props.Size / 1024),
+                name = info.Name,
+                sizeKB = Math.Ceiling(info.Length / 1024.0),
                 fileB64 = b64
             });
             string payload = JsonSerializer.Serialize(new { type = "user", content = fileJson });
 
+            // 5. WebSocket 发送
             if (_ws == null || _ws.State != WebSocketState.Open || _cts == null) return;
             await _ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(payload)),
                                 WebSocketMessageType.Text, true, _cts.Token);
-            AddMessage($"[已发送文件] {file.Name}", true);
+
+            AddMessage($"[已发送文件] {info.Name}", true);
         }
 
         /// <summary>

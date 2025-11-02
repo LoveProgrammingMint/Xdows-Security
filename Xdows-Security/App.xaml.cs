@@ -1,20 +1,22 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Compatibility.Windows.Storage;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.AppNotifications;
 using Microsoft.Windows.AppNotifications.Builder;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Principal;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
-using Compatibility.Windows.Storage;
-using Xdows.Protection;
-using WinUI3Localizer;
-using static Xdows.Protection.CallBack;
 using Windows.Globalization;
+using WinUI3Localizer;
+using Xdows.Protection;
+using static Xdows.Protection.CallBack;
 
 namespace Xdows_Security
 {
@@ -134,67 +136,175 @@ namespace Xdows_Security
         FATAL   // 致命错误日志
     }
 
-    /// <summary>
-    /// 日志管理类，负责收集并输出应用程序的日志信息。
-    /// </summary>
     public static class LogText
     {
-        private static StringBuilder _logText = new StringBuilder(); // 存储日志的 StringBuilder 对象
-        private const int MAX_LOG_SIZE = 8000; // 最大日志大小
-        private static readonly string LogFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Xdows-Security", "logs.txt"); // 日志文件路径
+        #region 对外保持不变的接口
+        public static event EventHandler? TextChanged;
+        public static string Text => _hotCache.ToString();
 
-        public static event EventHandler? TextChanged; // 日志内容变更时的事件
-
-        /// <summary>
-        /// 获取当前日志的全部内容。
-        /// </summary>
-        public static string Text => _logText.ToString();
-
-        /// <summary>
-        /// 清空当前日志内容，并记录一条清空日志的操作。
-        /// </summary>
         public static void ClearLog()
         {
-            _logText.Clear();
-            AddNewLog(1, "LogSystem", "Log is cleared");
-        }
+            lock (_hotCache)
+            {
+                _hotCache.Clear();
+                _hotLines = 0;
+            }
 
-        /// <summary>
-        /// 添加新的日志信息。
-        /// </summary>
-        /// <param name="level">日志级别</param>
-        /// <param name="source">日志来源</param>
-        /// <param name="info">日志内容</param>
+            AddNewLog((int)LogLevel.INFO, "LogSystem", "Log is cleared");
+        }
+        #endregion
+
+        #region 配置（可抽出去读 JSON）
+        private const int HOT_MAX_LINES = 500;
+        private const int HOT_MAX_BYTES = 80_000;
+        private const int BATCH_SIZE = 100;
+        private static readonly TimeSpan RetainAge = TimeSpan.FromDays(7);
+        #endregion
+
+        #region 路径 & 文件
+        private static readonly string BaseFolder =
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                         "Xdows-Security");
+
+        private static string CurrentFilePath =>
+            Path.Combine(BaseFolder, $"logs-{DateTime.Now:yyyy-MM-dd}.txt");
+        #endregion
+
+        #region 并发容器
+        private static readonly StringBuilder _hotCache = new();
+        private static readonly ConcurrentQueue<LogRow> _pending = new();
+        private static int _hotLines;
+        private static readonly SemaphoreSlim _signal = new(0, int.MaxValue);
+        #endregion
+
+        #region 启动后台写盘
+        static LogText()
+        {
+            Directory.CreateDirectory(BaseFolder);
+            _ = Task.Run(WritePump);
+            AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+                AddNewLog((int)LogLevel.FATAL, "Unhandled", e.ExceptionObject.ToString()!);
+        }
+        #endregion
+
+        #region 对外唯一写入口
         public static void AddNewLog(int level, string source, string info)
         {
-            string currentTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            string levelText = level switch
+            var row = new LogRow
             {
-                0 => "DEBUG",
-                1 => "INFO",
-                2 => "WARN",
-                3 => "ERROR",
-                4 => "FATAL",
-                _ => "UNKNOWN",
+                Time = DateTime.Now,
+                Level = level,
+                Source = source,
+                Text = info
             };
-            string logEntry = $"[{currentTime}][{levelText}][{source}]: {info}{Environment.NewLine}";
 
-            // 如果日志大小超过限制，清空日志
-            if (_logText.Length + logEntry.Length > MAX_LOG_SIZE)
+            _pending.Enqueue(row);
+            _signal.Release();
+            AppendToHotCache(row);
+        }
+        #endregion
+
+        #region 热缓存（线程安全）
+        private static void AppendToHotCache(LogRow row)
+        {
+            lock (_hotCache)
             {
-                _logText.Clear();
+                if (_hotLines >= HOT_MAX_LINES || _hotCache.Length >= HOT_MAX_BYTES)
+                    TrimHotHead();
+
+                _hotCache.AppendLine(FormatRow(row));
+                _hotLines++;
             }
 
-            _logText.Append(logEntry);
+            RaiseChangedThrottled();
+        }
 
-            // 如果当前页面是 Home 页面，触发 TextChanged 事件
-            if (Xdows_Security.MainWindow.NowPage == "Home")
+        private static void TrimHotHead()
+        {
+            int cut = _hotCache.ToString().IndexOf('\n') + 1;
+            if (cut > 0)
             {
-                TextChanged?.Invoke(null, EventArgs.Empty);
+                _hotCache.Remove(0, cut);
+                _hotLines--;
             }
         }
-    }
+        #endregion
 
+        #region 事件节流
+        private static Timer? _throttleTimer;
+        private static void RaiseChangedThrottled()
+        {
+            if (Xdows_Security.MainWindow.NowPage != "Home") return;
+
+            _throttleTimer?.Dispose();
+            _throttleTimer = new Timer(_ => TextChanged?.Invoke(null, EventArgs.Empty),
+                                       null, 100, Timeout.Infinite);
+        }
+        #endregion
+
+        #region 后台写盘泵
+        private static async Task WritePump()
+        {
+            var batch = new List<LogRow>(BATCH_SIZE);
+            while (true)
+            {
+                await _signal.WaitAsync();
+                while (_pending.TryDequeue(out var row)) batch.Add(row);
+                if (batch.Count == 0) continue;
+
+                try
+                {
+                    await File.AppendAllTextAsync(CurrentFilePath,
+                        string.Join(Environment.NewLine, batch.ConvertAll(FormatRow)) +
+                        Environment.NewLine);
+                }
+                catch
+                {
+                    var emergency = Path.Combine(BaseFolder, "emergency.log");
+                    await File.AppendAllTextAsync(emergency,
+                        string.Join(Environment.NewLine, batch.ConvertAll(FormatRow)) +
+                        Environment.NewLine);
+                }
+
+                batch.Clear();
+                RollIfNeeded();
+            }
+        }
+        #endregion
+
+        #region 工具
+        private static string FormatRow(LogRow r) =>
+            $"[{r.Time:yyyy-MM-dd HH:mm:ss}][{LevelToText(r.Level)}][{r.Source}][{Environment.CurrentManagedThreadId}]: {r.Text}";
+
+        private static string LevelToText(int l) => l switch
+        {
+            0 => "DEBUG",
+            1 => "INFO",
+            2 => "WARN",
+            3 => "ERROR",
+            4 => "FATAL",
+            _ => "UNKNOWN"
+        };
+
+        private static void RollIfNeeded()
+        {
+            var dir = new DirectoryInfo(BaseFolder);
+            foreach (var f in dir.GetFiles("logs-*.txt"))
+                if (DateTime.UtcNow - f.LastWriteTimeUtc > RetainAge)
+                    f.Delete();
+        }
+        #endregion
+
+        #region 内部行对象
+        private record LogRow
+        {
+            public DateTime Time;
+            public int Level;
+            public string Source = "";
+            public string Text = "";
+        }
+        #endregion
+    }
     /// <summary>
     /// 应用程序的主入口类，负责启动和管理应用程序。
     /// </summary>

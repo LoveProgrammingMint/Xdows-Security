@@ -24,14 +24,19 @@ namespace Xdows_Security
     {
         private DispatcherTimer _systemInfoTimer = new();
         private DispatcherTimer _protectionTimer = new();
+        private readonly ObservableCollection<string> _logLines = new();
+        private const int MAX_LINES = 200;
+
         public HomePage()
         {
             this.InitializeComponent();
+            LogRepeater.ItemsSource = _logLines;
             InitializeTimers();
             InitializeData();
             LogText.TextChanged += LogText_TextChanged;
             RefreshPomes();
             UpdateData();
+            RefreshLogFilter();
         }
 
         private void InitializeTimers()
@@ -50,9 +55,12 @@ namespace Xdows_Security
             LoadStatistics();
             LoadProtectionStatus();
         }
-        private void RefreshPomes_Click(object sender, RoutedEventArgs e) {
+
+        private void RefreshPomes_Click(object sender, RoutedEventArgs e)
+        {
             RefreshPomes();
         }
+
         private void RefreshPomes()
         {
             string Pomes = Localizer.Get().GetLocalizedString("HomePage_Pomes");
@@ -61,7 +69,6 @@ namespace Xdows_Security
                 .OrderBy(_ => Guid.NewGuid())
                 .FirstOrDefault();
             HomePage_Pomes.Text = randomLine;
-
         }
 
         private void LoadSystemInfo()
@@ -71,7 +78,6 @@ namespace Xdows_Security
                 var osVersion = Environment.OSVersion;
                 OSNameText.Text = "Windows " + (App.CheckWindowsVersion() ? "11" : osVersion.Version.Major.ToString());
                 OSVersionText.Text = osVersion.VersionString;
-
                 UpdateMemoryUsage();
             }
             catch (Exception ex)
@@ -100,48 +106,38 @@ namespace Xdows_Security
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
 
-        private void UpdateMemoryUsage()
+        private static (bool success, uint load, ulong total, ulong avail) GetMemoryStatus()
         {
             try
             {
-                var memStatus = new MEMORYSTATUSEX
-                {
-                    dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX))
-                };
-
-                if (GlobalMemoryStatusEx(ref memStatus))
-                {
-                    string[] units = { "B", "KB", "MB", "GB", "TB" };
-                    double totalMemory = memStatus.ullTotalPhys;
-                    double availableMemory = memStatus.ullAvailPhys;
-                    double usedMemory = totalMemory - availableMemory;
-
-                    // 自动选择合适的单位
-                    int unitIndex = 0;
-                    while (totalMemory >= 1024 && unitIndex < units.Length - 1)
-                    {
-                        totalMemory /= 1024;
-                        availableMemory /= 1024;
-                        usedMemory /= 1024;
-                        unitIndex++;
-                    }
-
-                    var usagePercent = memStatus.dwMemoryLoad;
-                    MemoryUsageText.Text = $"{usedMemory:F1} {units[unitIndex]} / {totalMemory:F1} {units[unitIndex]} ({usagePercent:F1}%)";
-                }
-                else
-                {
-                    var error = Marshal.GetLastWin32Error();
-                    MemoryUsageText.Text = "获取失败";
-                    LogText.AddNewLog(3, "HomePage - UpdateMemoryUsage", $"Cannot get MemoryStatus,because: {error}");
-                }
+                var mem = new MEMORYSTATUSEX { dwLength = (uint)Marshal.SizeOf<MEMORYSTATUSEX>() };
+                return GlobalMemoryStatusEx(ref mem)
+                    ? (true, mem.dwMemoryLoad, mem.ullTotalPhys, mem.ullAvailPhys)
+                    : (false, 0, 0, 0);
             }
-            catch (Exception ex)
+            catch (COMException ex)
             {
-                MemoryUsageText.Text = "获取失败";
-                LogText.AddNewLog(3, "HomePage - UpdateMemoryUsage", $"Cannot get MemoryStatus,because: {ex.Message}");
+                LogText.AddNewLog(3, "HomePage", $"COMException in GlobalMemoryStatusEx: 0x{ex.HResult:X8}");
+                return (false, 0, 0, 0);
             }
         }
+
+        private void UpdateMemoryUsage()
+        {
+            var (ok, load, total, avail) = GetMemoryStatus();
+            if (!ok)
+            {
+                MemoryUsageText.Text = "获取失败";
+                return;
+            }
+
+            double t = total, a = avail, u = t - a;
+            string[] units = { "B", "KB", "MB", "GB" };
+            int idx = 0;
+            while (t >= 1024 && idx < units.Length - 1) { t /= 1024; a /= 1024; u /= 1024; idx++; }
+            MemoryUsageText.Text = $"{u:F1} {units[idx]} / {t:F1} {units[idx]} ({load:F1}%)";
+        }
+
         private void LoadProtectionStatus()
         {
             var isProtected = Protection.IsOpen();
@@ -175,7 +171,6 @@ namespace Xdows_Security
             UpdateMemoryUsage();
             LoadProtectionStatus();
         }
-
 
         private void RefreshSystemInfo_Click(object sender, RoutedEventArgs e)
         {
@@ -253,47 +248,64 @@ namespace Xdows_Security
 
             RefreshLogFilter();
         }
+
         private void RefreshLogFilter()
         {
             var flyout = LogLevelFilter.Flyout as MenuFlyout;
             if (flyout == null) return;
+
             var selectedTags = flyout.Items
                 .OfType<ToggleMenuFlyoutItem>()
                 .Where(t => t.IsChecked == true && t.Tag.ToString() != "All")
                 .Select(t => t.Tag.ToString())
                 .ToList();
 
-            if (selectedTags.Count == 0)
-            {
-                LogTextBox.Text = LogText.Text;
-                return;
-            }
-
             var lines = LogText.Text
-                               .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            var filteredLines = lines.Where(line =>
-                selectedTags.Any(tag => line.Contains($"[{tag}]")));
+                .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
-            LogTextBox.Text = string.Join(Environment.NewLine, filteredLines);
+            var filtered = selectedTags.Count == 0
+                ? lines
+                : lines.Where(l => selectedTags.Any(t => l.Contains($"[{t}]")));
+
+            _logLines.Clear();
+            foreach (var l in filtered.TakeLast(MAX_LINES))
+                _logLines.Add(l);
+
+            LogScroll.ScrollToVerticalOffset(LogScroll.ScrollableHeight);
         }
+
         private void LogText_TextChanged(object? sender, EventArgs e)
         {
-            UpdateData();
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                var lines = LogText.Text
+                                   .Split('\n')
+                                   .Where(s => !string.IsNullOrWhiteSpace(s))
+                                   .ToList();
+
+                _logLines.Clear();
+                foreach (var l in lines.TakeLast(MAX_LINES))
+                    _logLines.Add(l);
+
+                LogScroll.ScrollToVerticalOffset(LogScroll.ScrollableHeight);
+            });
         }
 
         private void UpdateData()
         {
-            this.LogTextBox.Text = LogText.Text;
-            if (Protection.IsOpen())
+            DispatcherQueue.TryEnqueue(() =>
             {
-                HomePage_TextBlock.Text = Localizer.Get().GetLocalizedString("HomePage_TextBlock_Open");
-                Icon.Glyph = "\uE73E";
-            }
-            else
-            {
-                HomePage_TextBlock.Text = Localizer.Get().GetLocalizedString("HomePage_TextBlock_Close");
-                Icon.Glyph = "\uE711";
-            }
+                if (Protection.IsOpen())
+                {
+                    HomePage_TextBlock.Text = Localizer.Get().GetLocalizedString("HomePage_TextBlock_Open");
+                    Icon.Glyph = "\uE73E";
+                }
+                else
+                {
+                    HomePage_TextBlock.Text = Localizer.Get().GetLocalizedString("HomePage_TextBlock_Close");
+                    Icon.Glyph = "\uE711";
+                }
+            });
         }
     }
 }

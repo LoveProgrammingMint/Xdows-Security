@@ -11,4 +11,8 @@
     <PackageReference Include="PeNet" Version="5.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SouXiao_Self-Heuristic\Self-Heuristic.csproj" />
+  </ItemGroup>
+
 </Project>

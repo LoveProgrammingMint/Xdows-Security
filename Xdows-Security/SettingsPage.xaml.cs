@@ -37,12 +37,12 @@ namespace Xdows_Security
             }
 
             //if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "model.onnx")) {
-            SouXiaoScanToggle.IsOn = false;
-            SouXiaoScanToggle.IsEnabled = false;
-            ProcessToggle.IsOn = false;
-            ProcessToggle.IsEnabled = false;
-            FilesToggle.IsOn = false;
-            FilesToggle.IsEnabled = false;
+            //SouXiaoScanToggle.IsOn = false;
+            //SouXiaoScanToggle.IsEnabled = false;
+            //ProcessToggle.IsOn = false;
+            //ProcessToggle.IsEnabled = false;
+            //FilesToggle.IsOn = false;
+            //FilesToggle.IsEnabled = false;
             //}
             //if (!App.IsRunAsAdmin())
             //{
@@ -87,7 +87,7 @@ namespace Xdows_Security
 
             string key = toggle.Tag as string ?? toggle.Name;
             if (string.IsNullOrWhiteSpace(key)) return;
-            if (toggle.IsOn || (key == "CzkCloudScan" && key == "CloudScan"))
+            if (toggle.IsOn && (key == "CzkCloudScan" || key == "CloudScan"))
             {
                 var dialog = new ContentDialog
                 {

@@ -62,13 +62,8 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <None Update="IceZero.rules" CopyToOutputDirectory="PreserveNewest" />
     <None Update="IceZero.yar" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="MalwareMd5.bin" CopyToOutputDirectory="PreserveNewest" />
     <None Update="model.onnx" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="SouXiao.engine" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="XLin.engine" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="Yara.engine" CopyToOutputDirectory="PreserveNewest" />
     <None Update="yara64.exe" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

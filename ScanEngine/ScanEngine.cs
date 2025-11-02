@@ -1,4 +1,5 @@
 ﻿using PeNet;
+using Self_Heuristic;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -110,13 +111,46 @@ namespace Xdows.ScanEngine
         }
         public class SouXiaoEngineScan
         {
+            private Core? SouXiaoCore;
+            private Boolean IsDebug = false;
+
             public bool Initialize()
             {
-                    return false;
+                try
+                {
+                    SouXiaoCore = new(0.8, Directory.GetCurrentDirectory());
+                    return true;
+                }
+                catch (Exception)
+                {
+                    throw;
+                    //return false;
+                }
             }
             public (bool IsVirus,string Result) ScanFile(string path)
             {
-                return (false, string.Empty);
+                try
+                {
+                    if (SouXiaoCore == null)
+                    {
+                        throw new InvalidOperationException("SouXiaoCore is not initialized.");
+                    }
+                    bool scanResult = SouXiaoCore.Run(path);
+                    if (scanResult)
+                    {
+                        return (true, "SouXiao.Hit");
+                    }
+                    else
+                    {
+                        return (false, string.Empty);
+                    }
+                }
+                catch (Exception)
+                {
+                    if (IsDebug) { throw; }
+
+                    return (false, string.Empty);
+                }
             }
         }
     }

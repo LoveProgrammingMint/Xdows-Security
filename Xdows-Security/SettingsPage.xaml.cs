@@ -87,7 +87,26 @@ namespace Xdows_Security
 
             string key = toggle.Tag as string ?? toggle.Name;
             if (string.IsNullOrWhiteSpace(key)) return;
-
+            if (toggle.IsOn || (key == "CzkCloudScan" && key == "CloudScan"))
+            {
+                var dialog = new ContentDialog
+                {
+                    Title = "免责声明",
+                    Content = "当您启用此引擎后，" +
+                    "使用该引擎进行扫描文件时会将文件数据或其信息发送对应云服务提供商服务器。" +
+                    "用户应自觉遵守相关服务协议、条约或声明，不发送涉及相关法律和隐私文件。" +
+                    "任何由此引擎引发的文件泄露等问题或损失均由云服务提供商承担，此软件开发者不承担任何责任。" +
+                    "因不可抗力因素如服务器故障等问题而引发的数据丢失等文件或损失，此软件开发者同样不承担任何责任。" +
+                    "\n本声明或云服务提供协议、条约或声明会因软件更新等多种因素进行修改、删除、补充其内容，当发生纠纷时，请以最新版本为准，" +
+                    "本软件开发者具有对此声明进行修改、删除、补充而不经用户同意的权力，该声明最终解释权归本软件开发者所有。" +
+                    "\n对于此软件的分支产生的问题，此软件的源开发者（Xdows Software）不承担任何责任。" +
+                    "\n当您通过任何方式使用该引擎时则表示同意并接受该声明，如果您不接受请自行关闭此引擎或停止使用并删除该软件。",
+                    PrimaryButtonText = "确定",
+                    XamlRoot = this.XamlRoot,
+                    RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                    PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                }.ShowAsync();
+            }
             var settings = ApplicationData.Current.LocalSettings;
             settings.Values[key] = toggle.IsOn;
         }

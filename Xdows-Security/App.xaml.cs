@@ -316,7 +316,7 @@ namespace Xdows_Security
         public App()
         {
             // 在启动时尝试初始化通知管理器
-            LogText.AddNewLog(1, "UI Interface", "尝试加载主窗口");
+            LogText.AddNewLog(1, "UI Interface", "Attempting to load the MainWindow...");
             try
             {
                 InitializeAppNotificationManager();

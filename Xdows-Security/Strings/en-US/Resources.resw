@@ -415,7 +415,7 @@ Why not try XIGUA Security?</value>
     <value>The SouXiao scanning engine is from a third party, which improves the detection rate</value>
   </data>
   <data name="SettingsPage_Scan_SouXiao_Develop.Description" xml:space="preserve">
-    <value>Working Cat is the developer and maintainer of this scanning engine</value>
+    <value>Mint is the developer and maintainer of this scanning engine</value>
   </data>
   <data name="SettingsPage_Scan_SouXiao_Develop.Header" xml:space="preserve">
     <value>About this Engine</value>

@@ -48,7 +48,7 @@ namespace Xdows_Security
             manager.MinHeight = 530;
             Closed += delegate { Window_Closed(); };
             Localizer.Get().LanguageChanged += OnLangChanged;
-            LogText.AddNewLog(1, "UI Interface", "主窗口加载成功");
+            LogText.AddNewLog(1, "UI Interface", "MainWindow loaded successfully");
         }
         private void MainWindow_Activated_FirstTime(object sender, WindowActivatedEventArgs args)
         {

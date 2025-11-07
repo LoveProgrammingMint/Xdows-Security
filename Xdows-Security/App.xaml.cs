@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
 using System.Text.Json;
@@ -381,7 +382,7 @@ namespace Xdows_Security
                 }
                 else
                 {
-                    await Task.Delay(100); // Wait before trying again
+                    await Task.Delay(100);
                 }
             }
 
@@ -499,7 +500,7 @@ namespace Xdows_Security
         // 获取云API密钥
         public static string GetCzkCloudApiKey()
         {
-            return string.Empty;  // 实际的 API 密钥
+            return string.Empty;
         }
 
         // 检查是否以管理员身份运行
@@ -542,18 +543,11 @@ namespace Xdows_Security
             }
         }
 
-        // 检查 Windows 版本
-        public static bool CheckWindowsVersion()
-        {
-            var version = Environment.OSVersion.Version;
-            if (version.Major == 10 && version.Build >= 22000)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        // Windows 版本获取
+        public static string OsName => RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? (Environment.OSVersion.Version.Build >= 22000 ? "Windows 11" : "Windows 10")
+            : RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "macOS" : "Linux";
+
+        public static string OsVersion => Environment.OSVersion.ToString();
     }
 }

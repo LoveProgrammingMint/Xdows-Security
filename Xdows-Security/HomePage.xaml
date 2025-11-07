@@ -15,7 +15,6 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
             <FontIcon x:Name="Icon" Margin="16,0,0,0" HorizontalAlignment="Left" Glyph="&#xE73E;" FontSize="124" FontWeight="Bold"/>
-            <!-- 右侧文本 -->
             <StackPanel Margin="24,16,0,0" Orientation="Vertical">
                 <TextBlock Margin="0,12,0,0" x:Name="HomePage_TextBlock" FontSize="28" FontWeight="Bold"/>
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
@@ -114,6 +113,7 @@
                         </Grid>
                         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                             <Button l:Uids.Uid="HomePage_RefreshSystemInfo" Click="RefreshSystemInfo_Click" Margin="0,16,0,0" HorizontalAlignment="Left"/>
+                            <Button l:Uids.Uid="HomePage_CopySystemInfo" Click="CopySystemInfo_Click" Margin="0,16,0,0" HorizontalAlignment="Left"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>

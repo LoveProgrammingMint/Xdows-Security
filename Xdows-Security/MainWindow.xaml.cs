@@ -27,7 +27,6 @@ namespace Xdows_Security
     public sealed partial class MainWindow : Window
     {
         public static string NowPage = "Home";
-        //private readonly ResourceLoader _resourceLoader = ResourceLoader.GetForViewIndependentUse(); //¶àÓïÑÔµ÷ÓÃ
         public MainWindow()
         {
             InitializeComponent();
@@ -142,6 +141,11 @@ namespace Xdows_Security
         public void GoToPage(string PageName)
         {
             if ((MD5.HashData(Encoding.UTF8.GetBytes(AppInfo.AppName))[0] >> 4) != 14) return;
+            if (PageName == "BugReport")
+            {
+                GoToBugReportPage(null);
+                return;
+            }
             var selectedItem = nav.SelectedItem as NavigationViewItem;
 
             string currentTag = selectedItem?.Tag as string ?? "";

@@ -459,4 +459,7 @@
   <data name="MainWindow_Nav_Settings" xml:space="preserve">
     <value>设置</value>
   </data>
+  <data name="HomePage_CopySystemInfo.Content" xml:space="preserve">
+    <value>复制系统信息</value>
+  </data>
 </root>

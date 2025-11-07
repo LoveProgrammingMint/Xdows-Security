@@ -459,4 +459,7 @@ Why not try XIGUA Security?</value>
   <data name="MainWindow_Nav_Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="HomePage_CopySystemInfo.Content" xml:space="preserve">
+    <value>Copy System Info</value>
+  </data>
 </root>

@@ -12,6 +12,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Resources;
 using Windows.Storage.Pickers;
 using Windows.System;
@@ -60,7 +61,12 @@ namespace Xdows_Security
         {
             RefreshPomes();
         }
-
+        private void CopySystemInfo_Click(object sender, RoutedEventArgs e)
+        {
+            var package = new DataPackage();
+            package.SetText($"OSName: {OSNameText.Text}\nOSVersion: {OSVersionText.Text}\nMemoryUsage: {MemoryUsageText.Text}");
+            Clipboard.SetContent(package);
+        }
         private void RefreshPomes()
         {
             string Pomes = Localizer.Get().GetLocalizedString("HomePage_Pomes");
@@ -75,16 +81,15 @@ namespace Xdows_Security
         {
             try
             {
-                var osVersion = Environment.OSVersion;
-                OSNameText.Text = "Windows " + (App.CheckWindowsVersion() ? "11" : osVersion.Version.Major.ToString());
-                OSVersionText.Text = osVersion.VersionString;
+                OSNameText.Text = App.OsName;
+                OSVersionText.Text = App.OsVersion;
                 UpdateMemoryUsage();
             }
             catch (Exception ex)
             {
                 OSNameText.Text = "获取失败";
                 OSVersionText.Text = "获取失败";
-                LogText.AddNewLog(3, "HomePage - LoadSystemInfo", $"Cannot get SystemInfo,because: {ex.Message}");
+                LogText.AddNewLog(3, "HomePage - LoadSystemInfo", $"Cannot get SystemInfo, because: {ex.Message}");
             }
         }
 
@@ -105,8 +110,7 @@ namespace Xdows_Security
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
-
-        private static (bool success, uint load, ulong total, ulong avail) GetMemoryStatus()
+        private (bool success, uint load, ulong total, ulong avail) GetMemoryStatus()
         {
             try
             {
@@ -115,9 +119,9 @@ namespace Xdows_Security
                     ? (true, mem.dwMemoryLoad, mem.ullTotalPhys, mem.ullAvailPhys)
                     : (false, 0, 0, 0);
             }
-            catch (COMException ex)
+            catch (Exception ex)
             {
-                LogText.AddNewLog(3, "HomePage", $"COMException in GlobalMemoryStatusEx: 0x{ex.HResult:X8}");
+                LogText.AddNewLog(3, "HomePage", ex.Message);
                 return (false, 0, 0, 0);
             }
         }
@@ -130,12 +134,11 @@ namespace Xdows_Security
                 MemoryUsageText.Text = "获取失败";
                 return;
             }
-
             double t = total, a = avail, u = t - a;
             string[] units = { "B", "KB", "MB", "GB" };
             int idx = 0;
             while (t >= 1024 && idx < units.Length - 1) { t /= 1024; a /= 1024; u /= 1024; idx++; }
-            MemoryUsageText.Text = $"{u:F1} {units[idx]} / {t:F1} {units[idx]} ({load:F1}%)";
+            MemoryUsageText.Text = $"{u:F1} {units[idx]} / {t:F1} {units[idx]} ({load}%)";
         }
 
         private void LoadProtectionStatus()

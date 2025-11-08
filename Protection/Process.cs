@@ -106,11 +106,14 @@ namespace Xdows.Protection
                             {
                                 bool Succeed = TryKillProcess(pid);
 
-                                interceptCallBack(Succeed, path);
                                 if (string.Concat(path.EnumerateRunes().Reverse().Take(6).Reverse()) != ".virus")
                                 {
                                     try { File.Move(path, path + ".virus"); } catch { }
                                 }
+                                Task.Run(() =>
+                                {
+                                    interceptCallBack(Succeed, path);
+                                });
                             }
                         }
 

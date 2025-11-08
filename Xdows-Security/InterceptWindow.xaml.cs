@@ -13,8 +13,8 @@ namespace Xdows_Security
         public static void ShowOrActivate(string path)
         {
             var w = new InterceptWindow();
-            try { w.Activate(); } catch { }
             w.SetFileInfo(path);
+            w.Activate();
             // SetIcon("logo.ico");
         }
 

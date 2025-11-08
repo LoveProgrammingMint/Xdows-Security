@@ -16,6 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Globalization;
 using WinUI3Localizer;
+using WinUIEx;
 using Xdows.Protection;
 using static Xdows.Protection.CallBack;
 
@@ -39,9 +40,13 @@ namespace Xdows_Security
             LogText.AddNewLog(2, "Protection", isSucceed
                 ? $"InterceptProcess：{Path.GetFileName(path)}"
                 : $"Cannot InterceptProcess：{Path.GetFileName(path)}");
-            string content = isSucceed ? "已发现威胁" : "无法处理威胁";
-            content = $"{AppInfo.AppName} {content}.{Environment.NewLine}相关数据：{Path.GetFileName(path)}{Environment.NewLine}单击此通知以查看详细信息";
-            Notifications.ShowNotification("发现威胁", content, path);
+            // string content = isSucceed ? "已发现威胁" : "无法处理威胁";
+            // content = $"{AppInfo.AppName} {content}.{Environment.NewLine}相关数据：{Path.GetFileName(path)}{Environment.NewLine}单击此通知以查看详细信息";
+            App.MainWindow?.DispatcherQueue?.TryEnqueue(() =>
+            {
+                InterceptWindow.ShowOrActivate(path);
+            });
+            // Notifications.ShowNotification("发现威胁", content, path);
         };
 
         public static bool Run(int RunID)
@@ -91,39 +96,6 @@ namespace Xdows_Security
     {
         public static int ScansQuantity { get; set; } = 0;
         public static int VirusQuantity { get; set; } = 0;
-    }
-
-    public static class Notifications
-    {
-        /// <summary>
-        /// 显示通知
-        /// </summary>
-        public static void ShowNotification(string title, string content, string path)
-        {
-            var builder = new AppNotificationBuilder()
-                .AddText(title)
-                .AddText(content)
-                .AddArgument("action", "openIntercept")
-                .AddArgument("path", path);
-
-            AppNotification notification = builder.BuildNotification();
-            try
-            {
-                var markerDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Xdows-Security");
-                Directory.CreateDirectory(markerDir);
-                var markerPath = Path.Combine(markerDir, "lastNotification.json");
-                var markerObj = new
-                {
-                    action = "openIntercept",
-                    path = path,
-                    time = DateTime.UtcNow.ToString("o"),
-                    content = content
-                };
-                File.WriteAllText(markerPath, JsonSerializer.Serialize(markerObj));
-            }
-            catch { }
-            AppNotificationManager.Default.Show(notification);
-        }
     }
     /// <summary>
     /// 日志级别的枚举类型，定义了不同的日志级别。
@@ -311,97 +283,12 @@ namespace Xdows_Security
     /// </summary>
     public partial class App : Application
     {
-        private static int _mainWindowCreating = 0; // 标志位，防止多个线程同时创建 MainWindow
         public static MainWindow? MainWindow { get; private set; } // 主窗口实例
 
         public App()
         {
-            // 在启动时尝试初始化通知管理器
             LogText.AddNewLog(1, "UI Interface", "Attempting to load the MainWindow...");
-            try
-            {
-                InitializeAppNotificationManager();
-            }
-            catch (Exception ex)
-            {
-                LogText.AddNewLog(3, "UI Interface", $"Error initializing notifications: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// 初始化应用的通知管理器。
-        /// </summary>
-        private void InitializeAppNotificationManager()
-        {
-            AppNotificationManager mgr = AppNotificationManager.Default;
-            mgr.NotificationInvoked += OnAppNotificationInvoked;
-        }
-
-        /// <summary>
-        /// 处理通知激活事件。
-        /// </summary>
-        private async void OnAppNotificationInvoked(object? sender, AppNotificationActivatedEventArgs e)
-        {
-            try
-            {
-                var argsDict = e.Arguments as IDictionary<string, string>;
-                if (argsDict != null && argsDict.TryGetValue("action", out var action) && action == "openIntercept")
-                {
-                    string interceptedPath = argsDict.TryGetValue("path", out var path) ? path : string.Empty;
-                    LogText.AddNewLog(1, "Notifications", $"Notification invoked with action={action}, path={interceptedPath}");
-                    await HandleNotification(invokedAction: action, interceptedPath: interceptedPath);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogText.AddNewLog(3, "Notifications", $"Error processing notification: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// 处理通知中的具体操作。
-        /// </summary>
-        private async Task HandleNotification(string invokedAction, string interceptedPath)
-        {
-            if (MainWindow == null)
-            {
-                if (System.Threading.Interlocked.CompareExchange(ref _mainWindowCreating, 1, 0) == 0)
-                {
-                    try
-                    {
-                        MainWindow = new MainWindow();
-                    }
-                    catch (Exception ex)
-                    {
-                        LogText.AddNewLog(3, "MainWindow", $"Failed to create MainWindow: {ex.Message}");
-                    }
-                    finally
-                    {
-                        System.Threading.Interlocked.Exchange(ref _mainWindowCreating, 0);
-                    }
-                }
-                else
-                {
-                    await Task.Delay(100);
-                }
-            }
-
-            if (MainWindow != null)
-            {
-                var dq = MainWindow.DispatcherQueue;
-                dq?.TryEnqueue(() =>
-                {
-                    try
-                    {
-                        MainWindow.Activate();
-                        InterceptWindow.ShowOrActivate(interceptedPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogText.AddNewLog(3, "MainWindow", $"Failed to activate MainWindow or InterceptWindow: {ex.Message}");
-                    }
-                });
-            }
+            this.InitializeComponent();
         }
 
         /// <summary>
@@ -412,41 +299,13 @@ namespace Xdows_Security
             try
             {
                 await InitializeLocalizer();
-                if (args.Arguments.Contains("openIntercept"))
-                {
-                    HandleInterceptLaunch(args);
-                }
-                else
-                {
-                    InitializeMainWindow();
-                }
+                InitializeMainWindow();
             }
             catch (Exception ex)
             {
                 LogText.AddNewLog(3, "App", $"Error in OnLaunched: {ex.Message}");
             }
         }
-
-        /// <summary>
-        /// 处理拦截启动的参数。
-        /// </summary>
-        private void HandleInterceptLaunch(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
-        {
-            try
-            {
-                MainWindow?.Activate();
-                string interceptedPath = TryConsumeNotificationMarker().path;
-                InterceptWindow.ShowOrActivate(interceptedPath);
-            }
-            catch (Exception ex)
-            {
-                LogText.AddNewLog(3, "App", $"Error launching intercept: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// 初始化主窗口并显示。
-        /// </summary>
         private void InitializeMainWindow()
         {
             try
@@ -458,41 +317,6 @@ namespace Xdows_Security
             {
                 LogText.AddNewLog(3, "App", $"Error initializing MainWindow: {ex.Message}");
             }
-        }
-
-        /// <summary>
-        /// 尝试消费通知标记，获取拦截的路径。
-        /// </summary>
-        private (bool exists, string path) TryConsumeNotificationMarker()
-        {
-            try
-            {
-                var markerDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Xdows-Security");
-                var markerPath = Path.Combine(markerDir, "lastNotification.json");
-                if (!File.Exists(markerPath)) return (false, string.Empty);
-
-                var txt = File.ReadAllText(markerPath);
-                var doc = JsonDocument.Parse(txt);
-                string path = string.Empty;
-                bool hasAction = false;
-
-                if (doc.RootElement.TryGetProperty("action", out var action) && action.GetString() == "openIntercept")
-                {
-                    hasAction = true;
-                }
-
-                if (doc.RootElement.TryGetProperty("path", out var pathElement))
-                {
-                    path = pathElement.GetString() ?? string.Empty;
-                }
-
-                // 删除标记文件以防重复触发
-                try { File.Delete(markerPath); } catch { }
-
-                return (hasAction, path);
-            }
-            catch { }
-            return (false, string.Empty);
         }
         // 定义主题属性
         public static ElementTheme Theme { get; set; } = ElementTheme.Default;
@@ -524,25 +348,6 @@ namespace Xdows_Security
             // ApplicationLanguages.PrimaryLanguageOverride = "en-US";
             await localizer.SetLanguage(lastLang);
         }
-        // 重新启动应用程序
-        public static void RestartApplication()
-        {
-            try
-            {
-                var appPath = Environment.ProcessPath;
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = appPath,
-                    UseShellExecute = true
-                });
-                Application.Current.Exit();
-            }
-            catch (Exception ex)
-            {
-                LogText.AddNewLog(3, "App", $"Failed to restart application: {ex.Message}");
-            }
-        }
-
         // Windows 版本获取
         public static string OsName => RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
             ? (Environment.OSVersion.Version.Build >= 22000 ? "Windows 11" : "Windows 10")

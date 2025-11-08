@@ -137,11 +137,17 @@ namespace Xdows.Protection
                     try
                     {
                         File.Move(e.FullPath, e.FullPath + ".virus");
-                        _toastCallBack?.Invoke(true, e.FullPath);
+                        Task.Run(() =>
+                        {
+                            _toastCallBack?.Invoke(true, e.FullPath);
+                        });
                     }
                     catch
                     {
-                        _toastCallBack?.Invoke(false, e.FullPath);
+                        Task.Run(() =>
+                        {
+                            _toastCallBack?.Invoke(false, e.FullPath);
+                        });
                     }
 
                 }

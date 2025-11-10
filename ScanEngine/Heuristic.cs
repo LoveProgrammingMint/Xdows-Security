@@ -232,7 +232,7 @@ namespace Xdows.ScanEngine
                     "f-secure", "KvMonXP", "RavMonD", "Mcshield", "ekrn", "kxetray",
                     "avcenter", "avguard", "Sophos", "safedog"
                 }));
-                var t5 = Task.Run(() => ContainsSuspiciousContent(fileContent, new[] { "DelegateExecute", "fodhelper.exe" }));
+                var t5 = Task.Run(() => ContainsSuspiciousContent(fileContent, new[] { "DelegateExecute", "fodhelper.exe", "OSDATA" }));
                 var t6 = Task.Run(() => ContainsSuspiciousContent(fileContent, new[] { "sandboxie", "vmware - tray", "Detonate", "Vmware", "VMWARE", "Sandbox", "SANDBOX" }));
 
                 await Task.WhenAll(t1, t2, t3, t4, t5, t6);
@@ -242,7 +242,7 @@ namespace Xdows.ScanEngine
                 if (t2.Result) { score += 20; }
                 if (t3.Result) { suspiciousData.Add("BlackMoon"); score += 15; }
                 if (t4.Result) { suspiciousData.Add("AVKiller"); score += 20; }
-                if (t5.Result) { suspiciousData.Add("UACBypass"); score += 20; }
+                if (t5.Result) { suspiciousData.Add("BugsExploit"); score += 20; }
                 if (t6.Result) { suspiciousData.Add("SandboxBypass"); score += 20; }
             }
 

@@ -26,7 +26,20 @@
                          Storyboard.TargetProperty="Opacity"
                          From="0.8" To="0" Duration="0:0:0.2"/>
         </Storyboard>
+
+        <DataTemplate x:Key="MoreScanListTemplate">
+            <Grid Padding="0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <FontIcon Grid.Column="0" Glyph="{Binding IconGlyph}" Margin="0,0,8,0" FontSize="16"/>
+                <TextBlock Grid.Column="1" Text="{Binding Path}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+            </Grid>
+        </DataTemplate>
     </Page.Resources>
+
     <ScrollViewer>
         <Grid Margin="64,16,64,0" VerticalAlignment="Top">
             <Grid.RowDefinitions>
@@ -43,7 +56,6 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <!-- 扫描区域状态显示 -->
             <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Grid.Row="0" Grid.ColumnSpan="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="扫描状态" FontSize="16" FontWeight="Bold" Margin="0,0,0,16"/>
@@ -71,22 +83,16 @@
                         <TextBlock Grid.Column="1" x:Name="ProgressPercentText" Text="0%" FontSize="14" FontWeight="Bold"/>
                     </Grid>
 
-                    <!-- 雷达扫描区域 -->
                     <Grid Height="120" Margin="0,8,0,8">
-                        <!-- 雷达背景圆圈 -->
                         <Ellipse Width="100" Height="100" Stroke="{ThemeResource AccentTextFillColorTertiaryBrush}" StrokeThickness="2" Opacity="0.3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <Ellipse Width="80" Height="80" Stroke="{ThemeResource AccentTextFillColorTertiaryBrush}" StrokeThickness="1" Opacity="0.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <Ellipse Width="60" Height="60" Stroke="{ThemeResource AccentTextFillColorTertiaryBrush}" StrokeThickness="1" Opacity="0.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <Ellipse Width="40" Height="40" Stroke="{ThemeResource AccentTextFillColorTertiaryBrush}" StrokeThickness="1" Opacity="0.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
-                        <!-- 雷达扫描线 -->
                         <Line x:Name="RadarScanLine" X1="30" Y1="130" X2="0" Y2="0" Stroke="{ThemeResource AccentTextFillColorTertiaryBrush}" StrokeThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0">
                             <Line.RenderTransform>
                                 <RotateTransform CenterX="15" CenterY="65"/>
                             </Line.RenderTransform>
                         </Line>
-
-                        <!-- 雷达脉冲效果 -->
                         <Ellipse x:Name="RadarPulse" Width="20" Height="20" Fill="{ThemeResource AccentTextFillColorTertiaryBrush}" Opacity="0" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <Ellipse.RenderTransform>
                                 <TransformGroup>
@@ -95,15 +101,11 @@
                                 </TransformGroup>
                             </Ellipse.RenderTransform>
                         </Ellipse>
-
-                        <!-- 中心点 -->
                         <Ellipse Width="8" Height="8" Fill="{ThemeResource AccentTextFillColorTertiaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Grid>
 
-                    <!-- 进度条 -->
                     <ProgressBar x:Name="ScanProgress" Height="8" CornerRadius="4" Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
 
-                    <!-- 统计信息 -->
                     <Grid Margin="0,8,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -131,19 +133,9 @@
                 </StackPanel>
             </Border>
 
-            <!-- 扫描路径和选择按钮 -->
-            <TextBlock Name="PathText"
-           Grid.Row="4" Grid.Column="0"
-           Text="选择扫描文件"
-           FontSize="16"
-           VerticalAlignment="Center"
-           Margin="0,0,8,16"/>
+            <TextBlock Name="PathText" Grid.Row="4" Grid.Column="0" Text="选择扫描文件" FontSize="16" VerticalAlignment="Center" Margin="0,0,8,16"/>
 
-            <StackPanel Grid.Row="4" Grid.Column="1"
-            Orientation="Horizontal"
-            Spacing="8"
-            VerticalAlignment="Center"
-            Margin="0,0,0,16">
+            <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="0,0,0,16">
                 <Button x:Name="BackToVirusListButton" Click="OnBackToVirusListClick" Visibility="Collapsed">
                     <StackPanel Orientation="Horizontal" Tag="Visible" Spacing="8">
                         <FontIcon x:Name="BackToVirusListButtonIcon" Glyph="&#xE890;"/>
@@ -204,10 +196,8 @@
                 </DropDownButton>
             </StackPanel>
 
-            <!-- 状态文本 -->
             <TextBlock Name="StatusText" Grid.Row="5" Margin="0,8,0,0" FontSize="14" TextWrapping="Wrap" Grid.ColumnSpan="2"/>
 
-            <!-- 病毒列表 -->
             <ListView Name="VirusList" Grid.Row="6" Margin="-28,10,0,8" Visibility="Collapsed" DoubleTapped="VirusList_DoubleTapped" Grid.ColumnSpan="2">
                 <ListView.ItemTemplate>
                     <DataTemplate>

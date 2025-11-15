@@ -1,3 +1,4 @@
+using CommunityToolkit.WinUI;
 using Compatibility.Windows.Storage;
 using Microsoft.UI;
 using Microsoft.UI.Dispatching;
@@ -11,17 +12,20 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace Xdows_Security
 {
     public enum ScanMode { Quick, Full, File, Folder, More }
     public record VirusRow(string FilePath, string VirusName);
 
-    // 扫描项目数据模型
     public class ScanItem
     {
         public string ItemName { get; set; } = string.Empty;
@@ -31,6 +35,33 @@ namespace Xdows_Security
         public int ThreatCount { get; set; } = 0;
         public Visibility ThreatCountVisibility { get; set; } = Visibility.Collapsed;
         public SolidColorBrush ThreatCountBackground { get; set; } = new SolidColorBrush(Colors.Red);
+    }
+
+    public class MoreScanItem : INotifyPropertyChanged
+    {
+        private string _path = string.Empty;
+        private bool _isFolder;
+
+        public string Path
+        {
+            get => _path;
+            set { _path = value; OnPropertyChanged(); }
+        }
+
+        public bool IsFolder
+        {
+            get => _isFolder;
+            set { _isFolder = value; OnPropertyChanged(); OnPropertyChanged(nameof(IconGlyph)); }
+        }
+
+        public string IconGlyph => _isFolder ? "\uE8B7" : "\uE8A5";
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string name = null!)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 
     public sealed partial class SecurityPage : Page
@@ -43,6 +74,8 @@ namespace Xdows_Security
         private int _filesScanned = 0;
         private int _filesSafe = 0;
         private int _threatsFound = 0;
+        private int ScanId = 0;
+        private ContentDialog? _moreScanDialog;
 
         public SecurityPage()
         {
@@ -52,7 +85,6 @@ namespace Xdows_Security
             InitializeScanItems();
         }
 
-        // 初始化扫描项目
         private void InitializeScanItems()
         {
             _scanItems = new List<ScanItem>
@@ -100,7 +132,6 @@ namespace Xdows_Security
             });
         }
 
-        // 更新扫描区域信息
         private void UpdateScanAreaInfo(string areaName, string detailInfo)
         {
             _dispatcherQueue.TryEnqueue(() =>
@@ -110,7 +141,6 @@ namespace Xdows_Security
             });
         }
 
-        // 更新扫描项目状态
         private void UpdateScanItemStatus(int itemIndex, string status, bool isActive, int threatCount = 0)
         {
             _dispatcherQueue.TryEnqueue(() =>
@@ -128,10 +158,8 @@ namespace Xdows_Security
                 }
                 catch { }
             });
-
         }
 
-        // 更新扫描统计信息
         private void UpdateScanStats(int filesScanned, int filesSafe, int threatsFound)
         {
             _dispatcherQueue.TryEnqueue(() =>
@@ -149,7 +177,7 @@ namespace Xdows_Security
             });
         }
 
-        private void OnScanMenuClick(object sender, RoutedEventArgs e)
+        private async void OnScanMenuClick(object sender, RoutedEventArgs e)
         {
             var settings = ApplicationData.Current.LocalSettings;
             bool UseLocalScan = (settings.Values["LocalScan"] as bool?).GetValueOrDefault();
@@ -180,25 +208,176 @@ namespace Xdows_Security
                 "Folder" => ScanMode.Folder,
                 _ => ScanMode.More
             };
+
             if (mode == ScanMode.More)
             {
-                var dialog = new ContentDialog
+                var paths = await ShowMoreScanDialogAsync();
+                if (paths.Count > 0)
                 {
-                    Title = "暂未实现",
-                    Content = "请使用其它扫描方式进行扫描任务。",
-                    PrimaryButtonText = "确定",
+                    await StartScanAsync("更多扫描", ScanMode.More, paths);
+                }
+                return;
+            }
+
+            await StartScanAsync(((MenuFlyoutItem)sender).Text, mode);
+        }
+
+        private async Task<IReadOnlyList<string>> ShowMoreScanDialogAsync()
+        {
+            var items = new ObservableCollection<MoreScanItem>();
+            var listView = new ListView
+            {
+                ItemTemplate = Resources["MoreScanListTemplate"] as DataTemplate,
+                ItemsSource = items,
+                Height = 240
+            };
+
+            var browseFolderButton = new Button { Content = "浏览目录" };
+            browseFolderButton.Click += OnMoreScanBrowseFolderClick;
+            var browseFileButton = new Button { Content = "浏览文件" };
+            browseFileButton.Click += OnMoreScanBrowseFileClick;
+            var removeFileButton = new Button { Content = "删除项目" };
+            removeFileButton.Click += OnMoreScanRemovePathClick;
+            var clearButton = new Button { Content = "清空全部", IsEnabled = false };
+            clearButton.Click += OnMoreScanClearClick;
+
+            items.CollectionChanged += (s, e) => {
+                clearButton.IsEnabled = items.Count > 0;
+            };
+
+            var contentGrid = new Grid { RowSpacing = 12 };
+            contentGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            contentGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+            Grid.SetRow(listView, 0);
+
+            var buttonPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 8,
+                Children = { browseFolderButton, browseFileButton,removeFileButton, clearButton }
+            };
+            Grid.SetRow(buttonPanel, 1);
+
+            contentGrid.Children.Add(listView);
+            contentGrid.Children.Add(buttonPanel);
+
+            _moreScanDialog = new ContentDialog
+            {
+                Title = "更多扫描",
+                Content = contentGrid,
+                PrimaryButtonText = "开始扫描",
+                CloseButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.XamlRoot,
+                RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                Width = 600,
+                Height = 450
+            };
+
+            var result = await _moreScanDialog.ShowAsync();
+            _moreScanDialog = null;
+
+            if (result == ContentDialogResult.Primary)
+            {
+                return items.Select(i => i.Path).ToList();
+            }
+            return new List<string>();
+        }
+        private void OnMoreScanRemovePathClick(object sender, RoutedEventArgs e)
+        {
+            var listView = FindChild<ListView>(_moreScanDialog?.Content as DependencyObject);
+            if (listView?.SelectedItem is MoreScanItem item)
+            {
+                if (listView.ItemsSource is ObservableCollection<MoreScanItem> items)
+                {
+                    items.Remove(item);
+                }
+            }
+            else
+            {
+            }
+        }
+        private async void OnMoreScanBrowseFolderClick(object sender, RoutedEventArgs e)
+        {
+            using var dlg = new CommonOpenFileDialog
+            {
+                Title = "选择目录",
+                IsFolderPicker = true,
+                EnsurePathExists = true
+            };
+
+            if (dlg.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                await AddPathToMoreScanList(dlg.FileName, true);
+            }
+        }
+
+        private async void OnMoreScanBrowseFileClick(object sender, RoutedEventArgs e)
+        {
+            using var dlg = new CommonOpenFileDialog
+            {
+                Title = "选择文件",
+                IsFolderPicker = false,
+                EnsurePathExists = true
+            };
+
+            if (dlg.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                await AddPathToMoreScanList(dlg.FileName, false);
+            }
+        }
+
+        private async Task AddPathToMoreScanList(string path, bool isFolder)
+        {
+            var listView = FindChild<ListView>(_moreScanDialog?.Content as DependencyObject);
+            if (listView?.ItemsSource is not ObservableCollection<MoreScanItem> items) return;
+
+            var existingPaths = new HashSet<string>(items.Select(i => i.Path), StringComparer.OrdinalIgnoreCase);
+
+            if (existingPaths.Contains(path))
+            {
+                await new ContentDialog
+                {
+                    Title = "路径重复",
+                    Content = $"该路径已在列表中：{path}",
+                    CloseButtonText = "确定",
                     XamlRoot = this.XamlRoot,
-                    RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
-                    PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                    RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme
                 }.ShowAsync();
                 return;
             }
 
-
-            _ = StartScanAsync(((MenuFlyoutItem)sender).Text, mode);
+            items.Add(new MoreScanItem { Path = path, IsFolder = isFolder });
         }
-        private int ScanId = 0;
-        private async Task StartScanAsync(string displayName, ScanMode mode)
+
+        private void OnMoreScanClearClick(object sender, RoutedEventArgs e)
+        {
+            var listView = FindChild<ListView>(_moreScanDialog?.Content as DependencyObject);
+            if (listView?.ItemsSource is ObservableCollection<MoreScanItem> items)
+            {
+                items.Clear();
+            }
+        }
+
+        private T? FindChild<T>(DependencyObject? parent) where T : DependencyObject
+        {
+            if (parent == null) return null;
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T typedChild)
+                    return typedChild;
+
+                var result = FindChild<T>(child);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+
+        private async Task StartScanAsync(string displayName, ScanMode mode, IReadOnlyList<string>? customPaths = null)
         {
             _cts?.Cancel();
             _cts = new CancellationTokenSource();
@@ -217,7 +396,8 @@ namespace Xdows_Security
             var SouXiaoEngine = new Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan();
             if (UseSouXiaoScan)
             {
-                if (!SouXiaoEngine.Initialize()){
+                if (!SouXiaoEngine.Initialize())
+                {
                     _dispatcherQueue.TryEnqueue(() =>
                     {
                         var dialog = new ContentDialog
@@ -271,13 +451,11 @@ namespace Xdows_Security
 
             ScanButton.IsEnabled = false;
 
-            // 重置统计信息
             _filesScanned = 0;
             _filesSafe = 0;
             _threatsFound = 0;
             UpdateScanStats(0, 0, 0);
 
-            // 重置扫描项目状态
             for (int i = 0; i < _scanItems!.Count; i++)
             {
                 UpdateScanItemStatus(i, "等待扫描", false, 0);
@@ -290,7 +468,7 @@ namespace Xdows_Security
                 VirusList.ItemsSource = _currentResults;
                 ScanProgress.Value = 0;
                 ScanProgress.Visibility = Visibility.Visible;
-                ProgressPercentText.Text = showScanProgress? "0%":String.Empty;
+                ProgressPercentText.Text = showScanProgress ? "0%" : String.Empty;
                 PathText.Text = $"扫描模式：{displayName}";
                 BackToVirusListButton.Visibility = Visibility.Collapsed;
                 PauseScanButton.Visibility = Visibility.Visible;
@@ -305,7 +483,7 @@ namespace Xdows_Security
             {
                 try
                 {
-                    var files = EnumerateFiles(mode, userPath);
+                    var files = EnumerateFiles(mode, userPath, customPaths);
                     int ThisId = ScanId;
                     int total = files.Count();
                     var startTime = DateTime.Now;
@@ -329,9 +507,12 @@ namespace Xdows_Security
                             UpdateScanAreaInfo("单独扫描指定目录", $"正在检测：{userPath}");
                             currentItemIndex = 3;
                             break;
+                        case ScanMode.More:
+                            UpdateScanAreaInfo("更多扫描 - 自定义路径", $"共 {customPaths?.Count ?? 0} 个路径");
+                            currentItemIndex = 0;
+                            break;
                     }
 
-                    // 激活当前扫描项目
                     UpdateScanItemStatus(currentItemIndex, "正在扫描", true);
 
                     _dispatcherQueue.TryEnqueue(() =>
@@ -392,7 +573,7 @@ namespace Xdows_Security
                                     System.Diagnostics.Debug.WriteLine(cloudResult.result);
                                     if (cloudResult.result == "virus_file")
                                     {
-                                        Result = "MEMZUAC.Cloud.VirusFile" ?? string.Empty;
+                                        Result = "MEMZUAC.Cloud.VirusFile";
                                     }
                                 }
                             }
@@ -416,7 +597,7 @@ namespace Xdows_Security
                                 {
                                     _dispatcherQueue.TryEnqueue(() =>
                                     {
-                                        _currentResults!.Add(new VirusRow(file, Result));
+                                        _currentResults?.Add(new VirusRow(file, Result));
                                         BackToVirusListButton.Visibility = Visibility.Visible;
                                     });
                                     _threatsFound++;
@@ -433,7 +614,6 @@ namespace Xdows_Security
                         }
                         catch
                         {
-                            // 忽略无法访问的文件
                         }
 
                         finished++;
@@ -458,7 +638,6 @@ namespace Xdows_Security
                             UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
                         }
                         catch { }
-                        // 检测是否已经退出这个页面
                         if (MainWindow.NowPage != "Security" | ThisId != ScanId)
                         {
                             break;
@@ -466,21 +645,16 @@ namespace Xdows_Security
                         await Task.Delay(1, token);
                     }
 
-                    // 完成当前扫描项目
                     UpdateScanItemStatus(currentItemIndex, "扫描完成", false, _threatsFound);
 
                     _dispatcherQueue.TryEnqueue(() =>
                     {
                         var settings = ApplicationData.Current.LocalSettings;
                         settings.Values["LastScanTime"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
-                        //System.Diagnostics.Debug.WriteLine(Xdows.ScanEngine.ScanEngine.SignedAndValid);
-
-                        StatusText.Text = $"扫描完成，发现 {_currentResults.Count} 个威胁";
+                        StatusText.Text = $"扫描完成，发现 {_currentResults?.Count ?? 0} 个威胁";
                         ScanProgress.Visibility = Visibility.Collapsed;
                         PauseScanButton.Visibility = Visibility.Collapsed;
                         ResumeScanButton.Visibility = Visibility.Collapsed;
-
                         StopRadarAnimation();
                     });
                 }
@@ -491,7 +665,6 @@ namespace Xdows_Security
                         StatusText.Text = "扫描已取消";
                         ScanProgress.Visibility = Visibility.Collapsed;
                         ResumeScanButton.Visibility = Visibility.Collapsed;
-
                         StopRadarAnimation();
                     });
                 }
@@ -504,7 +677,6 @@ namespace Xdows_Security
                         ScanProgress.Visibility = Visibility.Collapsed;
                         PauseScanButton.Visibility = Visibility.Collapsed;
                         ResumeScanButton.Visibility = Visibility.Collapsed;
-
                         StopRadarAnimation();
                     });
                 }
@@ -512,18 +684,18 @@ namespace Xdows_Security
             ScanButton.IsEnabled = true;
         }
 
-        // 返回病毒列表按钮事件
         private void OnBackToVirusListClick(object sender, RoutedEventArgs e)
         {
             OnBackList(VirusList.Visibility != Visibility.Visible);
         }
+
         private void OnBackList(bool isShow)
         {
             VirusList.Visibility = isShow ? Visibility.Visible : Visibility.Collapsed;
             BackToVirusListButtonText.Text = isShow ? "隐藏列表" : "显示列表";
             BackToVirusListButtonIcon.Glyph = isShow ? "\uED1A" : "\uE890";
         }
-        // 暂停扫描按钮事件
+
         private void OnPauseScanClick(object sender, RoutedEventArgs e)
         {
             _isPaused = true;
@@ -531,11 +703,9 @@ namespace Xdows_Security
             PauseScanButton.Visibility = Visibility.Collapsed;
             ResumeScanButton.Visibility = Visibility.Visible;
             UpdateScanAreaInfo("扫描已暂停", "请点击继续扫描按钮恢复扫描");
-
             PauseRadarAnimation();
         }
 
-        // 继续扫描按钮事件
         private void OnResumeScanClick(object sender, RoutedEventArgs e)
         {
             _isPaused = false;
@@ -543,7 +713,6 @@ namespace Xdows_Security
             PauseScanButton.Visibility = Visibility.Visible;
             ResumeScanButton.Visibility = Visibility.Collapsed;
             UpdateScanAreaInfo("正在继续扫描", "扫描进程已恢复");
-
             ResumeRadarAnimation();
         }
 
@@ -604,6 +773,7 @@ namespace Xdows_Security
                 }
             }
         }
+
         private async Task ShowDetailsDialog(VirusRow row)
         {
             try
@@ -611,7 +781,7 @@ namespace Xdows_Security
                 bool isDetailsPause = false;
                 if (PauseScanButton.Visibility != Visibility.Collapsed)
                     isDetailsPause = true;
-                    OnPauseScanClick(new object(), new RoutedEventArgs());
+                OnPauseScanClick(new object(), new RoutedEventArgs());
                 var fileInfo = new FileInfo(row.FilePath);
                 var dialog = new ContentDialog
                 {
@@ -699,7 +869,6 @@ namespace Xdows_Security
             }
         }
 
-        #region 文件选择和枚举
         private async Task<string?> PickPathAsync(ScanMode mode)
         {
             if (mode == ScanMode.File)
@@ -714,7 +883,6 @@ namespace Xdows_Security
             }
             else
             {
-
                 using var dlg = new CommonOpenFileDialog
                 {
                     Title = "",
@@ -722,23 +890,33 @@ namespace Xdows_Security
                     EnsurePathExists = true,
                 };
                 return dlg.ShowDialog() == CommonFileDialogResult.Ok ? dlg.FileName : null;
-
             }
         }
 
-        private IReadOnlyList<string> EnumerateFiles(ScanMode mode, string? userPath) =>
+        private IReadOnlyList<string> EnumerateFiles(ScanMode mode, string? userPath, IReadOnlyList<string>? customPaths) =>
             mode switch
             {
                 ScanMode.Quick => EnumerateQuickScanFiles().ToList(),
                 ScanMode.Full => EnumerateFullScanFiles().ToList(),
-                ScanMode.File => (userPath != null && File.Exists(userPath))
+                ScanMode.File => (userPath != null && System.IO.File.Exists(userPath))
                                   ? new[] { userPath }
                                   : Array.Empty<string>(),
                 ScanMode.Folder => (userPath != null && Directory.Exists(userPath))
                                   ? SafeEnumerateFolder(userPath).ToList()
                                   : Array.Empty<string>(),
+                ScanMode.More => customPaths?.SelectMany(p =>
+                {
+                    if (Directory.Exists(p))
+                        return SafeEnumerateFolder(p);
+                    else if (System.IO.File.Exists(p))
+                        return new[] { p };
+                    return Enumerable.Empty<string>();
+                }).ToList() ?? new List<string>(),
                 _ => Array.Empty<string>()
             };
+
+        private IReadOnlyList<string> EnumerateFiles(ScanMode mode, string? userPath) =>
+            EnumerateFiles(mode, userPath, null);
 
         private static IEnumerable<string> SafeEnumerateFolder(string folder)
         {
@@ -756,7 +934,7 @@ namespace Xdows_Security
                 foreach (var entry in entries)
                 {
                     System.IO.FileAttributes attr;
-                    try { attr = File.GetAttributes(entry); }
+                    try { attr = System.IO.File.GetAttributes(entry); }
                     catch { continue; }
 
                     if ((attr & System.IO.FileAttributes.Directory) != 0)
@@ -781,7 +959,7 @@ namespace Xdows_Security
                  Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "SysWOW64")
             };
 
-            var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".exe", ".dll", ".sys" ,".com","scr"};
+            var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".exe", ".dll", ".sys", ".com", "scr" };
 
             return criticalPaths
                    .Where(Directory.Exists)
@@ -842,13 +1020,12 @@ namespace Xdows_Security
                     {
                         stack.Push(entry);
                     }
-                    else if (File.Exists(entry) && scanned.Add(entry))
+                    else if (System.IO.File.Exists(entry) && scanned.Add(entry))
                     {
                         yield return entry;
                     }
                 }
             }
         }
-        #endregion
     }
 }

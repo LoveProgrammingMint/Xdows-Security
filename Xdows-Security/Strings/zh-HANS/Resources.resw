@@ -135,9 +135,6 @@
   <data name="HomePage_TextBlock_Open" xml:space="preserve">
     <value>您已受到我们的保护</value>
   </data>
-  <data name="AllPage_Not_Open_Yet.Text" xml:space="preserve">
-    <value>暂未开放</value>
-  </data>
   <data name="SettingsPage_Other_CheckUpdate.Header" xml:space="preserve">
     <value>检查更新</value>
   </data>
@@ -461,5 +458,17 @@
   </data>
   <data name="HomePage_CopySystemInfo.Content" xml:space="preserve">
     <value>复制系统信息</value>
+  </data>
+  <data name="SettingsPage_Appearance_Nav.Header" xml:space="preserve">
+    <value>导航栏位置</value>
+  </data>
+  <data name="SettingsPage_Appearance_Nav.Description" xml:space="preserve">
+    <value>设置导航栏的位置方向</value>
+  </data>
+  <data name="SettingsPage_Appearance_Nav_Top.Content" xml:space="preserve">
+    <value>顶端</value>
+  </data>
+  <data name="SettingsPage_Appearance_Nav_Left.Content" xml:space="preserve">
+    <value>左侧</value>
   </data>
 </root>

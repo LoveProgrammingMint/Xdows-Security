@@ -30,8 +30,6 @@
             </StackPanel>
         </Grid>
         <NavigationView x:Name="nav"
-                    PaneDisplayMode="Auto"
-                    ExpandedModeThresholdWidth="1200"
                     SelectionChanged="{x:Bind NavigationSelectionChanged}"
                     IsBackButtonVisible="Collapsed"
                     IsBackEnabled="False"

@@ -74,22 +74,33 @@ namespace Xdows_Security
             var backdrop = settings.Values["AppBackdrop"] as string;
             ApplyBackdrop(backdrop ?? "Mica");
             Activated -= MainWindow_Activated_FirstTime;
-            if (!App.IsRunAsAdmin())
-            {
-                TitleText.Text += " (受限模式)";
-            }
+            //if (!App.IsRunAsAdmin())
+            //{
+            //    TitleText.Text += " (受限模式)";
+            //}
+            UpdateNavTheme(
+                settings.Values.TryGetValue("AppNavTheme", out object raw) && raw is double d ?
+                (int)d : 0
+            );
         }
-
+        public void UpdateNavTheme(int index)
+        {
+            nav.PaneDisplayMode = index == 0 ? NavigationViewPaneDisplayMode.LeftCompact : NavigationViewPaneDisplayMode.Top;
+        }
         private void OnLangChanged(object? sender, LanguageChangedEventArgs e) => LoadLocalizerData();
         private void LoadLocalizerData()
         {
-                        
-            if (nav.SettingsItem is NavigationViewItem setting)
-            {
-                setting.Content = Localizer.Get().GetLocalizedString("MainWindow_Nav_Settings");
-                nav.Header = (nav.SelectedItem as NavigationViewItem)?.Content ?? string.Empty;
+            var settings = ApplicationData.Current.LocalSettings;
+            int navTheme = settings.Values.TryGetValue("AppNavTheme", out object raw) && raw is double d ?
+                (int)d : 0;
+            if (navTheme == 0) {
+                if (nav.SettingsItem is NavigationViewItem setting)
+                {
+                    setting.Content = Localizer.Get().GetLocalizedString("MainWindow_Nav_Settings");
+                    nav.Header = (nav.SelectedItem as NavigationViewItem)?.Content ?? string.Empty;
+                }
             }
-}
+        }
         public void UpdateTheme(ElementTheme selectedTheme)
         {
             App.Theme = selectedTheme;
@@ -168,8 +179,13 @@ namespace Xdows_Security
                 }
             }
 
-            nav.Header = (nav.SelectedItem as NavigationViewItem)?.Content ?? string.Empty;
-
+            if (PageName == "Settings")
+            {
+                nav.Header = Localizer.Get().GetLocalizedString("MainWindow_Nav_Settings");
+            }
+            else {
+                nav.Header = (nav.SelectedItem as NavigationViewItem)?.Content ?? string.Empty;
+            }
             NowPage = PageName; 
             switch (PageName)
             {

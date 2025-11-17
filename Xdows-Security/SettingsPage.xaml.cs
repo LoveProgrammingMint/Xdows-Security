@@ -187,6 +187,10 @@ namespace Xdows_Security
                 ElementTheme.Dark => 2,
                 _ => 0
             };
+
+            NavComboBox.SelectedIndex = 
+                settings.Values.TryGetValue("AppNavTheme", out object raw) && raw is double d ?
+                (int)d : 0;
         }
         private async void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -297,6 +301,19 @@ namespace Xdows_Security
             settings.Values["AppBackdropOpacity"] = slider.Value;
             if (App.MainWindow == null) return;
             App.MainWindow.ApplyBackdrop(settings.Values["AppBackdrop"] as string ?? "Mica");
+        }
+
+        private void NavComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (IsInitialize) return;
+            try
+            {
+                int index = NavComboBox.SelectedIndex;
+                var settings = ApplicationData.Current.LocalSettings;
+                settings.Values["AppNavTheme"] = index;
+                App.MainWindow?.UpdateNavTheme(index);
+            }
+            catch { }
         }
     }
 }

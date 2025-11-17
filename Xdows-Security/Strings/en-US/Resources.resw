@@ -135,9 +135,6 @@
   <data name="HomePage_TextBlock_Open" xml:space="preserve">
     <value>You are protection</value>
   </data>
-  <data name="AllPage_Not_Open_Yet.Text" xml:space="preserve">
-    <value>Not Open Yet</value>
-  </data>
   <data name="SettingsPage_Other_CheckUpdate.Header" xml:space="preserve">
     <value>Check for Updates</value>
   </data>
@@ -461,5 +458,17 @@ Why not try XIGUA Security?</value>
   </data>
   <data name="HomePage_CopySystemInfo.Content" xml:space="preserve">
     <value>Copy System Info</value>
+  </data>
+  <data name="SettingsPage_Appearance_Nav.Header" xml:space="preserve">
+    <value>Navigation Position</value>
+  </data>
+  <data name="SettingsPage_Appearance_Nav.Description" xml:space="preserve">
+    <value>Set the position and orientation of the navigation bar</value>
+  </data>
+  <data name="SettingsPage_Appearance_Nav_Top.Content" xml:space="preserve">
+    <value>Top side</value>
+  </data>
+  <data name="SettingsPage_Appearance_Nav_Left.Content" xml:space="preserve">
+    <value>Left side</value>
   </data>
 </root>

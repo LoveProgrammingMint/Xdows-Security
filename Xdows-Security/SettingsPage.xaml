@@ -11,13 +11,21 @@
     <ScrollViewer>
         <StackPanel Spacing="4" Margin="80,24,80,0">
             <TextBlock Margin="0,8,0,8" l:Uids.Uid="SettingsPage_Appearance" />
-            <controls:SettingsCard x:Name="settingsCard"
+            <controls:SettingsCard
                                l:Uids.Uid="SettingsPage_Appearance_Theme"
                                HeaderIcon="{ui:FontIcon Glyph=&#xE790;}">
                 <ComboBox x:Name="ThemeComboBox" SelectionChanged="ThemeComboBox_SelectionChanged">
                     <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Theme_ComboBox_System" />
                     <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Theme_ComboBox_Light" />
                     <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Theme_ComboBox_Dark" />
+                </ComboBox>
+            </controls:SettingsCard>
+            <controls:SettingsCard
+                               l:Uids.Uid="SettingsPage_Appearance_Nav"
+                               HeaderIcon="{ui:FontIcon Glyph=&#xE700;}">
+                <ComboBox x:Name="NavComboBox" SelectionChanged="NavComboBox_SelectionChanged">
+                    <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Nav_Left" />
+                    <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Nav_Top" />
                 </ComboBox>
             </controls:SettingsCard>
             <controls:SettingsExpander

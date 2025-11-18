@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-// using Windows.ApplicationModel.Resources;//多语言调用
+// using Windows.ApplicationModel.Resources;//澶氳瑷�璋冪敤
 using Compatibility.Windows.Storage;
 using Windows.UI;
 using Windows.UI.ViewManagement;
@@ -76,7 +76,7 @@ namespace Xdows_Security
             Activated -= MainWindow_Activated_FirstTime;
             //if (!App.IsRunAsAdmin())
             //{
-            //    TitleText.Text += " (受限模式)";
+            //    TitleText.Text += " (鍙楅檺妯″紡)";
             //}
             UpdateNavTheme(
                 settings.Values.TryGetValue("AppNavTheme", out object raw) && raw is double d ?
@@ -210,7 +210,7 @@ namespace Xdows_Security
             nav.SelectedItem = null;
             navContainer.Navigate(typeof(BugReportPage));
         }
-        private NavigationViewItem FindNavigationItemByTag(IList<object> items, string targetTag)
+        private NavigationViewItem? FindNavigationItemByTag(IList<object> items, string targetTag)
         {
             foreach (var item in items)
             {
@@ -226,7 +226,7 @@ namespace Xdows_Security
                     }
                 }
             }
-            return new();
+                return null;
         }
         private void NavigationSelectionChanged()
         {

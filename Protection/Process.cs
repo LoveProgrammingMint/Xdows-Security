@@ -106,7 +106,7 @@ namespace Xdows.Protection
                             {
                                 bool Succeed = TryKillProcess(pid);
 
-                                if (string.Concat(path.EnumerateRunes().Reverse().Take(6).Reverse()) != ".virus")
+                                if (!Path.GetExtension(path).Equals(".virus", StringComparison.OrdinalIgnoreCase))
                                 {
                                     try { File.Move(path, path + ".virus"); } catch { }
                                 }

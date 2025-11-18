@@ -81,7 +81,7 @@ namespace Xdows_Security
             };
             RunProtectionWithToggle(toggle, runId);
         }
-        private void Toggled_SaveToggleData(object sender, RoutedEventArgs e)
+        private async void Toggled_SaveToggleData(object sender, RoutedEventArgs e)
         {
             if (sender is not ToggleSwitch toggle || IsInitialize) return;
 
@@ -91,19 +91,19 @@ namespace Xdows_Security
             {
                 var dialog = new ContentDialog
                 {
-                    Title = "ÃâÔðÉùÃ÷",
-                    Content = "µ±ÄúÆôÓÃ´ËÒýÇæºó£¬" +
-                    "Ê¹ÓÃ¸ÃÒýÇæ½øÐÐÉ¨ÃèÎÄ¼þÊ±»á½«ÎÄ¼þÊý¾Ý»òÆäÐÅÏ¢·¢ËÍ¶ÔÓ¦ÔÆ·þÎñÌá¹©ÉÌ·þÎñÆ÷¡£" +
-                    "ÓÃ»§Ó¦×Ô¾õ×ñÊØÏà¹Ø·þÎñÐ­Òé¡¢ÌõÔ¼»òÉùÃ÷£¬²»·¢ËÍÉæ¼°Ïà¹Ø·¨ÂÉºÍÒþË½ÎÄ¼þ¡£" +
-                    "ÈÎºÎÓÉ´ËÒýÇæÒý·¢µÄÎÄ¼þÐ¹Â¶µÈÎÊÌâ»òËðÊ§¾ùÓÉÔÆ·þÎñÌá¹©ÉÌ³Ðµ££¬´ËÈí¼þ¿ª·¢Õß²»³Ðµ£ÈÎºÎÔðÈÎ¡£" +
-                    "Òò²»¿É¿¹Á¦ÒòËØÈç·þÎñÆ÷¹ÊÕÏµÈÎÊÌâ¶øÒý·¢µÄÊý¾Ý¶ªÊ§µÈÎÄ¼þ»òËðÊ§£¬´ËÈí¼þ¿ª·¢ÕßÍ¬Ñù²»³Ðµ£ÈÎºÎÔðÈÎ¡£" +
-                    "\n±¾ÉùÃ÷»òÔÆ·þÎñÌá¹©Ð­Òé¡¢ÌõÔ¼»òÉùÃ÷»áÒòÈí¼þ¸üÐÂµÈ¶àÖÖÒòËØ½øÐÐÐÞ¸Ä¡¢É¾³ý¡¢²¹³äÆäÄÚÈÝ£¬µ±·¢Éú¾À·×Ê±£¬ÇëÒÔ×îÐÂ°æ±¾Îª×¼£¬" +
-                    "±¾Èí¼þ¿ª·¢Õß¾ßÓÐ¶Ô´ËÉùÃ÷½øÐÐÐÞ¸Ä¡¢É¾³ý¡¢²¹³ä¶ø²»¾­ÓÃ»§Í¬ÒâµÄÈ¨Á¦£¬¸ÃÉùÃ÷×îÖÕ½âÊÍÈ¨¹é±¾Èí¼þ¿ª·¢ÕßËùÓÐ¡£" +
-                    "\n¶ÔÓÚ´ËÈí¼þµÄ·ÖÖ§²úÉúµÄÎÊÌâ£¬´ËÈí¼þµÄÔ´¿ª·¢Õß£¨Xdows Software£©²»³Ðµ£ÈÎºÎÔðÈÎ¡£" +
-                    "\nµ±ÄúÍ¨¹ýÈÎºÎ·½Ê½Ê¹ÓÃ¸ÃÒýÇæÊ±Ôò±íÊ¾Í¬Òâ²¢½ÓÊÜ¸ÃÉùÃ÷£¬Èç¹ûÄú²»½ÓÊÜÇë×ÔÐÐ¹Ø±Õ´ËÒýÇæ»òÍ£Ö¹Ê¹ÓÃ²¢É¾³ý¸ÃÈí¼þ¡£",
-                    PrimaryButtonText = "È·¶¨",
+                    Title = "å…è´£å£°æ˜Ž",
+                    Content = "å½“æ‚¨å¯ç”¨æ­¤å¼•æ“ŽåŽï¼Œ" +
+                    "ä½¿ç”¨è¯¥å¼•æ“Žè¿›è¡Œæ‰«ææ–‡ä»¶æ—¶ä¼šå°†æ–‡ä»¶æ•°æ®æˆ–å…¶ä¿¡æ¯å‘é€å¯¹åº”äº‘æœåŠ¡æä¾›å•†æœåŠ¡å™¨ã€‚" +
+                    "ç”¨æˆ·åº”è‡ªè§‰éµå®ˆç›¸å…³æœåŠ¡åè®®ã€æ¡çº¦æˆ–å£°æ˜Žï¼Œä¸å‘é€æ¶‰åŠç›¸å…³æ³•å¾‹å’Œéšç§æ–‡ä»¶ã€‚" +
+                    "ä»»ä½•ç”±æ­¤å¼•æ“Žå¼•å‘çš„æ–‡ä»¶æ³„éœ²ç­‰é—®é¢˜æˆ–æŸå¤±å‡ç”±äº‘æœåŠ¡æä¾›å•†æ‰¿æ‹…ï¼Œæ­¤è½¯ä»¶å¼€å‘è€…ä¸æ‰¿æ‹…ä»»ä½•è´£ä»»ã€‚" +
+                    "å› ä¸å¯æŠ—åŠ›å› ç´ å¦‚æœåŠ¡å™¨æ•…éšœç­‰é—®é¢˜è€Œå¼•å‘çš„æ•°æ®ä¸¢å¤±ç­‰æ–‡ä»¶æˆ–æŸå¤±ï¼Œæ­¤è½¯ä»¶å¼€å‘è€…åŒæ ·ä¸æ‰¿æ‹…ä»»ä½•è´£ä»»ã€‚" +
+                    "\næœ¬å£°æ˜Žæˆ–äº‘æœåŠ¡æä¾›åè®®ã€æ¡çº¦æˆ–å£°æ˜Žä¼šå› è½¯ä»¶æ›´æ–°ç­‰å¤šç§å› ç´ è¿›è¡Œä¿®æ”¹ã€åˆ é™¤ã€è¡¥å……å…¶å†…å®¹ï¼Œå½“å‘ç”Ÿçº çº·æ—¶ï¼Œè¯·ä»¥æœ€æ–°ç‰ˆæœ¬ä¸ºå‡†ï¼Œ" +
+                    "æœ¬è½¯ä»¶å¼€å‘è€…å…·æœ‰å¯¹æ­¤å£°æ˜Žè¿›è¡Œä¿®æ”¹ã€åˆ é™¤ã€è¡¥å……è€Œä¸ç»ç”¨æˆ·åŒæ„çš„æƒåŠ›ï¼Œè¯¥å£°æ˜Žæœ€ç»ˆè§£é‡Šæƒå½’æœ¬è½¯ä»¶å¼€å‘è€…æ‰€æœ‰ã€‚" +
+                    "\nå¯¹äºŽæ­¤è½¯ä»¶çš„åˆ†æ”¯äº§ç”Ÿçš„é—®é¢˜ï¼Œæ­¤è½¯ä»¶çš„æºå¼€å‘è€…ï¼ˆXdows Softwareï¼‰ä¸æ‰¿æ‹…ä»»ä½•è´£ä»»ã€‚" +
+                    "\nå½“æ‚¨é€šè¿‡ä»»ä½•æ–¹å¼ä½¿ç”¨è¯¥å¼•æ“Žæ—¶åˆ™è¡¨ç¤ºåŒæ„å¹¶æŽ¥å—è¯¥å£°æ˜Žï¼Œå¦‚æžœæ‚¨ä¸æŽ¥å—è¯·è‡ªè¡Œå…³é—­æ­¤å¼•æ“Žæˆ–åœæ­¢ä½¿ç”¨å¹¶åˆ é™¤è¯¥è½¯ä»¶ã€‚",
+                    PrimaryButtonText = "ç¡®å®š",
                     XamlRoot = this.XamlRoot,
-                    RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                    RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                     PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 }.ShowAsync();
             }
@@ -283,7 +283,7 @@ namespace Xdows_Security
                     var settings = ApplicationData.Current.LocalSettings;
                     settings.Values["AppBackdrop"] = backdropType;
 
-                    // Ó¦ÓÃÐÂ±³¾°
+                    // åº”ç”¨æ–°èƒŒæ™¯
                     if (App.MainWindow != null)
                     {
                         App.MainWindow.ApplyBackdrop(backdropType);

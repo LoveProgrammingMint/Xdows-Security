@@ -123,7 +123,7 @@ namespace Xdows.Protection
             {
                 if (
                     e.FullPath.Contains("\\AppData\\Local\\Temp", StringComparison.OrdinalIgnoreCase) ||
-                    string.Concat(e.FullPath.EnumerateRunes().Reverse().Take(6).Reverse()) == ".virus" ||
+                    Path.GetExtension(e.FullPath).Equals(".virus", StringComparison.OrdinalIgnoreCase) ||
                     !IsFileAccessible(e.FullPath) ||
                     SouXiaoEngine == null
                 )

@@ -64,14 +64,17 @@ namespace Xdows.ScanEngine
         }
         //public static string SignedAndValid = string.Empty;
 
+        private static readonly System.Net.Http.HttpClient s_httpClient = new System.Net.Http.HttpClient { Timeout = TimeSpan.FromSeconds(10) };
         public static async Task<(int statusCode, string? result)> CzkCloudScanAsync(string path, string apiKey)
         {
-            using var client = new HttpClient();
+            var client = s_httpClient;
             string hash = await GetFileMD5Async(path);
             string url = $"https://cv.szczk.top/scan/{apiKey}/{hash}";
             try
             {
-                string json = await client.GetStringAsync(url);
+                var resp = await client.GetAsync(url);
+                resp.EnsureSuccessStatusCode();
+                string json = await resp.Content.ReadAsStringAsync();
                 using JsonDocument doc = JsonDocument.Parse(json);
                 if (doc.RootElement.TryGetProperty("result", out JsonElement prop))
                     return (200, prop.GetString());
@@ -85,12 +88,14 @@ namespace Xdows.ScanEngine
         }
         public static async Task<(int statusCode, string? result)> CloudScanAsync(string path)
         {
-            using var client = new HttpClient();
+            var client = s_httpClient;
             string hash = await GetFileMD5Async(path);
             string url = $"http://103.118.245.82:5000/scan/md5?key=my_virus_key_2024&md5={hash}";
             try
             {
-                string json = await client.GetStringAsync(url);
+                var resp = await client.GetAsync(url);
+                resp.EnsureSuccessStatusCode();
+                string json = await resp.Content.ReadAsStringAsync();
                 using JsonDocument doc = JsonDocument.Parse(json);
                 if (doc.RootElement.TryGetProperty("scan_result", out JsonElement prop))
                     return (200, prop.GetString());

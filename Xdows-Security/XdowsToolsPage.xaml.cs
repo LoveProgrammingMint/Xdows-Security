@@ -49,7 +49,7 @@ namespace Xdows_Security
                     Title = "刷新失败",
                     Content = ex.Message,
                     CloseButtonText = "确定",
-                    RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                    RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                     XamlRoot = XamlRoot
                 };
 
@@ -141,7 +141,7 @@ namespace Xdows_Security
                 CloseButtonText = "关闭",
                 XamlRoot = XamlRoot,
                 PrimaryButtonText = "定位文件",
-                RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                 CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
             };
 
@@ -155,8 +155,9 @@ namespace Xdows_Security
                     var psi = new System.Diagnostics.ProcessStartInfo
                     {
                         FileName = "explorer.exe",
-                        Arguments = $"/select,\"{filePath}\""
                     };
+                    var safeFilePath = filePath.Replace("\"", "\\\"");
+                    psi.Arguments = $"/select,\"{safeFilePath}\"";
                     System.Diagnostics.Process.Start(psi);
                 }
                 catch (Exception ex)
@@ -166,7 +167,7 @@ namespace Xdows_Security
                         Title = "无法定位文件",
                         Content = $"无法定位文件，因为{ex.Message}",
                         CloseButtonText = "确定",
-                        RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                        RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                         XamlRoot = this.XamlRoot,
                         CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                     }.ShowAsync();
@@ -206,7 +207,7 @@ namespace Xdows_Security
                 PrimaryButtonText = "结束",
                 CloseButtonText = "取消",
                 XamlRoot = XamlRoot,
-                RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                 PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
             };
             if (await confirm.ShowAsync() != ContentDialogResult.Primary) return;
@@ -224,7 +225,7 @@ namespace Xdows_Security
                     Title = "结束失败",
                     Content = $"不能结束这个进程，因为 {result.Error}。",
                     CloseButtonText = "确定",
-                    RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                    RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                     XamlRoot = XamlRoot,
                     CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 }.ShowAsync();
@@ -338,7 +339,7 @@ namespace Xdows_Security
                 PrimaryButtonText = "添加",
                 CloseButtonText = "取消",
                 XamlRoot = XamlRoot,
-                RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme
+                RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default
             };
 
             if (await dialog.ShowAsync() == ContentDialogResult.Primary)
@@ -371,7 +372,7 @@ namespace Xdows_Security
                 PrimaryButtonText = "删除",
                 CloseButtonText = "取消",
                 XamlRoot = XamlRoot,
-                RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme
+                RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default
             };
 
             if (await confirm.ShowAsync() == ContentDialogResult.Primary)
@@ -409,7 +410,7 @@ namespace Xdows_Security
                 PrimaryButtonText = "保存",
                 CloseButtonText = "取消",
                 XamlRoot = XamlRoot,
-                RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme
+                RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default
             };
 
             if (await dialog.ShowAsync() == ContentDialogResult.Primary)

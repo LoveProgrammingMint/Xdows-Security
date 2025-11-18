@@ -133,13 +133,13 @@
     <value>Xdows Tools</value>
   </data>
   <data name="HomePage_TextBlock_Open" xml:space="preserve">
-    <value>You are protection</value>
+    <value>You are protected</value>
   </data>
   <data name="SettingsPage_Other_CheckUpdate.Header" xml:space="preserve">
     <value>Check for Updates</value>
   </data>
   <data name="SettingsPage_Other_CheckUpdate.Description" xml:space="preserve">
-    <value>Update of the software-related components</value>
+    <value>Check for updates to software components</value>
   </data>
   <data name="SettingsPage_Appearance.Text" xml:space="preserve">
     <value>Appearance</value>
@@ -151,7 +151,7 @@
     <value>Select the application theme to display</value>
   </data>
   <data name="SettingsPage_Appearance_Theme_ComboBox_System.Content" xml:space="preserve">
-    <value>Use system setting</value>
+    <value>Use system settings</value>
   </data>
   <data name="SettingsPage_Appearance_Theme_ComboBox_Light.Content" xml:space="preserve">
     <value>Light</value>
@@ -166,7 +166,7 @@
     <value>Xdows Local Engine</value>
   </data>
   <data name="SettingsPage_Scan_Local.Description" xml:space="preserve">
-    <value>The local integrated engine is relatively fast but may not promptly detect new threats</value>
+    <value>The built-in local engine is fast but may not detect the latest threats promptly.</value>
   </data>
   <data name="SettingsPage_Scan_Local_DeepScan.Header" xml:space="preserve">
     <value>Deep Scan</value>
@@ -196,13 +196,13 @@
     <value>Block programs during high-risk operations</value>
   </data>
   <data name="SettingsPage_Protection_Boot.Description" xml:space="preserve">
-    <value>Fix boot sector upon malicious tampering</value>
+    <value>Attempt to repair the boot sector if it is tampered with.</value>
   </data>
   <data name="SettingsPage_Protection_Files.Description" xml:space="preserve">
-    <value>Scan after modification or creation for security</value>
+    <value>Scan files after they are created or modified to ensure they are safe.</value>
   </data>
   <data name="SettingsPage_Protection_Process.Description" xml:space="preserve">
-    <value>Scan files before execution for safety</value>
+    <value>Scan files before execution to ensure they are safe.</value>
   </data>
   <data name="SettingsPage_Protection_Registry.Description" xml:space="preserve">
     <value>Restore registry if maliciously altered</value>
@@ -211,22 +211,22 @@
     <value>Allow deep scan</value>
   </data>
   <data name="SettingsPage_Protection_Process_DeepScan.Description" xml:space="preserve">
-    <value>Prompt for deep scan during scanning if suspicious files</value>
+    <value>Prompt to perform a deep scan when suspicious files are detected.</value>
   </data>
   <data name="SettingsPage_Protection_Files_AllFiles.Header" xml:space="preserve">
     <value>Scan all files</value>
   </data>
   <data name="SettingsPage_Protection_Files_AllFiles.Description" xml:space="preserve">
-    <value>Default scans only high-risk directories</value>
+    <value>By default, only high-risk directories are scanned.</value>
   </data>
   <data name="SettingsPage_Protection_Behavior_Remote.Description" xml:space="preserve">
     <value>May impact some remote control software</value>
   </data>
   <data name="SettingsPage_Protection_Behavior_Remote.Header" xml:space="preserve">
-    <value>Remote command exec</value>
+    <value>Remote command execution</value>
   </data>
   <data name="SettingsPage_Protection_Behavior_URL.Description" xml:space="preserve">
-    <value>May cause false positives or affect system</value>
+    <value>May cause false positives or affect system stability.</value>
   </data>
   <data name="SettingsPage_Protection_Behavior_URL.Header" xml:space="preserve">
     <value>Access unknown URLs</value>
@@ -241,28 +241,28 @@
     <value>Restore boot backup</value>
   </data>
   <data name="SettingsPage_Protection_Boot_Save.Description" xml:space="preserve">
-    <value>Saves current system boot sector to path</value>
+    <value>Save the current system boot sector to a file.</value>
   </data>
   <data name="SettingsPage_Protection_Boot_Save_Button.Content" xml:space="preserve">
-    <value>Save  File</value>
+    <value>Save File</value>
   </data>
   <data name="SettingsPage_Protection_Boot_Open_Button.Content" xml:space="preserve">
     <value>Open File</value>
   </data>
   <data name="SettingsPage_Protection_Registry_Others.Header" xml:space="preserve">
-    <value>Protect misc items</value>
+    <value>Protect miscellaneous items</value>
   </data>
   <data name="SettingsPage_Protection_Registry_Others.Description" xml:space="preserve">
-    <value>May cause interface display issues only</value>
+    <value>Some registry changes may not affect functionality but can cause UI display issues.</value>
   </data>
   <data name="SettingsPage_Protection_Registry_Secondary.Header" xml:space="preserve">
-    <value>Protect aux functions</value>
+    <value>Protect auxiliary features</value>
   </data>
   <data name="SettingsPage_Protection_Registry_Secondary.Description" xml:space="preserve">
-    <value>Secures registry for secondary features</value>
+    <value>Protects registry entries used by auxiliary features.</value>
   </data>
   <data name="SettingsPage_Other.Text" xml:space="preserve">
-    <value>Others</value>
+    <value>Other</value>
   </data>
   <data name="SettingsPage_Other_Language.Description" xml:space="preserve">
     <value>Change the display language of the application</value>
@@ -292,7 +292,7 @@
     <value>Website</value>
   </data>
   <data name="AllPage_OpenLink.Content" xml:space="preserve">
-    <value>Open the Link</value>
+    <value>Open Link</value>
   </data>
   <data name="Button_Confirm" xml:space="preserve">
     <value>Confirm</value>
@@ -301,7 +301,7 @@
     <value>This is the latest version</value>
   </data>
   <data name="SettingsPage_Other_CheckUpdate_UpdateTeachingTip.Subtitle" xml:space="preserve">
-    <value>This software is currently not updated on this device</value>
+    <value>This software is up to date on this device</value>
   </data>
   <data name="SettingsPage_Appearance_Backdrop.Header" xml:space="preserve">
     <value>Background Material</value>
@@ -334,7 +334,7 @@
     <value>Extra Data</value>
   </data>
   <data name="SettingsPage_Scan_Local_ExtraData.Description" xml:space="preserve">
-    <value>The selection competition for the addition of extra data in the virus name</value>
+    <value>Add extra metadata to detected virus names</value>
   </data>
   <data name="HomePage_Pomes" xml:space="preserve">
     <value>Light—cosmic dot; black hole its plotted ellipsis.
@@ -400,7 +400,7 @@ Why not try XIGUA Security?</value>
     <value>Number of Threats: </value>
   </data>
   <data name="AllPage_Status" xml:space="preserve">
-    <value>Enable,Disabled</value>
+    <value>Enabled, Disabled</value>
   </data>
   <data name="AllPage_Undefined.Text" xml:space="preserve">
     <value>Undefined</value>
@@ -408,27 +408,21 @@ Why not try XIGUA Security?</value>
   <data name="SettingsPage_Scan_SouXiao.Header" xml:space="preserve">
     <value>SouXiao Engine</value>
   </data>
-  <data name="SettingsPage_Scan_SouXiao.Description" xml:space="preserve">
-    <value>The SouXiao scanning engine is from a third party, which improves the detection rate</value>
-  </data>
   <data name="SettingsPage_Scan_SouXiao_Develop.Description" xml:space="preserve">
     <value>Mint is the developer and maintainer of this scanning engine</value>
   </data>
-  <data name="SettingsPage_Scan_SouXiao_Develop.Header" xml:space="preserve">
-    <value>About this Engine</value>
-  </data>
   <data name="SettingsPage_Appearance_Backdrop_Opacity.Description" xml:space="preserve">
     <value>Modify the opacity of the main window</value>
-  </data>
-  <data name="SettingsPage_Appearance_Backdrop_Opacity.Header" xml:space="preserve">
-    <value>Opacity</value>
   </data>
   <data name="SettingsPage_Scan_CzkCloud.Header" xml:space="preserve">
     <value>CzkCloud Engine</value>
   </data>
   <data name="SettingsPage_Scan_CzkCloud.Description" xml:space="preserve">
-    <value>Connecting to the cloud engine improves detection and accuracy but requires internet access</value>
+    <value>Connecting to the cloud engine improves detection accuracy but requires an internet connection.</value>
   </data>
+    <data name="SettingsPage_Scan_SouXiao.Description" xml:space="preserve">
+      <value>The SouXiao scanning engine is provided by a third party and can improve detection rates.</value>
+    </data>
   <data name="SettingsPage_Scan_CzkCloud_Develop.Header" xml:space="preserve">
     <value>About this Engine</value>
   </data>
@@ -442,10 +436,10 @@ Why not try XIGUA Security?</value>
     <value>Automatic reporting</value>
   </data>
   <data name="SettingsPage_Scan_Cloud.Description" xml:space="preserve">
-    <value>Cloud engine needs internet to detect and respond to latest threats in real time.</value>
+    <value>The cloud engine requires an internet connection to detect and respond to the latest threats in real time.</value>
   </data>
   <data name="SettingsPage_Scan_Cloud_AutoUpload.Description" xml:space="preserve">
-    <value>During the testing phase, this option is required</value>
+    <value>This option is required during the testing phase.</value>
   </data>
   <data name="SettingsPage_Other_Feedback.Header" xml:space="preserve">
     <value>Feedback Channel</value>
@@ -466,9 +460,9 @@ Why not try XIGUA Security?</value>
     <value>Set the position and orientation of the navigation bar</value>
   </data>
   <data name="SettingsPage_Appearance_Nav_Top.Content" xml:space="preserve">
-    <value>Top side</value>
+    <value>Top</value>
   </data>
   <data name="SettingsPage_Appearance_Nav_Left.Content" xml:space="preserve">
-    <value>Left side</value>
+    <value>Left</value>
   </data>
 </root>

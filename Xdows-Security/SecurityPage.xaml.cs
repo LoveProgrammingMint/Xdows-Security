@@ -185,15 +185,15 @@ namespace Xdows_Security
             bool UseCloudScan = (settings.Values["CloudScan"] as bool?).GetValueOrDefault();
             bool UseSouXiaoScan = (settings.Values["SouXiaoScan"] as bool?).GetValueOrDefault();
 
-            if (!UseLocalScan && !UseCzkCloudScan && !UseSouXiaoScan && !UseCloudScan)
+                if (!UseLocalScan && !UseCzkCloudScan && !UseSouXiaoScan && !UseCloudScan)
             {
-                var dialog = new ContentDialog
-                {
+                    var dialog = new ContentDialog
+                    {
                     Title = "当前没有选择扫描引擎",
                     Content = "请转到 设置 - 扫描引擎 选择一个引擎。",
                     PrimaryButtonText = "确定",
                     XamlRoot = this.XamlRoot,
-                    RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                    RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                     PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 }.ShowAsync();
                 return;
@@ -270,7 +270,7 @@ namespace Xdows_Security
                 CloseButtonText = "取消",
                 DefaultButton = ContentDialogButton.Primary,
                 XamlRoot = this.XamlRoot,
-                RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                 Width = 600,
                 Height = 450
             };
@@ -292,8 +292,8 @@ namespace Xdows_Security
                 if (listView.ItemsSource is ObservableCollection<MoreScanItem> items)
                 {
                     items.Remove(item);
+                    }
                 }
-            }
             else
             {
             }
@@ -343,7 +343,7 @@ namespace Xdows_Security
                     Content = $"该路径已在列表中：{path}",
                     CloseButtonText = "确定",
                     XamlRoot = this.XamlRoot,
-                    RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme
+                    RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default
                 }.ShowAsync();
                 return;
             }
@@ -398,7 +398,7 @@ namespace Xdows_Security
             {
                 if (!SouXiaoEngine.Initialize())
                 {
-                    _dispatcherQueue.TryEnqueue(() =>
+                    _dispatcherQueue.TryEnqueue(async () =>
                     {
                         var dialog = new ContentDialog
                         {
@@ -406,9 +406,10 @@ namespace Xdows_Security
                             Content = "请转到 设置 - 扫描引擎 取消这个引擎的选中。",
                             PrimaryButtonText = "确定",
                             XamlRoot = this.XamlRoot,
-                            RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                            RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                             PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
-                        }.ShowAsync();
+                        };
+                        await dialog.ShowAsync();
                     });
                     return;
                 }
@@ -741,8 +742,8 @@ namespace Xdows_Security
                 Content = $"确定要删除此文件\n{row.FilePath}\n这将永久删除文件，无法恢复",
                 PrimaryButtonText = "删除",
                 CloseButtonText = "取消",
-                XamlRoot = this.XamlRoot,
-                RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                        XamlRoot = this.XamlRoot,
+                        RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                 PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
             };
             if (await dialog.ShowAsync() == ContentDialogResult.Primary)
@@ -766,7 +767,7 @@ namespace Xdows_Security
                         Title = "删除失败",
                         Content = ex.Message,
                         CloseButtonText = "确定",
-                        RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                        RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                         XamlRoot = this.XamlRoot,
                         CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                     }.ShowAsync();
@@ -821,7 +822,7 @@ namespace Xdows_Security
                     PrimaryButtonText = "定位文件",
                     CloseButtonText = "确定",
                     XamlRoot = this.XamlRoot,
-                    RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                        RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                     CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 };
                 if (await dialog.ShowAsync() == ContentDialogResult.Primary)
@@ -835,8 +836,9 @@ namespace Xdows_Security
                         var psi = new System.Diagnostics.ProcessStartInfo
                         {
                             FileName = "explorer.exe",
-                            Arguments = $"/select,\"{filePath}\""
                         };
+                        var safeFilePath = filePath.Replace("\"", "\\\"");
+                        psi.Arguments = $"/select,\"{safeFilePath}\"";
                         System.Diagnostics.Process.Start(psi);
                     }
                     catch (Exception ex)
@@ -846,7 +848,7 @@ namespace Xdows_Security
                             Title = "无法定位文件",
                             Content = $"无法定位文件，因为{ex.Message}",
                             CloseButtonText = "确定",
-                            RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                            RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                             XamlRoot = this.XamlRoot,
                             CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                         }.ShowAsync();
@@ -863,7 +865,7 @@ namespace Xdows_Security
                     Content = ex.Message,
                     CloseButtonText = "确定",
                     XamlRoot = this.XamlRoot,
-                    RequestedTheme = ((FrameworkElement)XamlRoot.Content).RequestedTheme,
+                    RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                     CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 }.ShowAsync();
             }

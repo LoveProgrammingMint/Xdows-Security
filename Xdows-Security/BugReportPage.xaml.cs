@@ -232,8 +232,9 @@ namespace Xdows_Security
                     var psi = new System.Diagnostics.ProcessStartInfo
                     {
                         FileName = "explorer.exe",
-                        Arguments = $"/select,\"{target}\""
                     };
+                    var safeTarget = target.Replace("\"", "\\\"");
+                    psi.Arguments = $"/select,\"{safeTarget}\"";
                     System.Diagnostics.Process.Start(psi);
                 }
 

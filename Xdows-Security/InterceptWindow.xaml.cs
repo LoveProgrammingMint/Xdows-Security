@@ -21,29 +21,50 @@ namespace Xdows_Security
         private void SetFileInfo(string path)
         {
             _originalFilePath = path;
-            _virusFilePath = path + (File.Exists(path) ? "" : ".virus");
+            if (File.Exists(path))
+                _virusFilePath = path;
+            else if (File.Exists(path + ".virus"))
+                _virusFilePath = path + ".virus";
+            else
+                _virusFilePath = path;
             System.Diagnostics.Debug.WriteLine(_virusFilePath);
             ProcessPath.Text = path;
             ProcessName.Text = System.IO.Path.GetFileName(path);
             
             try
             {
-                var fileInfo = new FileInfo(_virusFilePath);
-                ModifyDate.Text = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
+                if (File.Exists(_virusFilePath))
+                {
+                    var fileInfo = new FileInfo(_virusFilePath);
+                    ModifyDate.Text = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
+                }
+                else
+                {
+                    ModifyDate.Text = "æœªçŸ¥";
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                ModifyDate.Text = "Î´Öª";
+                ModifyDate.Text = "æœªçŸ¥";
+                LogText.AddNewLog(3, "InterceptWindow - SetFileInfo", ex.Message);
             }
             
-            SecurityAdvice.Text = "¼ì²âµ½¿ÉÒÉ³ÌĞò£¬½¨ÒéÁ¢¼´É¾³ı»ò¸ôÀë´¦Àí¡£";
+            SecurityAdvice.Text = "ï¿½ï¿½âµ½ï¿½ï¿½ï¿½É³ï¿½ï¿½ò£¬½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë´¦ï¿½ï¿½ï¿½ï¿½";
             
             try
             {
-                FileIcon.Source = SetIcon(_virusFilePath);
+                if (File.Exists(_virusFilePath))
+                {
+                    FileIcon.Source = SetIcon(_virusFilePath);
+                }
+                else
+                {
+                    // fallback: keep default or placeholder icon
+                }
             }
-            catch
+            catch (Exception ex)
             {
+                LogText.AddNewLog(3, "InterceptWindow - LoadIcon", ex.Message);
             }
         }
 
@@ -98,21 +119,22 @@ namespace Xdows_Security
         {
             try
             {
-                // É¾³ı .virus ÎÄ¼ş
+                // É¾ï¿½ï¿½ .virus ï¿½Ä¼ï¿½
                 if (File.Exists(_virusFilePath))
                 {
                     File.Delete(_virusFilePath);
-                    await ShowMessageDialog("É¾³ı³É¹¦", "ÎÄ¼şÒÑ³É¹¦É¾³ı¡£");
+                    await ShowMessageDialog("É¾ï¿½ï¿½ï¿½É¹ï¿½", "ï¿½Ä¼ï¿½ï¿½Ñ³É¹ï¿½É¾ï¿½ï¿½ï¿½ï¿½");
                     this.Close();
                 }
                 else
                 {
-                    await ShowMessageDialog("ÎÄ¼ş²»´æÔÚ", "ÒªÉ¾³ıµÄÎÄ¼ş²»´æÔÚ¡£");
+                    await ShowMessageDialog("ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", "ÒªÉ¾ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¡ï¿½");
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageDialog("É¾³ıÊ§°Ü", $"É¾³ıÎÄ¼şÊ±³ö´í£º{ex.Message}");
+                await ShowMessageDialog("åˆ é™¤å¤±è´¥", $"åˆ é™¤æ–‡ä»¶æ—¶å‡ºé”™ï¼š{ex.Message}ã€‚è¯·ç¡®è®¤æ‚¨æœ‰è¶³å¤Ÿæƒé™æˆ–æ–‡ä»¶æœªè¢«å ç”¨ã€‚");
+                LogText.AddNewLog(3, "InterceptWindow - DeleteFile - Failed", ex.ToString());
             }
         }
 
@@ -122,10 +144,10 @@ namespace Xdows_Security
             {
                 if (File.Exists(_virusFilePath))
                 {
-                    // »Ö¸´ÎÄ¼ş£ºÉ¾³ı .virus ºó×º
+                    // ï¿½Ö¸ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½É¾ï¿½ï¿½ .virus ï¿½ï¿½×º
                     string restoredPath = _virusFilePath.Replace(".virus", "");
                     
-                    // Èç¹ûÔ­ÎÄ¼şÒÑ´æÔÚ£¬ÏÈÉ¾³ı
+                    // ï¿½ï¿½ï¿½Ô­ï¿½Ä¼ï¿½ï¿½Ñ´ï¿½ï¿½Ú£ï¿½ï¿½ï¿½É¾ï¿½ï¿½
                     if (File.Exists(restoredPath))
                     {
                         File.Delete(restoredPath);
@@ -133,28 +155,29 @@ namespace Xdows_Security
                     
                     File.Move(_virusFilePath, restoredPath);
                     
-                    await ShowMessageDialog("»Ö¸´³É¹¦", "ÎÄ¼şÒÑ³É¹¦»Ö¸´¡£");
+                    await ShowMessageDialog("ï¿½Ö¸ï¿½ï¿½É¹ï¿½", "ï¿½Ä¼ï¿½ï¿½Ñ³É¹ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½");
                     this.Close();
                 }
                 else
                 {
-                    await ShowMessageDialog("ÎÄ¼ş²»´æÔÚ", "Òª»Ö¸´µÄÎÄ¼ş²»´æÔÚ¡£");
+                    await ShowMessageDialog("ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", "Òªï¿½Ö¸ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¡ï¿½");
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageDialog("»Ö¸´Ê§°Ü", $"»Ö¸´ÎÄ¼şÊ±³ö´í£º{ex.Message}");
+                await ShowMessageDialog("æ¢å¤å¤±è´¥", $"æ¢å¤æ–‡ä»¶æ—¶å‡ºé”™ï¼š{ex.Message}ã€‚è¯·ç¡®è®¤æ‚¨æœ‰è¶³å¤Ÿæƒé™ã€‚\n{ex.Message}");
+                LogText.AddNewLog(3, "InterceptWindow - RestoreFile - Failed", ex.ToString());
             }
         }
 
         private async void DisableProtection()
         {
-            var result = await ShowConfirmationDialog("¹Ø±Õ·À»¤", 
-                "È·¶¨Òª¹Ø±Õ°²È«·À»¤Âğ£¿Õâ½«Ê¹ÄúµÄÏµÍ³ÃæÁÙ°²È«·çÏÕ¡£");
+            var result = await ShowConfirmationDialog("ï¿½Ø±Õ·ï¿½ï¿½ï¿½", 
+                "È·ï¿½ï¿½Òªï¿½Ø±Õ°ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â½«Ê¹ï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½ï¿½ï¿½Ù°ï¿½È«ï¿½ï¿½ï¿½Õ¡ï¿½");
             
             if (result)
             {
-                await ShowMessageDialog("·À»¤ÒÑ¹Ø±Õ", "°²È«·À»¤ÒÑÔİÊ±¹Ø±Õ¡£");
+                await ShowMessageDialog("ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¹Ø±ï¿½", "ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Ø±Õ¡ï¿½");
                 this.Close();
             }
         }
@@ -165,8 +188,8 @@ namespace Xdows_Security
             {
                 Title = title,
                 Content = message,
-                PrimaryButtonText = "È·¶¨",
-                SecondaryButtonText = "È¡Ïû",
+                PrimaryButtonText = "È·ï¿½ï¿½",
+                SecondaryButtonText = "È¡ï¿½ï¿½",
                 XamlRoot = this.Content.XamlRoot
             };
 
@@ -180,7 +203,7 @@ namespace Xdows_Security
             {
                 Title = title,
                 Content = message,
-                PrimaryButtonText = "È·¶¨",
+                PrimaryButtonText = "È·ï¿½ï¿½",
                 XamlRoot = this.Content.XamlRoot
             };
 

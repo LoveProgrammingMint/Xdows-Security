@@ -400,7 +400,7 @@ Why not try XIGUA Security?</value>
     <value>Number of Threats: </value>
   </data>
   <data name="AllPage_Status" xml:space="preserve">
-    <value>Enabled, Disabled</value>
+    <value>Enabled,Disabled</value>
   </data>
   <data name="AllPage_Undefined.Text" xml:space="preserve">
     <value>Undefined</value>
@@ -420,9 +420,9 @@ Why not try XIGUA Security?</value>
   <data name="SettingsPage_Scan_CzkCloud.Description" xml:space="preserve">
     <value>Connecting to the cloud engine improves detection accuracy but requires an internet connection.</value>
   </data>
-    <data name="SettingsPage_Scan_SouXiao.Description" xml:space="preserve">
-      <value>The SouXiao scanning engine is provided by a third party and can improve detection rates.</value>
-    </data>
+  <data name="SettingsPage_Scan_SouXiao.Description" xml:space="preserve">
+    <value>The SouXiao scanning engine is provided by a third party and can improve detection rates.</value>
+  </data>
   <data name="SettingsPage_Scan_CzkCloud_Develop.Header" xml:space="preserve">
     <value>About this Engine</value>
   </data>
@@ -453,6 +453,63 @@ Why not try XIGUA Security?</value>
   <data name="HomePage_CopySystemInfo.Content" xml:space="preserve">
     <value>Copy System Info</value>
   </data>
+  <data name="HomePage_RefreshPomes.Content" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="HomePage_Scan.Text" xml:space="preserve">
+    <value>Scan Statistics</value>
+  </data>
+  <data name="HomePage_TotalScans.Text" xml:space="preserve">
+    <value>Total Scans</value>
+  </data>
+  <data name="HomePage_TotalThreats.Text" xml:space="preserve">
+    <value>Threats Found</value>
+  </data>
+  <data name="HomePage_RefreshStatistics.Content" xml:space="preserve">
+    <value>Refresh stats</value>
+  </data>
+  <data name="HomePage_LogsHeader.Text" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="HomePage_ClearLog.Content" xml:space="preserve">
+    <value>Clear log</value>
+  </data>
+  <data name="HomePage_ExportLog.Content" xml:space="preserve">
+    <value>Export log</value>
+  </data>
+  <data name="HomePage_LogFilter.Content" xml:space="preserve">
+    <value>Filter logs</value>
+  </data>
+  <data name="HomePage_LogFilter_All.Text" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="HomePage_LogFilter_Undefined.Text" xml:space="preserve">
+    <value>Undefined</value>
+  </data>
+  <data name="HomePage_LogFilter_Debug.Text" xml:space="preserve">
+    <value>Debug</value>
+  </data>
+  <data name="HomePage_LogFilter_Info.Text" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="HomePage_LogFilter_Warn.Text" xml:space="preserve">
+    <value>Warn</value>
+  </data>
+  <data name="HomePage_LogFilter_Error.Text" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="HomePage_LogFilter_Fatal.Text" xml:space="preserve">
+    <value>Fatal</value>
+  </data>
+  <data name="HomePage_GetFailed.Text" xml:space="preserve">
+    <value>Unavailable</value>
+  </data>
+  <data name="HomePage_ExportLog_SaveDialog_Title" xml:space="preserve">
+    <value>Save log</value>
+  </data>
+  <data name="HomePage_ExportLog_Filter_Name" xml:space="preserve">
+    <value>Log files</value>
+  </data>
   <data name="SettingsPage_Appearance_Nav.Header" xml:space="preserve">
     <value>Navigation Position</value>
   </data>
@@ -464,5 +521,11 @@ Why not try XIGUA Security?</value>
   </data>
   <data name="SettingsPage_Appearance_Nav_Left.Content" xml:space="preserve">
     <value>Left</value>
+  </data>
+  <data name="SettingsPage_Scan_SouXiao_Develop.Header" xml:space="preserve">
+    <value>About this Engine</value>
+  </data>
+  <data name="SettingsPage_Appearance_Backdrop_Opacity.Header" xml:space="preserve">
+    <value>Opacity</value>
   </data>
 </root>

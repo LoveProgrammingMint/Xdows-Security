@@ -459,6 +459,63 @@
   <data name="HomePage_CopySystemInfo.Content" xml:space="preserve">
     <value>复制系统信息</value>
   </data>
+  <data name="HomePage_RefreshPomes.Content" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="HomePage_Scan.Text" xml:space="preserve">
+    <value>扫描统计</value>
+  </data>
+  <data name="HomePage_TotalScans.Text" xml:space="preserve">
+    <value>总扫描数</value>
+  </data>
+  <data name="HomePage_TotalThreats.Text" xml:space="preserve">
+    <value>发现威胁</value>
+  </data>
+  <data name="HomePage_RefreshStatistics.Content" xml:space="preserve">
+    <value>刷新统计信息</value>
+  </data>
+  <data name="HomePage_LogsHeader.Text" xml:space="preserve">
+    <value>运行日志</value>
+  </data>
+  <data name="HomePage_ClearLog.Content" xml:space="preserve">
+    <value>清空日志</value>
+  </data>
+  <data name="HomePage_ExportLog.Content" xml:space="preserve">
+    <value>导出日志</value>
+  </data>
+  <data name="HomePage_LogFilter.Content" xml:space="preserve">
+    <value>筛选日志</value>
+  </data>
+  <data name="HomePage_LogFilter_All.Text" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="HomePage_LogFilter_Undefined.Text" xml:space="preserve">
+    <value>未定义</value>
+  </data>
+  <data name="HomePage_LogFilter_Debug.Text" xml:space="preserve">
+    <value>调试</value>
+  </data>
+  <data name="HomePage_LogFilter_Info.Text" xml:space="preserve">
+    <value>信息</value>
+  </data>
+  <data name="HomePage_LogFilter_Warn.Text" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="HomePage_LogFilter_Error.Text" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="HomePage_LogFilter_Fatal.Text" xml:space="preserve">
+    <value>失败</value>
+  </data>
+  <data name="HomePage_GetFailed.Text" xml:space="preserve">
+    <value>获取失败</value>
+  </data>
+  <data name="HomePage_ExportLog_SaveDialog_Title" xml:space="preserve">
+    <value>保存日志</value>
+  </data>
+  <data name="HomePage_ExportLog_Filter_Name" xml:space="preserve">
+    <value>日志文件</value>
+  </data>
   <data name="SettingsPage_Appearance_Nav.Header" xml:space="preserve">
     <value>导航栏位置</value>
   </data>

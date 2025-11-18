@@ -18,15 +18,15 @@
             <StackPanel Margin="24,16,0,0" Orientation="Vertical">
                 <TextBlock Margin="0,12,0,0" x:Name="HomePage_TextBlock" FontSize="28" FontWeight="Bold"/>
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                    <TextBlock x:Name="HomePage_Pomes"
+                                        <TextBlock x:Name="HomePage_Pomes"
                       Style="{StaticResource BodyTextBlockStyle}"
                       VerticalAlignment="Center"
                       IsTextSelectionEnabled="True" />
 
-                    <Button Content="刷新"
-                Click="RefreshPomes_Click"
-                            Height="32"
-                Margin="16,0,0,0"/>
+                <Button l:Uids.Uid="HomePage_RefreshPomes"
+                      Click="RefreshPomes_Click"
+                      Height="32"
+                      Margin="16,0,0,0"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
@@ -34,23 +34,23 @@
             <StackPanel Spacing="10">
                 <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
                     <StackPanel>
-                        <TextBlock Text="扫描统计" FontSize="18" FontWeight="Bold" Margin="0,0,0,8"/>
+                        <TextBlock l:Uids.Uid="HomePage_Scan" FontSize="18" FontWeight="Bold" Margin="0,0,0,8"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Grid Grid.Column="0">
-                                <TextBlock Text="总扫描数" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                <TextBlock l:Uids.Uid="HomePage_TotalScans" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center"/>
                                 <TextBlock x:Name="TotalScansText" Text="0" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,20,0,0"/>
                             </Grid>
                             <Grid Grid.Column="1">
-                                <TextBlock Text="发现威胁" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                <TextBlock l:Uids.Uid="HomePage_TotalThreats" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center"/>
                                 <TextBlock x:Name="TotalThreatsText" Text="0" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,20,0,0"/>
                             </Grid>
                         </Grid>
                         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                            <Button Grid.Row="0" Content="刷新统计信息" Click="RefreshStatistics_Click" HorizontalAlignment="Left"/>
+                            <Button l:Uids.Uid="HomePage_RefreshStatistics" Grid.Row="0" Click="RefreshStatistics_Click" HorizontalAlignment="Left"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -123,21 +123,21 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="运行日志" FontSize="18" FontWeight="Bold"/>
+                        <TextBlock l:Uids.Uid="HomePage_LogsHeader" FontSize="18" FontWeight="Bold"/>
                         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,32,0,8">
-                            <Button Content="清空日志" Click="ClearLog_Click"/>
-                            <Button Content="导出日志" Click="ExportLog_Click"/>
-                            <DropDownButton x:Name="LogLevelFilter" Content="筛选日志">
+                            <Button l:Uids.Uid="HomePage_ClearLog" Click="ClearLog_Click"/>
+                            <Button l:Uids.Uid="HomePage_ExportLog" Click="ExportLog_Click"/>
+                            <DropDownButton x:Name="LogLevelFilter" l:Uids.Uid="HomePage_LogFilter">
                                 <DropDownButton.Flyout>
                                     <MenuFlyout>
-                                        <ToggleMenuFlyoutItem Tag="All"     Text="全部"   Click="LogLevelFilter_MenuClick" IsChecked="True"/>
+                                        <ToggleMenuFlyoutItem Tag="All"     l:Uids.Uid="HomePage_LogFilter_All"       Click="LogLevelFilter_MenuClick" IsChecked="True"/>
                                         <MenuFlyoutSeparator/>
-                                        <ToggleMenuFlyoutItem Tag="UNKNOWN" Text="未定义" Click="LogLevelFilter_MenuClick" IsChecked="True"/>
-                                        <ToggleMenuFlyoutItem Tag="DEBUG"   Text="调试"   Click="LogLevelFilter_MenuClick" IsChecked="True"/>
-                                        <ToggleMenuFlyoutItem Tag="INFO"    Text="信息"   Click="LogLevelFilter_MenuClick" IsChecked="True"/>
-                                        <ToggleMenuFlyoutItem Tag="WARN"    Text="警告"   Click="LogLevelFilter_MenuClick" IsChecked="True"/>
-                                        <ToggleMenuFlyoutItem Tag="ERROR"   Text="错误"   Click="LogLevelFilter_MenuClick" IsChecked="True"/>
-                                        <ToggleMenuFlyoutItem Tag="FATAL"   Text="失败"   Click="LogLevelFilter_MenuClick" IsChecked="True"/>
+                                        <ToggleMenuFlyoutItem Tag="UNKNOWN" l:Uids.Uid="HomePage_LogFilter_Undefined" Click="LogLevelFilter_MenuClick" IsChecked="True"/>
+                                        <ToggleMenuFlyoutItem Tag="DEBUG"   l:Uids.Uid="HomePage_LogFilter_Debug"     Click="LogLevelFilter_MenuClick" IsChecked="True"/>
+                                        <ToggleMenuFlyoutItem Tag="INFO"    l:Uids.Uid="HomePage_LogFilter_Info"      Click="LogLevelFilter_MenuClick" IsChecked="True"/>
+                                        <ToggleMenuFlyoutItem Tag="WARN"    l:Uids.Uid="HomePage_LogFilter_Warn"      Click="LogLevelFilter_MenuClick" IsChecked="True"/>
+                                        <ToggleMenuFlyoutItem Tag="ERROR"   l:Uids.Uid="HomePage_LogFilter_Error"     Click="LogLevelFilter_MenuClick" IsChecked="True"/>
+                                        <ToggleMenuFlyoutItem Tag="FATAL"   l:Uids.Uid="HomePage_LogFilter_Fatal"     Click="LogLevelFilter_MenuClick" IsChecked="True"/>
                                     </MenuFlyout>
                                 </DropDownButton.Flyout>
                             </DropDownButton>

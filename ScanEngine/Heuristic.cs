@@ -1,10 +1,9 @@
 ﻿using PeNet;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
@@ -51,14 +50,51 @@ namespace Xdows.ScanEngine
                 if (code == 50)
                     return (0, string.Empty);
                 score -= code;
-
-                if (peInfo.ExportsName != null)
+                int tempScore = CheckResourceSectionForPacking(peFile);
+                if (tempScore > 0)
                 {
-                    if (DllScan.Scan(path, peInfo))
-                        suspiciousData.Add("DllVirus");
-                    score += 20;
+                    score += tempScore;
+                    suspiciousData.Add("AbnormalResources");
                 }
-
+                tempScore = CheckExceptionHandling(peFile, peInfo);
+                if (tempScore > 0)
+                {
+                    score += tempScore;
+                    suspiciousData.Add("ExceptionHandling");
+                }
+                
+                if (CheckPackingSignatures(peFile))
+                {
+                    score += 10;
+                    suspiciousData.Add("PackingSignatures");
+                }
+                if (peFile.IsDll)
+                {
+                    if (peInfo.ExportsName == null)
+                    {
+                        score += 5;
+                        suspiciousData.Add("CamouflagedDLL");
+                    }
+                    else
+                    {
+                        if (DllScan.Scan(path, peInfo)) {
+                            suspiciousData.Add("DllVirus");
+                            score += 20;
+                        }
+                    }
+                }
+                if (peFile.IsDotNet || peFile.IsDriver)
+                {
+                    score += 5;
+                }
+                if (peInfo.ImportsDll != null)
+                {
+                    if (ContainsSuspiciousApi(peInfo.ImportsDll, new[] { "KERNEL32.dll" }))
+                    {
+                        score += 5;
+                    }
+                }
+                score += peInfo.ImportsName.Length <= 50 ? 5 : -5;
                 if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "LoadLibrary" }))
                 {
                     if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "GetProcAddress" }))
@@ -97,7 +133,7 @@ namespace Xdows.ScanEngine
                     if (deepScan && ContainsSuspiciousApi(peInfo.ImportsName, new[] { "WriteFile" }) && ContainsSuspiciousContent(fileContent, new[] { "physicaldrive0" }))
                     {
                         score += 5;
-                        suspiciousData.Add("ChangeMBR");
+                        suspiciousData.Add("ModifyMBR");
                     }
                 }
 
@@ -133,7 +169,7 @@ namespace Xdows.ScanEngine
 
                         if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "MoveFile", "CopyFile" }))
                         {
-                            score += 10;
+                            score += 5;
                         }
                     }
                 }
@@ -146,14 +182,31 @@ namespace Xdows.ScanEngine
                 else if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "Hook" }))
                 {
                     suspiciousData.Add("LikeAddHook");
-                    score += 15;
+                    score += 10;
                 }
-
-                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "WriteConsole" }))
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "_"}))
                 {
                     score += 5;
                 }
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "GetLastError" }))
+                {
+                    score += 5;
+                }
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "FlushInstruction" }))
+                {
+                    score += 5;
+                }
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "WriteConsole" }))
+                {
+                    score -= 5;
+                }
+                if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "VirtualAlloc", "VirtualFree", "VirtualProtect", "VirtualQuery" }))
+                {
+                    score += 15;
+                    suspiciousData.Add("ModifyMemory");
+                    score += peInfo.ImportsName.Length <= 50 ? 15 : -10;
 
+                }
                 if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "GetModuleFileName", "GetModuleHandle" }))
                 {
                     score += 20;
@@ -249,7 +302,90 @@ namespace Xdows.ScanEngine
             // 将附加数据拼接到extra变量
             extra = string.Join(" ", suspiciousData);
 
-            return (score >= 50 ? score : 0,extra);
+            return (score, extra);
+        }
+        public static bool CheckPackingSignatures(PeFile pe)
+        {
+            var raw = pe.RawFile.ToArray();
+            if (raw.Length > 0x40 &&
+                raw[0x40] == 0x55 && raw[0x41] == 0x50 &&
+                raw[0x42] == 0x58 && raw[0x43] == 0x30)
+                return true;
+            uint ep = pe.ImageNtHeaders?.OptionalHeader.AddressOfEntryPoint ?? 0;
+            if (ep > raw.Length * 0.8)
+                return true;
+
+            return false;
+        }
+        public static int CheckResourceSectionForPacking(PeFile pe)
+        {
+            int score = 0;
+            var resRva = pe.ImageNtHeaders?.OptionalHeader.DataDirectory[2].VirtualAddress ?? 0;
+            if (resRva == 0) score += 10;
+            else if (resRva < 4096) score += 5;
+            var rsrc = pe.ImageSectionHeaders?
+                         .FirstOrDefault(s => s.Name
+                                             .TrimEnd('\0')
+                                             .Equals(".rsrc", StringComparison.OrdinalIgnoreCase));
+            if (rsrc != null)
+            {
+                if (rsrc.VirtualSize == 0 || rsrc.SizeOfRawData == 0)
+                    score += 10;
+                else if (rsrc.VirtualSize > 1024 * 1024)
+                    score += 5;
+                else if (rsrc.SizeOfRawData < 1024 && rsrc.VirtualSize > 1024)
+                    score += 15;
+            }
+
+            return score;
+        }
+        public static int CheckExceptionHandling(PeFile pe, PEInfo info)
+        {
+            if (info?.ImportsName == null) return 0;
+
+            int score = 0;
+
+            var exceptionAPIs = new[]
+            {
+            "vectoredexceptionhandler", "unhandledexceptionfilter",
+            "setunhandledexceptionfilter", "addvectoredexceptionhandler",
+            "removevectoredexceptionhandler", "raiseexception",
+            "rtladdvectoredexceptionhandler", "rtlremovevectoredexceptionhandler"
+        };
+
+            var antiDebugAPIs = new[]
+            {
+            "isdebuggerpresent", "checkremotedebuggerpresent",
+            "debugactiveprocess", "debugactiveprocessstop",
+            "ntqueryinformationprocess", "ntsetinformationthread",
+            "outputdebugstring", "debugbreak"
+        };
+
+            var memoryAPIs = new[]
+            {
+            "virtualprotect", "virtualprotectex", "virtuallock",
+            "virtualunlock", "fluskinstructioncache", "getwriteaccess"
+        };
+
+            foreach (var func in info.ImportsName.Select(f => f.ToLower()))
+            {
+                if (exceptionAPIs.Any(api => func.Contains(api)))
+                {
+                    score += 2;
+                }
+
+                if (antiDebugAPIs.Any(api => func.Contains(api)))
+                {
+                    score += 4;
+                }
+
+                if (memoryAPIs.Any(api => func.Contains(api)))
+                {
+                    score += 3;
+                }
+            }
+
+            return Math.Min(score, 15);
         }
         unsafe static string GetExtString(string path)
         {
@@ -265,13 +401,10 @@ namespace Xdows.ScanEngine
                 }
                 if (dot == null || dot < slash) return string.Empty;
 
-                int len = (int)(p + path.Length - dot);   // 含 "." 的长度
-                Span<char> buf = stackalloc char[len];    // 栈缓冲区
+                int len = (int)(p + path.Length - dot);
+                Span<char> buf = stackalloc char[len];
                 ReadOnlySpan<char> src = new ReadOnlySpan<char>(dot, len);
-
-                // 把转小写结果写进 buf
                 src.ToLowerInvariant(buf);
-                // 唯一一次堆分配：把 buf 变成 string
                 return buf.ToString();
             }
         }
@@ -376,7 +509,7 @@ namespace Xdows.ScanEngine
                 //}
                 //catch { }
                 if (filePath.IndexOf(@":\Windows", StringComparison.OrdinalIgnoreCase) >= 0)
-                    return 30;
+                    return 50;
                 var auth = pe.SigningAuthenticodeCertificate;
                 if (auth == null) return 0;
                 
@@ -394,13 +527,13 @@ namespace Xdows.ScanEngine
                 //if (isDeepScan && !WinTrustEx.AuthenticodeHashMatch(filePath)) return -10;
                 bool isTrusted = chain.ChainElements
                                       .Any(el => _trustedThumbprints.Contains(el.Certificate.Thumbprint));
-                if (isTrusted) return 50;
+                if (isTrusted) return 60;
 
                 if (auth.NotAfter <= DateTime.Now) return -10;
 
                 bool revoked = chain.ChainElements
                                     .Any(el => el.ChainElementStatus.Any(s => s.Status == X509ChainStatusFlags.Revoked));
-                if (revoked) return -10;
+                if (revoked) return -5;
 
                 return chainOk ? 5 : 0;
             }

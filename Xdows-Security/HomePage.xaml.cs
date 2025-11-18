@@ -87,8 +87,8 @@ namespace Xdows_Security
             }
             catch (Exception ex)
             {
-                OSNameText.Text = "获取失败";
-                OSVersionText.Text = "获取失败";
+                OSNameText.Text = Localizer.Get().GetLocalizedString("HomePage_GetFailed.Text");
+                OSVersionText.Text = Localizer.Get().GetLocalizedString("HomePage_GetFailed.Text");
                 LogText.AddNewLog(3, "HomePage - LoadSystemInfo", $"Cannot get SystemInfo, because: {ex.Message}");
             }
         }
@@ -131,7 +131,7 @@ namespace Xdows_Security
             var (ok, load, total, avail) = GetMemoryStatus();
             if (!ok)
             {
-                MemoryUsageText.Text = "获取失败";
+                MemoryUsageText.Text = Localizer.Get().GetLocalizedString("HomePage_GetFailed.Text");
                 return;
             }
             double t = total, a = avail, u = t - a;
@@ -195,13 +195,13 @@ namespace Xdows_Security
         {
             var dlg = new CommonSaveFileDialog
             {
-                Title = "保存日志",
+                Title = Localizer.Get().GetLocalizedString("HomePage_ExportLog_SaveDialog_Title"),
                 DefaultFileName = $"XdowsSecurity_Log_{DateTime.Now:yyyyMMdd_HHmmss}.log",
                 DefaultExtension = "log",
                 OverwritePrompt = true,
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             };
-            dlg.Filters.Add(new CommonFileDialogFilter("日志文件", "*.log"));
+            dlg.Filters.Add(new CommonFileDialogFilter(Localizer.Get().GetLocalizedString("HomePage_ExportLog_Filter_Name"), "*.log"));
 
             if (dlg.ShowDialog() == CommonFileDialogResult.Ok)
             {

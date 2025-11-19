@@ -129,6 +129,246 @@
   <data name="MainWindow_Nav_Security.Content" xml:space="preserve">
     <value>Security</value>
   </data>
+  <data name="SecurityPage_PathText_Default" xml:space="preserve">
+    <value>Scan mode: Unspecified</value>
+  </data>
+  <data name="SecurityPage_ScanItem_System" xml:space="preserve">
+    <value>System critical areas</value>
+  </data>
+  <data name="SecurityPage_ScanItem_Memory" xml:space="preserve">
+    <value>Memory processes</value>
+  </data>
+  <data name="SecurityPage_ScanItem_Startup" xml:space="preserve">
+    <value>Startup items</value>
+  </data>
+  <data name="SecurityPage_ScanItem_UserDocs" xml:space="preserve">
+    <value>User documents</value>
+  </data>
+  <data name="SecurityPage_SelectFolder_Title" xml:space="preserve">
+    <value>Select folder</value>
+  </data>
+  <data name="SecurityPage_SelectFile_Title" xml:space="preserve">
+    <value>Select file</value>
+  </data>
+  <data name="SecurityPage_GetFailed_Text" xml:space="preserve">
+    <value>Unavailable</value>
+  </data>
+  <data name="SecurityPage_ScanStatusHeader.Text" xml:space="preserve">
+    <value>Scan Status</value>
+  </data>
+  <data name="SecurityPage_CurrentScanAreaText.Text" xml:space="preserve">
+    <value>Ready to scan</value>
+  </data>
+  <data name="SecurityPage_ScanProgressDetailText.Text" xml:space="preserve">
+    <value>Waiting for user to choose scan type</value>
+  </data>
+  <data name="SecurityPage_ProgressHeader.Text" xml:space="preserve">
+    <value>Scan Progress</value>
+  </data>
+  <data name="SecurityPage_PathText.Text" xml:space="preserve">
+    <value>Select scan target</value>
+  </data>
+  <data name="SecurityPage_BackToVirusListButtonText.Text" xml:space="preserve">
+    <value>View list</value>
+  </data>
+  <data name="SecurityPage_PauseScanButtonText.Text" xml:space="preserve">
+    <value>Pause scan</value>
+  </data>
+  <data name="SecurityPage_ResumeScanButtonText.Text" xml:space="preserve">
+    <value>Resume scan</value>
+  </data>
+  <data name="SecurityPage_ScanButtonText.Text" xml:space="preserve">
+    <value>Start scan</value>
+  </data>
+  <data name="SecurityPage_ScanMenu_Quick.Text" xml:space="preserve">
+    <value>Quick scan</value>
+  </data>
+  <data name="SecurityPage_ScanMenu_Full.Text" xml:space="preserve">
+    <value>Full scan</value>
+  </data>
+  <data name="SecurityPage_ScanMenu_File.Text" xml:space="preserve">
+    <value>File scan</value>
+  </data>
+  <data name="SecurityPage_ScanMenu_Folder.Text" xml:space="preserve">
+    <value>Folder scan</value>
+  </data>
+  <data name="SecurityPage_ScanMenu_More.Text" xml:space="preserve">
+    <value>More scan</value>
+  </data>
+  <data name="SecurityPage_MenuItem_Details.Text" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="SecurityPage_MenuItem_Delete.Text" xml:space="preserve">
+    <value>Delete file</value>
+  </data>
+  <data name="SecurityPage_NoEngine_Title" xml:space="preserve">
+    <value>No scan engine selected</value>
+  </data>
+  <data name="SecurityPage_NoEngine_Content" xml:space="preserve">
+    <value>Please go to Settings - Scan Engine and select at least one engine.</value>
+  </data>
+  <data name="Button_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="SecurityPage_More_BrowseFolder" xml:space="preserve">
+    <value>Browse folder</value>
+  </data>
+  <data name="SecurityPage_More_BrowseFile" xml:space="preserve">
+    <value>Browse file</value>
+  </data>
+  <data name="SecurityPage_More_RemoveItem" xml:space="preserve">
+    <value>Remove item</value>
+  </data>
+  <data name="SecurityPage_More_ClearAll" xml:space="preserve">
+    <value>Clear all</value>
+  </data>
+  <data name="SecurityPage_MoreScan_Title" xml:space="preserve">
+    <value>More scan</value>
+  </data>
+  <data name="SecurityPage_StartScanButton" xml:space="preserve">
+    <value>Start scan</value>
+  </data>
+  <data name="SecurityPage_DuplicatePath_Title" xml:space="preserve">
+    <value>Duplicate path</value>
+  </data>
+  <data name="SecurityPage_DuplicatePath_Content" xml:space="preserve">
+    <value>The path is already in the list: {0}</value>
+  </data>
+  <data name="SecurityPage_SouXiao_InitFailed_Title" xml:space="preserve">
+    <value>Cannot initialize SouXiaoEngine</value>
+  </data>
+  <data name="SecurityPage_SouXiao_InitFailed_Content" xml:space="preserve">
+    <value>Please go to Settings - Scan Engine and uncheck this engine.</value>
+  </data>
+  <data name="SecurityPage_Status_Cancelled" xml:space="preserve">
+    <value>Selection cancelled</value>
+  </data>
+  <data name="SecurityPage_Status_Waiting" xml:space="preserve">
+    <value>Waiting</value>
+  </data>
+  <data name="SecurityPage_Status_Processing" xml:space="preserve">
+    <value>Processing files...</value>
+  </data>
+  <data name="SecurityPage_Area_Quick_Title" xml:space="preserve">
+    <value>Quick scan - critical areas</value>
+  </data>
+  <data name="SecurityPage_Area_Quick_Detail" xml:space="preserve">
+    <value>Scanning system critical files and directories</value>
+  </data>
+  <data name="SecurityPage_Area_Full_Title" xml:space="preserve">
+    <value>Full disk scan</value>
+  </data>
+  <data name="SecurityPage_Area_Full_Detail" xml:space="preserve">
+    <value>Scanning all files on all disks</value>
+  </data>
+  <data name="SecurityPage_Area_File_Title" xml:space="preserve">
+    <value>File scan</value>
+  </data>
+  <data name="SecurityPage_Area_File_Detail" xml:space="preserve">
+    <value>Scanning: {0}</value>
+  </data>
+  <data name="SecurityPage_Area_Folder_Title" xml:space="preserve">
+    <value>Folder scan</value>
+  </data>
+  <data name="SecurityPage_Area_Folder_Detail" xml:space="preserve">
+    <value>Scanning: {0}</value>
+  </data>
+  <data name="SecurityPage_Area_More_Title" xml:space="preserve">
+    <value>More scan - custom paths</value>
+  </data>
+  <data name="SecurityPage_Area_More_Detail" xml:space="preserve">
+    <value>{0} paths</value>
+  </data>
+  <data name="SecurityPage_Status_Scanning" xml:space="preserve">
+    <value>Scanning: {0}</value>
+  </data>
+  <data name="SecurityPage_Status_FoundThreat" xml:space="preserve">
+    <value>Threat found</value>
+  </data>
+  <data name="SecurityPage_ScanSpeed_Format" xml:space="preserve">
+    <value>{0:F2} files/s</value>
+  </data>
+  <data name="SecurityPage_Status_Completed" xml:space="preserve">
+    <value>Scan completed</value>
+  </data>
+  <data name="SecurityPage_ScanCompleteFound" xml:space="preserve">
+    <value>Scan completed, found {0} threats</value>
+  </data>
+  <data name="SecurityPage_ScanCancelled" xml:space="preserve">
+    <value>Scan cancelled</value>
+  </data>
+  <data name="SecurityPage_ScanFailed_Format" xml:space="preserve">
+    <value>Scan failed: {0}</value>
+  </data>
+  <data name="SecurityPage_DeleteConfirm_Title" xml:space="preserve">
+    <value>Are you sure to delete this file?</value>
+  </data>
+  <data name="SecurityPage_DeleteConfirm_Content" xml:space="preserve">
+    <value>Are you sure to delete this file\n{0}\nThis will permanently remove the file and cannot be undone</value>
+  </data>
+  <data name="SecurityPage_DeleteConfirm_Primary" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="SecurityPage_DeleteFailed_Title" xml:space="preserve">
+    <value>Delete failed</value>
+  </data>
+  <data name="SecurityPage_Details_Title" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="SecurityPage_Details_FilePath" xml:space="preserve">
+    <value>File path:</value>
+  </data>
+  <data name="SecurityPage_Details_VirusName" xml:space="preserve">
+    <value>Threat: {0}</value>
+  </data>
+  <data name="SecurityPage_Details_FileSize" xml:space="preserve">
+    <value>File size: {0:F2} KB</value>
+  </data>
+  <data name="SecurityPage_Details_CreationTime" xml:space="preserve">
+    <value>Creation time: {0}</value>
+  </data>
+  <data name="SecurityPage_Details_LastWriteTime" xml:space="preserve">
+    <value>Last write time: {0}</value>
+  </data>
+  <data name="SecurityPage_Details_LocateButton" xml:space="preserve">
+    <value>Locate file</value>
+  </data>
+  <data name="SecurityPage_LocateFailed_Title" xml:space="preserve">
+    <value>Cannot locate file</value>
+  </data>
+  <data name="SecurityPage_LocateFailed_Content" xml:space="preserve">
+    <value>Cannot locate file because {0}</value>
+  </data>
+  <data name="SecurityPage_PathText_Format" xml:space="preserve">
+    <value>Scan mode: {0}</value>
+  </data>
+  <data name="SecurityPage_BackToVirusList_Hide" xml:space="preserve">
+    <value>Hide list</value>
+  </data>
+  <data name="SecurityPage_BackToVirusList_Show" xml:space="preserve">
+    <value>Show list</value>
+  </data>
+  <data name="SecurityPage_Area_Paused_Title" xml:space="preserve">
+    <value>Scan paused</value>
+  </data>
+  <data name="SecurityPage_Area_Paused_Detail" xml:space="preserve">
+    <value>Please click resume to continue scanning</value>
+  </data>
+  <data name="SecurityPage_Area_Resume_Title" xml:space="preserve">
+    <value>Resuming scan</value>
+  </data>
+  <data name="SecurityPage_Area_Resume_Detail" xml:space="preserve">
+    <value>Scan process resumed</value>
+  </data>
+  <data name="SecurityPage_FilesScanned_Format" xml:space="preserve">
+    <value>{0} files</value>
+  </data>
+  <data name="SecurityPage_FilesSafe_Format" xml:space="preserve">
+    <value>{0} safe</value>
+  </data>
+  <data name="SecurityPage_ThreatsFound_Format" xml:space="preserve">
+    <value>{0} threats</value>
+  </data>
   <data name="MainWindow_Nav_Xdows-Tools.Content" xml:space="preserve">
     <value>Xdows Tools</value>
   </data>

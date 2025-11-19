@@ -129,6 +129,246 @@
   <data name="MainWindow_Nav_Security.Content" xml:space="preserve">
     <value>杀毒</value>
   </data>
+  <data name="SecurityPage_PathText_Default" xml:space="preserve">
+    <value>扫描模式：未指定</value>
+  </data>
+  <data name="SecurityPage_ScanItem_System" xml:space="preserve">
+    <value>系统关键区域</value>
+  </data>
+  <data name="SecurityPage_ScanItem_Memory" xml:space="preserve">
+    <value>内存进程</value>
+  </data>
+  <data name="SecurityPage_ScanItem_Startup" xml:space="preserve">
+    <value>启动扫描</value>
+  </data>
+  <data name="SecurityPage_ScanItem_UserDocs" xml:space="preserve">
+    <value>用户文档</value>
+  </data>
+  <data name="SecurityPage_SelectFolder_Title" xml:space="preserve">
+    <value>选择目录</value>
+  </data>
+  <data name="SecurityPage_SelectFile_Title" xml:space="preserve">
+    <value>选择文件</value>
+  </data>
+  <data name="SecurityPage_GetFailed_Text" xml:space="preserve">
+    <value>获取失败</value>
+  </data>
+  <data name="SecurityPage_ScanStatusHeader.Text" xml:space="preserve">
+    <value>扫描状态</value>
+  </data>
+  <data name="SecurityPage_CurrentScanAreaText.Text" xml:space="preserve">
+    <value>准备开始扫描</value>
+  </data>
+  <data name="SecurityPage_ScanProgressDetailText.Text" xml:space="preserve">
+    <value>等待用户选择扫描类型</value>
+  </data>
+  <data name="SecurityPage_ProgressHeader.Text" xml:space="preserve">
+    <value>扫描进度</value>
+  </data>
+  <data name="SecurityPage_PathText.Text" xml:space="preserve">
+    <value>选择扫描文件</value>
+  </data>
+  <data name="SecurityPage_BackToVirusListButtonText.Text" xml:space="preserve">
+    <value>查看列表</value>
+  </data>
+  <data name="SecurityPage_PauseScanButtonText.Text" xml:space="preserve">
+    <value>暂停扫描</value>
+  </data>
+  <data name="SecurityPage_ResumeScanButtonText.Text" xml:space="preserve">
+    <value>继续扫描</value>
+  </data>
+  <data name="SecurityPage_ScanButtonText.Text" xml:space="preserve">
+    <value>开始扫描</value>
+  </data>
+  <data name="SecurityPage_ScanMenu_Quick.Text" xml:space="preserve">
+    <value>快速扫描</value>
+  </data>
+  <data name="SecurityPage_ScanMenu_Full.Text" xml:space="preserve">
+    <value>全盘扫描</value>
+  </data>
+  <data name="SecurityPage_ScanMenu_File.Text" xml:space="preserve">
+    <value>文件扫描</value>
+  </data>
+  <data name="SecurityPage_ScanMenu_Folder.Text" xml:space="preserve">
+    <value>目录扫描</value>
+  </data>
+  <data name="SecurityPage_ScanMenu_More.Text" xml:space="preserve">
+    <value>更多扫描</value>
+  </data>
+  <data name="SecurityPage_MenuItem_Details.Text" xml:space="preserve">
+    <value>详细信息</value>
+  </data>
+  <data name="SecurityPage_MenuItem_Delete.Text" xml:space="preserve">
+    <value>删除文件</value>
+  </data>
+  <data name="SecurityPage_NoEngine_Title" xml:space="preserve">
+    <value>当前没有选择扫描引擎</value>
+  </data>
+  <data name="SecurityPage_NoEngine_Content" xml:space="preserve">
+    <value>请转到 设置 - 扫描引擎 选择一个引擎。</value>
+  </data>
+  <data name="Button_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="SecurityPage_More_BrowseFolder" xml:space="preserve">
+    <value>浏览目录</value>
+  </data>
+  <data name="SecurityPage_More_BrowseFile" xml:space="preserve">
+    <value>浏览文件</value>
+  </data>
+  <data name="SecurityPage_More_RemoveItem" xml:space="preserve">
+    <value>删除项目</value>
+  </data>
+  <data name="SecurityPage_More_ClearAll" xml:space="preserve">
+    <value>清空全部</value>
+  </data>
+  <data name="SecurityPage_MoreScan_Title" xml:space="preserve">
+    <value>更多扫描</value>
+  </data>
+  <data name="SecurityPage_StartScanButton" xml:space="preserve">
+    <value>开始扫描</value>
+  </data>
+  <data name="SecurityPage_DuplicatePath_Title" xml:space="preserve">
+    <value>路径重复</value>
+  </data>
+  <data name="SecurityPage_DuplicatePath_Content" xml:space="preserve">
+    <value>该路径已在列表中：{0}</value>
+  </data>
+  <data name="SecurityPage_SouXiao_InitFailed_Title" xml:space="preserve">
+    <value>无法初始化 SouXiaoEngine</value>
+  </data>
+  <data name="SecurityPage_SouXiao_InitFailed_Content" xml:space="preserve">
+    <value>请转到 设置 - 扫描引擎 取消这个引擎的选中。</value>
+  </data>
+  <data name="SecurityPage_Status_Cancelled" xml:space="preserve">
+    <value>取消选择</value>
+  </data>
+  <data name="SecurityPage_Status_Waiting" xml:space="preserve">
+    <value>等待扫描</value>
+  </data>
+  <data name="SecurityPage_Status_Processing" xml:space="preserve">
+    <value>正在处理文件...</value>
+  </data>
+  <data name="SecurityPage_Area_Quick_Title" xml:space="preserve">
+    <value>快速扫描系统关键区域</value>
+  </data>
+  <data name="SecurityPage_Area_Quick_Detail" xml:space="preserve">
+    <value>正在检测系统关键文件和目录</value>
+  </data>
+  <data name="SecurityPage_Area_Full_Title" xml:space="preserve">
+    <value>全面扫描所有磁盘</value>
+  </data>
+  <data name="SecurityPage_Area_Full_Detail" xml:space="preserve">
+    <value>正在检测所有磁盘的文件</value>
+  </data>
+  <data name="SecurityPage_Area_File_Title" xml:space="preserve">
+    <value>单独扫描指定文件</value>
+  </data>
+  <data name="SecurityPage_Area_File_Detail" xml:space="preserve">
+    <value>正在检测：{0}</value>
+  </data>
+  <data name="SecurityPage_Area_Folder_Title" xml:space="preserve">
+    <value>单独扫描指定目录</value>
+  </data>
+  <data name="SecurityPage_Area_Folder_Detail" xml:space="preserve">
+    <value>正在检测：{0}</value>
+  </data>
+  <data name="SecurityPage_Area_More_Title" xml:space="preserve">
+    <value>更多扫描 - 自定义路径</value>
+  </data>
+  <data name="SecurityPage_Area_More_Detail" xml:space="preserve">
+    <value>共 {0} 个路径</value>
+  </data>
+  <data name="SecurityPage_Status_Scanning" xml:space="preserve">
+    <value>正在扫描：{0}</value>
+  </data>
+  <data name="SecurityPage_Status_FoundThreat" xml:space="preserve">
+    <value>发现威胁</value>
+  </data>
+  <data name="SecurityPage_ScanSpeed_Format" xml:space="preserve">
+    <value>{0:F2} 文件/秒</value>
+  </data>
+  <data name="SecurityPage_Status_Completed" xml:space="preserve">
+    <value>扫描完成</value>
+  </data>
+  <data name="SecurityPage_ScanCompleteFound" xml:space="preserve">
+    <value>扫描完成，发现 {0} 个威胁</value>
+  </data>
+  <data name="SecurityPage_ScanCancelled" xml:space="preserve">
+    <value>扫描已取消</value>
+  </data>
+  <data name="SecurityPage_ScanFailed_Format" xml:space="preserve">
+    <value>扫描失败：{0}</value>
+  </data>
+  <data name="SecurityPage_DeleteConfirm_Title" xml:space="preserve">
+    <value>确认要删除此文件吗</value>
+  </data>
+  <data name="SecurityPage_DeleteConfirm_Content" xml:space="preserve">
+    <value>确定要删除此文件\n{0}\n这将永久删除文件，无法恢复</value>
+  </data>
+  <data name="SecurityPage_DeleteConfirm_Primary" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="SecurityPage_DeleteFailed_Title" xml:space="preserve">
+    <value>删除失败</value>
+  </data>
+  <data name="SecurityPage_Details_Title" xml:space="preserve">
+    <value>详细信息</value>
+  </data>
+  <data name="SecurityPage_Details_FilePath" xml:space="preserve">
+    <value>文件路径：</value>
+  </data>
+  <data name="SecurityPage_Details_VirusName" xml:space="preserve">
+    <value>威胁名称：{0}</value>
+  </data>
+  <data name="SecurityPage_Details_FileSize" xml:space="preserve">
+    <value>文件大小：{0:F2} KB</value>
+  </data>
+  <data name="SecurityPage_Details_CreationTime" xml:space="preserve">
+    <value>创建时间：{0}</value>
+  </data>
+  <data name="SecurityPage_Details_LastWriteTime" xml:space="preserve">
+    <value>修改时间：{0}</value>
+  </data>
+  <data name="SecurityPage_Details_LocateButton" xml:space="preserve">
+    <value>定位文件</value>
+  </data>
+  <data name="SecurityPage_LocateFailed_Title" xml:space="preserve">
+    <value>无法定位文件</value>
+  </data>
+  <data name="SecurityPage_LocateFailed_Content" xml:space="preserve">
+    <value>无法定位文件，因为{0}</value>
+  </data>
+  <data name="SecurityPage_PathText_Format" xml:space="preserve">
+    <value>扫描模式：{0}</value>
+  </data>
+  <data name="SecurityPage_BackToVirusList_Hide" xml:space="preserve">
+    <value>隐藏列表</value>
+  </data>
+  <data name="SecurityPage_BackToVirusList_Show" xml:space="preserve">
+    <value>显示列表</value>
+  </data>
+  <data name="SecurityPage_Area_Paused_Title" xml:space="preserve">
+    <value>扫描已暂停</value>
+  </data>
+  <data name="SecurityPage_Area_Paused_Detail" xml:space="preserve">
+    <value>请点击继续扫描按钮恢复扫描</value>
+  </data>
+  <data name="SecurityPage_Area_Resume_Title" xml:space="preserve">
+    <value>正在继续扫描</value>
+  </data>
+  <data name="SecurityPage_Area_Resume_Detail" xml:space="preserve">
+    <value>扫描进程已恢复</value>
+  </data>
+  <data name="SecurityPage_FilesScanned_Format" xml:space="preserve">
+    <value>{0} 个文件</value>
+  </data>
+  <data name="SecurityPage_FilesSafe_Format" xml:space="preserve">
+    <value>{0} 个安全</value>
+  </data>
+  <data name="SecurityPage_ThreatsFound_Format" xml:space="preserve">
+    <value>{0} 个威胁</value>
+  </data>
   <data name="MainWindow_Nav_Xdows-Tools.Content" xml:space="preserve">
     <value>Xdows Tools</value>
   </data>
@@ -408,26 +648,20 @@
   <data name="SettingsPage_Scan_SouXiao.Header" xml:space="preserve">
     <value>SouXiao 本地引擎</value>
   </data>
-  <data name="SettingsPage_Scan_SouXiao.Description" xml:space="preserve">
-    <value>SouXiao 扫描引擎来自于第三方，可以提高查杀率</value>
-  </data>
   <data name="SettingsPage_Scan_SouXiao_Develop.Description" xml:space="preserve">
     <value>Mint 是这个扫描引擎的开发者和维护者</value>
   </data>
-  <data name="SettingsPage_Scan_SouXiao_Develop.Header" xml:space="preserve">
-    <value>关于引擎</value>
-  </data>
   <data name="SettingsPage_Appearance_Backdrop_Opacity.Description" xml:space="preserve">
     <value>修改主窗口的不透明度</value>
-  </data>
-  <data name="SettingsPage_Appearance_Backdrop_Opacity.Header" xml:space="preserve">
-    <value>不透明度</value>
   </data>
   <data name="SettingsPage_Scan_CzkCloud.Header" xml:space="preserve">
     <value>CzkCloud 云端引擎</value>
   </data>
   <data name="SettingsPage_Scan_CzkCloud.Description" xml:space="preserve">
     <value>云端引擎来自第三方且需要连接至互联网，但是能提高查杀率</value>
+  </data>
+  <data name="SettingsPage_Scan_SouXiao.Description" xml:space="preserve">
+    <value>SouXiao 扫描引擎来自于第三方，可以提高查杀率</value>
   </data>
   <data name="SettingsPage_Scan_CzkCloud_Develop.Header" xml:space="preserve">
     <value>关于引擎</value>
@@ -527,5 +761,11 @@
   </data>
   <data name="SettingsPage_Appearance_Nav_Left.Content" xml:space="preserve">
     <value>左侧</value>
+  </data>
+  <data name="SettingsPage_Scan_SouXiao_Develop.Header" xml:space="preserve">
+    <value>关于引擎</value>
+  </data>
+  <data name="SettingsPage_Appearance_Backdrop_Opacity.Header" xml:space="preserve">
+    <value>不透明度</value>
   </data>
 </root>

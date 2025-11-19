@@ -40,7 +40,7 @@ git clone https://github.com/XTY64XTY12345/Xdows-Security
 ```
 3. 使用 VS 打开并进行生成
 
-> [!NOTE] 无法生成
+> 无法生成
 > 
 > 因为 SouXiao 提供方 `Mint` 不开源其相关内容，自行移除与 SouXiao 相关引用即可
 

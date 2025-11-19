@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using WinUI3Localizer;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -40,17 +41,15 @@ namespace Xdows_Security
                 }
                 else
                 {
-                    ModifyDate.Text = "未知";
+                    ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined.Text");
                 }
             }
             catch (Exception ex)
             {
-                ModifyDate.Text = "未知";
+                ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined.Text");
                 LogText.AddNewLog(3, "InterceptWindow - SetFileInfo", ex.Message);
             }
-            
-            SecurityAdvice.Text = "��⵽���ɳ��򣬽�������ɾ������봦����";
-            
+
             try
             {
                 if (File.Exists(_virusFilePath))
@@ -94,6 +93,30 @@ namespace Xdows_Security
             manager.MinHeight = 400;
             manager.Width = 700;
             manager.Height = 600;
+            try
+            {
+                Localizer.Get().LanguageChanged += Localizer_LanguageChanged;
+                UpdateWindowTitle();
+            }
+            catch { }
+
+            this.Closed += (_, __) => Localizer.Get().LanguageChanged -= Localizer_LanguageChanged;
+        }
+
+        private void Localizer_LanguageChanged(object? sender, WinUI3Localizer.LanguageChangedEventArgs e)
+        {
+            DispatcherQueue.TryEnqueue(() => UpdateWindowTitle());
+        }
+
+        private void UpdateWindowTitle()
+        {
+            try
+            {
+                var title = Localizer.Get().GetLocalizedString("InterceptWindow_WindowTitle");
+                if (!string.IsNullOrEmpty(title))
+                    this.Title = title;
+            }
+            catch { }
         }
 
         private async void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
@@ -119,21 +142,20 @@ namespace Xdows_Security
         {
             try
             {
-                // ɾ�� .virus �ļ�
                 if (File.Exists(_virusFilePath))
                 {
                     File.Delete(_virusFilePath);
-                    await ShowMessageDialog("ɾ���ɹ�", "�ļ��ѳɹ�ɾ����");
+                    await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Delete_Success_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Delete_Success_Message"));
                     this.Close();
                 }
                 else
                 {
-                    await ShowMessageDialog("�ļ�������", "Ҫɾ�����ļ������ڡ�");
+                    await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Delete_NoFile_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Delete_NoFile_Message"));
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageDialog("删除失败", $"删除文件时出错：{ex.Message}。请确认您有足够权限或文件未被占用。");
+                await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Delete_Failed_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Delete_Failed_Message"));
                 LogText.AddNewLog(3, "InterceptWindow - DeleteFile - Failed", ex.ToString());
             }
         }
@@ -144,10 +166,8 @@ namespace Xdows_Security
             {
                 if (File.Exists(_virusFilePath))
                 {
-                    // �ָ��ļ���ɾ�� .virus ��׺
                     string restoredPath = _virusFilePath.Replace(".virus", "");
                     
-                    // ���ԭ�ļ��Ѵ��ڣ���ɾ��
                     if (File.Exists(restoredPath))
                     {
                         File.Delete(restoredPath);
@@ -155,29 +175,31 @@ namespace Xdows_Security
                     
                     File.Move(_virusFilePath, restoredPath);
                     
-                    await ShowMessageDialog("�ָ��ɹ�", "�ļ��ѳɹ��ָ���");
+                    await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Success_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Success_Message"));
                     this.Close();
                 }
                 else
                 {
-                    await ShowMessageDialog("�ļ�������", "Ҫ�ָ����ļ������ڡ�");
+                    await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Restore_NoFile_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Restore_NoFile_Message"));
                 }
             }
             catch (Exception ex)
             {
-                await ShowMessageDialog("恢复失败", $"恢复文件时出错：{ex.Message}。请确认您有足够权限。\n{ex.Message}");
+                await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Failed_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Failed_Message"));
                 LogText.AddNewLog(3, "InterceptWindow - RestoreFile - Failed", ex.ToString());
             }
         }
 
         private async void DisableProtection()
         {
-            var result = await ShowConfirmationDialog("�رշ���", 
-                "ȷ��Ҫ�رհ�ȫ�������⽫ʹ����ϵͳ���ٰ�ȫ���ա�");
-            
+            var loc = Localizer.Get();
+            var title = loc.GetLocalizedString("InterceptWindow_Disable_Confirm_Title");
+            var msg = loc.GetLocalizedString("InterceptWindow_Disable_Confirm_Message");
+            var result = await ShowConfirmationDialog(title, msg);
+
             if (result)
             {
-                await ShowMessageDialog("�����ѹر�", "��ȫ��������ʱ�رա�");
+                await ShowMessageDialog(loc.GetLocalizedString("InterceptWindow_Disable_Success_Title"), loc.GetLocalizedString("InterceptWindow_Disable_Success_Message"));
                 this.Close();
             }
         }
@@ -188,8 +210,8 @@ namespace Xdows_Security
             {
                 Title = title,
                 Content = message,
-                PrimaryButtonText = "ȷ��",
-                SecondaryButtonText = "ȡ��",
+                PrimaryButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
+                SecondaryButtonText = Localizer.Get().GetLocalizedString("Button_Cancel"),
                 XamlRoot = this.Content.XamlRoot
             };
 
@@ -202,8 +224,8 @@ namespace Xdows_Security
             ContentDialog dialog = new ContentDialog
             {
                 Title = title,
-                Content = message,
-                PrimaryButtonText = "ȷ��",
+            Content = message,
+            PrimaryButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                 XamlRoot = this.Content.XamlRoot
             };
 

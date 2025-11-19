@@ -768,4 +768,91 @@
   <data name="SettingsPage_Appearance_Backdrop_Opacity.Header" xml:space="preserve">
     <value>不透明度</value>
   </data>
+  <data name="InterceptWindow_HeaderTitle" xml:space="preserve">
+    <value>发现威胁，建议立即清除！</value>
+  </data>
+  <data name="InterceptWindow_HeaderSubtitle" xml:space="preserve">
+    <value>已成功拦截可疑程序，请立即处理</value>
+  </data>
+  <data name="InterceptWindow_ModifyDateCaption" xml:space="preserve">
+    <value>修改日期</value>
+  </data>
+  <data name="InterceptWindow_EngineCaption" xml:space="preserve">
+    <value>扫描引擎</value>
+  </data>
+  <data name="InterceptWindow_EngineName" xml:space="preserve">
+    <value>SouXiao 引擎</value>
+  </data>
+  <data name="InterceptWindow_SecurityAdviceCaption" xml:space="preserve">
+    <value>安全建议</value>
+  </data>
+  <data name="InterceptWindow_SecurityAdvice" xml:space="preserve">
+    <value>检测到可疑行为。建议操作：删除文件或在误报时恢复。</value>
+  </data>
+  <data name="InterceptWindow_ChooseActionText" xml:space="preserve">
+    <value>请选择处理方式：</value>
+  </data>
+  <data name="InterceptWindow_ActionButtonText" xml:space="preserve">
+    <value>执行操作</value>
+  </data>
+  <data name="InterceptWindow_DeleteMenu" xml:space="preserve">
+    <value>删除文件</value>
+  </data>
+  <data name="InterceptWindow_RestoreMenu" xml:space="preserve">
+    <value>恢复文件</value>
+  </data>
+  <data name="InterceptWindow_DisableMenu" xml:space="preserve">
+    <value>关闭防护</value>
+  </data>
+  <data name="InterceptWindow_Delete_Success_Title" xml:space="preserve">
+    <value>删除成功</value>
+  </data>
+  <data name="InterceptWindow_Delete_Success_Message" xml:space="preserve">
+    <value>文件已成功删除。</value>
+  </data>
+  <data name="InterceptWindow_Delete_NoFile_Title" xml:space="preserve">
+    <value>文件不存在</value>
+  </data>
+  <data name="InterceptWindow_Delete_NoFile_Message" xml:space="preserve">
+    <value>要删除的文件不存在。</value>
+  </data>
+  <data name="InterceptWindow_Delete_Failed_Title" xml:space="preserve">
+    <value>删除失败</value>
+  </data>
+  <data name="InterceptWindow_Delete_Failed_Message" xml:space="preserve">
+    <value>删除文件失败。请检查权限或文件是否被占用。</value>
+  </data>
+  <data name="InterceptWindow_Restore_Success_Title" xml:space="preserve">
+    <value>恢复成功</value>
+  </data>
+  <data name="InterceptWindow_Restore_Success_MESSAGE" xml:space="preserve">
+    <value>文件已成功恢复。</value>
+  </data>
+  <data name="InterceptWindow_Restore_NoFile_Title" xml:space="preserve">
+    <value>文件不存在</value>
+  </data>
+  <data name="InterceptWindow_Restore_NoFile_Message" xml:space="preserve">
+    <value>要恢复的文件不存在。</value>
+  </data>
+  <data name="InterceptWindow_Restore_Failed_Title" xml:space="preserve">
+    <value>恢复失败</value>
+  </data>
+  <data name="InterceptWindow_Restore_Failed_Message" xml:space="preserve">
+    <value>恢复文件时出错。请检查权限。</value>
+  </data>
+  <data name="InterceptWindow_Disable_Confirm_Title" xml:space="preserve">
+    <value>关闭防护</value>
+  </data>
+  <data name="InterceptWindow_Disable_Confirm_Message" xml:space="preserve">
+    <value>确认要关闭实时防护吗？这将降低系统安全。</value>
+  </data>
+  <data name="InterceptWindow_Disable_Success_Title" xml:space="preserve">
+    <value>防护已关闭</value>
+  </data>
+  <data name="InterceptWindow_Disable_Success_Message" xml:space="preserve">
+    <value>实时防护已被关闭。</value>
+  </data>
+  <data name="InterceptWindow_WindowTitle" xml:space="preserve">
+    <value>发现威胁</value>
+  </data>
 </root>

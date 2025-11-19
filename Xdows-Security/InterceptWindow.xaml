@@ -5,8 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Title="发现威胁">
+    xmlns:l="using:WinUI3Localizer"
+    mc:Ignorable="d">
     <Window.SystemBackdrop>
         <MicaBackdrop />
     </Window.SystemBackdrop>
@@ -19,11 +19,13 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Spacing="4">
-            <TextBlock Text="发现威胁，建议立即清除！"
-                       Style="{ThemeResource TitleTextBlockStyle}"/>
-            <TextBlock Text="已成功拦截可疑程序，请立即处理"
+            <TextBlock x:Name="HeaderTitle" 
+                       Style="{ThemeResource TitleTextBlockStyle}"
+                       l:Uids.Uid="InterceptWindow_HeaderTitle.Text"/>
+            <TextBlock x:Name="HeaderSubtitle"
                        Style="{ThemeResource CaptionTextBlockStyle}"
-                       Opacity="0.7"/>
+                       Opacity="0.7"
+                       l:Uids.Uid="InterceptWindow_HeaderSubtitle.Text"/>
         </StackPanel>
 
         <ScrollViewer Grid.Row="2">
@@ -71,9 +73,10 @@
                 CornerRadius="8"
                 Padding="16">
                         <StackPanel Spacing="4">
-                            <TextBlock Text="修改日期"
+                            <TextBlock x:Name="ModifyDateCaption"
                            Style="{ThemeResource CaptionTextBlockStyle}"
-                           Opacity="0.7"/>
+                           Opacity="0.7"
+                           l:Uids.Uid="InterceptWindow_ModifyDateCaption.Text"/>
                             <TextBlock x:Name="ModifyDate"
                            Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                         </StackPanel>
@@ -86,11 +89,13 @@
                 CornerRadius="8"
                 Padding="16">
                         <StackPanel Spacing="4">
-                            <TextBlock Text="扫描引擎"
+                            <TextBlock x:Name="EngineCaption"
                            Style="{ThemeResource CaptionTextBlockStyle}"
-                           Opacity="0.7"/>
-                            <TextBlock Text="SouXiao Engine"
-                           Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                           Opacity="0.7"
+                           l:Uids.Uid="InterceptWindow_EngineCaption.Text"/>
+                            <TextBlock x:Name="EngineNameText"
+                           Style="{ThemeResource BodyStrongTextBlockStyle}"
+                           l:Uids.Uid="InterceptWindow_EngineName.Text"/>
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -101,12 +106,14 @@
             CornerRadius="8"
             Padding="16">
                     <StackPanel Spacing="4">
-                        <TextBlock Text="安全建议"
+                        <TextBlock x:Name="SecurityAdviceCaption"
                        Style="{ThemeResource CaptionTextBlockStyle}"
-                       Opacity="0.7"/>
+                       Opacity="0.7"
+                       l:Uids.Uid="InterceptWindow_SecurityAdviceCaption.Text"/>
                         <TextBlock x:Name="SecurityAdvice"
                        Style="{ThemeResource BodyTextBlockStyle}"
-                       TextWrapping="Wrap"/>
+                       TextWrapping="Wrap"
+                       l:Uids.Uid="InterceptWindow_SecurityAdvice.Text"/>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -118,29 +125,29 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0"
-                       Text="请选择处理方式："
+            <TextBlock x:Name="ChooseActionText" Grid.Column="0"
                        Style="{ThemeResource BodyTextBlockStyle}"
-                       VerticalAlignment="Center"/>
+                       VerticalAlignment="Center"
+                       l:Uids.Uid="InterceptWindow_ChooseActionText.Text"/>
             <DropDownButton Name="ScanButton" Grid.Column="1" Style="{ThemeResource AccentButtonStyle}">
                 <StackPanel Orientation="Horizontal" Spacing="4">
                     <FontIcon Glyph="&#xEA18;" FontSize="16"/>
-                    <TextBlock Text="执行操作"/>
+                    <TextBlock x:Name="ActionButtonText" l:Uids.Uid="InterceptWindow_ActionButtonText.Text"/>
                 </StackPanel>
                 <DropDownButton.Flyout>
                     <MenuFlyout Placement="Bottom">
-                        <MenuFlyoutItem Text="删除文件" Tag="Delete" Click="MenuFlyoutItem_Click">
+                        <MenuFlyoutItem x:Name="DeleteItem" Tag="Delete" Click="MenuFlyoutItem_Click" l:Uids.Uid="InterceptWindow_DeleteMenu.Text">
                             <MenuFlyoutItem.Icon>
                                 <FontIcon Glyph="&#xE74D;" />
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
-                        <MenuFlyoutItem Text="恢复文件" Tag="Restore" Click="MenuFlyoutItem_Click">
+                        <MenuFlyoutItem x:Name="RestoreItem" Tag="Restore" Click="MenuFlyoutItem_Click" l:Uids.Uid="InterceptWindow_RestoreMenu.Text">
                             <MenuFlyoutItem.Icon>
                                 <FontIcon Glyph="&#xE7A7;" />
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
                         <MenuFlyoutSeparator/>
-                        <MenuFlyoutItem IsEnabled="False" Text="关闭防护" Tag="Disable" Click="MenuFlyoutItem_Click">
+                        <MenuFlyoutItem x:Name="DisableItem" IsEnabled="False" Tag="Disable" Click="MenuFlyoutItem_Click" l:Uids.Uid="InterceptWindow_DisableMenu.Text">
                             <MenuFlyoutItem.Icon>
                                 <FontIcon Glyph="&#xF78A;" />
                             </MenuFlyoutItem.Icon>

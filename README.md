@@ -13,9 +13,9 @@
     ·
     <a href="https://github.com/XTY64XTY12345/Xdows-Security/releases ">Download</a>
     <br />
-    <a href="README.md">English</a>
+    English
     ·
-    Simplified Chinese
+    <a href="README.zh-HANS.md">English</a>
   </p>
 
 </p>

@@ -1,3 +1,5 @@
+// using Windows.ApplicationModel.Resources;//多语言调用
+using Compatibility.Windows.Storage;
 using Microsoft.UI;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Composition.SystemBackdrops;
@@ -13,23 +15,24 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-// using Windows.ApplicationModel.Resources;//多语言调用
-using Compatibility.Windows.Storage;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
 using WinRT;
 using WinUI3Localizer;
 using WinUIEx;
+using Xdows_Security.ViewModel;
 
 namespace Xdows_Security
 {
     public sealed partial class MainWindow : Window
     {
         public static string NowPage = "Home";
+
         public MainWindow()
         {
             InitializeComponent();
+            LogText.AddNewLog(1, "UI Interface", "MainWindow loaded successfully");
             Window window = this;
             window.ExtendsContentIntoTitleBar = true;
             AppWindow.SetIcon("logo.ico");
@@ -47,8 +50,9 @@ namespace Xdows_Security
             manager.MinHeight = 530;
             Closed += delegate { Window_Closed(); };
             Localizer.Get().LanguageChanged += OnLangChanged;
-            LogText.AddNewLog(1, "UI Interface", "MainWindow loaded successfully");
+
         }
+
         private void MainWindow_Activated_FirstTime(object sender, WindowActivatedEventArgs args)
         {
             var settings = ApplicationData.Current.LocalSettings;

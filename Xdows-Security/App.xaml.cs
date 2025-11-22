@@ -15,6 +15,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Globalization;
+using Xdows_Security.ViewModel; //接下日志 Xty放过我 qwq
 using WinUI3Localizer;
 using WinUIEx;
 using Xdows.Protection;

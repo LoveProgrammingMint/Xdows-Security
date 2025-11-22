@@ -6,33 +6,47 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:l="using:WinUI3Localizer"
+    xmlns:vm="using:Xdows_Security.ViewModel"
     mc:Ignorable="d">
+
+    <!-- 1. 指定 DataContext -->
+    <Page.DataContext>
+        <vm:HomeViewModel x:Name="Vm"/>
+    </Page.DataContext>
 
     <Grid Margin="64,0,64,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-            <FontIcon x:Name="Icon" Margin="16,0,0,0" HorizontalAlignment="Left" Glyph="&#xE73E;" FontSize="124" FontWeight="Bold"/>
-            <StackPanel Margin="24,16,0,0" Orientation="Vertical">
-                <TextBlock Margin="0,12,0,0" x:Name="HomePage_TextBlock" FontSize="28" FontWeight="Bold"/>
-                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                                        <TextBlock x:Name="HomePage_Pomes"
-                      Style="{StaticResource BodyTextBlockStyle}"
-                      VerticalAlignment="Center"
-                      IsTextSelectionEnabled="True" />
 
-                <Button l:Uids.Uid="HomePage_RefreshPomes"
-                      Click="RefreshPomes_Click"
-                      Height="32"
-                      Margin="16,0,0,0"/>
+        <!-- 头部 -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+            <FontIcon Glyph="{x:Bind Vm.HomePageIcon, Mode=OneWay}"
+                      Margin="16,0,0,0" HorizontalAlignment="Left"
+                      FontSize="124" FontWeight="Bold"/>
+            <StackPanel Margin="24,16,0,0" Orientation="Vertical">
+                <TextBlock Text="{x:Bind Vm.HomePageText, Mode=OneWay}"
+                           Margin="0,12,0,0" FontSize="28" FontWeight="Bold"/>
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <TextBlock Text="{x:Bind Vm.PomesLine, Mode=OneWay}"
+                               Style="{StaticResource BodyTextBlockStyle}"
+                               VerticalAlignment="Center"
+                               IsTextSelectionEnabled="True"/>
+                    <!-- 2. 命令绑定 -->
+                    <Button l:Uids.Uid="HomePage_RefreshPomes"
+                            Command="{x:Bind Vm.RefreshPomesCommand}"
+                            Height="32" Margin="16,0,0,0"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
+
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
             <StackPanel Spacing="10">
-                <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
+                <!-- ===== 统计卡片 ===== -->
+                <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        CornerRadius="8" Padding="16">
                     <StackPanel>
                         <TextBlock l:Uids.Uid="HomePage_Scan" FontSize="18" FontWeight="Bold" Margin="0,0,0,8"/>
                         <Grid>
@@ -41,21 +55,32 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Grid Grid.Column="0">
-                                <TextBlock l:Uids.Uid="HomePage_TotalScans" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                                <TextBlock x:Name="TotalScansText" Text="0" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,20,0,0"/>
+                                <TextBlock l:Uids.Uid="HomePage_TotalScans" FontSize="15" FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind Vm.TotalScans, Mode=OneWay}"
+                                           FontSize="24" FontWeight="Bold"
+                                           HorizontalAlignment="Center" Margin="0,20,0,0"/>
                             </Grid>
                             <Grid Grid.Column="1">
-                                <TextBlock l:Uids.Uid="HomePage_TotalThreats" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-                                <TextBlock x:Name="TotalThreatsText" Text="0" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,20,0,0"/>
+                                <TextBlock l:Uids.Uid="HomePage_TotalThreats" FontSize="15" FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind Vm.TotalThreats, Mode=OneWay}"
+                                           FontSize="24" FontWeight="Bold"
+                                           HorizontalAlignment="Center" Margin="0,20,0,0"/>
                             </Grid>
                         </Grid>
-                        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                            <Button l:Uids.Uid="HomePage_RefreshStatistics" Grid.Row="0" Click="RefreshStatistics_Click" HorizontalAlignment="Left"/>
+                        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft">
+                            <Button l:Uids.Uid="HomePage_RefreshStatistics"
+                                    Command="{x:Bind Vm.RefreshStatisticsCommand}"
+                                    HorizontalAlignment="Left"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
 
-                <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
+                <!-- ===== 防护状态 ===== -->
+                <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        CornerRadius="8" Padding="16">
                     <StackPanel>
                         <TextBlock l:Uids.Uid="HomePage_ProtectionStatus" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
                         <Grid>
@@ -64,7 +89,9 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock l:Uids.Uid="HomePage_Protection" Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock x:Name="ProtectionStatusText" Grid.Column="1" l:Uids.Uid="AllPage_Loading" />
+                            <TextBlock Grid.Column="1"
+                                       Text="{x:Bind Vm.ProtectionStatus, Mode=OneWay}"
+                                       Foreground="{x:Bind Vm.ProtectionColor, Mode=OneWay}"/>
                         </Grid>
                         <Grid Margin="0,5,0,0">
                             <Grid.ColumnDefinitions>
@@ -72,7 +99,8 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock l:Uids.Uid="HomePage_LastScan" Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock x:Name="LastScanText" Grid.Column="1" l:Uids.Uid="AllPage_Undefined"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{x:Bind Vm.LastScanTime, Mode=OneWay}"/>
                         </Grid>
                         <Grid Margin="0,5,0,0">
                             <Grid.ColumnDefinitions>
@@ -80,11 +108,16 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock l:Uids.Uid="HomePage_NumberOfThreats" Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock x:Name="ThreatCountText" Grid.Column="1" Text="0"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{x:Bind Vm.ThreatCount, Mode=OneWay}"/>
                         </Grid>
                     </StackPanel>
                 </Border>
-                <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
+
+                <!-- ===== 系统信息 ===== -->
+                <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        CornerRadius="8" Padding="16">
                     <StackPanel>
                         <TextBlock l:Uids.Uid="HomePage_SystemInfo" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
                         <Grid>
@@ -93,7 +126,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock l:Uids.Uid="HomePage_OSName" Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock x:Name="OSNameText" Grid.Column="1" l:Uids.Uid="AllPage_Loading" />
+                            <TextBlock Grid.Column="1" Text="{x:Bind Vm.OsName, Mode=OneWay}"/>
                         </Grid>
                         <Grid Margin="0,5,0,0">
                             <Grid.ColumnDefinitions>
@@ -101,7 +134,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock l:Uids.Uid="HomePage_OSVersion"  Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock x:Name="OSVersionText" Grid.Column="1" l:Uids.Uid="AllPage_Loading" />
+                            <TextBlock Grid.Column="1" Text="{x:Bind Vm.OsVersion, Mode=OneWay}"/>
                         </Grid>
                         <Grid Margin="0,5,0,0">
                             <Grid.ColumnDefinitions>
@@ -109,15 +142,24 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock l:Uids.Uid="HomePage_OSMemory" Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock x:Name="MemoryUsageText" Grid.Column="1" l:Uids.Uid="AllPage_Loading" />
+                            <TextBlock Grid.Column="1" Text="{x:Bind Vm.MemoryUsage, Mode=OneWay}"/>
                         </Grid>
-                        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                            <Button l:Uids.Uid="HomePage_RefreshSystemInfo" Click="RefreshSystemInfo_Click" Margin="0,16,0,0" HorizontalAlignment="Left"/>
-                            <Button l:Uids.Uid="HomePage_CopySystemInfo" Click="CopySystemInfo_Click" Margin="0,16,0,0" HorizontalAlignment="Left"/>
+                        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft">
+                            <Button l:Uids.Uid="HomePage_RefreshSystemInfo"
+                                    Command="{x:Bind Vm.RefreshSysInfoCommand}"
+                                    Margin="0,16,0,0" HorizontalAlignment="Left"/>
+                            <Button l:Uids.Uid="HomePage_CopySystemInfo"
+                                    Command="{x:Bind Vm.CopySysInfoCommand}"
+                                    Margin="0,16,0,0" HorizontalAlignment="Left"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
-                <Border Margin="0,0,0,16" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8" Padding="16">
+
+                <!-- ===== 日志 ===== -->
+                <Border Margin="0,0,0,16"
+                        BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        CornerRadius="8" Padding="16">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -125,28 +167,52 @@
                         </Grid.RowDefinitions>
                         <TextBlock l:Uids.Uid="HomePage_LogsHeader" FontSize="18" FontWeight="Bold"/>
                         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,32,0,8">
-                            <Button l:Uids.Uid="HomePage_ClearLog" Click="ClearLog_Click"/>
-                            <Button l:Uids.Uid="HomePage_ExportLog" Click="ExportLog_Click"/>
-                            <DropDownButton x:Name="LogLevelFilter" l:Uids.Uid="HomePage_LogFilter">
+                            <Button l:Uids.Uid="HomePage_ClearLog"
+                                    Command="{x:Bind Vm.ClearLogCommand}"/>
+                            <Button l:Uids.Uid="HomePage_ExportLog"
+                                    Command="{x:Bind Vm.ExportLogCommand}"/>
+                            <DropDownButton x:Name="LogLevelFilter"
+                                            l:Uids.Uid="HomePage_LogFilter">
                                 <DropDownButton.Flyout>
                                     <MenuFlyout>
-                                        <ToggleMenuFlyoutItem Tag="All"     l:Uids.Uid="HomePage_LogFilter_All"       Click="LogLevelFilter_MenuClick" IsChecked="True"/>
+                                        <ToggleMenuFlyoutItem Tag="All"
+                                            l:Uids.Uid="HomePage_LogFilter_All"
+                                            IsChecked="True"
+                                            Click="LogLevelFilter_MenuClick"/>
                                         <MenuFlyoutSeparator/>
-                                        <ToggleMenuFlyoutItem Tag="UNKNOWN" l:Uids.Uid="HomePage_LogFilter_Undefined" Click="LogLevelFilter_MenuClick" IsChecked="True"/>
-                                        <ToggleMenuFlyoutItem Tag="DEBUG"   l:Uids.Uid="HomePage_LogFilter_Debug"     Click="LogLevelFilter_MenuClick" IsChecked="True"/>
-                                        <ToggleMenuFlyoutItem Tag="INFO"    l:Uids.Uid="HomePage_LogFilter_Info"      Click="LogLevelFilter_MenuClick" IsChecked="True"/>
-                                        <ToggleMenuFlyoutItem Tag="WARN"    l:Uids.Uid="HomePage_LogFilter_Warn"      Click="LogLevelFilter_MenuClick" IsChecked="True"/>
-                                        <ToggleMenuFlyoutItem Tag="ERROR"   l:Uids.Uid="HomePage_LogFilter_Error"     Click="LogLevelFilter_MenuClick" IsChecked="True"/>
-                                        <ToggleMenuFlyoutItem Tag="FATAL"   l:Uids.Uid="HomePage_LogFilter_Fatal"     Click="LogLevelFilter_MenuClick" IsChecked="True"/>
+                                        <ToggleMenuFlyoutItem Tag="UNKNOWN"
+                                            l:Uids.Uid="HomePage_LogFilter_Undefined"
+                                            IsChecked="True"
+                                            Click="LogLevelFilter_MenuClick"/>
+                                        <ToggleMenuFlyoutItem Tag="DEBUG"
+                                            l:Uids.Uid="HomePage_LogFilter_Debug"
+                                            IsChecked="True"
+                                            Click="LogLevelFilter_MenuClick"/>
+                                        <ToggleMenuFlyoutItem Tag="INFO"
+                                            l:Uids.Uid="HomePage_LogFilter_Info"
+                                            IsChecked="True"
+                                            Click="LogLevelFilter_MenuClick"/>
+                                        <ToggleMenuFlyoutItem Tag="WARN"
+                                            l:Uids.Uid="HomePage_LogFilter_Warn"
+                                            IsChecked="True"
+                                            Click="LogLevelFilter_MenuClick"/>
+                                        <ToggleMenuFlyoutItem Tag="ERROR"
+                                            l:Uids.Uid="HomePage_LogFilter_Error"
+                                            IsChecked="True"
+                                            Click="LogLevelFilter_MenuClick"/>
+                                        <ToggleMenuFlyoutItem Tag="FATAL"
+                                            l:Uids.Uid="HomePage_LogFilter_Fatal"
+                                            IsChecked="True"
+                                            Click="LogLevelFilter_MenuClick"/>
                                     </MenuFlyout>
                                 </DropDownButton.Flyout>
                             </DropDownButton>
                         </StackPanel>
 
-                        <ScrollViewer x:Name="LogScroll" Grid.Row="1" Height="216">
-                            <ItemsRepeater x:Name="LogRepeater">
+                        <ScrollViewer Grid.Row="1" Height="216" x:Name="LogScroll">
+                            <ItemsRepeater ItemsSource="{x:Bind Vm.LogLines}">
                                 <ItemsRepeater.Layout>
-                                    <StackLayout Spacing="0" />
+                                    <StackLayout Spacing="0"/>
                                 </ItemsRepeater.Layout>
                                 <ItemsRepeater.ItemTemplate>
                                     <DataTemplate>

@@ -304,7 +304,9 @@
     <value>Are you sure to delete this file?</value>
   </data>
   <data name="SecurityPage_DeleteConfirm_Content" xml:space="preserve">
-    <value>Are you sure to delete this file\n{0}\nThis will permanently remove the file and cannot be undone</value>
+    <value>Are you sure to delete this file
+{0}
+This will permanently remove the file and cannot be undone</value>
   </data>
   <data name="SecurityPage_DeleteConfirm_Primary" xml:space="preserve">
     <value>Delete</value>
@@ -854,5 +856,20 @@ Why not try XIGUA Security?</value>
   </data>
   <data name="InterceptWindow_WindowTitle" xml:space="preserve">
     <value>Threat detected</value>
+  </data>
+  <data name="SettingsPage_Scan_Cloud_Disclaimer_Title" xml:space="preserve">
+    <value>Disclaimer</value>
+  </data>
+  <data name="SettingsPage_Scan_Cloud_Disclaimer_Text" xml:space="preserve">
+    <value>Once you enable this engine,
+using it to scan files will send the file data or its information to the servers of the corresponding cloud service provider.
+Users should consciously comply with relevant service agreements, treaties, or declarations, and should not send files involving relevant laws or privacy.
+Any issues or losses such as file leaks caused by this engine shall be borne by the cloud service provider, and the software developer shall not assume any responsibility.
+The software developer also shall not be responsible for any loss of files or data resulting from force majeure events, such as server failures.
+This statement or the cloud service agreement, treaty, or declaration may be modified, deleted, or supplemented due to software updates or other factors.
+In case of disputes, the latest version shall prevail. The software developer reserves the right to revise, delete, or supplement this statement without the user's consent, and the final interpretation right of this statement belongs to the software developer.
+The original developer of this software (Xdows Software) bears no responsibility for any problems arising from branches of this software. By using this engine in any manner, you agree to and accept this statement.
+In the event of any form of dispute, the Chinese version of the disclaimer shall prevail.
+If you do not accept it, please turn off the engine, or stop using and delete the software.</value>
   </data>
 </root>

@@ -88,4 +88,7 @@
     <Folder Include="Utils\" />
     <Folder Include="Views\" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="G:\NuGet\microsoft.windowsappsdk.foundation\1.8.250906002\buildTransitive\..\include\MddBootstrapAutoInitializer.cs" />
+  </ItemGroup>
 </Project>

@@ -46,4 +46,4 @@ git clone https://github.com/XTY64XTY12345/Xdows-Security
 
 ### 版权说明
 
-该项目签署了 MIT 授权许可，详情请参阅 [LICENSE](LICENSE)
+该项目签署了 MIT 授权许可，详情请参阅 [LICENSE](LICENSE.txt)

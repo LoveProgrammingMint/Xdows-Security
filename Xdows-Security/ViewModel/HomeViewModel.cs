@@ -41,7 +41,7 @@ namespace Xdows_Security.ViewModel
             RefreshPomes();
         }
 
-        #region === UI 属性（WinUI3 AOT 安全, Xty赶快感谢我！！！）===
+        #region === UI 属性 ===
         [ObservableProperty] public partial string OsName { get; set; }
         [ObservableProperty] public partial string OsVersion { get; set; }
         [ObservableProperty] public partial string MemoryUsage { get; set; }

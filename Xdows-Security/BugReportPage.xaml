@@ -6,6 +6,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:l="using:WinUI3Localizer"
     mc:Ignorable="d">
 
     <Grid Padding="24">
@@ -35,16 +36,16 @@
 						<ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-					<Button Grid.Column="0" x:Name="FileBtn" Content="文件" Width="56" Margin="0,0,4,0" Click="FileBtn_Click"/>
+					<Button Grid.Column="0" x:Name="FileBtn" l:Uids.Uid="BugReportPage_FileButton" Width="56" Margin="0,0,4,0" Click="FileBtn_Click"/>
 
 					<TextBox x:Name="InputBox"
                              Grid.Column="1"
-                             PlaceholderText="输入消息…"
+                             l:Uids.Uid="BugReportPage_Input"
                              KeyDown="InputBox_KeyDown"/>
                     <Button x:Name="SendBtn"
                             Grid.Column="2"
                             Margin="8,0,0,0"
-                            Content="发送"
+                            l:Uids.Uid="BugReportPage_SendButton"
 							Style="{StaticResource AccentButtonStyle}"
                             Click="SendBtn_Click"/>
                 </Grid>
@@ -59,11 +60,11 @@
             </Grid.ColumnDefinitions>
             <TextBlock x:Name="StatusTxt"
                        Grid.Column="0"
-                       Text="未连接"
+                       l:Uids.Uid="BugReportPage_NotConnected"
                        VerticalAlignment="Center"/>
             <Button x:Name="ReconnectBtn"
                     Grid.Column="1"
-                    Content="重新连接"
+                    l:Uids.Uid="BugReportPage_ReconnectButton"
                     Click="ReconnectBtn_Click"/>
         </Grid>
     </Grid>

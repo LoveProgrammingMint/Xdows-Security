@@ -96,10 +96,10 @@ namespace Xdows_Security
         {
             _scanItems = new List<ScanItem>
             {
-                new ScanItem { ItemName = Loc("SecurityPage_ScanItem_System"), IconGlyph = "&#xE721;" },
-                new ScanItem { ItemName = Loc("SecurityPage_ScanItem_Memory"), IconGlyph = "&#xE896;" },
-                new ScanItem { ItemName = Loc("SecurityPage_ScanItem_Startup"), IconGlyph = "&#xE812;" },
-                new ScanItem { ItemName = Loc("SecurityPage_ScanItem_UserDocs"), IconGlyph = "&#xE8A5;" }
+                new ScanItem { ItemName = Loc("SecurityPage_ScanItem_System"), IconGlyph = "&#xE721;", StatusText = Loc("SecurityPage_Status_Waiting") },
+                new ScanItem { ItemName = Loc("SecurityPage_ScanItem_Memory"), IconGlyph = "&#xE896;", StatusText = Loc("SecurityPage_Status_Waiting") },
+                new ScanItem { ItemName = Loc("SecurityPage_ScanItem_Startup"), IconGlyph = "&#xE812;", StatusText = Loc("SecurityPage_Status_Waiting") },
+                new ScanItem { ItemName = Loc("SecurityPage_ScanItem_UserDocs"), IconGlyph = "&#xE8A5;", StatusText = Loc("SecurityPage_Status_Waiting") }
             };
         }
         private string Loc(string key)

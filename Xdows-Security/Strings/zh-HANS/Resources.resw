@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -870,5 +870,41 @@
 本软件开发者具有对此声明进行修改、删除、补充而不经用户同意的权力，该声明最终解释权归本软件开发者所有。 
 对于此软件的分支产生的问题，此软件的源开发者（Xdows Software）不承担任何责任。 
 当您通过任何方式使用该引擎时则表示同意并接受该声明，如果您不接受请自行关闭此引擎或停止使用并删除该软件。</value>
+  </data>
+  <data name="BugReportPage_Connected" xml:space="preserve">
+    <value>已连接</value>
+  </data>
+  <data name="BugReportPage_ConnectionFailed" xml:space="preserve">
+    <value>连接失败</value>
+  </data>
+  <data name="BugReportPage_SelectFileTitle" xml:space="preserve">
+    <value>选择文件</value>
+  </data>
+  <data name="BugReportPage_DownloadAndLocate" xml:space="preserve">
+    <value>下载并定位</value>
+  </data>
+  <data name="BugReportPage_Input.PlaceholderText" xml:space="preserve">
+    <value>输入消息…</value>
+  </data>
+  <data name="BugReportPage_NotConnected" xml:space="preserve">
+    <value>未连接</value>
+  </data>
+  <data name="BugReportPage_FileButton.Content" xml:space="preserve">
+    <value>文件</value>
+  </data>
+  <data name="BugReportPage_SendButton.Content" xml:space="preserve">
+    <value>发送</value>
+  </data>
+  <data name="BugReportPage_ReconnectButton.Content" xml:space="preserve">
+    <value>重新连接</value>
+  </data>
+  <data name="BugReportPage_ConnectionFailedMessage" xml:space="preserve">
+    <value>连接失败: </value>
+  </data>
+  <data name="BugReportPage_FileTooLarge" xml:space="preserve">
+    <value>文件超过 20 KB，已拒绝</value>
+  </data>
+  <data name="BugReportPage_FileSent" xml:space="preserve">
+    <value>[已发送文件] </value>
   </data>
 </root>

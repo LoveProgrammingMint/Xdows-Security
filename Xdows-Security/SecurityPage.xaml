@@ -212,13 +212,13 @@
 
                             <Grid.ContextFlyout>
                                 <MenuFlyout>
-                                    <MenuFlyoutItem l:Uids.Uid="SecurityPage_MenuItem_Details" Text="详细信息" Click="OnDetailClick" Tag="{Binding}">
+                                    <MenuFlyoutItem l:Uids.Uid="SecurityPage_MenuItem_Details" Click="OnDetailClick" Tag="{Binding}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE946;" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
                                     <MenuFlyoutSeparator/>
-                                    <MenuFlyoutItem l:Uids.Uid="SecurityPage_MenuItem_Delete" Text="删除文件" Click="OnDeleteClick" Tag="{Binding}">
+                                    <MenuFlyoutItem l:Uids.Uid="SecurityPage_MenuItem_Delete" Click="OnDeleteClick" Tag="{Binding}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE74D;" />
                                         </MenuFlyoutItem.Icon>

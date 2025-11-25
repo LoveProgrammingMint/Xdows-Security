@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -871,5 +871,41 @@ In case of disputes, the latest version shall prevail. The software developer re
 The original developer of this software (Xdows Software) bears no responsibility for any problems arising from branches of this software. By using this engine in any manner, you agree to and accept this statement.
 In the event of any form of dispute, the Chinese version of the disclaimer shall prevail.
 If you do not accept it, please turn off the engine, or stop using and delete the software.</value>
+  </data>
+  <data name="BugReportPage_Connected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="BugReportPage_ConnectionFailed" xml:space="preserve">
+    <value>Connection failed</value>
+  </data>
+  <data name="BugReportPage_SelectFileTitle" xml:space="preserve">
+    <value>Select file</value>
+  </data>
+  <data name="BugReportPage_DownloadAndLocate" xml:space="preserve">
+    <value>Download and locate</value>
+  </data>
+  <data name="BugReportPage_Input.PlaceholderText" xml:space="preserve">
+    <value>Type a message...</value>
+  </data>
+  <data name="BugReportPage_NotConnected" xml:space="preserve">
+    <value>Not connected</value>
+  </data>
+  <data name="BugReportPage_FileButton.Content" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="BugReportPage_SendButton.Content" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="BugReportPage_ReconnectButton.Content" xml:space="preserve">
+    <value>Reconnect</value>
+  </data>
+  <data name="BugReportPage_ConnectionFailedMessage" xml:space="preserve">
+    <value>Connection failed: </value>
+  </data>
+  <data name="BugReportPage_FileTooLarge" xml:space="preserve">
+    <value>File exceeds 20 KB, rejected</value>
+  </data>
+  <data name="BugReportPage_FileSent" xml:space="preserve">
+    <value>[File sent] </value>
   </data>
 </root>

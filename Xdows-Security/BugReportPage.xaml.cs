@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.System;
+using WinUI3Localizer;
 
 namespace Xdows_Security
 {
@@ -22,6 +23,28 @@ namespace Xdows_Security
     {
         private ClientWebSocket? _ws;
         private CancellationTokenSource? _cts;
+
+        private string Loc(string key)
+        {
+            try
+            {
+                var s = Localizer.Get().GetLocalizedString(key);
+                if (!string.IsNullOrEmpty(s)) return s;
+
+                string[] suffixes = new[] { ".Text", ".Content", ".Header", ".Title", ".Description" };
+                foreach (var suf in suffixes)
+                {
+                    s = Localizer.Get().GetLocalizedString(key + suf);
+                    if (!string.IsNullOrEmpty(s)) return s;
+                }
+
+                return string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
 
         public BugReportPage()
         {
@@ -39,13 +62,13 @@ namespace Xdows_Security
             try
             {
                 await _ws.ConnectAsync(new Uri("ws://103.118.245.82:8765"), _cts.Token);
-                StatusTxt.Text = "已连接";
+                StatusTxt.Text = Loc("BugReportPage_Connected");
                 _ = Task.Run(() => ReceiveLoopAsync(_cts.Token));
             }
             catch (Exception ex)
             {
-                StatusTxt.Text = "连接失败";
-                AddMessage("连接失败: " + ex.Message, false);
+                StatusTxt.Text = Loc("BugReportPage_ConnectionFailed");
+                AddMessage(Loc("BugReportPage_ConnectionFailedMessage") + ex.Message, false);
             }
         }
 
@@ -92,7 +115,7 @@ namespace Xdows_Security
             // 1. 弹出原生打开对话框
             using var dlg = new CommonOpenFileDialog
             {
-                Title = "选择文件",
+                Title = Loc("BugReportPage_SelectFileTitle"),
                 Filters = { new CommonFileDialogFilter("所有文件", "*") }
             };
 
@@ -104,7 +127,7 @@ namespace Xdows_Security
             // 2. 大小检查
             if (info.Length > 20 * 1024)          // 20 KB
             {
-                AddMessage("文件超过 20 KB，已拒绝", true);
+                AddMessage(Loc("BugReportPage_FileTooLarge"), true);
                 return;
             }
 
@@ -127,7 +150,7 @@ namespace Xdows_Security
             await _ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(payload)),
                                 WebSocketMessageType.Text, true, _cts.Token);
 
-            AddMessage($"[已发送文件] {info.Name}", true);
+            AddMessage(Loc("BugReportPage_FileSent") + info.Name, true);
         }
 
         /// <summary>
@@ -214,7 +237,7 @@ namespace Xdows_Security
 
                 var btn = new Button
                 {
-                    Content = "下载并定位",
+                    Content = Loc("BugReportPage_DownloadAndLocate"),
                     Padding = new Thickness(8, 4, 8, 4),
                     FontSize = 12,
                     HorizontalAlignment = HorizontalAlignment.Stretch,

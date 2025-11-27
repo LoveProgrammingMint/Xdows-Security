@@ -550,11 +550,25 @@ namespace Xdows_Security
                         PauseScanButton.IsEnabled = true;
                     });
                     var tStatusText = Loc("SecurityPage_Status_Scanning");
+                    var pausedTime = TimeSpan.Zero; // 记录总的暂停时间
+                    var lastPauseTime = DateTime.MinValue; // 记录上次暂停开始的时间
                     foreach (var file in files)
                     {
                         while (_isPaused && !token.IsCancellationRequested)
                         {
+                            // 如果刚开始暂停，记录暂停开始时间
+                            if (lastPauseTime == DateTime.MinValue)
+                            {
+                                lastPauseTime = DateTime.Now;
+                            }
                             await Task.Delay(100, token);
+                        }
+
+                        // 如果刚刚恢复扫描，计算暂停时间并累加
+                        if (lastPauseTime != DateTime.MinValue)
+                        {
+                            pausedTime += DateTime.Now - lastPauseTime;
+                            lastPauseTime = DateTime.MinValue; // 重置暂停时间
                         }
 
                         if (token.IsCancellationRequested) break;
@@ -649,7 +663,7 @@ namespace Xdows_Security
 
                         finished++;
                         _filesScanned = finished;
-                        var elapsedTime = DateTime.Now - startTime;
+                        var elapsedTime = DateTime.Now - startTime - pausedTime; // 减去暂停时间
                         var scanSpeed = finished / elapsedTime.TotalSeconds;
                             _dispatcherQueue.TryEnqueue(() =>
                             {

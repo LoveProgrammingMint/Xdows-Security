@@ -1,4 +1,4 @@
-﻿using PeNet;
+using PeNet;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -276,27 +276,28 @@ namespace Xdows.ScanEngine
 
             if (deepScan)
             {
-                var t1 = Task.Run(() => ContainsSuspiciousContent(fileContent, new[] { ".sys" }));
-                var t2 = Task.Run(() => ContainsSuspiciousContent(fileContent, new[] { "Virtual" }));
-                var t3 = Task.Run(() => ContainsSuspiciousContent(fileContent, new[] { "BlackMoon" }));
-                var t4 = Task.Run(() => ContainsSuspiciousContent(fileContent, new[] {
+                bool t1Result = false, t2Result = false, t3Result = false, t4Result = false, t5Result = false, t6Result = false;
+            Parallel.Invoke(
+                () => t1Result = ContainsSuspiciousContent(fileContent, new[] { ".sys" }),
+                () => t2Result = ContainsSuspiciousContent(fileContent, new[] { "Virtual" }),
+                () => t3Result = ContainsSuspiciousContent(fileContent, new[] { "BlackMoon" }),
+                () => t4Result = ContainsSuspiciousContent(fileContent, new[] {
                     "wsctrlsvc", "ESET", "zhudongfangyu", "avp", "avconsol",
                     "ASWSCAN", "KWatch", "QQPCTray", "360tray", "360sd", "ccSvcHst",
                     "f-secure", "KvMonXP", "RavMonD", "Mcshield", "ekrn", "kxetray",
                     "avcenter", "avguard", "Sophos", "safedog"
-                }));
-                var t5 = Task.Run(() => ContainsSuspiciousContent(fileContent, new[] { "DelegateExecute", "fodhelper.exe", "OSDATA" }));
-                var t6 = Task.Run(() => ContainsSuspiciousContent(fileContent, new[] { "sandboxie", "vmware - tray", "Detonate", "Vmware", "VMWARE", "Sandbox", "SANDBOX" }));
-
-                await Task.WhenAll(t1, t2, t3, t4, t5, t6);
+                }),
+                () => t5Result = ContainsSuspiciousContent(fileContent, new[] { "DelegateExecute", "fodhelper.exe", "OSDATA" }),
+                () => t6Result = ContainsSuspiciousContent(fileContent, new[] { "sandboxie", "vmware - tray", "Detonate", "Vmware", "VMWARE", "Sandbox", "SANDBOX" })
+            );
 
                 // 合并结果
-                if (t1.Result) { suspiciousData.Add("UseDriver"); score += 10; }
-                if (t2.Result) { score += 20; }
-                if (t3.Result) { suspiciousData.Add("BlackMoon"); score += 15; }
-                if (t4.Result) { suspiciousData.Add("AVKiller"); score += 20; }
-                if (t5.Result) { suspiciousData.Add("BugsExploit"); score += 20; }
-                if (t6.Result) { suspiciousData.Add("SandboxBypass"); score += 20; }
+                if (t1Result) { suspiciousData.Add("UseDriver"); score += 10; }
+                if (t2Result) { score += 20; }
+                if (t3Result) { suspiciousData.Add("BlackMoon"); score += 15; }
+                if (t4Result) { suspiciousData.Add("AVKiller"); score += 20; }
+                if (t5Result) { suspiciousData.Add("BugsExploit"); score += 20; }
+                if (t6Result) { suspiciousData.Add("SandboxBypass"); score += 20; }
             }
 
             // 将附加数据拼接到extra变量

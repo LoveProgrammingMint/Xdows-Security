@@ -904,16 +904,19 @@ namespace Xdows_Security
             }
             catch (Exception ex)
             {
-                var failDlg = new ContentDialog
-                {
-                    Title = Loc("SecurityPage_GetFailed_Text"),
-                    Content = ex.Message,
-                    CloseButtonText = Loc("Button_Confirm"),
-                    XamlRoot = this.XamlRoot,
-                    RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
-                    CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
-                };
-                await failDlg.ShowAsync();
+                try{
+                    LogText.AddNewLog(4, "Security - FilesInfo - GetFailed", ex.Message);
+                    var failDlg = new ContentDialog
+                    {
+                        Title = Loc("SecurityPage_GetFailed_Text"),
+                        Content = ex.Message,
+                        CloseButtonText = Loc("Button_Confirm"),
+                        XamlRoot = this.XamlRoot,
+                        RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
+                        CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                   };
+                   await failDlg.ShowAsync();
+                }catch{ }
             }
         }
 

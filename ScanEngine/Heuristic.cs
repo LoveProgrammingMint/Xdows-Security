@@ -76,20 +76,29 @@ namespace Xdows.ScanEngine
                 if (code == 50)
                     return (0, string.Empty);
                 score -= code;
-                int tempScore = CheckResourceSectionForPacking(peFile);
+                
+                // 并行执行三个检查方法以提高性能
+                var resourceTask = CheckResourceSectionForPacking(peFile);
+                var exceptionTask = CheckExceptionHandling(peFile, peInfo);
+                var packingTask = CheckPackingSignatures(peFile);
+                
+                await Task.WhenAll(resourceTask, exceptionTask, packingTask).ConfigureAwait(false);
+                
+                int tempScore = await resourceTask;
                 if (tempScore > 0)
                 {
                     score += tempScore;
                     suspiciousData.Add("AbnormalResources");
                 }
-                tempScore = CheckExceptionHandling(peFile, peInfo);
+                
+                tempScore = await exceptionTask;
                 if (tempScore > 0)
                 {
                     score += tempScore;
                     suspiciousData.Add("ExceptionHandling");
                 }
                 
-                if (CheckPackingSignatures(peFile))
+                if (await packingTask)
                 {
                     score += 10;
                     suspiciousData.Add("PackingSignatures");
@@ -336,88 +345,97 @@ namespace Xdows.ScanEngine
 
             return (score, extra);
         }
-        public static bool CheckPackingSignatures(PeFile pe)
+        public static async Task<bool> CheckPackingSignatures(PeFile pe)
         {
-            var raw = pe.RawFile.ToArray();
-            if (raw.Length > 0x40 &&
-                raw[0x40] == 0x55 && raw[0x41] == 0x50 &&
-                raw[0x42] == 0x58 && raw[0x43] == 0x30)
-                return true;
-            uint ep = pe.ImageNtHeaders?.OptionalHeader.AddressOfEntryPoint ?? 0;
-            if (ep > raw.Length * 0.8)
-                return true;
+            return await Task.Run(() =>
+            {
+                var raw = pe.RawFile.ToArray();
+                if (raw.Length > 0x40 &&
+                    raw[0x40] == 0x55 && raw[0x41] == 0x50 &&
+                    raw[0x42] == 0x58 && raw[0x43] == 0x30)
+                    return true;
+                uint ep = pe.ImageNtHeaders?.OptionalHeader.AddressOfEntryPoint ?? 0;
+                if (ep > raw.Length * 0.8)
+                    return true;
 
-            return false;
+                return false;
+            }).ConfigureAwait(false);
         }
-        public static int CheckResourceSectionForPacking(PeFile pe)
+        public static async Task<int> CheckResourceSectionForPacking(PeFile pe)
         {
-            int score = 0;
-            var resRva = pe.ImageNtHeaders?.OptionalHeader.DataDirectory[2].VirtualAddress ?? 0;
-            if (resRva == 0) score += 10;
-            else if (resRva < 4096) score += 5;
-            var rsrc = pe.ImageSectionHeaders?
-                         .FirstOrDefault(s => s.Name
-                                             .TrimEnd('\0')
-                                             .Equals(".rsrc", StringComparison.OrdinalIgnoreCase));
-            if (rsrc != null)
+            return await Task.Run(() =>
             {
-                if (rsrc.VirtualSize == 0 || rsrc.SizeOfRawData == 0)
-                    score += 10;
-                else if (rsrc.VirtualSize > 1024 * 1024)
-                    score += 5;
-                else if (rsrc.SizeOfRawData < 1024 && rsrc.VirtualSize > 1024)
-                    score += 15;
-            }
+                int score = 0;
+                var resRva = pe.ImageNtHeaders?.OptionalHeader.DataDirectory[2].VirtualAddress ?? 0;
+                if (resRva == 0) score += 10;
+                else if (resRva < 4096) score += 5;
+                var rsrc = pe.ImageSectionHeaders?
+                             .FirstOrDefault(s => s.Name
+                                                 .TrimEnd('\0')
+                                                 .Equals(".rsrc", StringComparison.OrdinalIgnoreCase));
+                if (rsrc != null)
+                {
+                    if (rsrc.VirtualSize == 0 || rsrc.SizeOfRawData == 0)
+                        score += 10;
+                    else if (rsrc.VirtualSize > 1024 * 1024)
+                        score += 5;
+                    else if (rsrc.SizeOfRawData < 1024 && rsrc.VirtualSize > 1024)
+                        score += 15;
+                }
 
-            return score;
+                return score;
+            }).ConfigureAwait(false);
         }
-        public static int CheckExceptionHandling(PeFile pe, PEInfo info)
+        public static async Task<int> CheckExceptionHandling(PeFile pe, PEInfo info)
         {
-            if (info?.ImportsName == null) return 0;
-
-            int score = 0;
-
-            var exceptionAPIs = new[]
+            return await Task.Run(() =>
             {
-            "vectoredexceptionhandler", "unhandledexceptionfilter",
-            "setunhandledexceptionfilter", "addvectoredexceptionhandler",
-            "removevectoredexceptionhandler", "raiseexception",
-            "rtladdvectoredexceptionhandler", "rtlremovevectoredexceptionhandler"
-        };
+                if (info?.ImportsName == null) return 0;
 
-            var antiDebugAPIs = new[]
-            {
-            "isdebuggerpresent", "checkremotedebuggerpresent",
-            "debugactiveprocess", "debugactiveprocessstop",
-            "ntqueryinformationprocess", "ntsetinformationthread",
-            "outputdebugstring", "debugbreak"
-        };
+                int score = 0;
 
-            var memoryAPIs = new[]
-            {
-            "virtualprotect", "virtualprotectex", "virtuallock",
-            "virtualunlock", "fluskinstructioncache", "getwriteaccess"
-        };
-
-            foreach (var func in info.ImportsName.Select(f => f.ToLower()))
-            {
-                if (exceptionAPIs.Any(api => func.Contains(api)))
+                var exceptionAPIs = new[]
                 {
-                    score += 2;
+                "vectoredexceptionhandler", "unhandledexceptionfilter",
+                "setunhandledexceptionfilter", "addvectoredexceptionhandler",
+                "removevectoredexceptionhandler", "raiseexception",
+                "rtladdvectoredexceptionhandler", "rtlremovevectoredexceptionhandler"
+            };
+
+                var antiDebugAPIs = new[]
+                {
+                "isdebuggerpresent", "checkremotedebuggerpresent",
+                "debugactiveprocess", "debugactiveprocessstop",
+                "ntqueryinformationprocess", "ntsetinformationthread",
+                "outputdebugstring", "debugbreak"
+            };
+
+                var memoryAPIs = new[]
+                {
+                "virtualprotect", "virtualprotectex", "virtuallock",
+                "virtualunlock", "fluskinstructioncache", "getwriteaccess"
+            };
+
+                foreach (var func in info.ImportsName.Select(f => f.ToLower()))
+                {
+                    if (exceptionAPIs.Any(api => func.Contains(api)))
+                    {
+                        score += 2;
+                    }
+
+                    if (antiDebugAPIs.Any(api => func.Contains(api)))
+                    {
+                        score += 4;
+                    }
+
+                    if (memoryAPIs.Any(api => func.Contains(api)))
+                    {
+                        score += 3;
+                    }
                 }
 
-                if (antiDebugAPIs.Any(api => func.Contains(api)))
-                {
-                    score += 4;
-                }
-
-                if (memoryAPIs.Any(api => func.Contains(api)))
-                {
-                    score += 3;
-                }
-            }
-
-            return Math.Min(score, 15);
+                return Math.Min(score, 15);
+            }).ConfigureAwait(false);
         }
         unsafe static string GetExtString(string path)
         {

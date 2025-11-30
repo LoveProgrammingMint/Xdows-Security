@@ -1,4 +1,4 @@
-﻿using Xdows.ScanEngine;
+using Xdows.ScanEngine;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -112,7 +112,7 @@ namespace Xdows.Protection
                                 }
                                 Task.Run(() =>
                                 {
-                                    interceptCallBack(Succeed, path);
+                                    interceptCallBack(Succeed, path, "Process");
                                 });
                             }
                         }

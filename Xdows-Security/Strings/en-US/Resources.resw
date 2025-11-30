@@ -785,6 +785,9 @@ Why not try XIGUA Security?</value>
   <data name="InterceptWindow_EngineName" xml:space="preserve">
     <value>SouXiao Engine</value>
   </data>
+  <data name="InterceptWindow_EngineName_Registry" xml:space="preserve">
+    <value>Built-in Rules</value>
+  </data>
   <data name="InterceptWindow_SecurityAdviceCaption" xml:space="preserve">
     <value>Security Advice</value>
   </data>

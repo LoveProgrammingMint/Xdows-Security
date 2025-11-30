@@ -11,15 +11,17 @@ using System.Threading;
 using Microsoft.Win32;
 using static Xdows.Protection.CallBack;
 
+#pragma warning disable CA1416 // 验证平台兼容性
+
 namespace Xdows.Protection
 {
     public static class RegistryProtection
     {
         private static bool _isEnabled;
-        private static Thread _monitorThread;
+        private static Thread? _monitorThread;
         private static readonly object _lock = new object();
         private static readonly HashSet<string> _whitelist = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        private static InterceptCallBack _interceptCallBack;
+        private static InterceptCallBack? _interceptCallBack;
         private static readonly string _configDirectory;
         private static readonly string _logFile;
 
@@ -202,7 +204,7 @@ namespace Xdows.Protection
             return snapshot;
         }
 
-        private static Dictionary<string, object> ReadRegistryValues(RegistryView view, string subKeyPath)
+        private static Dictionary<string, object>? ReadRegistryValues(RegistryView view, string subKeyPath)
         {
             try
             {
@@ -215,7 +217,7 @@ namespace Xdows.Protection
                 {
                     try
                     {
-                        values[valueName] = key.GetValue(valueName);
+                        values[valueName] = key.GetValue(valueName) ?? "";
                     }
                     catch
                     {
@@ -330,10 +332,10 @@ namespace Xdows.Protection
                 return;
 
             // 检查是否为恶意值
-            if (change.NewValue != null && IsMaliciousPattern(change.NewValue.ToString()))
+            if (change.NewValue != null && IsMaliciousPattern(change.NewValue.ToString() ?? ""))
             {
                 // 调用拦截回调 - 成功拦截
-                _interceptCallBack?.Invoke(true, change.Path);
+                _interceptCallBack?.Invoke(true, $"{change.Path}\\{change.ValueName}", "Reg");
 
                 // 自动恢复原始值
                 RestoreOriginalValue(change);
@@ -342,7 +344,7 @@ namespace Xdows.Protection
             else if (change.NewValue == null && change.OldValue != null)
             {
                 // 值被删除，也可能是恶意行为
-                _interceptCallBack?.Invoke(true, change.Path);
+                _interceptCallBack?.Invoke(true, change.Path, "Reg");
                 RestoreOriginalValue(change);
                 LogThreat(change);
             }
@@ -383,7 +385,6 @@ namespace Xdows.Protection
             {
                 string actualPath = change.Path.Replace("HKEY_LOCAL_MACHINE_32\\", "").Replace("HKEY_LOCAL_MACHINE\\", "");
                 RegistryView view = change.Path.Contains("HKEY_LOCAL_MACHINE_32") ? RegistryView.Registry32 : RegistryView.Registry64;
-
                 using var baseKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, view);
                 using var key = baseKey.OpenSubKey(actualPath, true);
                 if (key != null)

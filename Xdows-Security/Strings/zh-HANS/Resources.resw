@@ -785,6 +785,9 @@
   <data name="InterceptWindow_EngineName" xml:space="preserve">
     <value>SouXiao 引擎</value>
   </data>
+  <data name="InterceptWindow_EngineName_Registry" xml:space="preserve">
+    <value>内置规则</value>
+  </data>
   <data name="InterceptWindow_SecurityAdviceCaption" xml:space="preserve">
     <value>安全建议</value>
   </data>

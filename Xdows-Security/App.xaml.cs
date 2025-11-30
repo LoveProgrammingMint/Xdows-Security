@@ -36,7 +36,7 @@ namespace Xdows_Security
             return true;
         }
 
-        public static InterceptCallBack interceptCallBack = (bool isSucceed, string path) =>
+        public static InterceptCallBack interceptCallBack = (bool isSucceed, string path, string type) =>
         {
             LogText.AddNewLog(2, "Protection", isSucceed
                 ? $"InterceptProcess：{Path.GetFileName(path)}"
@@ -45,7 +45,7 @@ namespace Xdows_Security
             // content = $"{AppInfo.AppName} {content}.{Environment.NewLine}相关数据：{Path.GetFileName(path)}{Environment.NewLine}单击此通知以查看详细信息";
             App.MainWindow?.DispatcherQueue?.TryEnqueue(() =>
             {
-                InterceptWindow.ShowOrActivate(path);
+                InterceptWindow.ShowOrActivate(isSucceed, path, type);
             });
             // Notifications.ShowNotification("发现威胁", content, path);
         };

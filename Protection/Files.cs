@@ -139,14 +139,14 @@ namespace Xdows.Protection
                         File.Move(e.FullPath, e.FullPath + ".virus");
                         Task.Run(() =>
                         {
-                            _toastCallBack?.Invoke(true, e.FullPath);
+                            _toastCallBack?.Invoke(true, e.FullPath, "Process");
                         });
                     }
                     catch
                     {
                         Task.Run(() =>
                         {
-                            _toastCallBack?.Invoke(false, e.FullPath);
+                            _toastCallBack?.Invoke(false, e.FullPath, "Process");
                         });
                     }
 

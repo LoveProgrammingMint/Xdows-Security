@@ -10,11 +10,11 @@ namespace Xdows_Security
     {
         private string? _originalFilePath;
         private string? _virusFilePath;
+        private string? _type;
 
-        public static void ShowOrActivate(string path)
+        public static void ShowOrActivate(bool isSucceed, string path, string type)
         {
-            var w = new InterceptWindow();
-            w.SetFileInfo(path);
+            var w = new InterceptWindow(isSucceed, path, type);
             w.Activate();
             // SetIcon("logo.ico");
         }
@@ -85,9 +85,9 @@ namespace Xdows_Security
             }
         }
 
-        public InterceptWindow()
+        private InterceptWindow(bool isSucceed, string path, string type)
         {
-            InitializeComponent();
+            this.InitializeComponent();
             var manager = WinUIEx.WindowManager.Get(this);
             manager.MinWidth = 500;
             manager.MinHeight = 400;
@@ -101,6 +101,64 @@ namespace Xdows_Security
             catch { }
 
             this.Closed += (_, __) => Localizer.Get().LanguageChanged -= Localizer_LanguageChanged;
+            SetFileInfo(path);
+            _type = type;
+
+            // 根据类型设置图标
+            if (_type == "Reg")
+            {
+                // 使用系统注册表编辑器图标
+                try
+                {
+                    string regeditPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "regedit.exe");
+                    if (File.Exists(regeditPath))
+                    {
+                        FileIcon.Source = SetIcon(regeditPath);
+                    }
+                    else
+                    {
+                        FileIcon.Source = SetIcon(path);
+                    }
+                }
+                catch
+                {
+                    // 如果获取失败，使用默认图标
+                    if (File.Exists(path))
+                    {
+                        FileIcon.Source = SetIcon(path);
+                    }
+                }
+            }
+            else
+            {
+                // 原有的动态获取图标逻辑
+                if (File.Exists(path))
+                {
+                    FileIcon.Source = SetIcon(path);
+                }
+            }
+
+            // 根据类型调整界面文本
+            if (_type == "Reg")
+            {
+                // 将"SouXiao 引擎"文本更改为"内置规则"
+                EngineNameText.Text = Localizer.Get().GetLocalizedString("InterceptWindow_EngineName_Registry");
+            }
+
+            // 根据类型调整按钮状态
+            if (_type == "Reg")
+            {
+                ScanButton.IsEnabled = false;
+                ModifyDateBox.Visibility = Visibility.Collapsed;
+                SecurityAdviceBox.Visibility = Visibility.Collapsed;
+                Grid.SetColumn(EngineBox, 0);
+            }
+
+            // 更新本地化标题
+            UpdateWindowTitle();
+
+            // 初始化其他UI元素
+            InitializeUI(path);
         }
 
         private void Localizer_LanguageChanged(object? sender, WinUI3Localizer.LanguageChangedEventArgs e)
@@ -164,23 +222,27 @@ namespace Xdows_Security
         {
             try
             {
-                if (File.Exists(_virusFilePath))
+                if (_type != "Reg")
                 {
-                    string restoredPath = _virusFilePath.Replace(".virus", "");
-                    
-                    if (File.Exists(restoredPath))
+                    // 文件类型的恢复逻辑
+                    if (File.Exists(_virusFilePath))
                     {
-                        File.Delete(restoredPath);
+                        string restoredPath = _virusFilePath.Replace(".virus", "");
+                        
+                        if (File.Exists(restoredPath))
+                        {
+                            File.Delete(restoredPath);
+                        }
+                        
+                        File.Move(_virusFilePath, restoredPath);
+                        
+                        await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Success_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Success_Message"));
+                        this.Close();
                     }
-                    
-                    File.Move(_virusFilePath, restoredPath);
-                    
-                    await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Success_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Success_Message"));
-                    this.Close();
-                }
-                else
-                {
-                    await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Restore_NoFile_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Restore_NoFile_Message"));
+                    else
+                    {
+                        await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Restore_NoFile_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Restore_NoFile_Message"));
+                    }
                 }
             }
             catch (Exception ex)
@@ -212,6 +274,7 @@ namespace Xdows_Security
                 Content = message,
                 PrimaryButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                 SecondaryButtonText = Localizer.Get().GetLocalizedString("Button_Cancel"),
+                PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"],
                 XamlRoot = this.Content.XamlRoot
             };
 
@@ -219,13 +282,39 @@ namespace Xdows_Security
             return result == ContentDialogResult.Primary;
         }
 
+        private void InitializeUI(string path)
+        {
+            // 设置文件路径和名称
+            ProcessPath.Text = path;
+            ProcessName.Text = System.IO.Path.GetFileName(path);
+            
+            try
+            {
+                if (File.Exists(_virusFilePath))
+                {
+                    var fileInfo = new FileInfo(_virusFilePath);
+                    ModifyDate.Text = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
+                }
+                else
+                {
+                    ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined.Text");
+                }
+            }
+            catch (Exception ex)
+            {
+                ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined.Text");
+                LogText.AddNewLog(3, "InterceptWindow - InitializeUI", ex.Message);
+            }
+        }
+
         private async Task ShowMessageDialog(string title, string message)
         {
             ContentDialog dialog = new ContentDialog
             {
                 Title = title,
-            Content = message,
-            PrimaryButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
+                Content = message,
+                PrimaryButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
+                PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"],
                 XamlRoot = this.Content.XamlRoot
             };
 

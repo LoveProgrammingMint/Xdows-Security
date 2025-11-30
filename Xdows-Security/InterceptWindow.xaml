@@ -71,7 +71,7 @@
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
-                Padding="16">
+                Padding="16" x:Name="ModifyDateBox">
                         <StackPanel Spacing="4">
                             <TextBlock x:Name="ModifyDateCaption"
                            Style="{ThemeResource CaptionTextBlockStyle}"
@@ -87,7 +87,7 @@
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8"
-                Padding="16">
+                Padding="16" x:Name="EngineBox">
                         <StackPanel Spacing="4">
                             <TextBlock x:Name="EngineCaption"
                            Style="{ThemeResource CaptionTextBlockStyle}"
@@ -104,7 +104,7 @@
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
             CornerRadius="8"
-            Padding="16">
+            Padding="16" x:Name="SecurityAdviceBox">
                     <StackPanel Spacing="4">
                         <TextBlock x:Name="SecurityAdviceCaption"
                        Style="{ThemeResource CaptionTextBlockStyle}"

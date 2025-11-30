@@ -1,4 +1,4 @@
-﻿using Compatibility.Windows.Storage;
+using Compatibility.Windows.Storage;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.AppNotifications;

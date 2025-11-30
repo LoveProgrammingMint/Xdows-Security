@@ -1,309 +1,510 @@
-﻿using System;
+// Registry.cs
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
+using System.Text;
 using System.Threading;
+using Microsoft.Win32;
+using static Xdows.Protection.CallBack;
 
 namespace Xdows.Protection
 {
     public static class RegistryProtection
     {
-        public static CallBack.InterceptCallBack? InterceptCallback;
+        private static bool _isEnabled;
+        private static Thread _monitorThread;
+        private static readonly object _lock = new object();
+        private static readonly HashSet<string> _whitelist = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private static InterceptCallBack _interceptCallBack;
+        private static readonly string _configDirectory;
+        private static readonly string _logFile;
 
-        // 监控状态
-        private static bool _isEnabled = false;
-        private static IntPtr _hRegistryKey = IntPtr.Zero;
-        private static Thread? _monitorThread = null;
-        private static CancellationTokenSource? _cancellationTokenSource = null;
-
-        // Windows API 常量
-        private const uint KEY_NOTIFY = 0x0010;
-        private const uint REG_NOTIFY_CHANGE_LAST_SET = 0x00000004;
-        private const uint REG_NOTIFY_CHANGE_NAME = 0x00000001;
-        private const uint REG_NOTIFY_CHANGE_ATTRIBUTES = 0x00000002;
-        private const uint REG_NOTIFY_CHANGE_SECURITY = 0x00000008;
-        private const uint ERROR_SUCCESS = 0;
-        private const uint ERROR_NO_MORE_ITEMS = 259;
-
-        // Windows API 函数
-        [DllImport("advapi32.dll", SetLastError = true)]
-        private static extern int RegOpenKeyEx(
-            IntPtr hKey,
-            string subKey,
-            uint ulOptions,
-            uint samDesired,
-            out IntPtr hkResult);
-
-        [DllImport("advapi32.dll", SetLastError = true)]
-        private static extern int RegCloseKey(IntPtr hKey);
-
-        [DllImport("advapi32.dll", SetLastError = true)]
-        private static extern int RegNotifyChangeKeyValue(
-            IntPtr hKey,
-            bool bWatchSubtree,
-            uint dwNotifyFilter,
-            IntPtr hEvent,
-            bool fAsynchronous);
-
-        [DllImport("kernel32.dll")]
-        private static extern IntPtr CreateEvent(
-            IntPtr lpEventAttributes,
-            bool bManualReset,
-            bool bInitialState,
-            string? lpName);
-
-        [DllImport("kernel32.dll")]
-        private static extern bool CloseHandle(IntPtr hObject);
-
-        [DllImport("kernel32.dll")]
-        private static extern uint WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
-
-        // 注册表根键常量
-        private static readonly IntPtr HKEY_LOCAL_MACHINE = unchecked((IntPtr)0x80000002);
-        private static readonly IntPtr HKEY_CURRENT_USER = unchecked((IntPtr)0x80000001);
-        private static readonly IntPtr HKEY_CLASSES_ROOT = unchecked((IntPtr)0x80000000);
-        private static readonly IntPtr HKEY_USERS = unchecked((IntPtr)0x80000003);
-        private static readonly IntPtr HKEY_CURRENT_CONFIG = unchecked((IntPtr)0x80000005);
-
-        // 要监控的注册表路径
-        private static readonly List<string> _monitoredPaths = new List<string>
+        // 关键监控路径
+        private static readonly string[] _criticalPaths = new[]
         {
             @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
             @"SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce",
-            @"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies",
-            @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options"
+            @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run",
+            @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\RunOnce",
+            @"SYSTEM\CurrentControlSet\Services",
+            @"SOFTWARE\Classes\exefile\shell\open\command",
+            @"SOFTWARE\Classes\batfile\shell\open\command"
         };
 
-        /// <summary>
-        /// 启用注册表保护监控
-        /// </summary>
-        /// <param name="cb">回调函数</param>
-        /// <returns>是否启用成功</returns>
-        public static bool Enable(CallBack.InterceptCallBack cb)
+        // 恶意特征
+        private static readonly string[] _maliciousPatterns = new[]
         {
-            if (_isEnabled)
-            {
-                Console.WriteLine("注册表监控已经启用");
-                return false;
-            }
+            "cmd.exe /c",
+            "powershell.exe -enc",
+            "powershell.exe -e ",
+            "rundll32.exe javascript",
+            "mshta.exe http",
+            "certutil.exe -decode",
+            "bitsadmin.exe /transfer",
+            "regsvr32.exe /s",
+            "schtasks.exe /create"
+        };
 
-            if (cb == null)
-            {
-                Console.WriteLine("回调函数不能为null");
-                return false;
-            }
-
-            InterceptCallback = cb;
-            _isEnabled = true;
-            _cancellationTokenSource = new CancellationTokenSource();
-
-            // 启动监控线程
-            _monitorThread = new Thread(MonitorRegistryChanges);
-            _monitorThread.IsBackground = true;
-            _monitorThread.Start();
-
-            Console.WriteLine("注册表监控已启用");
-            return true;
+        static RegistryProtection()
+        {
+            _configDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config");
+            _logFile = Path.Combine(_configDirectory, "registry_protection.log");
+            Directory.CreateDirectory(_configDirectory);
+            LoadConfiguration();
         }
 
-        /// <summary>
-        /// 禁用注册表保护监控
-        /// </summary>
-        /// <returns>是否禁用成功</returns>
-        public static bool Disable()
-        {
-            if (!_isEnabled)
-            {
-                Console.WriteLine("注册表监控未启用");
-                return false;
-            }
-
-            _isEnabled = false;
-            _cancellationTokenSource?.Cancel();
-
-            // 等待监控线程结束
-            if (_monitorThread != null && _monitorThread.IsAlive)
-            {
-                _monitorThread.Join(3000); // 等待线程结束
-            }
-
-            // 关闭注册表句柄
-            if (_hRegistryKey != IntPtr.Zero)
-            {
-                RegCloseKey(_hRegistryKey);
-                _hRegistryKey = IntPtr.Zero;
-            }
-
-            _cancellationTokenSource?.Dispose();
-            _cancellationTokenSource = null;
-
-            Console.WriteLine("注册表监控已禁用");
-            return true;
-        }
-
-        /// <summary>
-        /// 检查注册表监控是否启用
-        /// </summary>
-        /// <returns>监控状态</returns>
         public static bool IsEnabled()
         {
-            return _isEnabled;
+            lock (_lock)
+            {
+                return _isEnabled;
+            }
         }
 
-        /// <summary>
-        /// 监控注册表变化的线程函数
-        /// </summary>
-        private static void MonitorRegistryChanges()
+        public static bool Enable(InterceptCallBack interceptCallBack)
+        {
+            lock (_lock)
+            {
+                if (_isEnabled) return true;
+
+                try
+                {
+                    if (!IsAdministrator())
+                    {
+                        LogEvent("❌ 需要管理员权限");
+                        return false;
+                    }
+
+                    _interceptCallBack = interceptCallBack;
+                    _isEnabled = true;
+
+                    _monitorThread = new Thread(MonitorRegistry)
+                    {
+                        IsBackground = true,
+                        Name = "RegistryMonitor"
+                    };
+                    _monitorThread.Start();
+
+                    LogEvent("✅ 注册表防护已启用");
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    LogEvent($"❌ 启用失败: {ex.Message}");
+                    _isEnabled = false;
+                    return false;
+                }
+            }
+        }
+
+        public static bool Disable()
+        {
+            lock (_lock)
+            {
+                if (!_isEnabled) return true;
+
+                try
+                {
+                    _isEnabled = false;
+                    _monitorThread?.Join(1000);
+                    LogEvent("⏹️ 注册表防护已禁用");
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    LogEvent($"⚠️ 禁用错误: {ex.Message}");
+                    return false;
+                }
+            }
+        }
+
+        private static bool IsAdministrator()
         {
             try
             {
-                if (_cancellationTokenSource == null)
-                    _cancellationTokenSource = new CancellationTokenSource();
-                while (_isEnabled && !_cancellationTokenSource.Token.IsCancellationRequested)
+                var identity = WindowsIdentity.GetCurrent();
+                var principal = new WindowsPrincipal(identity);
+                return principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static void MonitorRegistry()
+        {
+            // 创建初始快照
+            var lastSnapshot = CreateRegistrySnapshot();
+
+            while (_isEnabled)
+            {
+                try
                 {
-                    foreach (var path in _monitoredPaths)
+                    Thread.Sleep(300); // 300ms检查间隔，更灵敏
+
+                    var currentSnapshot = CreateRegistrySnapshot();
+                    var changes = CompareSnapshots(lastSnapshot, currentSnapshot);
+
+                    foreach (var change in changes)
                     {
-                        if (!_isEnabled) break;
-
-                        try
+                        if (_isEnabled) // 再次确认状态
                         {
-                            MonitorSingleRegistryKey(HKEY_LOCAL_MACHINE, path);
+                            ProcessChange(change);
+                            // 更新快照
+                            lastSnapshot = CreateRegistrySnapshot();
                         }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"监控注册表路径 {path} 时出错: {ex.Message}");
-                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogEvent($"监控错误: {ex.Message}");
+                    Thread.Sleep(1000);
+                }
+            }
+        }
 
-                        // 添加短暂延迟，避免CPU占用过高
-                        Thread.Sleep(100);
+        private static Dictionary<string, Dictionary<string, object>> CreateRegistrySnapshot()
+        {
+            var snapshot = new Dictionary<string, Dictionary<string, object>>();
+
+            foreach (var path in _criticalPaths)
+            {
+                try
+                {
+                    // 读取64位视图
+                    var values64 = ReadRegistryValues(RegistryView.Registry64, path);
+                    if (values64 != null)
+                    {
+                        snapshot[$"HKEY_LOCAL_MACHINE\\{path}"] = values64;
                     }
 
-                    // 监控HKEY_CURRENT_USER下的关键路径
+                    // 读取32位视图（64位系统）
+                    if (Environment.Is64BitOperatingSystem)
+                    {
+                        var values32 = ReadRegistryValues(RegistryView.Registry32, path);
+                        if (values32 != null)
+                        {
+                            snapshot[$"HKEY_LOCAL_MACHINE_32\\{path}"] = values32;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogEvent($"读取快照失败 {path}: {ex.Message}");
+                }
+            }
+
+            return snapshot;
+        }
+
+        private static Dictionary<string, object> ReadRegistryValues(RegistryView view, string subKeyPath)
+        {
+            try
+            {
+                using var baseKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, view);
+                using var key = baseKey.OpenSubKey(subKeyPath, false); // 只读
+                if (key == null) return null;
+
+                var values = new Dictionary<string, object>();
+                foreach (var valueName in key.GetValueNames())
+                {
                     try
                     {
-                        MonitorSingleRegistryKey(HKEY_CURRENT_USER, @"Software\Microsoft\Windows\CurrentVersion\Run");
-                        MonitorSingleRegistryKey(HKEY_CURRENT_USER, @"Software\Microsoft\Windows\CurrentVersion\RunOnce");
+                        values[valueName] = key.GetValue(valueName);
                     }
-                    catch (Exception ex)
+                    catch
                     {
-                        Console.WriteLine($"监控HKEY_CURRENT_USER时出错: {ex.Message}");
+                        // 忽略单个值读取错误
+                    }
+                }
+                return values;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static List<RegistryChange> CompareSnapshots(
+            Dictionary<string, Dictionary<string, object>> oldSnapshot,
+            Dictionary<string, Dictionary<string, object>> newSnapshot)
+        {
+            var changes = new List<RegistryChange>();
+            var currentProcess = GetCurrentProcessInfo();
+
+            // 检查新增或修改的值
+            foreach (var newEntry in newSnapshot)
+            {
+                string registryPath = newEntry.Key;
+                var newValues = newEntry.Value;
+
+                if (!oldSnapshot.ContainsKey(registryPath))
+                {
+                    // 全新注册表路径
+                    foreach (var valuePair in newValues)
+                    {
+                        changes.Add(new RegistryChange
+                        {
+                            Path = registryPath,
+                            ValueName = valuePair.Key,
+                            OldValue = null,
+                            NewValue = valuePair.Value,
+                            ProcessName = currentProcess.Item1,
+                            ProcessId = currentProcess.Item2
+                        });
+                    }
+                }
+                else
+                {
+                    var oldValues = oldSnapshot[registryPath];
+
+                    // 检查新值或修改的值
+                    foreach (var valuePair in newValues)
+                    {
+                        if (!oldValues.ContainsKey(valuePair.Key))
+                        {
+                            // 新值
+                            changes.Add(new RegistryChange
+                            {
+                                Path = registryPath,
+                                ValueName = valuePair.Key,
+                                OldValue = null,
+                                NewValue = valuePair.Value,
+                                ProcessName = currentProcess.Item1,
+                                ProcessId = currentProcess.Item2
+                            });
+                        }
+                        else if (!AreValuesEqual(oldValues[valuePair.Key], valuePair.Value))
+                        {
+                            // 值被修改
+                            changes.Add(new RegistryChange
+                            {
+                                Path = registryPath,
+                                ValueName = valuePair.Key,
+                                OldValue = oldValues[valuePair.Key],
+                                NewValue = valuePair.Value,
+                                ProcessName = currentProcess.Item1,
+                                ProcessId = currentProcess.Item2
+                            });
+                        }
                     }
 
-                    Thread.Sleep(1000); // 主循环延迟
+                    // 检查被删除的值
+                    foreach (var oldValuePair in oldValues)
+                    {
+                        if (!newValues.ContainsKey(oldValuePair.Key))
+                        {
+                            changes.Add(new RegistryChange
+                            {
+                                Path = registryPath,
+                                ValueName = oldValuePair.Key,
+                                OldValue = oldValuePair.Value,
+                                NewValue = null,
+                                ProcessName = currentProcess.Item1,
+                                ProcessId = currentProcess.Item2
+                            });
+                        }
+                    }
                 }
             }
-            catch (ThreadAbortException)
-            {
-                // 线程被中止，正常退出
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"监控线程发生错误: {ex.Message}");
-            }
+
+            return changes;
         }
 
-        /// <summary>
-        /// 监控单个注册表键
-        /// </summary>
-        private static void MonitorSingleRegistryKey(IntPtr hKey, string subKey)
+        private static bool AreValuesEqual(object val1, object val2)
         {
-            IntPtr hSubKey = IntPtr.Zero;
-            IntPtr hEvent = IntPtr.Zero;
-
-            try
-            {
-                // 打开注册表键
-                int result = RegOpenKeyEx(hKey, subKey, 0, KEY_NOTIFY, out hSubKey);
-                if (result != ERROR_SUCCESS)
-                {
-                    // 如果键不存在，忽略错误
-                    if (result == 2) // ERROR_FILE_NOT_FOUND
-                        return;
-
-                    throw new Win32Exception(result);
-                }
-
-                // 创建事件对象
-                hEvent = CreateEvent(IntPtr.Zero, true, false, null);
-                if (hEvent == IntPtr.Zero)
-                {
-                    throw new Win32Exception(Marshal.GetLastWin32Error());
-                }
-
-                // 设置注册表变更通知
-                result = RegNotifyChangeKeyValue(
-                    hSubKey,
-                    true, // 监控子键
-                    REG_NOTIFY_CHANGE_LAST_SET | REG_NOTIFY_CHANGE_NAME |
-                    REG_NOTIFY_CHANGE_ATTRIBUTES | REG_NOTIFY_CHANGE_SECURITY,
-                    hEvent,
-                    true); // 异步方式
-
-                if (result != ERROR_SUCCESS)
-                {
-                    throw new Win32Exception(result);
-                }
-
-                // 等待事件触发（最多等待5秒）
-                uint waitResult = WaitForSingleObject(hEvent, 5000);
-
-                if (waitResult == 0) // WAIT_OBJECT_0
-                {
-                    // 注册表发生变化
-                    string fullPath = GetRootKeyName(hKey) + "\\" + subKey;
-                    OnRegistryChanged(fullPath);
-                }
-                else if (waitResult == ERROR_NO_MORE_ITEMS) // 错误处理，事件未触发
-                {
-                    Console.WriteLine($"监控到 {subKey} 键发生删除或其他错误，正在重新尝试...");
-                    // 尝试重新注册
-                    MonitorSingleRegistryKey(hKey, subKey);
-                }
-            }
-            finally
-            {
-                if (hSubKey != IntPtr.Zero)
-                {
-                    RegCloseKey(hSubKey);
-                }
-                if (hEvent != IntPtr.Zero)
-                {
-                    CloseHandle(hEvent);
-                }
-            }
+            if (val1 == null && val2 == null) return true;
+            if (val1 == null || val2 == null) return false;
+            return val1.Equals(val2);
         }
 
-
-        /// <summary>
-        /// 获取根键名称
-        /// </summary>
-        private static string GetRootKeyName(IntPtr hKey)
+        private static void ProcessChange(RegistryChange change)
         {
-            if (hKey == HKEY_LOCAL_MACHINE) return "HKEY_LOCAL_MACHINE";
-            if (hKey == HKEY_CURRENT_USER) return "HKEY_CURRENT_USER";
-            if (hKey == HKEY_CLASSES_ROOT) return "HKEY_CLASSES_ROOT";
-            if (hKey == HKEY_USERS) return "HKEY_USERS";
-            if (hKey == HKEY_CURRENT_CONFIG) return "HKEY_CURRENT_CONFIG";
-            return "UNKNOWN";
+            // 跳过白名单项
+            if (IsWhitelisted(change))
+                return;
+
+            // 检查是否为恶意值
+            if (change.NewValue != null && IsMaliciousPattern(change.NewValue.ToString()))
+            {
+                // 调用拦截回调 - 成功拦截
+                _interceptCallBack?.Invoke(true, change.Path);
+
+                // 自动恢复原始值
+                RestoreOriginalValue(change);
+                LogThreat(change);
+            }
+            else if (change.NewValue == null && change.OldValue != null)
+            {
+                // 值被删除，也可能是恶意行为
+                _interceptCallBack?.Invoke(true, change.Path);
+                RestoreOriginalValue(change);
+                LogThreat(change);
+            }
         }
 
-        /// <summary>
-        /// 注册表变化事件处理
-        /// </summary>
-        private static void OnRegistryChanged(string registryPath)
+        private static bool IsWhitelisted(RegistryChange change)
+        {
+            lock (_lock)
+            {
+                // 检查进程白名单
+                if (_whitelist.Contains(change.ProcessName, StringComparer.OrdinalIgnoreCase))
+                    return true;
+
+                // 检查注册表路径白名单
+                foreach (var whitelistItem in _whitelist)
+                {
+                    if (!string.IsNullOrEmpty(whitelistItem) &&
+                        change.Path.IndexOf(whitelistItem, StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        private static bool IsMaliciousPattern(string value)
+        {
+            if (string.IsNullOrEmpty(value)) return false;
+            value = value.ToLowerInvariant();
+            return _maliciousPatterns.Any(pattern => value.Contains(pattern.ToLowerInvariant()));
+        }
+
+        private static void RestoreOriginalValue(RegistryChange change)
         {
             try
             {
-                Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] 检测到注册表修改: {registryPath}");
+                string actualPath = change.Path.Replace("HKEY_LOCAL_MACHINE_32\\", "").Replace("HKEY_LOCAL_MACHINE\\", "");
+                RegistryView view = change.Path.Contains("HKEY_LOCAL_MACHINE_32") ? RegistryView.Registry32 : RegistryView.Registry64;
 
-                // 调用回调函数
-                InterceptCallback?.Invoke(true, registryPath);
+                using var baseKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, view);
+                using var key = baseKey.OpenSubKey(actualPath, true);
+                if (key != null)
+                {
+                    if (change.NewValue == null && change.OldValue != null)
+                    {
+                        // 恢复被删除的值
+                        key.SetValue(change.ValueName, change.OldValue);
+                    }
+                    else if (change.OldValue == null)
+                    {
+                        // 删除新创建的恶意值
+                        try
+                        {
+                            key.DeleteValue(change.ValueName, false);
+                        }
+                        catch
+                        {
+                            // 忽略删除错误
+                        }
+                    }
+                    else
+                    {
+                        // 恢复原始值
+                        key.SetValue(change.ValueName, change.OldValue);
+                    }
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"处理注册表变化时出错: {ex.Message}");
-                InterceptCallback?.Invoke(false, registryPath);
+                LogEvent($"恢复注册表值失败: {ex.Message}");
             }
+        }
+
+        private static (string, int) GetCurrentProcessInfo()
+        {
+            try
+            {
+                using var current = Process.GetCurrentProcess();
+                return (current.ProcessName, current.Id);
+            }
+            catch
+            {
+                return ("unknown", 0);
+            }
+        }
+
+        public static void LoadConfiguration()
+        {
+            lock (_lock)
+            {
+                _whitelist.Clear();
+                var whitelistFile = Path.Combine(_configDirectory, "registry_whitelist.txt");
+                if (File.Exists(whitelistFile))
+                {
+                    var lines = File.ReadAllLines(whitelistFile);
+                    foreach (var line in lines)
+                    {
+                        var trimmed = line.Trim();
+                        if (!string.IsNullOrEmpty(trimmed) && !trimmed.StartsWith("#"))
+                        {
+                            _whitelist.Add(trimmed);
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void SaveConfiguration()
+        {
+            lock (_lock)
+            {
+                var whitelistFile = Path.Combine(_configDirectory, "registry_whitelist.txt");
+                var lines = new List<string>
+                {
+                    "# 注册表防护白名单",
+                    "# 每行一个进程名或注册表路径"
+                };
+                lines.AddRange(_whitelist);
+                File.WriteAllLines(whitelistFile, lines);
+            }
+        }
+
+        public static void AddToWhitelist(string pattern)
+        {
+            lock (_lock)
+            {
+                if (!_whitelist.Contains(pattern, StringComparer.OrdinalIgnoreCase))
+                {
+                    _whitelist.Add(pattern);
+                    SaveConfiguration();
+                }
+            }
+        }
+
+        private static void LogEvent(string message)
+        {
+            try
+            {
+                File.AppendAllText(_logFile, $"[{DateTime.Now:HH:mm:ss.fff}] {message}{Environment.NewLine}");
+            }
+            catch
+            {
+                // 忽略日志错误
+            }
+        }
+
+        private static void LogThreat(RegistryChange change)
+        {
+            var message = $"THREAT|{change.Path}|{change.ValueName}|{change.NewValue}|{change.ProcessName}";
+            LogEvent(message);
+        }
+
+        private class RegistryChange
+        {
+            public string Path { get; set; } = string.Empty;
+            public string ValueName { get; set; } = string.Empty;
+            public object? OldValue { get; set; }
+            public object? NewValue { get; set; }
+            public string ProcessName { get; set; } = string.Empty;
+            public int ProcessId { get; set; }
         }
     }
 }

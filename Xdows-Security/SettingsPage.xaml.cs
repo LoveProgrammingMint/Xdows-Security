@@ -44,11 +44,11 @@ namespace Xdows_Security
             //FilesToggle.IsOn = false;
             //FilesToggle.IsEnabled = false;
             //}
-            //if (!App.IsRunAsAdmin())
-            //{
-            RegistryToggle.IsEnabled = false;
-            RegistryToggle.IsOn = false;
-            //}
+            if (!App.IsRunAsAdmin())
+            {
+                RegistryToggle.IsEnabled = false;
+                RegistryToggle.IsOn = false;
+            }
             IsInitialize = false;
         }
         private void RunProtectionWithToggle(ToggleSwitch toggle, int runId)

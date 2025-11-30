@@ -1,4 +1,4 @@
-﻿using PeNet;
+using PeNet;
 using Self_Heuristic;
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,25 @@ namespace Xdows.ScanEngine
 
         public static async Task<string> LocalScanAsync(string path, bool deep, bool ExtraData)
         {
-            if (!File.Exists(path) || !PeFile.IsPeFile(path)) return string.Empty;
+            if (!File.Exists(path)) return string.Empty;
+
+            if (!PeFile.IsPeFile(path))
+            {
+                try
+                {
+                    var fileContent = await File.ReadAllBytesAsync(path);
+                    var scriptScanResult = await ScriptScan.ScanScriptFileAsync(path, fileContent);
+                    if (scriptScanResult.score >= 75)
+                    {
+                        return ExtraData ? $"Xdows.local.code{scriptScanResult.score} {scriptScanResult.extra}" : $"Xdows.local.code{scriptScanResult.score}";
+                    }
+                    return string.Empty;
+                }
+                catch
+                {
+                    return string.Empty;
+                }
+            }
 
             var peFile = new PeFile(path);
             var fileInfo = new PEInfo();

@@ -1010,7 +1010,7 @@ namespace Xdows_Security
                  Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "SysWOW64")
             };
 
-            var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".exe", ".dll", ".sys", ".com", "scr" };
+            var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".exe", ".dll", ".sys", ".com", ".scr", ".bat" };
 
             return criticalPaths
                    .Where(Directory.Exists)

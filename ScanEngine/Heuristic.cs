@@ -24,8 +24,9 @@ namespace Xdows.ScanEngine
 
             var fileContent = peFile.RawFile.ToArray();
             var suspiciousData = new List<string>();
+            string[] docExts = { ".doc", ".ppt", ".xls", ".csv"};
 
-            if (fileExtension == ".doc" || fileExtension == ".docx")
+            if (docExts.Any(docExt => path.Contains(docExt)))
             {
                 if (IsSuspiciousDoc(fileContent))
                 {
@@ -38,6 +39,7 @@ namespace Xdows.ScanEngine
                 suspiciousData.Add("EComponent");
             }
             string[] mediaExts = { ".jpg", ".bmp", ".gif", ".avi", ".wmv", ".rar", ".zip" };
+
             if (mediaExts.Any(mediaExt => path.Contains(mediaExt)))
             {
                 score += 20;// 谁家好人在文件路径里放这些东西啊

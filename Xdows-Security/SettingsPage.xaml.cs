@@ -13,6 +13,7 @@ using Windows.Globalization;
 using Compatibility.Windows.Storage;
 using WinUI3Localizer;
 using Xdows.Protection;
+using System.Threading.Tasks;
 
 namespace Xdows_Security
 {
@@ -200,10 +201,52 @@ namespace Xdows_Security
             }
         }
 
-        private void UpdateButtonClick(object sender, RoutedEventArgs e)
+        private async void UpdateButtonClick(object sender, RoutedEventArgs e)
         {
-            UpdateTeachingTip.ActionButtonContent = Localizer.Get().GetLocalizedString("Button_Confirm");
-            UpdateTeachingTip.IsOpen = !UpdateTeachingTip.IsOpen;
+            try
+            {
+                UpdateButton.IsEnabled = false;
+
+                var update = await Updater.CheckUpdateAsync();
+                if (update == null)
+                {
+                    UpdateButton.IsEnabled = true;
+                    UpdateTeachingTip.ActionButtonContent = Localizer.Get().GetLocalizedString("Button_Confirm");
+                    UpdateTeachingTip.IsOpen = !UpdateTeachingTip.IsOpen;
+                    return;
+                }
+                var box = new TextBlock
+                {
+                    Text = update.Content,
+                    IsTextSelectionEnabled = true,
+                    TextWrapping = TextWrapping.Wrap,
+                    Margin = new Thickness(12)
+                };
+                var scrollViewer = new ScrollViewer
+                {
+                    Content = box,
+                    MaxHeight = 320,
+                    HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                    VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+                };
+
+                var dialog = new ContentDialog
+                {
+                    Title = update.Title,
+                    Content = scrollViewer,
+                    PrimaryButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
+                    XamlRoot = this.XamlRoot,
+                    RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
+                    PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                };
+
+                await dialog.ShowAsync();
+            }
+            catch { }
+            finally
+            {
+                UpdateButton.IsEnabled = true;
+            }
         }
 
         private void UpdateTeachingTipClose(TeachingTip sender, object args)

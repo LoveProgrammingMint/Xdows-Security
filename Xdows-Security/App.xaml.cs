@@ -20,9 +20,68 @@ using WinUI3Localizer;
 using WinUIEx;
 using Xdows.Protection;
 using static Xdows.Protection.CallBack;
+using System.Net.Http;
 
 namespace Xdows_Security
 {
+    public class UpdateInfo
+    {
+        public required string Title { get; set; }
+        public required string Content { get; set; }
+        public required string DownloadUrl { get; set; }
+    }
+
+    public static class Updater
+    {
+        private static readonly HttpClient _httpClient = new HttpClient();
+
+        static Updater()
+        {
+            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Xdows-Security/4.1");
+        }
+
+        public static async Task<UpdateInfo?> CheckUpdateAsync()
+        {
+            try
+            {
+                const string url = "https://api.github.com/repositories/1032964256/releases/latest";
+                string json = await _httpClient.GetStringAsync(url);
+                using var doc = JsonDocument.Parse(json);
+                var root = doc.RootElement;
+
+                string? title = root.GetProperty("name").GetString()
+                               ?? root.GetProperty("tag_name").GetString();
+
+                string? content = root.GetProperty("body").GetString();
+
+                string? downloadUrl = null;
+                if (root.TryGetProperty("assets", out var assets) && assets.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var asset in assets.EnumerateArray())
+                    {
+                        if (asset.TryGetProperty("browser_download_url", out var urlProp))
+                        {
+                            downloadUrl = urlProp.GetString();
+                            break;
+                        }
+                    }
+                }
+
+                downloadUrl ??= root.GetProperty("html_url").GetString();
+
+                return new UpdateInfo
+                {
+                    Title = title ?? string.Empty,
+                    Content = content ?? string.Empty,
+                    DownloadUrl = downloadUrl ?? string.Empty
+                };
+            }
+            catch
+            {
+                return null; // 或可抛出异常，依需求而定
+            }
+        }
+    }
     public class AppInfo { 
         public static readonly string AppName = "Xdows Security";
         public static readonly string AppVersion = "4.10-Dev";

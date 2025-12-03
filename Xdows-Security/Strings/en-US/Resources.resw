@@ -539,6 +539,12 @@ This will permanently remove the file and cannot be undone</value>
   <data name="Button_Confirm" xml:space="preserve">
     <value>Confirm</value>
   </data>
+  <data name="Button_Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="Button_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
   <data name="SettingsPage_Other_CheckUpdate_UpdateTeachingTip.Title" xml:space="preserve">
     <value>This is the latest version</value>
   </data>

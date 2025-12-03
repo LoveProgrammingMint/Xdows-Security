@@ -206,11 +206,15 @@ namespace Xdows_Security
             try
             {
                 UpdateButton.IsEnabled = false;
+                UpdateProgressRing.IsActive = true;
+                UpdateProgressRing.Visibility = Visibility.Visible;
 
                 var update = await Updater.CheckUpdateAsync();
                 if (update == null)
                 {
                     UpdateButton.IsEnabled = true;
+                    UpdateProgressRing.IsActive = false;
+                    UpdateProgressRing.Visibility = Visibility.Collapsed;
                     UpdateTeachingTip.ActionButtonContent = Localizer.Get().GetLocalizedString("Button_Confirm");
                     UpdateTeachingTip.IsOpen = !UpdateTeachingTip.IsOpen;
                     return;
@@ -234,18 +238,25 @@ namespace Xdows_Security
                 {
                     Title = update.Title,
                     Content = scrollViewer,
-                    PrimaryButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
+                    PrimaryButtonText = Localizer.Get().GetLocalizedString("Button_Download"),
+                    SecondaryButtonText = Localizer.Get().GetLocalizedString("Button_Cancel"),
                     XamlRoot = this.XamlRoot,
                     RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                     PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 };
 
-                await dialog.ShowAsync();
+                var result = await dialog.ShowAsync();
+                if (result == ContentDialogResult.Primary)
+                {
+                    await Windows.System.Launcher.LaunchUriAsync(new Uri(update.DownloadUrl));
+                }
             }
             catch { }
             finally
             {
                 UpdateButton.IsEnabled = true;
+                UpdateProgressRing.IsActive = false;
+                UpdateProgressRing.Visibility = Visibility.Collapsed;
             }
         }
 

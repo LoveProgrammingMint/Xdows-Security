@@ -212,7 +212,10 @@
             <controls:SettingsCard 
                     l:Uids.Uid="SettingsPage_Other_CheckUpdate"
                     HeaderIcon="{ui:FontIcon Glyph=&#xE895;}">
-                <Button l:Uids.Uid="SettingsPage_Other_CheckUpdate_Button" x:Name="UpdateButton" Click="UpdateButtonClick" Style="{ThemeResource AccentButtonStyle}" />
+                <Grid>
+                    <Button l:Uids.Uid="SettingsPage_Other_CheckUpdate_Button" x:Name="UpdateButton" Click="UpdateButtonClick" Style="{ThemeResource AccentButtonStyle}" />
+                    <ProgressRing x:Name="UpdateProgressRing" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" IsActive="False" Visibility="Collapsed" />
+                </Grid>
             </controls:SettingsCard>
             <controls:SettingsExpander
                             VerticalAlignment="Top"

@@ -196,6 +196,41 @@
                     </controls:SettingsCard>
                 </controls:SettingsExpander.Items>
             </controls:SettingsExpander>
+            <TextBlock Margin="0,8,0,8" l:Uids.Uid="SettingsPage_Quarantine_Trust" />
+            <controls:SettingsExpander
+                VerticalAlignment="Top"
+                l:Uids.Uid="SettingsPage_Quarantine"
+                HeaderIcon="{ui:FontIcon Glyph=&#xE8B6;}">
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard
+                        l:Uids.Uid="SettingsPage_Quarantine_ViewItems"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
+                        <Button x:Name="Quarantine_ViewButton" l:Uids.Uid="SettingsPage_Quarantine_ViewButton" Click="Quarantine_ViewButton_Click"/>
+                    </controls:SettingsCard>
+                    <controls:SettingsCard
+                        l:Uids.Uid="SettingsPage_Quarantine_ClearAll"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE74D;}">
+                        <Button x:Name="Quarantine_ClearButton" l:Uids.Uid="SettingsPage_Quarantine_ClearButton" Click="Quarantine_ClearButton_Click"/>
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
+            <controls:SettingsExpander
+                VerticalAlignment="Top"
+                l:Uids.Uid="SettingsPage_Trust"
+                HeaderIcon="{ui:FontIcon Glyph=&#xE8E5;}">
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard
+                        l:Uids.Uid="SettingsPage_Trust_ViewItems"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
+                        <Button x:Name="Trust_ViewButton" l:Uids.Uid="SettingsPage_Trust_ViewButton" Click="Trust_ViewButton_Click"/>
+                    </controls:SettingsCard>
+                    <controls:SettingsCard
+                        l:Uids.Uid="SettingsPage_Trust_AddItem"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE710;}">
+                        <Button x:Name="Trust_AddButton" l:Uids.Uid="SettingsPage_Trust_AddButton" Click="Trust_AddButton_Click"/>
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
             <TextBlock Margin="0,8,0,8" l:Uids.Uid="SettingsPage_Other"/>
             <controls:SettingsCard 
                      l:Uids.Uid="SettingsPage_Other_Language"

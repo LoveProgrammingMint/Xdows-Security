@@ -21,6 +21,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using WinUI3Localizer;
+using Xdows.Protection;
       
 namespace Xdows_Security
 {
@@ -32,7 +33,7 @@ namespace Xdows_Security
         public string ItemName { get; set; } = string.Empty;
         public string IconGlyph { get; set; } = "&#xE721;";
         public SolidColorBrush IconColor { get; set; } = new SolidColorBrush(Colors.Gray);
-        public string StatusText { get; set; } = "等待扫描";
+        public string StatusText { get; set; } = Localizer.Get().GetLocalizedString("SecurityPage_Status_Waiting");
         public int ThreatCount { get; set; } = 0;
         public Visibility ThreatCountVisibility { get; set; } = Visibility.Collapsed;
         public SolidColorBrush ThreatCountBackground { get; set; } = new SolidColorBrush(Colors.Red);
@@ -589,6 +590,14 @@ namespace Xdows_Security
                         {
                             string Result = string.Empty;
 
+                            // 检查文件是否在信任区中
+                            if (TrustManager.IsPathTrusted(file))
+                            {
+                                LogText.AddNewLog(1, "Security - Find", "Is Trusted (Path)");
+                                _filesSafe++;
+                                continue;
+                            }
+                            
                             if (UseSouXiaoScan)
                             {
                                 if (SouXiaoEngine != null)
@@ -775,39 +784,164 @@ namespace Xdows_Security
                 await ShowDetailsDialog(row);
         }
 
-        private async void OnDeleteClick(object sender, RoutedEventArgs e)
+        private async void OnTrustClick(object sender, RoutedEventArgs e)
         {
-            if ((sender as MenuFlyoutItem)?.Tag is not VirusRow row ||
-                _currentResults is null) return;
-            var dialog = new ContentDialog
+            if ((sender as MenuFlyoutItem)?.Tag is not VirusRow row)
+                return;
+            
+            // 确认对话框
+            var confirmDialog = new ContentDialog
             {
-                Title = Localizer.Get().GetLocalizedString("SecurityPage_DeleteConfirm_Title"),
-                Content = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_DeleteConfirm_Content"), row.FilePath),
-                PrimaryButtonText = Localizer.Get().GetLocalizedString("SecurityPage_DeleteConfirm_Primary"),
+                Title = Localizer.Get().GetLocalizedString("SecurityPage_TrustConfirm_Title"),
+                Content = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_TrustConfirm_Content"), row.FilePath),
+                PrimaryButtonText = Localizer.Get().GetLocalizedString("SecurityPage_TrustConfirm_Primary"),
                 CloseButtonText = Localizer.Get().GetLocalizedString("Button_Cancel"),
                 XamlRoot = this.XamlRoot,
                 RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                 PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
             };
-            if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+            
+            if (await confirmDialog.ShowAsync() == ContentDialogResult.Primary)
             {
                 try
                 {
-                    File.Delete(row.FilePath);
-                    var itemToRemove = _currentResults.FirstOrDefault(r => r.FilePath == row.FilePath && r.VirusName == row.VirusName);
-                    if (itemToRemove != null)
+                    // 添加文件到信任区
+                    bool success = Xdows.Protection.TrustManager.AddFileToTrust(row.FilePath, row.VirusName);
+                    
+                    // 显示结果
+                    var resultDialog = new ContentDialog
                     {
-                        _currentResults.Remove(itemToRemove);
+                        Title = success ? 
+                            Localizer.Get().GetLocalizedString("SecurityPage_TrustResult_Title") : 
+                            Localizer.Get().GetLocalizedString("SecurityPage_TrustFailed_Title"),
+                        Content = success ? 
+                            string.Format(Localizer.Get().GetLocalizedString("SecurityPage_TrustResult_Content"), row.FilePath) :
+                            Localizer.Get().GetLocalizedString("SecurityPage_TrustFailed_Content"),
+                        CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
+                        XamlRoot = this.XamlRoot,
+                        RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
+                        CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                    };
+                    await resultDialog.ShowAsync();
+                    
+                    // 如果添加成功，从列表中移除
+                    if (success && _currentResults != null)
+                    {
+                        var itemToRemove = _currentResults.FirstOrDefault(r => r.FilePath == row.FilePath && r.VirusName == row.VirusName);
+                        if (itemToRemove != null)
+                        {
+                            _currentResults.Remove(itemToRemove);
+                        }
+                        _threatsFound--;
+                        UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
+                        StatusText.Text = string.Format(Loc("SecurityPage_ScanCompleteFound"), _currentResults?.Count ?? 0);
                     }
-                    _threatsFound--;
-                    UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
-                    StatusText.Text = string.Format(Loc("SecurityPage_ScanCompleteFound"), _currentResults.Count);
                 }
                 catch (Exception ex)
                 {
                     await new ContentDialog
                     {
-                        Title = Localizer.Get().GetLocalizedString("SecurityPage_DeleteFailed_Title"),
+                        Title = Localizer.Get().GetLocalizedString("SecurityPage_TrustFailed_Title"),
+                        Content = ex.Message,
+                        CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
+                        RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
+                        XamlRoot = this.XamlRoot,
+                        CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                    }.ShowAsync();
+                }
+            }
+        }
+
+        private async void OnHandleClick(object sender, RoutedEventArgs e)
+        {
+            if ((sender as MenuFlyoutItem)?.Tag is not VirusRow row ||
+                _currentResults is null) return;
+            
+            var dialog = new ContentDialog
+            {
+                Title = Localizer.Get().GetLocalizedString("SecurityPage_HandleConfirm_Title"),
+                Content = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_HandleConfirm_Content"), row.FilePath),
+                PrimaryButtonText = Localizer.Get().GetLocalizedString("SecurityPage_HandleConfirm_Primary"),
+                CloseButtonText = Localizer.Get().GetLocalizedString("Button_Cancel"),
+                XamlRoot = this.XamlRoot,
+                RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
+                PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+            };
+            
+            if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+            {
+                try
+                {
+                    bool handled = false;
+                    string actionTaken = "";
+                    
+                    // 首先尝试加入隔离区
+                    if (Xdows.Protection.QuarantineManager.AddToQuarantine(row.FilePath, row.VirusName))
+                    {
+                        actionTaken = Localizer.Get().GetLocalizedString("SecurityPage_HandleAction_Quarantined");
+                        handled = true;
+                    }
+                    // 如果隔离失败，尝试删除文件
+                    else if (File.Exists(row.FilePath))
+                    {
+                        try
+                        {
+                            File.Delete(row.FilePath);
+                            actionTaken = Localizer.Get().GetLocalizedString("SecurityPage_HandleAction_Deleted");
+                            handled = true;
+                        }
+                        catch
+                        {
+                            // 如果删除也失败，尝试修改文件名
+                            try
+                            {
+                                string directory = Path.GetDirectoryName(row.FilePath) ?? "";
+                                string fileName = Path.GetFileNameWithoutExtension(row.FilePath);
+                                string extension = Path.GetExtension(row.FilePath);
+                                string newFileName = $"{fileName}_virus_{DateTime.Now:yyyyMMddHHmmss}{extension}";
+                                string newPath = Path.Combine(directory, newFileName);
+                                
+                                File.Move(row.FilePath, newPath);
+                                actionTaken = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_HandleAction_Renamed"), newFileName);
+                                handled = true;
+                            }
+                            catch
+                            {
+                                actionTaken = Localizer.Get().GetLocalizedString("SecurityPage_HandleAction_Failed");
+                            }
+                        }
+                    }
+                    
+                    // 显示处理结果
+                    var resultDialog = new ContentDialog
+                    {
+                        Title = Localizer.Get().GetLocalizedString("SecurityPage_HandleResult_Title"),
+                        Content = actionTaken,
+                        CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
+                        XamlRoot = this.XamlRoot,
+                        RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
+                        CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                    };
+                    await resultDialog.ShowAsync();
+                    
+                    // 如果处理成功，从列表中移除
+                    if (handled)
+                    {
+                        var itemToRemove = _currentResults.FirstOrDefault(r => r.FilePath == row.FilePath && r.VirusName == row.VirusName);
+                        if (itemToRemove != null)
+                        {
+                            _currentResults.Remove(itemToRemove);
+                        }
+                        _threatsFound--;
+                        UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
+                        StatusText.Text = string.Format(Loc("SecurityPage_ScanCompleteFound"), _currentResults.Count);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await new ContentDialog
+                    {
+                        Title = Localizer.Get().GetLocalizedString("SecurityPage_HandleFailed_Title"),
                         Content = ex.Message,
                         CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                         RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,

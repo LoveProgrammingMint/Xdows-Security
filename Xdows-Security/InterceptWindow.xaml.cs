@@ -4,6 +4,9 @@ using WinUI3Localizer;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Xdows.Protection;
+
 namespace Xdows_Security
 {
     public sealed partial class InterceptWindow : Window
@@ -11,10 +14,32 @@ namespace Xdows_Security
         private string? _originalFilePath;
         private string? _virusFilePath;
         private string? _type;
+        
+        // 静态字典用于跟踪已打开的窗口
+        private static readonly Dictionary<string, InterceptWindow> _openWindows = new Dictionary<string, InterceptWindow>();
 
         public static void ShowOrActivate(bool isSucceed, string path, string type)
         {
-            var w = new InterceptWindow(isSucceed, path, type);
+            // 创建唯一的键（路径+类型）
+            string key = $"{path}|{type}";
+            
+            // 如果已经存在相同文件的窗口，激活它而不是创建新窗口
+            if (_openWindows.TryGetValue(key, out var existingWindow))
+            {
+                try
+                {
+                    existingWindow.Activate();
+                    return;
+                }
+                catch
+                {
+                    // 如果窗口已关闭但未从字典中移除，移除它
+                    _openWindows.Remove(key);
+                }
+            }
+            
+            // 创建新窗口
+            var w = new InterceptWindow(isSucceed, path, type, key);
             w.Activate();
             // SetIcon("logo.ico");
         }
@@ -85,7 +110,7 @@ namespace Xdows_Security
             }
         }
 
-        private InterceptWindow(bool isSucceed, string path, string type)
+        private InterceptWindow(bool isSucceed, string path, string type, string key)
         {
             this.InitializeComponent();
             var manager = WinUIEx.WindowManager.Get(this);
@@ -93,6 +118,10 @@ namespace Xdows_Security
             manager.MinHeight = 400;
             manager.Width = 700;
             manager.Height = 600;
+            
+            // 将窗口添加到静态字典
+            _openWindows[key] = this;
+            
             try
             {
                 Localizer.Get().LanguageChanged += Localizer_LanguageChanged;
@@ -100,7 +129,13 @@ namespace Xdows_Security
             }
             catch { }
 
-            this.Closed += (_, __) => Localizer.Get().LanguageChanged -= Localizer_LanguageChanged;
+            // 注册窗口关闭事件，从字典中移除
+            this.Closed += (sender, e) => 
+            {
+                Localizer.Get().LanguageChanged -= Localizer_LanguageChanged;
+                _openWindows.Remove(key);
+            };
+            
             SetFileInfo(path);
             _type = type;
 
@@ -227,6 +262,33 @@ namespace Xdows_Security
                     // 文件类型的恢复逻辑
                     if (File.Exists(_virusFilePath))
                     {
+                        // 检查是否是隔离区文件
+                        if (_virusFilePath.EndsWith(".virus"))
+                        {
+                            // 尝试从隔离区恢复文件
+                            string quarantinePath = _virusFilePath;
+                            string originalPath = _originalFilePath ?? string.Empty;
+                            
+                            // 尝试从隔离区管理器恢复文件
+                            var quarantineItems = Xdows.Protection.QuarantineManager.GetQuarantineItems();
+                            var quarantineItem = quarantineItems.Find(q => q.QuarantinePath == quarantinePath || q.OriginalPath == originalPath);
+                            
+                            if (quarantineItem != null)
+                            {
+                                // 从隔离区恢复文件
+                                string itemId = Path.GetFileName(quarantineItem.QuarantinePath);
+                                bool success = Xdows.Protection.QuarantineManager.RestoreFromQuarantine(itemId);
+                                
+                                if (success)
+                                {
+                                    await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Success_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Success_Message"));
+                                    this.Close();
+                                    return;
+                                }
+                            }
+                        }
+                        
+                        // 如果不是隔离区文件或隔离区恢复失败，使用原有逻辑
                         string restoredPath = _virusFilePath.Replace(".virus", "");
                         
                         if (File.Exists(restoredPath))

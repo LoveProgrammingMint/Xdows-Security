@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using Xdows.ScanEngine;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using static Xdows.Protection.CallBack;
 
 namespace Xdows.Protection
@@ -18,6 +19,10 @@ namespace Xdows.Protection
         {
             SouXiaoEngine ??= new Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan();
             SouXiaoEngine.Initialize();
+            
+            // 初始化隔离区
+            QuarantineManager.Initialize();
+            
             if (_isMonitoring || SouXiaoEngine == null)
             {
                 return false;
@@ -130,16 +135,25 @@ namespace Xdows.Protection
                 {
                     return;
                 }
+                
+                // 检查文件是否在信任区中
+                if (TrustManager.IsPathTrusted(e.FullPath))
+                {
+                    return;
+                }
+                
                 bool isVirus = false;
                 isVirus = SouXiaoEngine.ScanFile(e.FullPath).IsVirus;
                 if (isVirus)
                 {
                     try
                     {
-                        File.Move(e.FullPath, e.FullPath + ".virus");
+                        // 将文件添加到隔离区
+                        bool success = QuarantineManager.AddToQuarantine(e.FullPath, "未知病毒");
+                        
                         Task.Run(() =>
                         {
-                            _toastCallBack?.Invoke(true, e.FullPath, "Process");
+                            _toastCallBack?.Invoke(success, e.FullPath, "Process");
                         });
                     }
                     catch

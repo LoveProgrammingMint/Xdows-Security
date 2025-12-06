@@ -1,0 +1,70 @@
+<ContentDialog
+    x:Class="Xdows_Security.AddTrustDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Xdows_Security"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:l="using:WinUI3Localizer"
+    mc:Ignorable="d"
+    Title="{x:Bind Title}"
+    PrimaryButtonText="{x:Bind PrimaryButtonText}"
+    CloseButtonText="{x:Bind CloseButtonText}"
+    DefaultButton="Primary"
+    Width="500"
+    Height="400"
+    CornerRadius="8">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 说明文本 -->
+        <TextBlock Grid.Row="0" Margin="0,0,0,16" Style="{StaticResource SubtitleTextBlockStyle}" l:Uids.Uid="AddTrustDialog_Description"/>
+
+        <!-- 输入区域 -->
+        <StackPanel Grid.Row="1" Spacing="12">
+            <!-- 路径输入 -->
+            <StackPanel>
+                <TextBlock l:Uids.Uid="AddTrustDialog_Label_Path" Margin="0,0,0,4"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="PathTextBox" Grid.Column="0" PlaceholderText="" TextChanged="PathTextBox_TextChanged" l:Uids.Uid="AddTrustDialog_PathPlaceholder"/>
+                    <Button x:Name="BrowseButton" Grid.Column="1" Margin="8,0,0,0" Click="BrowseButton_Click" l:Uids.Uid="AddTrustDialog_BrowseButton"/>
+                </Grid>
+            </StackPanel>
+
+            <!-- 类型选择 -->
+            <StackPanel>
+                <TextBlock l:Uids.Uid="AddTrustDialog_Label_Type" Margin="0,0,0,4"/>
+                <RadioButton x:Name="FileRadioButton" IsChecked="True" Checked="TypeRadioButton_Checked" l:Uids.Uid="AddTrustDialog_Type_File"/>
+                <RadioButton x:Name="FolderRadioButton" Margin="0,8,0,0" Checked="TypeRadioButton_Checked" l:Uids.Uid="AddTrustDialog_Type_Folder"/>
+            </StackPanel>
+
+            <!-- 备注 -->
+            <StackPanel>
+                <TextBlock l:Uids.Uid="AddTrustDialog_Label_Note" Margin="0,0,0,4"/>
+                <TextBox x:Name="NoteTextBox" l:Uids.Uid="AddTrustDialog_NotePlaceholder"/>
+            </StackPanel>
+
+            <!-- 预览信息 -->
+            <Border BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    Padding="12" CornerRadius="4" MinHeight="80">
+                <StackPanel>
+                    <TextBlock l:Uids.Uid="AddTrustDialog_Preview_Title" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,8"/>
+                    <TextBlock x:Name="PreviewText" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- 状态信息 -->
+        <TextBlock x:Name="StatusText" Grid.Row="2" Text="" Margin="0,16,0,0" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+    </Grid>
+</ContentDialog>

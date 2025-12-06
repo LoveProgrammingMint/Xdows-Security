@@ -289,7 +289,7 @@
     <value>{0:F2} 文件/秒</value>
   </data>
   <data name="SecurityPage_Status_Completed" xml:space="preserve">
-    <value>扫描完成</value>
+    <value>已完成</value>
   </data>
   <data name="SecurityPage_ScanCompleteFound" xml:space="preserve">
     <value>扫描完成，发现 {0} 个威胁</value>
@@ -300,28 +300,14 @@
   <data name="SecurityPage_ScanFailed_Format" xml:space="preserve">
     <value>扫描失败：{0}</value>
   </data>
-  <data name="SecurityPage_DeleteConfirm_Title" xml:space="preserve">
-    <value>确认要删除此文件吗</value>
-  </data>
-  <data name="SecurityPage_DeleteConfirm_Content" xml:space="preserve">
-    <value>确定要删除此文件
-{0}
-这将永久删除文件，无法恢复</value>
-  </data>
-  <data name="SecurityPage_DeleteConfirm_Primary" xml:space="preserve">
-    <value>删除</value>
-  </data>
-  <data name="SecurityPage_DeleteFailed_Title" xml:space="preserve">
-    <value>删除失败</value>
-  </data>
   <data name="SecurityPage_Details_Title" xml:space="preserve">
-    <value>详细信息</value>
+    <value>文件详情</value>
   </data>
   <data name="SecurityPage_Details_FilePath" xml:space="preserve">
     <value>文件路径：</value>
   </data>
   <data name="SecurityPage_Details_VirusName" xml:space="preserve">
-    <value>威胁名称：{0}</value>
+    <value>病毒名称：{0}</value>
   </data>
   <data name="SecurityPage_Details_FileSize" xml:space="preserve">
     <value>文件大小：{0:F2} KB</value>
@@ -336,10 +322,10 @@
     <value>定位文件</value>
   </data>
   <data name="SecurityPage_LocateFailed_Title" xml:space="preserve">
-    <value>无法定位文件</value>
+    <value>定位失败</value>
   </data>
   <data name="SecurityPage_LocateFailed_Content" xml:space="preserve">
-    <value>无法定位文件，因为{0}</value>
+    <value>无法定位文件：{0}</value>
   </data>
   <data name="SecurityPage_PathText_Format" xml:space="preserve">
     <value>扫描模式：{0}</value>
@@ -348,19 +334,13 @@
     <value>隐藏列表</value>
   </data>
   <data name="SecurityPage_BackToVirusList_Show" xml:space="preserve">
-    <value>显示列表</value>
+    <value>查看列表</value>
   </data>
   <data name="SecurityPage_Area_Paused_Title" xml:space="preserve">
     <value>扫描已暂停</value>
   </data>
   <data name="SecurityPage_Area_Paused_Detail" xml:space="preserve">
-    <value>请点击继续扫描按钮恢复扫描</value>
-  </data>
-  <data name="SecurityPage_Area_Resume_Title" xml:space="preserve">
-    <value>正在继续扫描</value>
-  </data>
-  <data name="SecurityPage_Area_Resume_Detail" xml:space="preserve">
-    <value>扫描进程已恢复</value>
+    <value>扫描已暂停，点击继续按钮恢复扫描</value>
   </data>
   <data name="SecurityPage_FilesScanned_Format" xml:space="preserve">
     <value>{0} 个文件</value>
@@ -506,6 +486,57 @@
   <data name="SettingsPage_Other.Text" xml:space="preserve">
     <value>其它</value>
   </data>
+  <data name="SettingsPage_Quarantine_Trust.Text" xml:space="preserve">
+    <value>隔离与信任</value>
+  </data>
+  <data name="SettingsPage_Quarantine.Header" xml:space="preserve">
+    <value>隔离区</value>
+  </data>
+  <data name="SettingsPage_Quarantine.Description" xml:space="preserve">
+    <value>管理被隔离的威胁文件，您可以查看、恢复或永久删除这些文件</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ViewItems.Header" xml:space="preserve">
+    <value>查看隔离项</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ViewItems.Description" xml:space="preserve">
+    <value>查看所有被隔离的文件列表</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ViewButton.Content" xml:space="preserve">
+    <value>查看</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearAll.Header" xml:space="preserve">
+    <value>清空隔离区</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearAll.Description" xml:space="preserve">
+    <value>永久删除所有被隔离的文件</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearButton.Content" xml:space="preserve">
+    <value>清空</value>
+  </data>
+  <data name="SettingsPage_Trust.Header" xml:space="preserve">
+    <value>信任区</value>
+  </data>
+  <data name="SettingsPage_Trust.Description" xml:space="preserve">
+    <value>管理您信任的文件和应用程序，这些项目将被安全扫描排除</value>
+  </data>
+  <data name="SettingsPage_Trust_ViewItems.Header" xml:space="preserve">
+    <value>查看信任项</value>
+  </data>
+  <data name="SettingsPage_Trust_ViewItems.Description" xml:space="preserve">
+    <value>查看所有被信任的文件和应用程序列表</value>
+  </data>
+  <data name="SettingsPage_Trust_ViewButton.Content" xml:space="preserve">
+    <value>查看</value>
+  </data>
+  <data name="SettingsPage_Trust_AddItem.Header" xml:space="preserve">
+    <value>添加信任项</value>
+  </data>
+  <data name="SettingsPage_Trust_AddItem.Description" xml:space="preserve">
+    <value>添加新的文件或文件夹到信任列表</value>
+  </data>
+  <data name="SettingsPage_Trust_AddButton.Content" xml:space="preserve">
+    <value>添加</value>
+  </data>
   <data name="SettingsPage_Other_Language.Description" xml:space="preserve">
     <value>更改应用程序的显示语言</value>
   </data>
@@ -537,13 +568,10 @@
     <value>打开链接</value>
   </data>
   <data name="Button_Confirm" xml:space="preserve">
-    <value>确定</value>
+    <value>确认</value>
   </data>
   <data name="Button_Download" xml:space="preserve">
     <value>下载</value>
-  </data>
-  <data name="Button_Cancel" xml:space="preserve">
-    <value>取消</value>
   </data>
   <data name="SettingsPage_Other_CheckUpdate_UpdateTeachingTip.Title" xml:space="preserve">
     <value>当前已是最新版</value>
@@ -646,9 +674,6 @@
   </data>
   <data name="HomePage_NumberOfThreats.Text" xml:space="preserve">
     <value>威胁数量: </value>
-  </data>
-  <data name="AllPage_Status" xml:space="preserve">
-    <value>已启用,已禁用</value>
   </data>
   <data name="AllPage_Undefined.Text" xml:space="preserve">
     <value>未定义</value>
@@ -915,5 +940,333 @@
   </data>
   <data name="BugReportPage_FileSent" xml:space="preserve">
     <value>[已发送文件] </value>
+  </data>
+  <data name="QuarantineDialog_Title" xml:space="preserve">
+    <value>隔离区</value>
+  </data>
+  <data name="QuarantineDialog_TotalItems" xml:space="preserve">
+    <value>共 {0} 个隔离项</value>
+  </data>
+  <data name="QuarantineDialog_FileName" xml:space="preserve">
+    <value>文件名</value>
+  </data>
+  <data name="QuarantineDialog_FilePath" xml:space="preserve">
+    <value>文件路径</value>
+  </data>
+  <data name="QuarantineDialog_QuarantineDate" xml:space="preserve">
+    <value>隔离日期</value>
+  </data>
+  <data name="QuarantineDialog_VirusName" xml:space="preserve">
+    <value>病毒名称</value>
+  </data>
+  <data name="QuarantineDialog_Restore" xml:space="preserve">
+    <value>恢复</value>
+  </data>
+  <data name="QuarantineDialog_Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="QuarantineDialog_ClearAll" xml:space="preserve">
+    <value>清空所有</value>
+  </data>
+  <data name="QuarantineDialog_Empty_Title" xml:space="preserve">
+    <value>隔离区为空</value>
+  </data>
+  <data name="QuarantineDialog_Empty_Message" xml:space="preserve">
+    <value>当前没有隔离的文件</value>
+  </data>
+  <data name="QuarantineDialog_Restore_Confirm_Title" xml:space="preserve">
+    <value>确认恢复</value>
+  </data>
+  <data name="QuarantineDialog_Restore_Confirm_Message" xml:space="preserve">
+    <value>确定要恢复此文件吗？恢复后文件将返回原位置。</value>
+  </data>
+  <data name="QuarantineDialog_Restore_Success_Title" xml:space="preserve">
+    <value>恢复成功</value>
+  </data>
+  <data name="QuarantineDialog_Restore_Success_Message" xml:space="preserve">
+    <value>文件已成功恢复到原位置</value>
+  </data>
+  <data name="QuarantineDialog_Restore_Failed_Title" xml:space="preserve">
+    <value>恢复失败</value>
+  </data>
+  <data name="QuarantineDialog_Restore_Failed_Message" xml:space="preserve">
+    <value>恢复文件失败，请检查文件是否存在或权限是否足够</value>
+  </data>
+  <data name="QuarantineDialog_Delete_Confirm_Title" xml:space="preserve">
+    <value>确认删除</value>
+  </data>
+  <data name="QuarantineDialog_Delete_Confirm_Message" xml:space="preserve">
+    <value>确定要永久删除此文件吗？此操作不可撤销。</value>
+  </data>
+  <data name="QuarantineDialog_Delete_Success_Title" xml:space="preserve">
+    <value>删除成功</value>
+  </data>
+  <data name="QuarantineDialog_Delete_Success_Message" xml:space="preserve">
+    <value>文件已永久删除</value>
+  </data>
+  <data name="QuarantineDialog_Delete_Failed_Title" xml:space="preserve">
+    <value>删除失败</value>
+  </data>
+  <data name="QuarantineDialog_Delete_Failed_Message" xml:space="preserve">
+    <value>删除文件失败，请检查权限</value>
+  </data>
+  <data name="QuarantineDialog_ClearAll_Confirm_Title" xml:space="preserve">
+    <value>确认清空隔离区</value>
+  </data>
+  <data name="QuarantineDialog_ClearAll_Confirm_Message" xml:space="preserve">
+    <value>确定要永久删除所有隔离文件吗？此操作不可撤销。</value>
+  </data>
+  <data name="QuarantineDialog_ClearAll_Success_Title" xml:space="preserve">
+    <value>清空成功</value>
+  </data>
+  <data name="QuarantineDialog_ClearAll_Success_Message" xml:space="preserve">
+    <value>所有隔离文件已永久删除</value>
+  </data>
+  <data name="QuarantineDialog_ClearAll_Failed_Title" xml:space="preserve">
+    <value>清空失败</value>
+  </data>
+  <data name="QuarantineDialog_ClearAll_Failed_Message" xml:space="preserve">
+    <value>清空隔离区失败，请重试</value>
+  </data>
+  <data name="SecurityPage_MenuItem_Trust.Text" xml:space="preserve">
+    <value>信任文件</value>
+  </data>
+  <data name="SecurityPage_MenuItem_Handle.Text" xml:space="preserve">
+    <value>处理文件</value>
+  </data>
+  <data name="SecurityPage_TrustConfirm_Title" xml:space="preserve">
+    <value>信任文件</value>
+  </data>
+  <data name="SecurityPage_TrustConfirm_Content" xml:space="preserve">
+    <value>确定要将此文件添加到信任区吗？{0} 将不再被扫描引擎检测为威胁。</value>
+  </data>
+  <data name="SecurityPage_TrustConfirm_Primary" xml:space="preserve">
+    <value>信任</value>
+  </data>
+  <data name="SecurityPage_TrustResult_Title" xml:space="preserve">
+    <value>信任成功</value>
+  </data>
+  <data name="SecurityPage_TrustResult_Content" xml:space="preserve">
+    <value>文件 {0} 已成功添加到信任区，将不再被检测为威胁。</value>
+  </data>
+  <data name="SecurityPage_TrustFailed_Title" xml:space="preserve">
+    <value>信任失败</value>
+  </data>
+  <data name="SecurityPage_TrustFailed_Content" xml:space="preserve">
+    <value>添加文件到信任区失败，请检查文件是否存在或权限是否足够。</value>
+  </data>
+  <data name="SecurityPage_HandleConfirm_Title" xml:space="preserve">
+    <value>处理文件</value>
+  </data>
+  <data name="SecurityPage_HandleConfirm_Content" xml:space="preserve">
+    <value>确定要处理此文件
+{0}</value>
+  </data>
+  <data name="SecurityPage_HandleConfirm_Primary" xml:space="preserve">
+    <value>处理</value>
+  </data>
+  <data name="SecurityPage_HandleAction_Quarantined" xml:space="preserve">
+    <value>文件已成功隔离</value>
+  </data>
+  <data name="SecurityPage_HandleAction_Deleted" xml:space="preserve">
+    <value>文件已成功删除</value>
+  </data>
+  <data name="SecurityPage_HandleAction_Renamed" xml:space="preserve">
+    <value>文件已重命名为：{0}</value>
+  </data>
+  <data name="SecurityPage_HandleAction_Failed" xml:space="preserve">
+    <value>处理文件失败</value>
+  </data>
+  <data name="SecurityPage_HandleResult_Title" xml:space="preserve">
+    <value>处理结果</value>
+  </data>
+  <data name="SecurityPage_HandleFailed_Title" xml:space="preserve">
+    <value>处理失败</value>
+  </data>
+  <data name="SecurityPage_Area_Resume_Title" xml:space="preserve">
+    <value>扫描已恢复</value>
+  </data>
+  <data name="SecurityPage_Area_Resume_Detail" xml:space="preserve">
+    <value>扫描已恢复，正在继续扫描</value>
+  </data>
+  <data name="QuarantineDialog_OperationResult" xml:space="preserve">
+    <value>操作结果</value>
+  </data>
+  <data name="TrustDialog_Title" xml:space="preserve">
+    <value>信任区</value>
+  </data>
+  <data name="TrustDialog_CloseButton" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="TrustDialog_EmptyStatus" xml:space="preserve">
+    <value>信任区中没有项目</value>
+  </data>
+  <data name="TrustDialog_TotalCount" xml:space="preserve">
+    <value>共 {0} 个信任项</value>
+  </data>
+  <data name="TrustDialog_ConfirmClearTitle" xml:space="preserve">
+    <value>确认清空</value>
+  </data>
+  <data name="TrustDialog_ConfirmClearContent" xml:space="preserve">
+    <value>确定要清空信任区吗？将删除</value>
+  </data>
+  <data name="TrustDialog_ConfirmClearItems" xml:space="preserve">
+    <value>个信任项</value>
+  </data>
+  <data name="TrustDialog_ClearAll" xml:space="preserve">
+    <value>全部清空</value>
+  </data>
+  <data name="TrustDialog_ClearSuccessTitle" xml:space="preserve">
+    <value>清空成功</value>
+  </data>
+  <data name="TrustDialog_ClearFailedTitle" xml:space="preserve">
+    <value>清空失败</value>
+  </data>
+  <data name="TrustDialog_ConfirmRemoveTitle" xml:space="preserve">
+    <value>确认移除</value>
+  </data>
+  <data name="TrustDialog_ConfirmRemoveContent" xml:space="preserve">
+    <value>确定要移除</value>
+  </data>
+  <data name="TrustDialog_ConfirmRemoveSuffix" xml:space="preserve">
+    <value>吗？</value>
+  </data>
+  <data name="TrustDialog_Remove" xml:space="preserve">
+    <value>移除</value>
+  </data>
+  <data name="TrustDialog_RemoveSuccessTitle" xml:space="preserve">
+    <value>移除成功</value>
+  </data>
+  <data name="TrustDialog_RemoveFailedTitle" xml:space="preserve">
+    <value>移除失败</value>
+  </data>
+  <data name="AddTrustDialog_Title" xml:space="preserve">
+    <value>添加到信任区</value>
+  </data>
+  <data name="AddTrustDialog_SelectFile_Title" xml:space="preserve">
+    <value>选择文件</value>
+  </data>
+  <data name="AddTrustDialog_SelectFolder_Title" xml:space="preserve">
+    <value>选择文件夹</value>
+  </data>
+  <data name="AddTrustDialog_AllFiles_Filter" xml:space="preserve">
+    <value>所有文件</value>
+  </data>
+  <data name="AddTrustDialog_Error_SelectFile" xml:space="preserve">
+    <value>请选择要添加的文件或文件夹</value>
+  </data>
+  <data name="AddTrustDialog_Error_AddFailed" xml:space="preserve">
+    <value>添加失败</value>
+  </data>
+  <data name="AddTrustDialog_Error_BrowseFailed" xml:space="preserve">
+    <value>浏览失败</value>
+  </data>
+  <data name="AddTrustDialog_Preview_SelectFile" xml:space="preserve">
+    <value>请选择文件或文件夹</value>
+  </data>
+  <data name="AddTrustDialog_Label_Name" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="AddTrustDialog_Label_Size" xml:space="preserve">
+    <value>大小</value>
+  </data>
+  <data name="AddTrustDialog_Label_Contains" xml:space="preserve">
+    <value>包含</value>
+  </data>
+  <data name="AddTrustDialog_Label_File" xml:space="preserve">
+    <value>文件</value>
+  </data>
+  <data name="AddTrustDialog_Label_Folder" xml:space="preserve">
+    <value>文件夹</value>
+  </data>
+  <data name="AddTrustDialog_Status_FileExists" xml:space="preserve">
+    <value>文件存在，可以添加</value>
+  </data>
+  <data name="AddTrustDialog_Status_FileNotExists" xml:space="preserve">
+    <value>文件不存在，无法添加</value>
+  </data>
+  <data name="AddTrustDialog_Status_FolderExists" xml:space="preserve">
+    <value>文件夹存在，可以添加</value>
+  </data>
+  <data name="AddTrustDialog_Status_FolderNotExists" xml:space="preserve">
+    <value>文件夹不存在，无法添加</value>
+  </data>
+  <data name="TrustItem_Type_File" xml:space="preserve">
+    <value>文件</value>
+  </data>
+  <data name="TrustItem_Type_Folder" xml:space="preserve">
+    <value>文件目录</value>
+  </data>
+  <data name="Common_OperationSuccess" xml:space="preserve">
+    <value>操作成功</value>
+  </data>
+  <data name="Common_OperationFailed" xml:space="preserve">
+    <value>操作失败</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="QuarantineDialog_OperationFailed" xml:space="preserve">
+    <value>操作失败</value>
+  </data>
+  <data name="QuarantineDialog_InvalidPath" xml:space="preserve">
+    <value>无效的路径</value>
+  </data>
+  <data name="QuarantineDialog_RestoreError" xml:space="preserve">
+    <value>恢复错误</value>
+  </data>
+  <data name="QuarantineDialog_DeleteError" xml:space="preserve">
+    <value>删除错误</value>
+  </data>
+  <data name="QuarantineDialog_ClearFailed" xml:space="preserve">
+    <value>清空失败</value>
+  </data>
+  <data name="QuarantineDialog_ClearFailedMessage" xml:space="preserve">
+    <value>清空隔离区时发生错误</value>
+  </data>
+  <data name="TrustDialog_AddButton.Content" xml:space="preserve">
+    <value>添加文件/目录</value>
+  </data>
+  <data name="TrustDialog_ClearButton.Content" xml:space="preserve">
+    <value>清空信任区</value>
+  </data>
+  <data name="TrustDialog_RemoveButton.Content" xml:space="preserve">
+    <value>移除</value>
+  </data>
+  <data name="AddTrustDialog_AddButton.Content" xml:space="preserve">
+    <value>添加</value>
+  </data>
+  <data name="AddTrustDialog_CancelButton.Content" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="AddTrustDialog_Description.Text" xml:space="preserve">
+    <value>选择要添加到信任区的文件或文件夹：</value>
+  </data>
+  <data name="AddTrustDialog_PathPlaceholder.PlaceholderText" xml:space="preserve">
+    <value>输入文件或文件夹路径...</value>
+  </data>
+  <data name="AddTrustDialog_BrowseButton.Content" xml:space="preserve">
+    <value>浏览...</value>
+  </data>
+  <data name="AddTrustDialog_Type_File.Content" xml:space="preserve">
+    <value>文件</value>
+  </data>
+  <data name="AddTrustDialog_Type_Folder.Content" xml:space="preserve">
+    <value>文件夹</value>
+  </data>
+  <data name="AddTrustDialog_Label_Type.Text" xml:space="preserve">
+    <value>类型</value>
+  </data>
+  <data name="AddTrustDialog_Label_Path.Text" xml:space="preserve">
+    <value>路径</value>
+  </data>
+  <data name="AddTrustDialog_Label_Note.Text" xml:space="preserve">
+    <value>备注</value>
+  </data>
+  <data name="AddTrustDialog_NotePlaceholder.PlaceholderText" xml:space="preserve">
+    <value>输入可选备注...</value>
+  </data>
+  <data name="AddTrustDialog_Preview_Title.Text" xml:space="preserve">
+    <value>预览</value>
   </data>
 </root>

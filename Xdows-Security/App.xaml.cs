@@ -358,6 +358,9 @@ namespace Xdows_Security
         {
             try
             {
+                // 初始化信任区管理器
+                Xdows.Protection.TrustManager.Initialize();
+                
                 await InitializeLocalizer();
                 InitializeMainWindow();
             }

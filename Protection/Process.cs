@@ -29,6 +29,10 @@ namespace Xdows.Protection
             {
                 return false;
             }
+            
+            // 初始化隔离区
+            QuarantineManager.Initialize();
+            
             if (IsEnabled())
                 return true;
             try
@@ -100,16 +104,34 @@ namespace Xdows.Protection
                             if (string.IsNullOrEmpty(path) || SouXiaoEngine == null)
                                 continue;
 
+                            // 检查文件是否在信任区中
+                            if (TrustManager.IsPathTrusted(path))
+                                continue;
+
                             bool isVirus = SouXiaoEngine.ScanFile(path).IsVirus;
 
                             if (isVirus)
                             {
                                 bool Succeed = TryKillProcess(pid);
 
-                                if (!Path.GetExtension(path).Equals(".virus", StringComparison.OrdinalIgnoreCase))
-                                {
-                                    try { File.Move(path, path + ".virus"); } catch { }
-                                }
+                                // 使用隔离区功能而不是简单地重命名文件
+                                try 
+                                { 
+                                    // 将文件添加到隔离区
+                                    bool quarantineSuccess = QuarantineManager.AddToQuarantine(path, "Process Protection");
+                                    
+                                    // 如果隔离成功，不需要重命名文件
+                                    if (!quarantineSuccess)
+                                    {
+                                        // 如果隔离失败，回退到原来的重命名方式
+                                        if (!Path.GetExtension(path).Equals(".virus", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            try { File.Move(path, path + ".virus"); } catch { }
+                                        }
+                                    }
+                                } 
+                                catch { }
+                                
                                 Task.Run(() =>
                                 {
                                     interceptCallBack(Succeed, path, "Process");
@@ -215,5 +237,7 @@ namespace Xdows.Protection
                 return false;
             }
         }
+        
+
     }
 }

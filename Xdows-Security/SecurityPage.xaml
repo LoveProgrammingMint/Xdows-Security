@@ -116,19 +116,19 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" HorizontalAlignment="Center">
                             <FontIcon Glyph="&#xE916;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
-                            <TextBlock x:Name="ScanSpeedText" Text="0 文件/秒" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
+                            <TextBlock x:Name="ScanSpeedText" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" HorizontalAlignment="Center">
                             <FontIcon Glyph="&#xE8B7;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
-                            <TextBlock x:Name="FilesScannedText" Text="0 个文件" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
+                            <TextBlock x:Name="FilesScannedText" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
                         </StackPanel>
                         <StackPanel Grid.Column="2" HorizontalAlignment="Center">
                             <FontIcon Glyph="&#xE7C9;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
-                            <TextBlock x:Name="FilesSafeText" Text="0 个安全" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
+                            <TextBlock x:Name="FilesSafeText" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
                         </StackPanel>
                         <StackPanel Grid.Column="3" HorizontalAlignment="Center">
                             <FontIcon Glyph="&#xE783;" FontSize="24" Margin="0,0,0,4" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
-                            <TextBlock x:Name="ThreatsFoundText" Text="0 个威胁" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
+                            <TextBlock x:Name="ThreatsFoundText" FontSize="12" TextAlignment="Center" Foreground="{ThemeResource AccentTextFillColorTertiaryBrush}"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -218,7 +218,12 @@
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
                                     <MenuFlyoutSeparator/>
-                                    <MenuFlyoutItem l:Uids.Uid="SecurityPage_MenuItem_Delete" Click="OnDeleteClick" Tag="{Binding}">
+                                    <MenuFlyoutItem l:Uids.Uid="SecurityPage_MenuItem_Trust" Click="OnTrustClick" Tag="{Binding}">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE73E;" />
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+                                    <MenuFlyoutItem l:Uids.Uid="SecurityPage_MenuItem_Handle" Click="OnHandleClick" Tag="{Binding}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE74D;" />
                                         </MenuFlyoutItem.Icon>

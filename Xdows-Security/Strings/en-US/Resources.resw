@@ -151,7 +151,7 @@
     <value>Select file</value>
   </data>
   <data name="SecurityPage_GetFailed_Text" xml:space="preserve">
-    <value>Unavailable</value>
+    <value>Get Failed</value>
   </data>
   <data name="SecurityPage_ScanStatusHeader.Text" xml:space="preserve">
     <value>Scan Status</value>
@@ -289,7 +289,7 @@
     <value>{0:F2} files/s</value>
   </data>
   <data name="SecurityPage_Status_Completed" xml:space="preserve">
-    <value>Scan completed</value>
+    <value>Completed</value>
   </data>
   <data name="SecurityPage_ScanCompleteFound" xml:space="preserve">
     <value>Scan completed, found {0} threats</value>
@@ -300,67 +300,47 @@
   <data name="SecurityPage_ScanFailed_Format" xml:space="preserve">
     <value>Scan failed: {0}</value>
   </data>
-  <data name="SecurityPage_DeleteConfirm_Title" xml:space="preserve">
-    <value>Are you sure to delete this file?</value>
-  </data>
-  <data name="SecurityPage_DeleteConfirm_Content" xml:space="preserve">
-    <value>Are you sure to delete this file
-{0}
-This will permanently remove the file and cannot be undone</value>
-  </data>
-  <data name="SecurityPage_DeleteConfirm_Primary" xml:space="preserve">
-    <value>Delete</value>
-  </data>
-  <data name="SecurityPage_DeleteFailed_Title" xml:space="preserve">
-    <value>Delete failed</value>
-  </data>
   <data name="SecurityPage_Details_Title" xml:space="preserve">
-    <value>Details</value>
+    <value>File Details</value>
   </data>
   <data name="SecurityPage_Details_FilePath" xml:space="preserve">
-    <value>File path:</value>
+    <value>File Path:</value>
   </data>
   <data name="SecurityPage_Details_VirusName" xml:space="preserve">
-    <value>Threat: {0}</value>
+    <value>Virus Name: {0}</value>
   </data>
   <data name="SecurityPage_Details_FileSize" xml:space="preserve">
-    <value>File size: {0:F2} KB</value>
+    <value>File Size: {0:F2} KB</value>
   </data>
   <data name="SecurityPage_Details_CreationTime" xml:space="preserve">
-    <value>Creation time: {0}</value>
+    <value>Creation Time: {0}</value>
   </data>
   <data name="SecurityPage_Details_LastWriteTime" xml:space="preserve">
-    <value>Last write time: {0}</value>
+    <value>Last Write Time: {0}</value>
   </data>
   <data name="SecurityPage_Details_LocateButton" xml:space="preserve">
-    <value>Locate file</value>
+    <value>Locate File</value>
   </data>
   <data name="SecurityPage_LocateFailed_Title" xml:space="preserve">
-    <value>Cannot locate file</value>
+    <value>Locate Failed</value>
   </data>
   <data name="SecurityPage_LocateFailed_Content" xml:space="preserve">
-    <value>Cannot locate file because {0}</value>
+    <value>Unable to locate file: {0}</value>
   </data>
   <data name="SecurityPage_PathText_Format" xml:space="preserve">
     <value>Scan mode: {0}</value>
   </data>
   <data name="SecurityPage_BackToVirusList_Hide" xml:space="preserve">
-    <value>Hide list</value>
+    <value>Hide List</value>
   </data>
   <data name="SecurityPage_BackToVirusList_Show" xml:space="preserve">
-    <value>Show list</value>
+    <value>Show List</value>
   </data>
   <data name="SecurityPage_Area_Paused_Title" xml:space="preserve">
-    <value>Scan paused</value>
+    <value>Scan Paused</value>
   </data>
   <data name="SecurityPage_Area_Paused_Detail" xml:space="preserve">
-    <value>Please click resume to continue scanning</value>
-  </data>
-  <data name="SecurityPage_Area_Resume_Title" xml:space="preserve">
-    <value>Resuming scan</value>
-  </data>
-  <data name="SecurityPage_Area_Resume_Detail" xml:space="preserve">
-    <value>Scan process resumed</value>
+    <value>Scan has been paused, click resume button to continue scanning</value>
   </data>
   <data name="SecurityPage_FilesScanned_Format" xml:space="preserve">
     <value>{0} files</value>
@@ -506,6 +486,57 @@ This will permanently remove the file and cannot be undone</value>
   <data name="SettingsPage_Other.Text" xml:space="preserve">
     <value>Other</value>
   </data>
+  <data name="SettingsPage_Quarantine_Trust.Text" xml:space="preserve">
+    <value>Quarantine &amp; Trust</value>
+  </data>
+  <data name="SettingsPage_Quarantine.Header" xml:space="preserve">
+    <value>Quarantine</value>
+  </data>
+  <data name="SettingsPage_Quarantine.Description" xml:space="preserve">
+    <value>Manage quarantined threat files, you can view, restore or permanently delete these files</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ViewItems.Header" xml:space="preserve">
+    <value>View Quarantine Items</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ViewItems.Description" xml:space="preserve">
+    <value>View the list of all quarantined files</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ViewButton.Content" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearAll.Header" xml:space="preserve">
+    <value>Clear Quarantine</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearAll.Description" xml:space="preserve">
+    <value>Permanently delete all quarantined files</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearButton.Content" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="SettingsPage_Trust.Header" xml:space="preserve">
+    <value>Trust Zone</value>
+  </data>
+  <data name="SettingsPage_Trust.Description" xml:space="preserve">
+    <value>Manage files and applications you trust, these items will be excluded from security scans</value>
+  </data>
+  <data name="SettingsPage_Trust_ViewItems.Header" xml:space="preserve">
+    <value>View Trust Items</value>
+  </data>
+  <data name="SettingsPage_Trust_ViewItems.Description" xml:space="preserve">
+    <value>View the list of all trusted files and applications</value>
+  </data>
+  <data name="SettingsPage_Trust_ViewButton.Content" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="SettingsPage_Trust_AddItem.Header" xml:space="preserve">
+    <value>Add Trust Item</value>
+  </data>
+  <data name="SettingsPage_Trust_AddItem.Description" xml:space="preserve">
+    <value>Add new files or folders to the trust list</value>
+  </data>
+  <data name="SettingsPage_Trust_AddButton.Content" xml:space="preserve">
+    <value>Add</value>
+  </data>
   <data name="SettingsPage_Other_Language.Description" xml:space="preserve">
     <value>Change the display language of the application</value>
   </data>
@@ -541,9 +572,6 @@ This will permanently remove the file and cannot be undone</value>
   </data>
   <data name="Button_Download" xml:space="preserve">
     <value>Download</value>
-  </data>
-  <data name="Button_Cancel" xml:space="preserve">
-    <value>Cancel</value>
   </data>
   <data name="SettingsPage_Other_CheckUpdate_UpdateTeachingTip.Title" xml:space="preserve">
     <value>This is the latest version</value>
@@ -646,9 +674,6 @@ Why not try XIGUA Security?</value>
   </data>
   <data name="HomePage_NumberOfThreats.Text" xml:space="preserve">
     <value>Number of Threats: </value>
-  </data>
-  <data name="AllPage_Status" xml:space="preserve">
-    <value>Enabled,Disabled</value>
   </data>
   <data name="AllPage_Undefined.Text" xml:space="preserve">
     <value>Undefined</value>
@@ -916,5 +941,333 @@ If you do not accept it, please turn off the engine, or stop using and delete th
   </data>
   <data name="BugReportPage_FileSent" xml:space="preserve">
     <value>[File sent] </value>
+  </data>
+  <data name="QuarantineDialog_Title" xml:space="preserve">
+    <value>Quarantine</value>
+  </data>
+  <data name="QuarantineDialog_TotalItems" xml:space="preserve">
+    <value>Total {0} quarantined items</value>
+  </data>
+  <data name="QuarantineDialog_FileName" xml:space="preserve">
+    <value>File Name</value>
+  </data>
+  <data name="QuarantineDialog_FilePath" xml:space="preserve">
+    <value>File Path</value>
+  </data>
+  <data name="QuarantineDialog_QuarantineDate" xml:space="preserve">
+    <value>Quarantine Date</value>
+  </data>
+  <data name="QuarantineDialog_VirusName" xml:space="preserve">
+    <value>Virus Name</value>
+  </data>
+  <data name="QuarantineDialog_Restore" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="QuarantineDialog_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="QuarantineDialog_ClearAll" xml:space="preserve">
+    <value>Clear All</value>
+  </data>
+  <data name="QuarantineDialog_Empty_Title" xml:space="preserve">
+    <value>Quarantine is empty</value>
+  </data>
+  <data name="QuarantineDialog_Empty_Message" xml:space="preserve">
+    <value>There are currently no quarantined files</value>
+  </data>
+  <data name="QuarantineDialog_Restore_Confirm_Title" xml:space="preserve">
+    <value>Confirm Restore</value>
+  </data>
+  <data name="QuarantineDialog_Restore_Confirm_Message" xml:space="preserve">
+    <value>Are you sure you want to restore this file? After restoration, the file will return to its original location.</value>
+  </data>
+  <data name="QuarantineDialog_Restore_Success_Title" xml:space="preserve">
+    <value>Restore Successful</value>
+  </data>
+  <data name="QuarantineDialog_Restore_Success_Message" xml:space="preserve">
+    <value>File has been successfully restored to its original location</value>
+  </data>
+  <data name="QuarantineDialog_Restore_Failed_Title" xml:space="preserve">
+    <value>Restore Failed</value>
+  </data>
+  <data name="QuarantineDialog_Restore_Failed_Message" xml:space="preserve">
+    <value>Failed to restore file. Please check if the file exists or if permissions are sufficient</value>
+  </data>
+  <data name="QuarantineDialog_Delete_Confirm_Title" xml:space="preserve">
+    <value>Confirm Delete</value>
+  </data>
+  <data name="QuarantineDialog_Delete_Confirm_Message" xml:space="preserve">
+    <value>Are you sure you want to permanently delete this file? This action cannot be undone.</value>
+  </data>
+  <data name="QuarantineDialog_Delete_Success_Title" xml:space="preserve">
+    <value>Delete Successful</value>
+  </data>
+  <data name="QuarantineDialog_Delete_Success_Message" xml:space="preserve">
+    <value>File has been permanently deleted</value>
+  </data>
+  <data name="QuarantineDialog_Delete_Failed_Title" xml:space="preserve">
+    <value>Delete Failed</value>
+  </data>
+  <data name="QuarantineDialog_Delete_Failed_Message" xml:space="preserve">
+    <value>Failed to delete file. Please check permissions</value>
+  </data>
+  <data name="QuarantineDialog_ClearAll_Confirm_Title" xml:space="preserve">
+    <value>Confirm Clear Quarantine</value>
+  </data>
+  <data name="QuarantineDialog_ClearAll_Confirm_Message" xml:space="preserve">
+    <value>Are you sure you want to permanently delete all quarantined files? This action cannot be undone.</value>
+  </data>
+  <data name="QuarantineDialog_ClearAll_Success_Title" xml:space="preserve">
+    <value>Clear Successful</value>
+  </data>
+  <data name="QuarantineDialog_ClearAll_Success_Message" xml:space="preserve">
+    <value>All quarantined files have been permanently deleted</value>
+  </data>
+  <data name="QuarantineDialog_ClearAll_Failed_Title" xml:space="preserve">
+    <value>Clear Failed</value>
+  </data>
+  <data name="QuarantineDialog_ClearAll_Failed_Message" xml:space="preserve">
+    <value>Failed to clear quarantine area, please try again</value>
+  </data>
+  <data name="SecurityPage_MenuItem_Trust.Text" xml:space="preserve">
+    <value>Trust File</value>
+  </data>
+  <data name="SecurityPage_MenuItem_Handle.Text" xml:space="preserve">
+    <value>Handle File</value>
+  </data>
+  <data name="SecurityPage_TrustConfirm_Title" xml:space="preserve">
+    <value>Trust File</value>
+  </data>
+  <data name="SecurityPage_TrustConfirm_Content" xml:space="preserve">
+    <value>Are you sure you want to add this file to the trust area? {0} will no longer be detected as a threat by the scan engine.</value>
+  </data>
+  <data name="SecurityPage_TrustConfirm_Primary" xml:space="preserve">
+    <value>Trust</value>
+  </data>
+  <data name="SecurityPage_TrustResult_Title" xml:space="preserve">
+    <value>Trust Successful</value>
+  </data>
+  <data name="SecurityPage_TrustResult_Content" xml:space="preserve">
+    <value>File {0} has been successfully added to the trust area and will no longer be detected as a threat.</value>
+  </data>
+  <data name="SecurityPage_TrustFailed_Title" xml:space="preserve">
+    <value>Trust Failed</value>
+  </data>
+  <data name="SecurityPage_TrustFailed_Content" xml:space="preserve">
+    <value>Failed to add file to trust area. Please check if the file exists or if permissions are sufficient.</value>
+  </data>
+  <data name="SecurityPage_HandleConfirm_Title" xml:space="preserve">
+    <value>Handle File</value>
+  </data>
+  <data name="SecurityPage_HandleConfirm_Content" xml:space="preserve">
+    <value>Are you sure to handle this file
+{0}</value>
+  </data>
+  <data name="SecurityPage_HandleConfirm_Primary" xml:space="preserve">
+    <value>Handle</value>
+  </data>
+  <data name="SecurityPage_HandleAction_Quarantined" xml:space="preserve">
+    <value>File has been successfully quarantined</value>
+  </data>
+  <data name="SecurityPage_HandleAction_Deleted" xml:space="preserve">
+    <value>File has been successfully deleted</value>
+  </data>
+  <data name="SecurityPage_HandleAction_Renamed" xml:space="preserve">
+    <value>File has been renamed to: {0}</value>
+  </data>
+  <data name="SecurityPage_HandleAction_Failed" xml:space="preserve">
+    <value>Failed to handle file</value>
+  </data>
+  <data name="SecurityPage_HandleResult_Title" xml:space="preserve">
+    <value>Handle Result</value>
+  </data>
+  <data name="SecurityPage_HandleFailed_Title" xml:space="preserve">
+    <value>Handle Failed</value>
+  </data>
+  <data name="SecurityPage_Area_Resume_Title" xml:space="preserve">
+    <value>Scan Resumed</value>
+  </data>
+  <data name="SecurityPage_Area_Resume_Detail" xml:space="preserve">
+    <value>Scan has been resumed, continuing to scan</value>
+  </data>
+  <data name="QuarantineDialog_OperationResult" xml:space="preserve">
+    <value>Operation Result</value>
+  </data>
+  <data name="TrustDialog_Title" xml:space="preserve">
+    <value>Trust Zone</value>
+  </data>
+  <data name="TrustDialog_CloseButton" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="TrustDialog_EmptyStatus" xml:space="preserve">
+    <value>No items in trust zone</value>
+  </data>
+  <data name="TrustDialog_TotalCount" xml:space="preserve">
+    <value>Total {0} trust items</value>
+  </data>
+  <data name="TrustDialog_ConfirmClearTitle" xml:space="preserve">
+    <value>Confirm Clear</value>
+  </data>
+  <data name="TrustDialog_ConfirmClearContent" xml:space="preserve">
+    <value>Are you sure you want to clear the trust zone? This will delete</value>
+  </data>
+  <data name="TrustDialog_ConfirmClearItems" xml:space="preserve">
+    <value>trust items</value>
+  </data>
+  <data name="TrustDialog_ClearAll" xml:space="preserve">
+    <value>Clear All</value>
+  </data>
+  <data name="TrustDialog_ClearSuccessTitle" xml:space="preserve">
+    <value>Clear Success</value>
+  </data>
+  <data name="TrustDialog_ClearFailedTitle" xml:space="preserve">
+    <value>Clear Failed</value>
+  </data>
+  <data name="TrustDialog_ConfirmRemoveTitle" xml:space="preserve">
+    <value>Confirm Remove</value>
+  </data>
+  <data name="TrustDialog_ConfirmRemoveContent" xml:space="preserve">
+    <value>Are you sure you want to remove</value>
+  </data>
+  <data name="TrustDialog_ConfirmRemoveSuffix" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="TrustDialog_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="TrustDialog_RemoveSuccessTitle" xml:space="preserve">
+    <value>Remove Success</value>
+  </data>
+  <data name="TrustDialog_RemoveFailedTitle" xml:space="preserve">
+    <value>Remove Failed</value>
+  </data>
+  <data name="AddTrustDialog_Title" xml:space="preserve">
+    <value>Add to Trust Zone</value>
+  </data>
+  <data name="AddTrustDialog_SelectFile_Title" xml:space="preserve">
+    <value>Select File</value>
+  </data>
+  <data name="AddTrustDialog_SelectFolder_Title" xml:space="preserve">
+    <value>Select Folder</value>
+  </data>
+  <data name="AddTrustDialog_AllFiles_Filter" xml:space="preserve">
+    <value>All Files</value>
+  </data>
+  <data name="AddTrustDialog_Error_SelectFile" xml:space="preserve">
+    <value>Please select a file or folder to add</value>
+  </data>
+  <data name="AddTrustDialog_Error_AddFailed" xml:space="preserve">
+    <value>Add Failed</value>
+  </data>
+  <data name="AddTrustDialog_Error_BrowseFailed" xml:space="preserve">
+    <value>Browse Failed</value>
+  </data>
+  <data name="AddTrustDialog_Preview_SelectFile" xml:space="preserve">
+    <value>Please select a file or folder</value>
+  </data>
+  <data name="AddTrustDialog_Label_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="AddTrustDialog_Label_Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="AddTrustDialog_Label_Contains" xml:space="preserve">
+    <value>Contains</value>
+  </data>
+  <data name="AddTrustDialog_Label_File" xml:space="preserve">
+    <value>file</value>
+  </data>
+  <data name="AddTrustDialog_Label_Folder" xml:space="preserve">
+    <value>folder</value>
+  </data>
+  <data name="AddTrustDialog_Status_FileExists" xml:space="preserve">
+    <value>File exists, can be added</value>
+  </data>
+  <data name="AddTrustDialog_Status_FileNotExists" xml:space="preserve">
+    <value>File does not exist, cannot be added</value>
+  </data>
+  <data name="AddTrustDialog_Status_FolderExists" xml:space="preserve">
+    <value>Folder exists, can be added</value>
+  </data>
+  <data name="AddTrustDialog_Status_FolderNotExists" xml:space="preserve">
+    <value>Folder does not exist, cannot be added</value>
+  </data>
+  <data name="TrustItem_Type_File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="TrustItem_Type_Folder" xml:space="preserve">
+    <value>Folder</value>
+  </data>
+  <data name="Common_OperationSuccess" xml:space="preserve">
+    <value>Operation Successful</value>
+  </data>
+  <data name="Common_OperationFailed" xml:space="preserve">
+    <value>Operation Failed</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="QuarantineDialog_OperationFailed" xml:space="preserve">
+    <value>Operation Failed</value>
+  </data>
+  <data name="QuarantineDialog_InvalidPath" xml:space="preserve">
+    <value>Invalid Path</value>
+  </data>
+  <data name="QuarantineDialog_RestoreError" xml:space="preserve">
+    <value>Restore Error</value>
+  </data>
+  <data name="QuarantineDialog_DeleteError" xml:space="preserve">
+    <value>Delete Error</value>
+  </data>
+  <data name="QuarantineDialog_ClearFailed" xml:space="preserve">
+    <value>Clear Failed</value>
+  </data>
+  <data name="QuarantineDialog_ClearFailedMessage" xml:space="preserve">
+    <value>An error occurred while clearing the quarantine area</value>
+  </data>
+  <data name="TrustDialog_AddButton.Content" xml:space="preserve">
+    <value>Add File/Folder</value>
+  </data>
+  <data name="TrustDialog_ClearButton.Content" xml:space="preserve">
+    <value>Clear Trust Zone</value>
+  </data>
+  <data name="TrustDialog_RemoveButton.Content" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="AddTrustDialog_AddButton.Content" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="AddTrustDialog_CancelButton.Content" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="AddTrustDialog_Description.Text" xml:space="preserve">
+    <value>Select the file or folder to add to the trust zone:</value>
+  </data>
+  <data name="AddTrustDialog_PathPlaceholder.PlaceholderText" xml:space="preserve">
+    <value>Enter file or folder path...</value>
+  </data>
+  <data name="AddTrustDialog_BrowseButton.Content" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
+  <data name="AddTrustDialog_Type_File.Content" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="AddTrustDialog_Type_Folder.Content" xml:space="preserve">
+    <value>Folder</value>
+  </data>
+  <data name="AddTrustDialog_Label_Type.Text" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="AddTrustDialog_Label_Path.Text" xml:space="preserve">
+    <value>Path</value>
+  </data>
+  <data name="AddTrustDialog_Label_Note.Text" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="AddTrustDialog_NotePlaceholder.PlaceholderText" xml:space="preserve">
+    <value>Enter optional note...</value>
+  </data>
+  <data name="AddTrustDialog_Preview_Title.Text" xml:space="preserve">
+    <value>Preview</value>
   </data>
 </root>

@@ -13,6 +13,7 @@ using Windows.Globalization;
 using Compatibility.Windows.Storage;
 using WinUI3Localizer;
 using Xdows.Protection;
+using Xdows.UI.Dialogs;
 using System.Threading.Tasks;
 
 namespace Xdows_Security
@@ -360,6 +361,141 @@ namespace Xdows_Security
                 App.MainWindow?.UpdateNavTheme(index);
             }
             catch { }
+        }
+
+        /// <summary>
+        /// 隔离区查看按钮点击事件
+        /// </summary>
+        private async void Quarantine_ViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dialog = new QuarantineDialog
+                {
+                    XamlRoot = this.XamlRoot
+                };
+
+                await dialog.ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"打开隔离区对话框失败: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 隔离区清空按钮点击事件
+        /// </summary>
+        private async void Quarantine_ClearButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int count = QuarantineManager.GetQuarantineCount();
+                
+                if (count == 0)
+                {
+                    var emptyDialog = new ContentDialog
+                    {
+                        Title = "隔离区为空",
+                        Content = "隔离区中没有文件需要清空。",
+                        CloseButtonText = "确定",
+                        XamlRoot = this.XamlRoot
+                    };
+                    await emptyDialog.ShowAsync();
+                    return;
+                }
+
+                var confirmDialog = new ContentDialog
+                {
+                    Title = "确认清空",
+                    Content = $"确定要永久删除隔离区中的所有 {count} 个文件吗？此操作不可撤销。",
+                    PrimaryButtonText = "清空所有",
+                    CloseButtonText = "取消",
+                    DefaultButton = ContentDialogButton.Close,
+                    XamlRoot = this.XamlRoot
+                };
+
+                if (await confirmDialog.ShowAsync() == ContentDialogResult.Primary)
+                {
+                    bool success = QuarantineManager.ClearQuarantine();
+                    
+                    if (success)
+                    {
+                        var successDialog = new ContentDialog
+                        {
+                            Title = "隔离区已清空",
+                            Content = "所有文件已从隔离区永久删除。",
+                            CloseButtonText = "确定",
+                            XamlRoot = this.XamlRoot
+                        };
+                        await successDialog.ShowAsync();
+                    }
+                    else
+                    {
+                        var errorDialog = new ContentDialog
+                        {
+                            Title = "清空失败",
+                            Content = "清空隔离区时发生错误，请重试。",
+                            CloseButtonText = "确定",
+                            XamlRoot = this.XamlRoot
+                        };
+                        await errorDialog.ShowAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"清空隔离区失败: {ex.Message}");
+                
+                var errorDialog = new ContentDialog
+                {
+                    Title = "清空失败",
+                    Content = "清空隔离区时发生错误，请重试。",
+                    CloseButtonText = "确定",
+                    XamlRoot = this.XamlRoot
+                };
+                await errorDialog.ShowAsync();
+            }
+        }
+
+        /// <summary>
+        /// 信任区查看按钮点击事件
+        /// </summary>
+        private async void Trust_ViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dialog = new TrustDialog
+                {
+                    XamlRoot = this.XamlRoot
+                };
+
+                await dialog.ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"打开信任区对话框失败: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 信任区添加按钮点击事件
+        /// </summary>
+        private async void Trust_AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dialog = new AddTrustDialog
+                {
+                    XamlRoot = this.XamlRoot
+                };
+
+                await dialog.ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"打开添加信任项对话框失败: {ex.Message}");
+            }
         }
     }
 }

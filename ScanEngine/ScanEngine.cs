@@ -125,7 +125,7 @@ namespace Xdows.ScanEngine
 
             return (-1, string.Empty);
         }
-        private static async Task<string> GetFileMD5Async(string path)
+        public static async Task<string> GetFileMD5Async(string path)
         {
             using var md5 = MD5.Create();
             await using var stream = File.OpenRead(path);

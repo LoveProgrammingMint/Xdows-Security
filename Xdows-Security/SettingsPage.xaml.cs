@@ -38,6 +38,14 @@ namespace Xdows_Security
                 CzkCloudScanToggle.IsEnabled = false;
             }
 
+            // 检查AX_API.exe是否存在
+            string axApiPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AX_API", "AX_API.exe");
+            if (!File.Exists(axApiPath))
+            {
+                JiSuSafeAXToggle.IsOn = false;
+                JiSuSafeAXToggle.IsEnabled = false;
+            }
+
             //if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "model.onnx")) {
             //SouXiaoScanToggle.IsOn = false;
             //SouXiaoScanToggle.IsEnabled = false;
@@ -115,6 +123,7 @@ namespace Xdows_Security
                  ExtraDataToggle,
                  LocalScanToggle,
                  CzkCloudScanToggle,
+                 JiSuSafeAXToggle,
                  SouXiaoScanToggle,
                  CloudScanToggle
                };

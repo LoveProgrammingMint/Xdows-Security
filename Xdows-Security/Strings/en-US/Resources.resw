@@ -702,6 +702,18 @@ Why not try XIGUA Security?</value>
   <data name="SettingsPage_Scan_CzkCloud_Develop.Description" xml:space="preserve">
     <value>天启星图网络科技 is the developer and maintainer of this scanning engine</value>
   </data>
+  <data name="SettingsPage_Scan_JiSuSafeAX.Header" xml:space="preserve">
+    <value>JiSuSafe AX Mode</value>
+  </data>
+  <data name="SettingsPage_Scan_JiSuSafeAX.Description" xml:space="preserve">
+    <value>JiSuSafe AX Mode is a high-performance local scanning engine that provides fast and accurate threat detection</value>
+  </data>
+  <data name="SettingsPage_Scan_JiSuSafeAX_Develop.Header" xml:space="preserve">
+    <value>About this Engine</value>
+  </data>
+  <data name="SettingsPage_Scan_JiSuSafeAX_Develop.Description" xml:space="preserve">
+    <value>FastStudio is the developer and maintainer of this scanning engine</value>
+  </data>
   <data name="SettingsPage_Scan_Cloud.Header" xml:space="preserve">
     <value>Cloud-based scanning</value>
   </data>
@@ -1269,5 +1281,8 @@ If you do not accept it, please turn off the engine, or stop using and delete th
   </data>
   <data name="AddTrustDialog_Preview_Title.Text" xml:space="preserve">
     <value>Preview</value>
+  </data>
+  <data name="AllPage_Status" xml:space="preserve">
+    <value />
   </data>
 </root>

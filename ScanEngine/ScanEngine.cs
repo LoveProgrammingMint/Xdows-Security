@@ -9,6 +9,8 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
+using System.Diagnostics;
+using System.Text;
 
 namespace Xdows.ScanEngine
 {
@@ -174,6 +176,73 @@ namespace Xdows.ScanEngine
 
                     return (false, string.Empty);
                 }
+            }
+        }
+        public static async Task<(int statusCode, string? result)> AXScanFileAsync(string targetFilePath)
+        {
+            if (!File.Exists(targetFilePath))
+                throw new FileNotFoundException($"Target file not found: {targetFilePath}");
+
+            string baseDir = AppContext.BaseDirectory;
+            string axApiExePath = Path.Combine(baseDir, "AX_API", "AX_API.exe");
+
+            if (!File.Exists(axApiExePath))
+                throw new FileNotFoundException($"AX_API.exe not found at: {axApiExePath}");
+
+            string escapedTargetPath = $"\"{targetFilePath}\"";
+
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = axApiExePath,
+                Arguments = $"-PE \"{escapedTargetPath}\"",
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+                StandardOutputEncoding = Encoding.UTF8,
+                StandardErrorEncoding = Encoding.UTF8
+            };
+
+            using var process = new Process { StartInfo = startInfo };
+
+            try
+            {
+                process.Start();
+
+                var outputTask = process.StandardOutput.ReadToEndAsync();
+                var errorTask = process.StandardError.ReadToEndAsync();
+
+                await process.WaitForExitAsync();
+
+                string output = await outputTask;
+                string error = await errorTask;
+
+                string result = !string.IsNullOrEmpty(output) ? output : error;
+                using var doc = JsonDocument.Parse(result);
+
+                if (doc.RootElement.TryGetProperty("status", out var statusProp) &&
+                    statusProp.GetString() == "success")
+                {
+                    if (doc.RootElement.TryGetProperty("detected_threats", out var threatsArray) &&
+                        threatsArray.ValueKind == JsonValueKind.Array)
+                    {
+                        foreach (var threat in threatsArray.EnumerateArray())
+                        {
+                            if (threat.TryGetProperty("type", out var typeProp))
+                            {
+                                return (200, typeProp.GetString() ?? string.Empty);
+                            }
+                        }
+
+                        return (-1, string.Empty);
+                    }
+                }
+
+                return (-1, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                return (-1, $"Exception during scan: {ex.Message}");
             }
         }
     }

@@ -15,4 +15,9 @@
     <ProjectReference Include="..\SouXiao_Self-Heuristic\Self-Heuristic.csproj" />
   </ItemGroup>
 
+	<ItemGroup>
+		<None Update="AX_API\**\*.*">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 </Project>

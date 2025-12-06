@@ -83,6 +83,19 @@
             </controls:SettingsExpander>
             <controls:SettingsExpander
                             VerticalAlignment="Top"
+                            l:Uids.Uid="SettingsPage_Scan_JiSuSafeAX"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xF003;}">
+                <ToggleSwitch x:Name="JiSuSafeAXToggle" Tag="JiSuSafeAX" Toggled="Toggled_SaveToggleData"  />
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard
+                            l:Uids.Uid="SettingsPage_Scan_JiSuSafeAX_Develop"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xEC7A;}">
+                        <HyperlinkButton l:Uids.Uid="AllPage_OpenLink" NavigateUri="https://ax.faststudio.top" />
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
+            <controls:SettingsExpander
+                            VerticalAlignment="Top"
                             l:Uids.Uid="SettingsPage_Scan_Cloud"
                             HeaderIcon="{ui:FontIcon Glyph=&#xE753;}">
                 <ToggleSwitch x:Name="CloudScanToggle" Tag="CloudScan" Toggled="Toggled_SaveToggleData"  />

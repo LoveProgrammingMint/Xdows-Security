@@ -568,7 +568,7 @@
     <value>打开链接</value>
   </data>
   <data name="Button_Confirm" xml:space="preserve">
-    <value>确认</value>
+    <value>确定</value>
   </data>
   <data name="Button_Download" xml:space="preserve">
     <value>下载</value>
@@ -701,6 +701,18 @@
   </data>
   <data name="SettingsPage_Scan_CzkCloud_Develop.Description" xml:space="preserve">
     <value>天启星图网络科技 是这个扫描引擎的开发者和维护者</value>
+  </data>
+  <data name="SettingsPage_Scan_JiSuSafeAX.Header" xml:space="preserve">
+    <value>极速安全 AX 模型</value>
+  </data>
+  <data name="SettingsPage_Scan_JiSuSafeAX.Description" xml:space="preserve">
+    <value>极速安全 AX 模型是基于本地的高性能扫描引擎，提供快速准确的威胁检测</value>
+  </data>
+  <data name="SettingsPage_Scan_JiSuSafeAX_Develop.Header" xml:space="preserve">
+    <value>关于引擎</value>
+  </data>
+  <data name="SettingsPage_Scan_JiSuSafeAX_Develop.Description" xml:space="preserve">
+    <value>FastStudio 是这个扫描引擎的开发者和维护者</value>
   </data>
   <data name="SettingsPage_Scan_Cloud.Header" xml:space="preserve">
     <value>基于云的扫描引擎</value>
@@ -880,7 +892,7 @@
     <value>关闭防护</value>
   </data>
   <data name="InterceptWindow_Disable_Confirm_Message" xml:space="preserve">
-    <value>确认要关闭实时防护吗？这将降低系统安全。</value>
+    <value>确定确认要关闭实时防护吗？这将降低系统安全。</value>
   </data>
   <data name="InterceptWindow_Disable_Success_Title" xml:space="preserve">
     <value>防护已关闭</value>
@@ -975,7 +987,7 @@
     <value>当前没有隔离的文件</value>
   </data>
   <data name="QuarantineDialog_Restore_Confirm_Title" xml:space="preserve">
-    <value>确认恢复</value>
+    <value>确定恢复</value>
   </data>
   <data name="QuarantineDialog_Restore_Confirm_Message" xml:space="preserve">
     <value>确定要恢复此文件吗？恢复后文件将返回原位置。</value>
@@ -993,7 +1005,7 @@
     <value>恢复文件失败，请检查文件是否存在或权限是否足够</value>
   </data>
   <data name="QuarantineDialog_Delete_Confirm_Title" xml:space="preserve">
-    <value>确认删除</value>
+    <value>确定删除</value>
   </data>
   <data name="QuarantineDialog_Delete_Confirm_Message" xml:space="preserve">
     <value>确定要永久删除此文件吗？此操作不可撤销。</value>
@@ -1011,7 +1023,7 @@
     <value>删除文件失败，请检查权限</value>
   </data>
   <data name="QuarantineDialog_ClearAll_Confirm_Title" xml:space="preserve">
-    <value>确认清空隔离区</value>
+    <value>确定清空隔离区</value>
   </data>
   <data name="QuarantineDialog_ClearAll_Confirm_Message" xml:space="preserve">
     <value>确定要永久删除所有隔离文件吗？此操作不可撤销。</value>
@@ -1105,7 +1117,7 @@
     <value>共 {0} 个信任项</value>
   </data>
   <data name="TrustDialog_ConfirmClearTitle" xml:space="preserve">
-    <value>确认清空</value>
+    <value>确定清空</value>
   </data>
   <data name="TrustDialog_ConfirmClearContent" xml:space="preserve">
     <value>确定要清空信任区吗？将删除</value>
@@ -1123,7 +1135,7 @@
     <value>清空失败</value>
   </data>
   <data name="TrustDialog_ConfirmRemoveTitle" xml:space="preserve">
-    <value>确认移除</value>
+    <value>确定删除</value>
   </data>
   <data name="TrustDialog_ConfirmRemoveContent" xml:space="preserve">
     <value>确定要移除</value>
@@ -1268,5 +1280,8 @@
   </data>
   <data name="AddTrustDialog_Preview_Title.Text" xml:space="preserve">
     <value>预览</value>
+  </data>
+  <data name="AllPage_Status" xml:space="preserve">
+    <value>已启用,已禁用</value>
   </data>
 </root>

@@ -213,7 +213,8 @@ namespace Xdows_Security
             bool UseCzkCloudScan = (settings.Values["CzkCloudScan"] as bool?).GetValueOrDefault();
             bool UseCloudScan = (settings.Values["CloudScan"] as bool?).GetValueOrDefault();
             bool UseSouXiaoScan = (settings.Values["SouXiaoScan"] as bool?).GetValueOrDefault();
-            if (!UseLocalScan && !UseCzkCloudScan && !UseSouXiaoScan && !UseCloudScan)
+            bool UseJiSuSafeAX = (settings.Values["JiSuSafeAX"] as bool?).GetValueOrDefault();
+            if (!UseLocalScan && !UseCzkCloudScan && !UseSouXiaoScan && !UseCloudScan && !UseJiSuSafeAX)
             {
                 var dialog = new ContentDialog
                 {
@@ -422,6 +423,7 @@ namespace Xdows_Security
             bool UseCzkCloudScan = settings.Values["CzkCloudScan"] as bool? ?? false;
             bool UseCloudScan = settings.Values["CloudScan"] as bool? ?? false;
             bool UseSouXiaoScan = settings.Values["SouXiaoScan"] as bool? ?? false;
+            bool UseJiSuSafeAX = settings.Values["JiSuSafeAX"] as bool? ?? false;
 
             var SouXiaoEngine = new Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan();
             if (UseSouXiaoScan)
@@ -462,6 +464,10 @@ namespace Xdows_Security
             if (UseSouXiaoScan)
             {
                 Log += " SouXiaoScan";
+            }
+            if (UseJiSuSafeAX)
+            {
+                Log += " JiSuSafeAX";
             }
             LogText.AddNewLog(1, "Security - StartScan", Log);
 
@@ -615,6 +621,18 @@ namespace Xdows_Security
                                     if (!string.IsNullOrEmpty(localResult))
                                     {
                                         Result = DeepScan ? $"{localResult} with DeepScan" : localResult;
+                                    }
+                                }
+                            }
+
+                            if (string.IsNullOrEmpty(Result))
+                            {
+                                if (UseJiSuSafeAX)
+                                {
+                                    var jiSuSafeAXResult = await Xdows.ScanEngine.ScanEngine.AXScanFileAsync(file);
+                                    if (!string.IsNullOrEmpty(jiSuSafeAXResult.result) && jiSuSafeAXResult.statusCode == 200)
+                                    {
+                                        Result = $"JiSuSafeAX.{jiSuSafeAXResult.result}";
                                     }
                                 }
                             }

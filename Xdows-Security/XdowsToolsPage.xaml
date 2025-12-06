@@ -5,12 +5,11 @@
     xmlns:local="using:Xdows_Security"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:l="using:WinUI3Localizer"
     mc:Ignorable="d"
     Loaded="Page_Loaded">
     <Grid Margin="64,16,64,0" VerticalAlignment="Top">
         <TabView IsAddTabButtonVisible="False" SelectionChanged="TabView_SelectionChanged" TabWidthMode="Equal">
-            <TabViewItem Header="进程管理器" IsClosable="False" l:Uids.Uid="XdowsToolsPage_ProcessManager_Tab">
+            <TabViewItem Header="进程管理器" IsClosable="False">
                 <TabViewItem.IconSource>
                     <FontIconSource Glyph="&#xE9D9;"/>
                 </TabViewItem.IconSource>
@@ -41,13 +40,13 @@
                                           Margin="16,12,0,0"
                                           SelectionChanged="SortCombo_SelectionChanged"
                                           Width="120">
-                                    <ComboBoxItem l:Uids.Uid="XdowsToolsPage_ProcessManager_Sort_Name" Tag="Name"/>
-                                    <ComboBoxItem l:Uids.Uid="XdowsToolsPage_ProcessManager_Sort_PID" Tag="Id"/>
-                                    <ComboBoxItem l:Uids.Uid="XdowsToolsPage_ProcessManager_Sort_Memory" Tag="Memory"/>
+                                    <ComboBoxItem Content="名称" Tag="Name"/>
+                                    <ComboBoxItem Content="PID" Tag="Id"/>
+                                    <ComboBoxItem Content="内存" Tag="Memory"/>
                                 </ComboBox>
                                 <TextBox x:Name="SearchBox"
                                          Grid.Column="2"
-                                         l:Uids.Uid="XdowsToolsPage_ProcessManager_SearchPlaceholder"
+                                         PlaceholderText="键入要搜索的内容..."
                                          HorizontalAlignment="Center"
                                          Width="Auto"
                                          MinWidth="240"
@@ -55,9 +54,9 @@
                                          TextChanged="SearchBox_TextChanged"/>
                             </Grid>
                         </CommandBar.Content>
-                        <AppBarButton Icon="Refresh" l:Uids.Uid="XdowsToolsPage_ProcessManager_Refresh" Click="Refresh_Click"/>
-                        <AppBarButton Icon="Cancel" l:Uids.Uid="XdowsToolsPage_ProcessManager_Kill" Click="Kill_Click"/>
-                        <AppBarButton l:Uids.Uid="XdowsToolsPage_ProcessManager_Details" Click="ShowProcessDetail_Click">
+                        <AppBarButton Icon="Refresh" Label="刷新列表" Click="Refresh_Click"/>
+                        <AppBarButton Icon="Cancel" Label="结束进程" Click="Kill_Click"/>
+                        <AppBarButton Label="详细信息" Click="ShowProcessDetail_Click">
                             <AppBarButton.Icon>
                                 <FontIcon Glyph="&#xE946;"/>
                             </AppBarButton.Icon>
@@ -77,18 +76,18 @@
                                     <TextBlock Grid.Column="2" Text="{Binding Memory}" FontSize="14"/>
                                     <Grid.ContextFlyout>
                                         <MenuFlyout x:Name="ItemMenuFlyout">
-                                            <MenuFlyoutItem l:Uids.Uid="XdowsToolsPage_ProcessManager_Refresh" Click="Refresh_Click">
+                                            <MenuFlyoutItem Text="刷新列表" Click="Refresh_Click">
                                                 <MenuFlyoutItem.Icon>
                                                     <FontIcon Glyph="&#xE72C;"  />
                                                 </MenuFlyoutItem.Icon>
                                             </MenuFlyoutItem>
                                             <MenuFlyoutSeparator/>
-                                            <MenuFlyoutItem l:Uids.Uid="XdowsToolsPage_ProcessManager_Details" Click="ShowProcessDetail_Click">
+                                            <MenuFlyoutItem Text="详细信息" Click="ShowProcessDetail_Click">
                                                 <MenuFlyoutItem.Icon>
                                                     <FontIcon Glyph="&#xE946;"/>
                                                 </MenuFlyoutItem.Icon>
                                             </MenuFlyoutItem>
-                                            <MenuFlyoutItem l:Uids.Uid="XdowsToolsPage_ProcessManager_Kill" Click="Kill_Click">
+                                            <MenuFlyoutItem Text="终止进程" Click="Kill_Click">
                                                 <MenuFlyoutItem.Icon>
                                                     <FontIcon Glyph="&#xF140;"/>
                                                 </MenuFlyoutItem.Icon>
@@ -102,7 +101,7 @@
                 </Grid>
             </TabViewItem>
 
-            <TabViewItem Header="命令提示符" IsClosable="False" l:Uids.Uid="XdowsToolsPage_CommandPrompt_Tab">
+            <TabViewItem Header="命令提示符" IsClosable="False">
                 <TabViewItem.IconSource>
                     <FontIconSource Glyph="&#xE756;"/>
                 </TabViewItem.IconSource>
@@ -127,11 +126,11 @@
                                 <TextBlock x:Name="CmdTabTitle"
                                            Margin="12,16,0,0"
                                            FontSize="16"
-                                           l:Uids.Uid="XdowsToolsPage_CommandPrompt_Title"/>
+                                           Text="命令提示符"/>
                             </Grid>
                         </CommandBar.Content>
-                        <AppBarButton Icon="Clear" l:Uids.Uid="XdowsToolsPage_CommandPrompt_ClearOutput" Click="ClearOutput_Click"/>
-                        <AppBarButton Icon="Copy" l:Uids.Uid="XdowsToolsPage_CommandPrompt_CopyOutput" Click="CopyOutput_Click"/>
+                        <AppBarButton Icon="Clear" Label="清空输出" Click="ClearOutput_Click"/>
+                        <AppBarButton Icon="Copy" Label="复制输出" Click="CopyOutput_Click"/>
                     </CommandBar>
                     <Border Grid.Row="1" 
                             Margin="16,8,16,0" 
@@ -144,7 +143,7 @@
                                      IsReadOnly="True"
                                      TextWrapping="Wrap"
                                      FontSize="12"
-                                     l:Uids.Uid="XdowsToolsPage_CommandPrompt_InitialText"
+                                     Text="命令提示符启动成功，请输入相关命令。"
                                      AcceptsReturn="True"
                                      VerticalAlignment="Stretch"
                                      HorizontalAlignment="Stretch"
@@ -158,13 +157,13 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBox x:Name="CmdInput"
-                            l:Uids.Uid="XdowsToolsPage_CommandPrompt_InputPlaceholder"
+                            PlaceholderText="输入命令..."
                             KeyDown="CmdInput_KeyDown"
                             VerticalAlignment="Center"
                             Height="30"/>
                         <Button x:Name="ExecuteButton"
                             Grid.Column="1"
-                            l:Uids.Uid="XdowsToolsPage_CommandPrompt_Execute"
+                            Content="执行"
                             Click="ExecuteButton_Click"
                             MinWidth="80"
                             Height="30"
@@ -174,7 +173,7 @@
                 </Grid>
             </TabViewItem>
 
-            <TabViewItem Header="弹窗拦截器" IsClosable="False" l:Uids.Uid="XdowsToolsPage_PopupBlocker_Tab">
+            <TabViewItem Header="弹窗拦截器" IsClosable="False">
                 <TabViewItem.IconSource>
                     <FontIconSource Glyph="&#xEA0D;"/>
                 </TabViewItem.IconSource>
@@ -199,20 +198,20 @@
                                 <TextBlock x:Name="PopupTabTitle"
                                            Style="{StaticResource CaptionTextBlockStyle}"
                                            Margin="12,16,0,0"
-                                           l:Uids.Uid="XdowsToolsPage_PopupBlocker_Title"
+                                           Text="弹窗拦截器"
                                            FontSize="16"/>
                                 <ComboBox x:Name="PopupSortCombo"
                                           Grid.Column="1"
                                           Margin="16,12,0,0"
                                           SelectionChanged="PopupSortCombo_SelectionChanged"
                                           Width="120">
-                                    <ComboBoxItem l:Uids.Uid="XdowsToolsPage_PopupBlocker_Sort_Title" Tag="Title"/>
-                                    <ComboBoxItem l:Uids.Uid="XdowsToolsPage_PopupBlocker_Sort_Status" Tag="Status"/>
-                                    <ComboBoxItem l:Uids.Uid="XdowsToolsPage_PopupBlocker_Sort_Process" Tag="Process"/>
+                                    <ComboBoxItem Content="标题" Tag="Title"/>
+                                    <ComboBoxItem Content="状态" Tag="Status"/>
+                                    <ComboBoxItem Content="进程" Tag="Process"/>
                                 </ComboBox>
                                 <TextBox x:Name="PopupSearchBox"
                                          Grid.Column="2"
-                                         l:Uids.Uid="XdowsToolsPage_PopupBlocker_SearchPlaceholder"
+                                         PlaceholderText="键入要搜索的内容..."
                                          HorizontalAlignment="Center"
                                          Width="Auto"
                                          MinWidth="240"
@@ -220,9 +219,9 @@
                                          TextChanged="PopupSearchBox_TextChanged"/>
                             </Grid>
                         </CommandBar.Content>
-                        <AppBarButton Icon="Add" l:Uids.Uid="XdowsToolsPage_PopupBlocker_AddRule" Click="AddPopupRule_Click"/>
-                        <AppBarButton Icon="Delete" l:Uids.Uid="XdowsToolsPage_PopupBlocker_DeleteRule" Click="DeletePopupRule_Click"/>
-                        <AppBarButton Icon="Refresh" l:Uids.Uid="XdowsToolsPage_PopupBlocker_RefreshList" Click="RefreshPopupList_Click"/>
+                        <AppBarButton Icon="Add" Label="添加规则" Click="AddPopupRule_Click"/>
+                        <AppBarButton Icon="Delete" Label="删除规则" Click="DeletePopupRule_Click"/>
+                        <AppBarButton Icon="Refresh" Label="刷新列表" Click="RefreshPopupList_Click"/>
                     </CommandBar>
                     <ListView x:Name="PopupRuleList" Grid.Row="1" SelectionMode="Single" Margin="0,16,0,0">
                         <ListView.ItemTemplate>
@@ -240,13 +239,13 @@
                                     <ToggleSwitch Grid.Column="3" IsOn="{Binding IsEnabled}" Toggled="PopupRuleToggle_Toggled" MinWidth="60"/>
                                     <Grid.ContextFlyout>
                                         <MenuFlyout x:Name="PopupItemMenuFlyout">
-                                            <MenuFlyoutItem l:Uids.Uid="XdowsToolsPage_PopupBlocker_EditRule" Click="EditPopupRule_Click">
+                                            <MenuFlyoutItem Text="编辑规则" Click="EditPopupRule_Click">
                                                 <MenuFlyoutItem.Icon>
                                                     <FontIcon Glyph="&#xE70F;"  />
                                                 </MenuFlyoutItem.Icon>
                                             </MenuFlyoutItem>
                                             <MenuFlyoutSeparator/>
-                                            <MenuFlyoutItem l:Uids.Uid="XdowsToolsPage_PopupBlocker_DeleteRule" Click="DeletePopupRule_Click">
+                                            <MenuFlyoutItem Text="删除规则" Click="DeletePopupRule_Click">
                                                 <MenuFlyoutItem.Icon>
                                                     <FontIcon Glyph="&#xE107;"/>
                                                 </MenuFlyoutItem.Icon>

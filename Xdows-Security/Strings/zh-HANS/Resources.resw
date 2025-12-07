@@ -682,7 +682,7 @@
     <value>SouXiao 本地引擎</value>
   </data>
   <data name="SettingsPage_Scan_SouXiao_Develop.Description" xml:space="preserve">
-    <value>Mint 是这个扫描引擎的开发者和维护者</value>
+    <value>由 Xdows Security - 零度枫铸工作室维护</value>
   </data>
   <data name="SettingsPage_Appearance_Backdrop_Opacity.Description" xml:space="preserve">
     <value>修改主窗口的不透明度</value>
@@ -694,7 +694,7 @@
     <value>云端引擎来自第三方且需要连接至互联网，但是能提高查杀率</value>
   </data>
   <data name="SettingsPage_Scan_SouXiao.Description" xml:space="preserve">
-    <value>SouXiao 扫描引擎来自于第三方，可以提高查杀率</value>
+    <value>零度枫铸提供的飕萧高精度查杀引擎</value>
   </data>
   <data name="SettingsPage_Scan_CzkCloud_Develop.Header" xml:space="preserve">
     <value>关于引擎</value>
@@ -712,7 +712,7 @@
     <value>关于引擎</value>
   </data>
   <data name="SettingsPage_Scan_JiSuSafeAX_Develop.Description" xml:space="preserve">
-    <value>FastStudio 是这个扫描引擎的开发者和维护者</value>
+    <value>极速安全 是这个扫描引擎的开发者和维护者</value>
   </data>
   <data name="SettingsPage_Scan_Cloud.Header" xml:space="preserve">
     <value>基于云的扫描引擎</value>

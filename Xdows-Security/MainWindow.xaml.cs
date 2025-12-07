@@ -76,7 +76,7 @@ namespace Xdows_Security
             }
 
             var backdrop = settings.Values["AppBackdrop"] as string;
-            ApplyBackdrop(backdrop ?? "Mica");
+            ApplyBackdrop(backdrop ?? "Mica",false);
             Activated -= MainWindow_Activated_FirstTime;
             //if (!App.IsRunAsAdmin())
             //{
@@ -139,6 +139,13 @@ namespace Xdows_Security
                         titleBar.ButtonForegroundColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
                     }
                 }
+            }
+            var settings = ApplicationData.Current.LocalSettings;
+
+            var backdrop = settings.Values["AppBackdrop"] as string;
+            if (backdrop != null)
+            {
+                App.MainWindow?.ApplyBackdrop(backdrop,true);
             }
         }
         public ApplicationTheme GetSystemTheme()
@@ -262,15 +269,15 @@ namespace Xdows_Security
             IsInputActive = true
         };
 
-        public void ApplyBackdrop(string backdropType)
+        public void ApplyBackdrop(string backdropType, bool compulsory)
         {
             try {
                 if (RootGrid == null) return;
 
                 var settings = ApplicationData.Current.LocalSettings;
                 double opacity = settings.Values["AppBackdropOpacity"] is double v ? v : 100;
-
-                if (_lastBackdrop == backdropType && _lastOpacity.Equals(opacity)) return;
+                if (!compulsory)
+                    if (_lastBackdrop == backdropType && _lastOpacity.Equals(opacity)) return;
 
                 _lastBackdrop = backdropType;
                 _lastOpacity = opacity;
@@ -292,23 +299,32 @@ namespace Xdows_Security
                 {
                     "Mica" => new MicaController()
                     {
-                        LuminosityOpacity = (float)opacity / 100
+                        LuminosityOpacity = (float)opacity / 100,
+                        TintColor = GetCurrentTheme() == ElementTheme.Dark
+                        ? new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x20, 0x20)).Color
+                        : new SolidColorBrush(Colors.White).Color
                     },
                     "MicaAlt" => new MicaController()
                     {
                         LuminosityOpacity = (float)opacity / 100,
+                        TintColor = GetCurrentTheme() == ElementTheme.Dark
+                        ? new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x20, 0x20)).Color
+                        : new SolidColorBrush(Colors.White).Color,
                         Kind = MicaKind.BaseAlt
                     },
                     "Acrylic" => new DesktopAcrylicController()
                     {
-                        LuminosityOpacity = (float)opacity / 100
+                        LuminosityOpacity = (float)opacity / 100,
+                        TintColor = GetCurrentTheme() == ElementTheme.Dark
+                        ? new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x20, 0x20)).Color
+                        : new SolidColorBrush(Colors.White).Color
                     },
                     _ => null
                 };
 
                 if (_controller == null)
                 {
-                    ApplyBackdrop("Solid");
+                    ApplyBackdrop("Solid", compulsory);
                     return;
                 }
 
@@ -321,10 +337,8 @@ namespace Xdows_Security
         {
             var settings = ApplicationData.Current.LocalSettings;
             var backdrop = settings.Values["AppBackdrop"] as string;
-            if (backdrop == "Solid")
-            {
-                ApplyBackdrop(backdrop);
-            }
+            if (backdrop != null)
+                ApplyBackdrop(backdrop,true);
         }
 
         private void Window_Closed()

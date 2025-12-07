@@ -682,7 +682,7 @@ Why not try XIGUA Security?</value>
     <value>SouXiao Engine</value>
   </data>
   <data name="SettingsPage_Scan_SouXiao_Develop.Description" xml:space="preserve">
-    <value>Mint is the developer and maintainer of this scanning engine</value>
+    <value>Officially maintained by Xdows Security - IceZero Studio.</value>
   </data>
   <data name="SettingsPage_Appearance_Backdrop_Opacity.Description" xml:space="preserve">
     <value>Modify the opacity of the main window</value>
@@ -694,7 +694,7 @@ Why not try XIGUA Security?</value>
     <value>Connecting to the cloud engine improves detection accuracy but requires an internet connection.</value>
   </data>
   <data name="SettingsPage_Scan_SouXiao.Description" xml:space="preserve">
-    <value>The SouXiao scanning engine is provided by a third party and can improve detection rates.</value>
+    <value>IceZero Studio provides the Souxiao high-precision engine.</value>
   </data>
   <data name="SettingsPage_Scan_CzkCloud_Develop.Header" xml:space="preserve">
     <value>About this Engine</value>

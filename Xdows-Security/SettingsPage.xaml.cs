@@ -294,12 +294,6 @@ namespace Xdows_Security
                 rootElement.RequestedTheme = selectedTheme;
             }
             App.MainWindow.UpdateTheme(selectedTheme);
-
-            var backdrop = settings.Values["AppBackdrop"] as string;
-            if (backdrop == "Solid" && App.MainWindow != null)
-            {
-                App.MainWindow.ApplyBackdrop(backdrop);
-            }
         }
 
         private void LoadBackdropSetting()
@@ -342,7 +336,7 @@ namespace Xdows_Security
                     // 应用新背景
                     if (App.MainWindow != null)
                     {
-                        App.MainWindow.ApplyBackdrop(backdropType);
+                        App.MainWindow.ApplyBackdrop(backdropType,false);
                     }
                     Appearance_Backdrop_Opacity.IsEnabled = !(backdropType == "Solid");
                 }
@@ -356,7 +350,7 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             settings.Values["AppBackdropOpacity"] = slider.Value;
             if (App.MainWindow == null) return;
-            App.MainWindow.ApplyBackdrop(settings.Values["AppBackdrop"] as string ?? "Mica");
+            App.MainWindow.ApplyBackdrop(settings.Values["AppBackdrop"] as string ?? "Mica",false);
         }
 
         private void NavComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

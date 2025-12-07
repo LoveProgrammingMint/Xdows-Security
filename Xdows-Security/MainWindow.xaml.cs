@@ -306,14 +306,14 @@ namespace Xdows_Security
                     case "Mica":
                         _controller = new MicaController()
                         {
-                            LuminosityOpacity = (float)opacity / 95,
+                            LuminosityOpacity = (float)(opacity / 100 * 0.95),
                             TintColor = GetBackgroundColor()
                         };
                         break;
                     case "MicaAlt":
                         _controller = new MicaController()
                         {
-                            LuminosityOpacity = (float)opacity / 95,
+                            LuminosityOpacity = (float)(opacity / 100 * 0.95),
                             TintColor = GetBackgroundColor(),
                             Kind = MicaKind.BaseAlt
                         };
@@ -321,7 +321,7 @@ namespace Xdows_Security
                     case "Acrylic":
                         _controller = new DesktopAcrylicController()
                         {
-                            LuminosityOpacity = (float)opacity / 95,
+                            LuminosityOpacity = (float)(opacity / 100 * 0.95),
                             TintColor = GetBackgroundColor()
                         };
                         break;

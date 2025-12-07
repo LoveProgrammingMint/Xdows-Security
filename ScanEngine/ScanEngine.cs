@@ -137,22 +137,51 @@ namespace Xdows.ScanEngine
         public class SouXiaoEngineScan
         {
             private Core? SouXiaoCore;
+            private SouRule.SouRuleEngine? SouRuleEngine;
             private Boolean IsDebug = false;
 
             public bool Initialize()
             {
                 try
                 {
-                    SouXiaoCore = new(0.8, Directory.GetCurrentDirectory());
+                    SouXiaoCore = new(0.75, Directory.GetCurrentDirectory());
+                    //SouRuleEngine = new();
+                    //if (!SouRuleEngine.Initialization) { return false; }
                     return true;
                 }
                 catch (Exception)
                 {
-                    throw;
-                    //return false;
+                    return false;
                 }
             }
-            public (bool IsVirus,string Result) ScanFile(string path)
+
+            public (bool IsVirus, string Result) ScanFileByRuleEngine(string path)
+            {
+                //try
+                //{
+                //    if (SouRuleEngine == null)
+                //    {
+                //        throw new InvalidOperationException("SouXiaoRule is not initialized.");
+                //    }
+                //    bool scanResult = SouRuleEngine.ScanFile(path);
+                //    if (scanResult)
+                //    {
+                //        return (true, "SouXiaoRule.Hit");
+                //    }
+                //    else
+                //    {
+                        return (false, string.Empty);
+                    //}
+                //}
+                //catch (Exception)
+                //{
+                //    if (IsDebug) { throw; }
+
+                //    return (false, string.Empty);
+                //}
+            }
+
+            public (bool IsVirus, string Result) ScanFile(string path)
             {
                 try
                 {

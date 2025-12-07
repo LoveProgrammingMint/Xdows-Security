@@ -603,13 +603,25 @@ namespace Xdows_Security
                                 _filesSafe++;
                                 continue;
                             }
-                            
+
                             if (UseSouXiaoScan)
                             {
                                 if (SouXiaoEngine != null)
                                 {
                                     var SouXiaoEngineResult = SouXiaoEngine.ScanFile(file);
-                                    Result = SouXiaoEngineResult.IsVirus ? SouXiaoEngineResult.Result : string.Empty;
+                                    if (SouXiaoEngineResult.IsVirus)
+                                    {
+                                        Result = SouXiaoEngineResult.Result;
+                                    }
+
+                                    else
+                                    {
+                                        var SouXiaoRuleEngineResult = SouXiaoEngine.ScanFileByRuleEngine(file);
+                                        if (SouXiaoEngineResult.IsVirus)
+                                        {
+                                            Result = SouXiaoEngineResult.Result;
+                                        }
+                                    }
                                 }
                             }
                             if (string.IsNullOrEmpty(Result))

@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SouXiao_Self-Heuristic\Self-Heuristic.csproj" />
+    <ProjectReference Include="..\SouXiao_SouRule\SouRule.csproj" />
   </ItemGroup>
 
 	<ItemGroup>

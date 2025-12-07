@@ -258,7 +258,6 @@ namespace Xdows_Security
             var systemBackground = settings.GetColorValue(UIColorType.Background);
             return IsLightColor(systemBackground) ? ElementTheme.Light : ElementTheme.Dark;
         }
-
         private string _lastBackdrop = "";
         private double _lastOpacity = 100;
         private ISystemBackdropControllerWithTargets? _controller;
@@ -271,17 +270,20 @@ namespace Xdows_Security
 
         public void ApplyBackdrop(string backdropType, bool compulsory)
         {
-            try {
+            try
+            {
                 if (RootGrid == null) return;
-
                 var settings = ApplicationData.Current.LocalSettings;
-                double opacity = settings.Values["AppBackdropOpacity"] is double v ? v : 100;
-                if (!compulsory)
-                    if (_lastBackdrop == backdropType && _lastOpacity.Equals(opacity)) return;
-
+                double opacity = settings.Values["AppBackdropOpacity"] is double v ? v :
+                                (settings.Values["AppBackdropOpacity"] is int i ? i : 100);
+                if (!compulsory && _lastBackdrop == backdropType && _lastOpacity.Equals(opacity))
+                {
+                    return;
+                }
+                CleanupBackdropResources();
                 _lastBackdrop = backdropType;
                 _lastOpacity = opacity;
-                _lastBackdrop = "";
+
                 if (backdropType == "Solid")
                 {
                     this.SystemBackdrop = null;
@@ -290,48 +292,75 @@ namespace Xdows_Security
                         : new SolidColorBrush(Colors.White);
                     return;
                 }
-                if (!MicaController.IsSupported() && (backdropType is "Mica" or "MicaAlt"))
+
+                if (backdropType is "Mica" or "MicaAlt" && !MicaController.IsSupported())
+                {
                     backdropType = "Acrylic";
+                }
+
                 RootGrid.Background = new SolidColorBrush(Colors.Transparent);
                 _target = this.As<ICompositionSupportsSystemBackdrop>();
 
-                _controller = backdropType switch
+                switch (backdropType)
                 {
-                    "Mica" => new MicaController()
-                    {
-                        LuminosityOpacity = (float)opacity / 100,
-                        TintColor = GetCurrentTheme() == ElementTheme.Dark
-                        ? new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x20, 0x20)).Color
-                        : new SolidColorBrush(Colors.White).Color
-                    },
-                    "MicaAlt" => new MicaController()
-                    {
-                        LuminosityOpacity = (float)opacity / 100,
-                        TintColor = GetCurrentTheme() == ElementTheme.Dark
-                        ? new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x20, 0x20)).Color
-                        : new SolidColorBrush(Colors.White).Color,
-                        Kind = MicaKind.BaseAlt
-                    },
-                    "Acrylic" => new DesktopAcrylicController()
-                    {
-                        LuminosityOpacity = (float)opacity / 100,
-                        TintColor = GetCurrentTheme() == ElementTheme.Dark
-                        ? new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x20, 0x20)).Color
-                        : new SolidColorBrush(Colors.White).Color
-                    },
-                    _ => null
-                };
-
-                if (_controller == null)
-                {
-                    ApplyBackdrop("Solid", compulsory);
-                    return;
+                    case "Mica":
+                        _controller = new MicaController()
+                        {
+                            LuminosityOpacity = (float)opacity / 100,
+                            TintColor = GetBackgroundColor()
+                        };
+                        break;
+                    case "MicaAlt":
+                        _controller = new MicaController()
+                        {
+                            LuminosityOpacity = (float)opacity / 100,
+                            TintColor = GetBackgroundColor(),
+                            Kind = MicaKind.BaseAlt
+                        };
+                        break;
+                    case "Acrylic":
+                        _controller = new DesktopAcrylicController()
+                        {
+                            LuminosityOpacity = (float)opacity / 100,
+                            TintColor = GetBackgroundColor()
+                        };
+                        break;
+                    default:
+                        ApplyBackdrop("Solid", compulsory);
+                        return;
                 }
 
-                _controller.AddSystemBackdropTarget(_target);
-                _controller.SetSystemBackdropConfiguration(_config);
+                if (_controller != null && _target != null)
+                {
+                    _controller.AddSystemBackdropTarget(_target);
+                    _controller.SetSystemBackdropConfiguration(_config);
+                }
             }
-            catch { }
+            catch
+            {
+                ApplyBackdrop("Solid", true);
+            }
+        }
+
+        private Color GetBackgroundColor()
+        {
+            return GetCurrentTheme() == ElementTheme.Dark
+                ? Color.FromArgb(0xFF, 0x20, 0x20, 0x20)
+                : Colors.White;
+        }
+
+        private void CleanupBackdropResources()
+        {
+            if (_controller != null)
+            {
+                if (_target != null)
+                {
+                    _controller.RemoveSystemBackdropTarget(_target);
+                }
+                _controller.Dispose();
+                _controller = null;
+            }
+            _target = null;
         }
         private void OnThemeChanged(FrameworkElement sender, object args)
         {

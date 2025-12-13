@@ -197,13 +197,13 @@
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                          l:Uids.Uid="SettingsPage_Protection_Registry_Secondary"
-                        IsEnabled="False"
+                         IsEnabled="False"
                          HeaderIcon="{ui:FontIcon Glyph=&#xED4D;}">
                         <ToggleSwitch />
                     </controls:SettingsCard>
                     <controls:SettingsCard
                          l:Uids.Uid="SettingsPage_Protection_Registry_Others"
-                        IsEnabled="False"
+                         IsEnabled="False"
                          HeaderIcon="{ui:FontIcon Glyph=&#xEA8F;}">
                         <ToggleSwitch />
                     </controls:SettingsCard>
@@ -253,6 +253,11 @@
                     <ComboBoxItem Tag="en-US">English</ComboBoxItem>
                     <ComboBoxItem Tag="zh-HANS">简体中文</ComboBoxItem>
                 </ComboBox>
+            </controls:SettingsCard>
+            <controls:SettingsCard
+                            l:Uids.Uid="SettingsPage_Other_Tray"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xE90E;}">
+                <ToggleSwitch x:Name="TrayVisibleToggle" Tag="TrayVisibleToggle" Toggled="TrayVisibleToggle_Toggled" />
             </controls:SettingsCard>
             <controls:SettingsCard l:Uids.Uid="SettingsPage_Other_Feedback" x:Name="SettingsPage_Other_Feedback" HeaderIcon="{ui:FontIcon Glyph=&#xED15;}">
                 <Button l:Uids.Uid="AllPage_OpenLink" Click="Settings_Feedback_Click"/>

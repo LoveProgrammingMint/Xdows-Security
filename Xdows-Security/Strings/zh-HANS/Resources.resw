@@ -1284,4 +1284,19 @@
   <data name="AllPage_Status" xml:space="preserve">
     <value>已启用,已禁用</value>
   </data>
+  <data name="SettingsPage_Other_Tray.Header" xml:space="preserve">
+    <value>托盘图标</value>
+  </data>
+  <data name="SettingsPage_Other_Tray.Description" xml:space="preserve">
+    <value>在任务栏中显示托盘图标</value>
+  </data>
+  <data name="TrayMenu_Open" xml:space="preserve">
+    <value>打开</value>
+  </data>
+  <data name="TrayMenu_Quit" xml:space="preserve">
+    <value>退出</value>
+  </data>
+  <data name="TrayMenu_Settings" xml:space="preserve">
+    <value>设置</value>
+  </data>
 </root>

@@ -125,7 +125,8 @@ namespace Xdows_Security
                  CzkCloudScanToggle,
                  JiSuSafeAXToggle,
                  SouXiaoScanToggle,
-                 CloudScanToggle
+                 CloudScanToggle,
+                 TrayVisibleToggle
                };
 
             foreach (var toggle in toggles)
@@ -499,6 +500,12 @@ namespace Xdows_Security
             {
                 System.Diagnostics.Debug.WriteLine($"打开添加信任项对话框失败: {ex.Message}");
             }
+        }
+
+        private void TrayVisibleToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            Toggled_SaveToggleData(sender, e);
+            App.MainWindow?.manager?.IsVisibleInTray = TrayVisibleToggle.IsEnabled;
         }
     }
 }

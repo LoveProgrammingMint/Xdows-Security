@@ -1283,6 +1283,21 @@ If you do not accept it, please turn off the engine, or stop using and delete th
     <value>Preview</value>
   </data>
   <data name="AllPage_Status" xml:space="preserve">
-    <value />
+    <value>Enable,Disabled</value>
+  </data>
+  <data name="SettingsPage_Other_Tray.Header" xml:space="preserve">
+    <value>Tray Icon</value>
+  </data>
+  <data name="SettingsPage_Other_Tray.Description" xml:space="preserve">
+    <value>Show tray icon in the taskbar</value>
+  </data>
+  <data name="TrayMenu_Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="TrayMenu_Quit" xml:space="preserve">
+    <value>Quit</value>
+  </data>
+  <data name="TrayMenu_Settings" xml:space="preserve">
+    <value>Settings</value>
   </data>
 </root>

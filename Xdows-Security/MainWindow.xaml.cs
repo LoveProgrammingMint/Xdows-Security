@@ -28,13 +28,13 @@ namespace Xdows_Security
     public sealed partial class MainWindow : Window
     {
         public static string NowPage = "Home";
+        public WinUIEx.WindowManager? manager;
 
         public MainWindow()
         {
             InitializeComponent();
-            LogText.AddNewLog(1, "UI Interface", "MainWindow loaded successfully");
-            Window window = this;
-            window.ExtendsContentIntoTitleBar = true;
+            manager = WinUIEx.WindowManager.Get(this);
+            this.ExtendsContentIntoTitleBar = true;
             AppWindow.SetIcon("logo.ico");
             this.AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
             if (ExtendsContentIntoTitleBar)
@@ -45,12 +45,27 @@ namespace Xdows_Security
             Activated += MainWindow_Activated_FirstTime;
             Title = AppInfo.AppName;
             TitleText.Text = AppInfo.AppName;
-            var manager = WinUIEx.WindowManager.Get(window);
+            manager.AppWindow.Closing += MainWindow_Closing;
             manager.MinWidth = 650;
             manager.MinHeight = 530;
             Closed += delegate { Window_Closed(); };
             Localizer.Get().LanguageChanged += OnLangChanged;
-
+            manager.TrayIconContextMenu += (w, e) =>
+            {
+                var flyout = new MenuFlyout();
+                flyout.Items.Add(new MenuFlyoutItem() { Text = Localizer.Get().GetLocalizedString("TrayMenu_Open") });
+                flyout.Items.Add(new MenuFlyoutItem() { Text = Localizer.Get().GetLocalizedString("TrayMenu_Settings") });
+                flyout.Items.Add(new MenuFlyoutSeparator());
+                flyout.Items.Add(new MenuFlyoutItem() { Text = Localizer.Get().GetLocalizedString("TrayMenu_Quit") });
+                ((MenuFlyoutItem)flyout.Items[0]).Click += (s, e) => this.Activate();
+                ((MenuFlyoutItem)flyout.Items[1]).Click += (s, e) => {
+                    this.Activate();
+                    this.GoToPage("Settings"); 
+                };
+                ((MenuFlyoutItem)flyout.Items[3]).Click += (s, e) => this.Close();
+                e.Flyout = flyout;
+            };
+            LogText.AddNewLog(1, "UI Interface", "MainWindow loaded successfully");
         }
 
         private void MainWindow_Activated_FirstTime(object sender, WindowActivatedEventArgs args)
@@ -86,6 +101,10 @@ namespace Xdows_Security
                 settings.Values.TryGetValue("AppNavTheme", out object raw) && raw is double d ?
                 (int)d : 0
             );
+            if (settings.Values.TryGetValue("TrayVisibleToggle", out object? trayVisibleToggle))
+            {
+                manager?.IsVisibleInTray = (bool)trayVisibleToggle;
+            }
         }
         public void UpdateNavTheme(int index)
         {
@@ -376,7 +395,18 @@ namespace Xdows_Security
             _controller.Dispose();
             _controller = null;
         }
-
+        private void MainWindow_Closing(object sender, AppWindowClosingEventArgs e)
+        {
+            if (ApplicationData.Current.LocalSettings.Values.TryGetValue("TrayVisibleToggle", out object? trayVisibleToggle))
+            {
+                if ((bool)trayVisibleToggle)
+                {
+                    e.Cancel = true;
+                    this.Hide();
+                }
+            }
+            
+        }
         private void nav_Loaded(object sender, RoutedEventArgs e)
         {
             LoadLocalizerData();

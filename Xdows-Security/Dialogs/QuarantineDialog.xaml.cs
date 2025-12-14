@@ -27,7 +27,7 @@ namespace Xdows.UI.Dialogs
             get
             {
                 string format = Localizer.Get().GetLocalizedString("QuarantineDialog_TotalItems");
-                return string.Format(format, _quarantineItems.Count);
+                return $"{format}{_quarantineItems.Count}";
             }
         }
 

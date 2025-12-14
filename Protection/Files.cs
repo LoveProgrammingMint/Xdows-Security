@@ -30,9 +30,7 @@ namespace Xdows.Protection
             
             _isMonitoring = true;
             _toastCallBack = toastCallBack;
-            _monitorThread = new Thread(StartMonitoring);
-            _monitorThread.IsBackground = true;
-            _monitorThread.Start();
+            _ = Task.Run(async () => await StartMonitoring());
 
             return true;
         }
@@ -68,7 +66,7 @@ namespace Xdows.Protection
             try {return _isMonitoring;} catch { return false; }
         }
 
-        private static void StartMonitoring()
+        private static async Task StartMonitoring()
         {
             string[] drives = Directory.GetLogicalDrives();
             _watchers = new FileSystemWatcher[drives.Length];
@@ -102,7 +100,7 @@ namespace Xdows.Protection
 
             while (_isMonitoring)
             {
-                Thread.Sleep(1000);
+                await Task.Delay(1000);
             }
         }
         static bool IsFileAccessible(string path)

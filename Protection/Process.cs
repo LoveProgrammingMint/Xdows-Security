@@ -38,7 +38,7 @@ namespace Xdows.Protection
             try
             {
                 _cts = new CancellationTokenSource();
-                _monitorTask = Task.Run(() => MonitorNewProcessesLoop(toastCallBack, _cts.Token), _cts.Token);
+                _monitorTask = Task.Run(async () => await MonitorNewProcessesLoop(toastCallBack, _cts.Token), _cts.Token);
                 return true;
             }
             catch
@@ -81,7 +81,7 @@ namespace Xdows.Protection
 
         private static readonly List<int> _oldPids = new List<int>();
 
-        private static void MonitorNewProcessesLoop(InterceptCallBack interceptCallBack, CancellationToken token)
+        private static async Task MonitorNewProcessesLoop(InterceptCallBack interceptCallBack, CancellationToken token)
         {
             Debug.WriteLine("Protection Enabled");
 
@@ -148,7 +148,7 @@ namespace Xdows.Protection
                 }
                 try
                 {
-                    Task.Delay(10, token).Wait(token);
+                    await Task.Delay(10, token);
                 }
                 catch (OperationCanceledException)
                 {

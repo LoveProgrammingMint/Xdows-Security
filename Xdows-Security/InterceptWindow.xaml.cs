@@ -72,7 +72,7 @@ namespace Xdows_Security
             catch (Exception ex)
             {
                 ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined.Text");
-                LogText.AddNewLog(3, "InterceptWindow - SetFileInfo", ex.Message);
+                LogText.AddNewLog(LogLevel.ERROR, "InterceptWindow - SetFileInfo", ex.Message);
             }
 
             try
@@ -88,7 +88,7 @@ namespace Xdows_Security
             }
             catch (Exception ex)
             {
-                LogText.AddNewLog(3, "InterceptWindow - LoadIcon", ex.Message);
+                LogText.AddNewLog(LogLevel.ERROR, "InterceptWindow - LoadIcon", ex.Message);
             }
         }
 
@@ -216,18 +216,13 @@ namespace Xdows_Security
         {
             if (sender is MenuFlyoutItem menuItem)
             {
-                switch (menuItem.Tag.ToString())
+                await (menuItem.Tag.ToString() switch
                 {
-                    case "Delete":
-                        await DeleteFile();
-                        break;
-                    case "Restore":
-                        await RestoreFile();
-                        break;
-                    case "Disable":
-                        DisableProtection();
-                        break;
-                }
+                    "Delete" => DeleteFile(),
+                    "Restore" => RestoreFile(),
+                    "Disable" => DisableProtection(),
+                    _ => Task.CompletedTask
+                });
             }
         }
 
@@ -249,7 +244,7 @@ namespace Xdows_Security
             catch (Exception ex)
             {
                 await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Delete_Failed_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Delete_Failed_Message"));
-                LogText.AddNewLog(3, "InterceptWindow - DeleteFile - Failed", ex.ToString());
+                LogText.AddNewLog(LogLevel.ERROR, "InterceptWindow - DeleteFile - Failed", ex.ToString());
             }
         }
 
@@ -310,11 +305,11 @@ namespace Xdows_Security
             catch (Exception ex)
             {
                 await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Failed_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Failed_Message"));
-                LogText.AddNewLog(3, "InterceptWindow - RestoreFile - Failed", ex.ToString());
+                LogText.AddNewLog(LogLevel.ERROR, "InterceptWindow - RestoreFile - Failed", ex.ToString());
             }
         }
 
-        private async void DisableProtection()
+        private async Task DisableProtection()
         {
             var loc = Localizer.Get();
             var title = loc.GetLocalizedString("InterceptWindow_Disable_Confirm_Title");
@@ -365,7 +360,7 @@ namespace Xdows_Security
             catch (Exception ex)
             {
                 ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined.Text");
-                LogText.AddNewLog(3, "InterceptWindow - InitializeUI", ex.Message);
+                LogText.AddNewLog(LogLevel.ERROR, "InterceptWindow - InitializeUI", ex.Message);
             }
         }
 

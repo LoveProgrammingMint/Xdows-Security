@@ -1,6 +1,6 @@
-﻿namespace Xdows_Security.Model
+namespace Xdows_Security.Model
 {
-    public class StatisticsModel
+    public record StatisticsModel
     {
         public int ScansQuantity => Statistics.ScansQuantity;
         public int VirusQuantity => Statistics.VirusQuantity;

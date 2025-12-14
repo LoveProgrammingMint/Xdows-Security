@@ -23,11 +23,11 @@ namespace Xdows_Security
             InitializeComponent();
             SortCombo.SelectedIndex = 0;
             PopupSortCombo.SelectedIndex = 0;
-            RefreshProcesses();
+            _ = RefreshProcesses();
             InitializePopupRules();
         }
 
-        private async void RefreshProcesses()
+        private async Task RefreshProcesses()
         {
             try
             {
@@ -57,7 +57,7 @@ namespace Xdows_Security
             }
         }
 
-        private void Refresh_Click(object sender, RoutedEventArgs e) => RefreshProcesses();
+        private async void Refresh_Click(object sender, RoutedEventArgs e) => await RefreshProcesses();
 
         private void SortCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
             => ApplyFilterAndSort();
@@ -211,12 +211,12 @@ namespace Xdows_Security
                 PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
             };
             if (await confirm.ShowAsync() != ContentDialogResult.Primary) return;
-            LogText.AddNewLog(1, "Xdows Tools - KillProgress", $"{info.Name}({info.Id})");
+            LogText.AddNewLog(LogLevel.INFO, "Xdows Tools - KillProgress", $"{info.Name}({info.Id})");
 
             var result = TryKill(info.Id);
             if (result.Success)
             {
-                LogText.AddNewLog(1, "Xdows Tools - KillProgress - Result", "Termination Successful");
+                LogText.AddNewLog(LogLevel.INFO, "Xdows Tools - KillProgress - Result", "Termination Successful");
             }
             else
             {
@@ -229,9 +229,9 @@ namespace Xdows_Security
                     XamlRoot = XamlRoot,
                     CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 }.ShowAsync();
-                LogText.AddNewLog(2, "Xdows Tools - KillProgress - Result", $"Cannot terminate this process because {result.Error}");
+                LogText.AddNewLog(LogLevel.WARN, "Xdows Tools - KillProgress - Result", $"Cannot terminate this process because {result.Error}");
             }
-            RefreshProcesses();
+            await RefreshProcesses();
         }
 
         private static KillResult TryKill(int pid)
@@ -356,7 +356,7 @@ namespace Xdows_Security
                     _popupRules.Add(newRule);
                     ApplyPopupFilterAndSort();
                     UpdatePopupBlocking();
-                    LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", $"Added rule: {newRule.Title}");
+                    LogText.AddNewLog(LogLevel.INFO, "Xdows Tools - PopupBlocker", $"Added rule: {newRule.Title}");
                 }
             }
         }
@@ -380,7 +380,7 @@ namespace Xdows_Security
                 _popupRules.Remove(rule);
                 ApplyPopupFilterAndSort();
                 UpdatePopupBlocking();
-                LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", $"Deleted rule: {rule.Title}");
+                LogText.AddNewLog(LogLevel.INFO, "Xdows Tools - PopupBlocker", $"Deleted rule: {rule.Title}");
             }
         }
 
@@ -423,7 +423,7 @@ namespace Xdows_Security
 
                     ApplyPopupFilterAndSort();
                     UpdatePopupBlocking();
-                    LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", $"Edited rule: {rule.Title}");
+                    LogText.AddNewLog(LogLevel.INFO, "Xdows Tools - PopupBlocker", $"Edited rule: {rule.Title}");
                 }
             }
         }
@@ -434,7 +434,7 @@ namespace Xdows_Security
             {
                 rule.IsEnabled = toggle.IsOn;
                 UpdatePopupBlocking();
-                LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", $"Toggled rule: {rule.Title} - {rule.IsEnabled}");
+                LogText.AddNewLog(LogLevel.INFO, "Xdows Tools - PopupBlocker", $"Toggled rule: {rule.Title} - {rule.IsEnabled}");
             }
         }
 
@@ -448,12 +448,12 @@ namespace Xdows_Security
                 {
                     _popupBlocker.Start(enabledRules);
                     _isPopupBlockingEnabled = true;
-                    LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", "Popup blocking enabled");
+                    LogText.AddNewLog(LogLevel.INFO, "Xdows Tools - PopupBlocker", "Popup blocking enabled");
                 }
                 else
                 {
                     _popupBlocker.UpdateRules(enabledRules);
-                    LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", "Popup rules updated");
+                    LogText.AddNewLog(LogLevel.INFO, "Xdows Tools - PopupBlocker", "Popup rules updated");
                 }
             }
             else
@@ -462,7 +462,7 @@ namespace Xdows_Security
                 {
                     _popupBlocker.Stop();
                     _isPopupBlockingEnabled = false;
-                    LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", "Popup blocking disabled");
+                    LogText.AddNewLog(LogLevel.INFO, "Xdows Tools - PopupBlocker", "Popup blocking disabled");
                 }
             }
         }
@@ -471,7 +471,7 @@ namespace Xdows_Security
         {
             ApplyPopupFilterAndSort();
             UpdatePopupBlocking();
-            LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", "Refreshed popup rules list");
+            LogText.AddNewLog(LogLevel.INFO, "Xdows Tools - PopupBlocker", "Refreshed popup rules list");
         }
         private readonly System.Text.StringBuilder _cmdOutputSb = new();
         private System.Diagnostics.Process? _cmdProcess;
@@ -492,7 +492,7 @@ namespace Xdows_Security
             await _cmdProcess!.StandardInput.WriteLineAsync(cmd);
             }
             catch { }
-            LogText.AddNewLog(1, "Xdows Tools - RunCommand", cmd);
+            LogText.AddNewLog(LogLevel.INFO, "Xdows Tools - RunCommand", cmd);
             CmdInput.Text = string.Empty;
         }
 
@@ -599,7 +599,7 @@ namespace Xdows_Security
             Stop();
             _rules = rules;
             _cts = new CancellationTokenSource();
-            _monitorTask = Task.Run(() => MonitorLoop(_cts.Token), _cts.Token);
+            _monitorTask = Task.Run(async () => await MonitorLoop(_cts.Token), _cts.Token);
         }
 
         public void Stop()
@@ -619,32 +619,35 @@ namespace Xdows_Security
             _rules = rules;
         }
 
-        private void MonitorLoop(CancellationToken token)
+        private async Task MonitorLoop(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
                 try
                 {
-                    EnumWindows((hWnd, lParam) =>
+                    await Task.Run(() =>
                     {
-                        if (IsWindowVisible(hWnd) && !IsIconic(hWnd))
+                        EnumWindows((hWnd, lParam) =>
                         {
-                            var title = GetWindowTitle(hWnd);
-                            var processName = GetWindowProcessName(hWnd);
-
-                            foreach (var rule in _rules)
+                            if (IsWindowVisible(hWnd) && !IsIconic(hWnd))
                             {
-                                if (title.Contains(rule.Title, StringComparison.OrdinalIgnoreCase) &&
-                                    (rule.ProcessName == "*" || processName.Contains(rule.ProcessName, StringComparison.OrdinalIgnoreCase)))
+                                var title = GetWindowTitle(hWnd);
+                                var processName = GetWindowProcessName(hWnd);
+
+                                foreach (var rule in _rules)
                                 {
-                                    LogText.AddNewLog(1, "Xdows Tools - PopupBlocker", $"Blocking popup: '{title}' from {processName}");
-                                    PostMessage(hWnd, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
-                                    break;
+                                    if (title.Contains(rule.Title, StringComparison.OrdinalIgnoreCase) &&
+                                        (rule.ProcessName == "*" || processName.Contains(rule.ProcessName, StringComparison.OrdinalIgnoreCase)))
+                                    {
+                                        LogText.AddNewLog(LogLevel.INFO, "Xdows Tools - PopupBlocker", $"Blocking popup: '{title}' from {processName}");
+                                        PostMessage(hWnd, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                        return true;
-                    }, IntPtr.Zero);
+                            return true;
+                        }, IntPtr.Zero);
+                    }, token);
                 }
                 catch
                 {
@@ -652,7 +655,7 @@ namespace Xdows_Security
 
                 try
                 {
-                    Task.Delay(500, token).Wait(token);
+                    await Task.Delay(500, token);
                 }
                 catch (OperationCanceledException)
                 {

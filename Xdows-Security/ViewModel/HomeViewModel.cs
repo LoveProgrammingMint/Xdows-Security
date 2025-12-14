@@ -117,7 +117,7 @@ namespace Xdows_Security.ViewModel
         #endregion
 
         #region === 加载入口（由 View Loaded 调用）===
-        public async void LoadOnUiThread()
+        public async Task LoadOnUiThread()
         {
             try
             {

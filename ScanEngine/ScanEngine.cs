@@ -16,7 +16,7 @@ namespace Xdows.ScanEngine
 {
     public static class ScanEngine
     {
-        public class PEInfo
+        public record PEInfo
         {
             public string[]? ImportsDll;
             public string[]? ImportsName;

@@ -178,33 +178,16 @@ namespace Xdows.ScanEngine
                 score += CheckGenericScript(content, extra);
 
                 // 根据脚本类型进行特定检查
-                switch (extension)
+                score += extension switch
                 {
-                    case ".ps1":
-                    case ".psm1":
-                    case ".psd1":
-                        score += CheckPowerShellScript(content, extra);
-                        break;
-                    case ".vbs":
-                    case ".vbe":
-                        score += CheckVBScript(content, extra);
-                        break;
-                    case ".js":
-                    case ".jse":
-                        score += CheckJavaScript(content, extra);
-                        break;
-                    case ".bat":
-                    case ".cmd":
-                        score += CheckBatchScript(content, extra);
-                        break;
-                    case ".py":
-                    case ".pyw":
-                        score += CheckPythonScript(content, extra);
-                        break;
-                    case ".sh":
-                        score += CheckShellScript(content, extra);
-                        break;
-                }
+                    ".ps1" or ".psm1" or ".psd1" => CheckPowerShellScript(content, extra),
+                    ".vbs" or ".vbe" => CheckVBScript(content, extra),
+                    ".js" or ".jse" => CheckJavaScript(content, extra),
+                    ".bat" or ".cmd" => CheckBatchScript(content, extra),
+                    ".py" or ".pyw" => CheckPythonScript(content, extra),
+                    ".sh" => CheckShellScript(content, extra),
+                    _ => 0
+                };
             }
             catch
             {

@@ -65,7 +65,7 @@ namespace Xdows_Security
                 ((MenuFlyoutItem)flyout.Items[3]).Click += (s, e) => this.Close();
                 e.Flyout = flyout;
             };
-            LogText.AddNewLog(1, "UI Interface", "MainWindow loaded successfully");
+            LogText.AddNewLog(LogLevel.INFO, "UI Interface", "MainWindow loaded successfully");
         }
 
         private void MainWindow_Activated_FirstTime(object sender, WindowActivatedEventArgs args)
@@ -217,21 +217,15 @@ namespace Xdows_Security
                 nav.Header = (nav.SelectedItem as NavigationViewItem)?.Content ?? string.Empty;
             }
             NowPage = PageName; 
-            switch (PageName)
+            var pageType = PageName switch
             {
-                case "Home":
-                    navContainer.Navigate(typeof(HomePage));
-                    break;
-                case "Security":
-                    navContainer.Navigate(typeof(SecurityPage));
-                    break;
-                case "Xdows-Tools":
-                    navContainer.Navigate(typeof(XdowsToolsPage));
-                    break;
-                case "Settings":
-                    navContainer.Navigate(typeof(SettingsPage));
-                    break;
-            }
+                "Home" => typeof(HomePage),
+                "Security" => typeof(SecurityPage),
+                "Xdows-Tools" => typeof(XdowsToolsPage),
+                "Settings" => typeof(SettingsPage),
+                _ => typeof(HomePage)
+            };
+            navContainer.Navigate(pageType);
         }
         public void GoToBugReportPage(string? PageName)
         {

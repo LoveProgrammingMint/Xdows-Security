@@ -279,13 +279,13 @@ namespace Xdows_Security
         {
             if (IsInitialize || ThemeComboBox.SelectedIndex == -1) return;
 
-            ElementTheme selectedTheme = ElementTheme.Default;
-            switch (ThemeComboBox.SelectedIndex)
+            ElementTheme selectedTheme = ThemeComboBox.SelectedIndex switch
             {
-                case 0: selectedTheme = ElementTheme.Default; break;
-                case 1: selectedTheme = ElementTheme.Light; break;
-                case 2: selectedTheme = ElementTheme.Dark; break;
-            }
+                0 => ElementTheme.Default,
+                1 => ElementTheme.Light,
+                2 => ElementTheme.Dark,
+                _ => ElementTheme.Default
+            };
 
             var settings = ApplicationData.Current.LocalSettings;
             settings.Values["AppTheme"] = selectedTheme.ToString();

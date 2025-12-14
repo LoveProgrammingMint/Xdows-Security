@@ -11,7 +11,7 @@ namespace Xdows.Protection
     /// <summary>
     /// 隔离区项目模型
     /// </summary>
-    public class QuarantineItem
+    public record QuarantineItem
     {
         /// <summary>
         /// 原始文件路径

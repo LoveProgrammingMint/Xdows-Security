@@ -11,7 +11,7 @@ namespace Xdows.Protection
     /// <summary>
     /// 信任区项目模型
     /// </summary>
-    public class TrustItem
+    public record TrustItem
     {
         /// <summary>
         /// 信任项ID

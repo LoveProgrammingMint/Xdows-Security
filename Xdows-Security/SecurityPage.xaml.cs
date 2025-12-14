@@ -28,7 +28,7 @@ namespace Xdows_Security
     public enum ScanMode { Quick, Full, File, Folder, More }
     public record VirusRow(string FilePath, string VirusName);
 
-    public class ScanItem
+    public record ScanItem
     {
         public string ItemName { get; set; } = string.Empty;
         public string IconGlyph { get; set; } = "&#xE721;";
@@ -86,10 +86,10 @@ namespace Xdows_Security
             PathText.Text = Loc("SecurityPage_PathText_Default");
             ScanStatusHeader.Text = Loc("SecurityPage_ScanStatusHeader");
             ProgressHeader.Text = Loc("SecurityPage_ProgressHeader");
-            ScanSpeedText.Text = string.Format(Loc("SecurityPage_ScanSpeed_Format"), 0.0);
-            FilesScannedText.Text = string.Format(Loc("SecurityPage_FilesScanned_Format"), 0);
-            FilesSafeText.Text = string.Format(Loc("SecurityPage_FilesSafe_Format"), 0);
-            ThreatsFoundText.Text = string.Format(Loc("SecurityPage_ThreatsFound_Format"), 0);
+            ScanSpeedText.Text = $"{Loc("SecurityPage_ScanSpeed_Format")}{0.0}";
+            FilesScannedText.Text = $"{Loc("SecurityPage_FilesScanned_Format")}{0}";
+            FilesSafeText.Text = $"{Loc("SecurityPage_FilesSafe_Format")}{0}";
+            ThreatsFoundText.Text = $"{Loc("SecurityPage_ThreatsFound_Format")}{0}";
             InitializeScanItems();
         }
 
@@ -198,9 +198,9 @@ namespace Xdows_Security
                 _threatsFound = threatsFound;
                 try
                 {
-                    FilesScannedText.Text = string.Format(Loc("SecurityPage_FilesScanned_Format"), filesScanned);
-                    FilesSafeText.Text = string.Format(Loc("SecurityPage_FilesSafe_Format"), filesSafe);
-                    ThreatsFoundText.Text = string.Format(Loc("SecurityPage_ThreatsFound_Format"), threatsFound);
+                    FilesScannedText.Text = $"{Loc("SecurityPage_FilesScanned_Format")}{filesScanned}";
+                    FilesSafeText.Text = $"{Loc("SecurityPage_FilesSafe_Format")}{filesSafe}";
+                    ThreatsFoundText.Text = $"{Loc("SecurityPage_ThreatsFound_Format")}{threatsFound}";
                 }
                 catch { }
             });
@@ -370,7 +370,7 @@ namespace Xdows_Security
                 var dup = new ContentDialog
                 {
                     Title = Loc("SecurityPage_DuplicatePath_Title"),
-                    Content = string.Format(Loc("SecurityPage_DuplicatePath_Content"), path),
+                    Content = $"{Loc("SecurityPage_DuplicatePath_Content")}{path}",
                     CloseButtonText = Loc("Button_Confirm"),
                     XamlRoot = this.XamlRoot,
                     RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default
@@ -469,7 +469,7 @@ namespace Xdows_Security
             {
                 Log += " JiSuSafeAX";
             }
-            LogText.AddNewLog(1, "Security - StartScan", Log);
+            LogText.AddNewLog(LogLevel.INFO, "Security - StartScan", Log);
 
             string? userPath = null;
             if (mode is ScanMode.File or ScanMode.Folder)
@@ -506,7 +506,7 @@ namespace Xdows_Security
                 ScanProgress.Value = 0;
                 ScanProgress.Visibility = Visibility.Visible;
                 ProgressPercentText.Text = showScanProgress ? "0%" : String.Empty;
-                PathText.Text = string.Format(Loc("SecurityPage_PathText_Format"), displayName);
+                PathText.Text = $"{Loc("SecurityPage_PathText_Format")}{displayName}";
                 BackToVirusListButton.Visibility = Visibility.Collapsed;
                 PauseScanButton.Visibility = Visibility.Visible;
                 PauseScanButton.IsEnabled = false;
@@ -526,29 +526,29 @@ namespace Xdows_Security
                     var startTime = DateTime.Now;
                     int finished = 0;
                     int currentItemIndex = 0;
-                    switch (mode)
+                    // 使用Switch表达式计算标题和详情
+                    var (title, detail) = mode switch
                     {
-                        case ScanMode.Quick:
-                            UpdateScanAreaInfo(Loc("SecurityPage_Area_Quick_Title"), Loc("SecurityPage_Area_Quick_Detail"));
-                            currentItemIndex = 0;
-                            break;
-                        case ScanMode.Full:
-                            UpdateScanAreaInfo(Loc("SecurityPage_Area_Full_Title"), Loc("SecurityPage_Area_Full_Detail"));
-                            currentItemIndex = 1;
-                            break;
-                        case ScanMode.File:
-                            UpdateScanAreaInfo(Loc("SecurityPage_Area_File_Title"), string.Format(Loc("SecurityPage_Area_File_Detail"), userPath));
-                            currentItemIndex = 2;
-                            break;
-                        case ScanMode.Folder:
-                            UpdateScanAreaInfo(Loc("SecurityPage_Area_Folder_Title"), string.Format(Loc("SecurityPage_Area_Folder_Detail"), userPath));
-                            currentItemIndex = 3;
-                            break;
-                        case ScanMode.More:
-                            UpdateScanAreaInfo(Loc("SecurityPage_Area_More_Title"), string.Format(Loc("SecurityPage_Area_More_Detail"), customPaths?.Count ?? 0));
-                            currentItemIndex = 0;
-                            break;
-                    }
+                        ScanMode.Quick => (Loc("SecurityPage_Area_Quick_Title"), Loc("SecurityPage_Area_Quick_Detail")),
+                        ScanMode.Full => (Loc("SecurityPage_Area_Full_Title"), Loc("SecurityPage_Area_Full_Detail")),
+                        ScanMode.File => (Loc("SecurityPage_Area_File_Title"), $"{Loc("SecurityPage_Area_File_Detail")}{userPath}"),
+                        ScanMode.Folder => (Loc("SecurityPage_Area_Folder_Title"), $"{Loc("SecurityPage_Area_Folder_Detail")}{userPath}"),
+                        ScanMode.More => (Loc("SecurityPage_Area_More_Title"), $"{Loc("SecurityPage_Area_More_Detail")}{customPaths?.Count ?? 0}"),
+                        _ => (Loc("SecurityPage_Area_Quick_Title"), Loc("SecurityPage_Area_Quick_Detail"))
+                    };
+                    
+                    // 使用Switch表达式计算当前项索引
+                    currentItemIndex = mode switch
+                    {
+                        ScanMode.Quick => 0,
+                        ScanMode.Full => 1,
+                        ScanMode.File => 2,
+                        ScanMode.Folder => 3,
+                        ScanMode.More => 0,
+                        _ => 0
+                    };
+                    
+                    UpdateScanAreaInfo(title, detail);
 
                     UpdateScanItemStatus(currentItemIndex, Loc("SecurityPage_Status_Scanning"), true);
 
@@ -582,10 +582,10 @@ namespace Xdows_Security
 
                             _dispatcherQueue.TryEnqueue(() =>
                             {
-                                LogText.AddNewLog(1, "Security - ScanFile", file);
+                                LogText.AddNewLog(LogLevel.INFO, "Security - ScanFile", file);
                                 try
                                 {
-                                    StatusText.Text = string.Format(tStatusText, file);
+                                    StatusText.Text = $"{tStatusText}{file}";
                                 }
                                 catch
                                 {
@@ -599,7 +599,7 @@ namespace Xdows_Security
                             // 检查文件是否在信任区中
                             if (TrustManager.IsPathTrusted(file))
                             {
-                                LogText.AddNewLog(1, "Security - Find", "Is Trusted (Path)");
+                                LogText.AddNewLog(LogLevel.INFO, "Security - Find", "Is Trusted (Path)");
                                 _filesSafe++;
                                 continue;
                             }
@@ -675,7 +675,7 @@ namespace Xdows_Security
                             Statistics.ScansQuantity += 1;
                             if (!string.IsNullOrEmpty(Result))
                             {
-                                LogText.AddNewLog(1, "Security - Find", Result);
+                                LogText.AddNewLog(LogLevel.INFO, "Security - Find", Result);
                                 Statistics.VirusQuantity += 1;
                                 try
                                 {
@@ -691,7 +691,7 @@ namespace Xdows_Security
                             }
                             else
                             {
-                                LogText.AddNewLog(1, "Security - Find", "Is Safe");
+                                LogText.AddNewLog(LogLevel.INFO, "Security - Find", "Is Safe");
                                 _filesSafe++;
                             }
 
@@ -706,7 +706,7 @@ namespace Xdows_Security
                         var scanSpeed = finished / elapsedTime.TotalSeconds;
                             _dispatcherQueue.TryEnqueue(() =>
                             {
-                                ScanSpeedText.Text = string.Format(Loc("SecurityPage_ScanSpeed_Format"), scanSpeed);
+                                ScanSpeedText.Text = $"{Loc("SecurityPage_ScanSpeed_Format")}{scanSpeed}";
                             });
                         if (showScanProgress)
                         {
@@ -735,7 +735,7 @@ namespace Xdows_Security
                     {
                         var settings = ApplicationData.Current.LocalSettings;
                         settings.Values["LastScanTime"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                        StatusText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanCompleteFound"), _currentResults?.Count ?? 0);
+                        StatusText.Text = $"{Localizer.Get().GetLocalizedString("SecurityPage_ScanCompleteFound")}{_currentResults?.Count ?? 0}";
                         ScanProgress.Visibility = Visibility.Collapsed;
                         PauseScanButton.Visibility = Visibility.Collapsed;
                         ResumeScanButton.Visibility = Visibility.Collapsed;
@@ -756,8 +756,8 @@ namespace Xdows_Security
                 {
                     _dispatcherQueue.TryEnqueue(() =>
                     {
-                        LogText.AddNewLog(4, "Security - Failed", ex.Message);
-                        StatusText.Text = string.Format(Loc("SecurityPage_ScanFailed_Format"), ex.Message);
+                        LogText.AddNewLog(LogLevel.FATAL, "Security - Failed", ex.Message);
+                        StatusText.Text = $"{Loc("SecurityPage_ScanFailed_Format")}{ex.Message}";
                         ScanProgress.Visibility = Visibility.Collapsed;
                         PauseScanButton.Visibility = Visibility.Collapsed;
                         ResumeScanButton.Visibility = Visibility.Collapsed;
@@ -823,7 +823,7 @@ namespace Xdows_Security
             var confirmDialog = new ContentDialog
             {
                 Title = Localizer.Get().GetLocalizedString("SecurityPage_TrustConfirm_Title"),
-                Content = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_TrustConfirm_Content"), row.FilePath),
+                Content = $"{Localizer.Get().GetLocalizedString("SecurityPage_TrustConfirm_Content")}{row.FilePath}",
                 PrimaryButtonText = Localizer.Get().GetLocalizedString("SecurityPage_TrustConfirm_Primary"),
                 CloseButtonText = Localizer.Get().GetLocalizedString("Button_Cancel"),
                 XamlRoot = this.XamlRoot,
@@ -845,7 +845,7 @@ namespace Xdows_Security
                             Localizer.Get().GetLocalizedString("SecurityPage_TrustResult_Title") : 
                             Localizer.Get().GetLocalizedString("SecurityPage_TrustFailed_Title"),
                         Content = success ? 
-                            string.Format(Localizer.Get().GetLocalizedString("SecurityPage_TrustResult_Content"), row.FilePath) :
+                            $"{Localizer.Get().GetLocalizedString("SecurityPage_TrustResult_Content")}{row.FilePath}" :
                             Localizer.Get().GetLocalizedString("SecurityPage_TrustFailed_Content"),
                         CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                         XamlRoot = this.XamlRoot,
@@ -864,7 +864,7 @@ namespace Xdows_Security
                         }
                         _threatsFound--;
                         UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
-                        StatusText.Text = string.Format(Loc("SecurityPage_ScanCompleteFound"), _currentResults?.Count ?? 0);
+                        StatusText.Text = $"{Loc("SecurityPage_ScanCompleteFound")}{_currentResults?.Count ?? 0}";
                     }
                 }
                 catch (Exception ex)
@@ -890,7 +890,7 @@ namespace Xdows_Security
             var dialog = new ContentDialog
             {
                 Title = Localizer.Get().GetLocalizedString("SecurityPage_HandleConfirm_Title"),
-                Content = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_HandleConfirm_Content"), row.FilePath),
+                Content = $"{Localizer.Get().GetLocalizedString("SecurityPage_HandleConfirm_Content")}{row.FilePath}",
                 PrimaryButtonText = Localizer.Get().GetLocalizedString("SecurityPage_HandleConfirm_Primary"),
                 CloseButtonText = Localizer.Get().GetLocalizedString("Button_Cancel"),
                 XamlRoot = this.XamlRoot,
@@ -932,7 +932,7 @@ namespace Xdows_Security
                                 string newPath = Path.Combine(directory, newFileName);
                                 
                                 File.Move(row.FilePath, newPath);
-                                actionTaken = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_HandleAction_Renamed"), newFileName);
+                                actionTaken = $"{Localizer.Get().GetLocalizedString("SecurityPage_HandleAction_Renamed")}{newFileName}";
                                 handled = true;
                             }
                             catch
@@ -964,7 +964,7 @@ namespace Xdows_Security
                         }
                         _threatsFound--;
                         UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
-                        StatusText.Text = string.Format(Loc("SecurityPage_ScanCompleteFound"), _currentResults.Count);
+                        StatusText.Text = $"{Loc("SecurityPage_ScanCompleteFound")}{_currentResults.Count}";
                     }
                 }
                 catch (Exception ex)
@@ -1019,10 +1019,10 @@ namespace Xdows_Security
                                         }
                                     }
                                 },
-                                new TextBlock { Text = string.Format(Loc("SecurityPage_Details_VirusName"), row.VirusName), Margin = new Thickness(0, 8, 0, 0) },
-                                new TextBlock { Text = string.Format(Loc("SecurityPage_Details_FileSize"), fileInfo.Length / 1024.0), Margin = new Thickness(0, 8, 0, 0) },
-                                new TextBlock { Text = string.Format(Loc("SecurityPage_Details_CreationTime"), fileInfo.CreationTime), Margin = new Thickness(0, 8, 0, 0) },
-                                new TextBlock { Text = string.Format(Loc("SecurityPage_Details_LastWriteTime"), fileInfo.LastWriteTime), Margin = new Thickness(0, 8, 0, 0) }
+                                new TextBlock { Text = $"{Loc("SecurityPage_Details_VirusName")}{row.VirusName}", Margin = new Thickness(0, 8, 0, 0) },
+                                new TextBlock { Text = $"{Loc("SecurityPage_Details_FileSize")}{fileInfo.Length / 1024.0}", Margin = new Thickness(0, 8, 0, 0) },
+                                new TextBlock { Text = $"{Loc("SecurityPage_Details_CreationTime")}{fileInfo.CreationTime}", Margin = new Thickness(0, 8, 0, 0) },
+                                new TextBlock { Text = $"{Loc("SecurityPage_Details_LastWriteTime")}{fileInfo.LastWriteTime}", Margin = new Thickness(0, 8, 0, 0) }
                             }
                         },
                         MaxHeight = 400
@@ -1054,7 +1054,7 @@ namespace Xdows_Security
                         var dlg = new ContentDialog
                         {
                             Title = Loc("SecurityPage_LocateFailed_Title"),
-                            Content = string.Format(Loc("SecurityPage_LocateFailed_Content"), ex.Message),
+                            Content = $"{Loc("SecurityPage_LocateFailed_Content")}{ex.Message}",
                             CloseButtonText = Loc("Button_Confirm"),
                             RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                             XamlRoot = this.XamlRoot,
@@ -1069,7 +1069,7 @@ namespace Xdows_Security
             catch (Exception ex)
             {
                 try{
-                    LogText.AddNewLog(4, "Security - FilesInfo - GetFailed", ex.Message);
+                    LogText.AddNewLog(LogLevel.FATAL, "Security - FilesInfo - GetFailed", ex.Message);
                     var failDlg = new ContentDialog
                     {
                         Title = Loc("SecurityPage_GetFailed_Text"),

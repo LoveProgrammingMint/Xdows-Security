@@ -24,7 +24,7 @@ using System.Net.Http;
 
 namespace Xdows_Security
 {
-    public class UpdateInfo
+    public record UpdateInfo
     {
         public required string Title { get; set; }
         public required string Content { get; set; }
@@ -97,7 +97,7 @@ namespace Xdows_Security
 
         public static InterceptCallBack interceptCallBack = (bool isSucceed, string path, string type) =>
         {
-            LogText.AddNewLog(2, "Protection", isSucceed
+            LogText.AddNewLog(LogLevel.WARN, "Protection", isSucceed
                 ? $"InterceptProcess：{Path.GetFileName(path)}"
                 : $"Cannot InterceptProcess：{Path.GetFileName(path)}");
             // string content = isSucceed ? "已发现威胁" : "无法处理威胁";
@@ -116,34 +116,34 @@ namespace Xdows_Security
                 case 0:
                     if (ProcessProtection.IsEnabled())
                     {
-                        LogText.AddNewLog(1, "Protection", $"Try to Disable ProcessProtection ...");
+                        LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Disable ProcessProtection ...");
                         return Xdows.Protection.ProcessProtection.Disable();
                     }
                     else
                     {
-                        LogText.AddNewLog(1, "Protection", $"Try to Enable ProcessProtection ...");
+                        LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Enable ProcessProtection ...");
                         return Xdows.Protection.ProcessProtection.Enable(interceptCallBack);
                     }
                 case 1:
                     if (FilesProtection.IsEnabled())
                     {
-                        LogText.AddNewLog(1, "Protection", $"Try to Disable FilesProtection ...");
+                        LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Disable FilesProtection ...");
                         return Xdows.Protection.FilesProtection.Disable();
                     }
                     else
                     {
-                        LogText.AddNewLog(1, "Protection", $"Try to Enable FilesProtection ...");
+                        LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Enable FilesProtection ...");
                         return Xdows.Protection.FilesProtection.Enable(interceptCallBack);
                     }
                 case 4:
                     if (RegistryProtection.IsEnabled())
                     {
-                        LogText.AddNewLog(1, "Protection", $"Try to Disable RegistryProtection ...");
+                        LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Disable RegistryProtection ...");
                         return Xdows.Protection.RegistryProtection.Disable();
                     }
                     else
                     {
-                        LogText.AddNewLog(1, "Protection", $"Try to Enable RegistryProtection ...");
+                        LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Enable RegistryProtection ...");
                         return Xdows.Protection.RegistryProtection.Enable(interceptCallBack);
                     }
                 default:
@@ -183,7 +183,7 @@ namespace Xdows_Security
                 _hotLines = 0;
             }
 
-            AddNewLog((int)LogLevel.INFO, "LogSystem", "Log is cleared");
+            AddNewLog(LogLevel.INFO, "LogSystem", "Log is cleared");
         }
         #endregion
 
@@ -216,17 +216,17 @@ namespace Xdows_Security
             Directory.CreateDirectory(BaseFolder);
             _ = Task.Run(WritePump);
             AppDomain.CurrentDomain.UnhandledException += (_, e) =>
-                AddNewLog((int)LogLevel.FATAL, "Unhandled", e.ExceptionObject.ToString()!);
+                AddNewLog(LogLevel.FATAL, "Unhandled", e.ExceptionObject.ToString()!);
         }
         #endregion
 
         #region 对外唯一写入口
-        public static void AddNewLog(int level, string source, string info)
+        public static void AddNewLog(LogLevel level, string source, string info)
         {
             var row = new LogRow
             {
                 Time = DateTime.Now,
-                Level = level,
+                Level = (int)level,
                 Source = source,
                 Text = info
             };
@@ -347,7 +347,7 @@ namespace Xdows_Security
 
         public App()
         {
-            LogText.AddNewLog(1, "UI Interface", "Attempting to load the MainWindow...");
+            LogText.AddNewLog(LogLevel.INFO, "UI Interface", "Attempting to load the MainWindow...");
             this.InitializeComponent();
         }
 
@@ -366,7 +366,7 @@ namespace Xdows_Security
             }
             catch (Exception ex)
             {
-                LogText.AddNewLog(3, "App", $"Error in OnLaunched: {ex.Message}");
+                LogText.AddNewLog(LogLevel.ERROR, "App", $"Error in OnLaunched: {ex.Message}");
             }
         }
         private void InitializeMainWindow()
@@ -378,7 +378,7 @@ namespace Xdows_Security
             }
             catch (Exception ex)
             {
-                LogText.AddNewLog(3, "App", $"Error initializing MainWindow: {ex.Message}");
+                LogText.AddNewLog(LogLevel.ERROR, "App", $"Error initializing MainWindow: {ex.Message}");
             }
         }
         // 定义主题属性

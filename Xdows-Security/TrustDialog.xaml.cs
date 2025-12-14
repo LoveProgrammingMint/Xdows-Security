@@ -192,7 +192,7 @@ namespace Xdows_Security
     /// <summary>
     /// 信任项视图模型
     /// </summary>
-    public class TrustItemViewModel
+    public record TrustItemViewModel
     {
         public string Id { get; set; }
         public string Name { get; set; }

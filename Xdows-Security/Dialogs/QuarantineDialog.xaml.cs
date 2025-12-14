@@ -36,7 +36,7 @@ namespace Xdows.UI.Dialogs
             this.InitializeComponent();
             this.Opened += QuarantineDialog_Opened;
         }
-        
+
         /// <summary>
         /// 内容对话框打开事件
         /// </summary>
@@ -55,10 +55,10 @@ namespace Xdows.UI.Dialogs
             {
                 _quarantineItems = QuarantineManager.GetQuarantineItems();
                 QuarantineListView.ItemsSource = _quarantineItems;
-                
+
                 // 通知绑定更新
                 this.Bindings.Update();
-                
+
                 // 如果没有项目，禁用清空按钮
                 ClearAllButton.IsEnabled = _quarantineItems.Count > 0;
             }
@@ -86,7 +86,7 @@ namespace Xdows.UI.Dialogs
                             button);
                         return;
                     }
-                    
+
                     string fileName = Path.GetFileName(item.QuarantinePath);
                     if (string.IsNullOrEmpty(fileName))
                     {
@@ -96,7 +96,7 @@ namespace Xdows.UI.Dialogs
                             button);
                         return;
                     }
-                    
+
                     string[] pathParts = fileName.Split('_');
                     if (pathParts.Length == 0)
                     {
@@ -106,17 +106,17 @@ namespace Xdows.UI.Dialogs
                             button);
                         return;
                     }
-                    
+
                     string itemId = pathParts[0];
-                    
+
                     // 恢复文件
                     bool success = QuarantineManager.RestoreFromQuarantine(itemId);
-                    
+
                     if (success)
                     {
                         // 刷新列表
                         LoadQuarantineItems();
-                        
+
                         // 显示成功提示
                         ShowResultTip(
                             Localizer.Get().GetLocalizedString("QuarantineDialog_Restore_Success_Title"),
@@ -172,7 +172,7 @@ namespace Xdows.UI.Dialogs
                                 button);
                             return;
                         }
-                        
+
                         string fileName = Path.GetFileName(item.QuarantinePath);
                         if (string.IsNullOrEmpty(fileName))
                         {
@@ -182,7 +182,7 @@ namespace Xdows.UI.Dialogs
                                 button);
                             return;
                         }
-                        
+
                         string[] pathParts = fileName.Split('_');
                         if (pathParts.Length == 0)
                         {
@@ -192,15 +192,15 @@ namespace Xdows.UI.Dialogs
                                 button);
                             return;
                         }
-                        
+
                         string itemId = pathParts[0];
-                        
+
                         // 删除文件
                         bool success = QuarantineManager.DeleteFromQuarantine(itemId);
-                        
+
                         // 刷新列表
                         LoadQuarantineItems();
-                        
+
                         // 显示结果提示
                         if (success)
                         {
@@ -259,10 +259,10 @@ namespace Xdows.UI.Dialogs
                 {
                     // 清空隔离区
                     bool success = QuarantineManager.ClearQuarantine();
-                    
+
                     // 刷新列表
                     LoadQuarantineItems();
-                    
+
                     // 显示结果提示
                     if (success)
                     {

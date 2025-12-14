@@ -19,18 +19,20 @@ namespace Xdows.Protection
         {
             SouXiaoEngine ??= new Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan();
             SouXiaoEngine.Initialize();
-            
+
             // 初始化隔离区
             QuarantineManager.Initialize();
-            
+
             if (_isMonitoring || SouXiaoEngine == null)
             {
                 return false;
             }
-            
+
             _isMonitoring = true;
             _toastCallBack = toastCallBack;
-            _ = Task.Run(async () => await StartMonitoring());
+            _monitorThread = new Thread(StartMonitoring);
+            _monitorThread.IsBackground = true;
+            _monitorThread.Start();
 
             return true;
         }
@@ -49,7 +51,8 @@ namespace Xdows.Protection
             }
             foreach (var watcher in _watchers)
             {
-                try {
+                try
+                {
                     watcher.EnableRaisingEvents = false;
                     watcher.Dispose();
                 }
@@ -63,10 +66,10 @@ namespace Xdows.Protection
 
         public static bool IsEnabled()
         {
-            try {return _isMonitoring;} catch { return false; }
+            try { return _isMonitoring; } catch { return false; }
         }
 
-        private static async Task StartMonitoring()
+        private static void StartMonitoring()
         {
             string[] drives = Directory.GetLogicalDrives();
             _watchers = new FileSystemWatcher[drives.Length];
@@ -100,7 +103,7 @@ namespace Xdows.Protection
 
             while (_isMonitoring)
             {
-                await Task.Delay(1000);
+                Thread.Sleep(1000);
             }
         }
         static bool IsFileAccessible(string path)
@@ -133,13 +136,13 @@ namespace Xdows.Protection
                 {
                     return;
                 }
-                
+
                 // 检查文件是否在信任区中
                 if (TrustManager.IsPathTrusted(e.FullPath))
                 {
                     return;
                 }
-                
+
                 bool isVirus = false;
                 isVirus = SouXiaoEngine.ScanFile(e.FullPath).IsVirus;
                 if (isVirus)
@@ -148,7 +151,7 @@ namespace Xdows.Protection
                     {
                         // 将文件添加到隔离区
                         bool success = QuarantineManager.AddToQuarantine(e.FullPath, "未知病毒");
-                        
+
                         Task.Run(() =>
                         {
                             _toastCallBack?.Invoke(success, e.FullPath, "Process");

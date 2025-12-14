@@ -807,6 +807,9 @@ Why not try XIGUA Security?</value>
   <data name="SettingsPage_Appearance_Nav_Left.Content" xml:space="preserve">
     <value>Left</value>
   </data>
+  <data name="SettingsPage_Search.PlaceholderText" xml:space="preserve">
+    <value>Search settings...</value>
+  </data>
   <data name="SettingsPage_Scan_SouXiao_Develop.Header" xml:space="preserve">
     <value>About this Engine</value>
   </data>

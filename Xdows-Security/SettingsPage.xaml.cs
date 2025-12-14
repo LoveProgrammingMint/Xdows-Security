@@ -2,19 +2,23 @@ using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.Windows.BadgeNotifications;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Xml.Schema;
+using System.Linq;
 using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
+using Windows.UI;
 using Compatibility.Windows.Storage;
 using WinUI3Localizer;
 using Xdows.Protection;
 using Xdows.UI.Dialogs;
 using System.Threading.Tasks;
+using CommunityToolkit.WinUI.Controls;
 
 namespace Xdows_Security
 {
@@ -506,6 +510,165 @@ namespace Xdows_Security
         {
             Toggled_SaveToggleData(sender, e);
             App.MainWindow?.manager?.IsVisibleInTray = TrayVisibleToggle.IsEnabled;
+        }
+
+        private void SettingsSearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                string searchText = sender.Text.ToLowerInvariant();
+                
+                if (string.IsNullOrWhiteSpace(searchText))
+                {
+                    ShowAllSettingsItems();
+                    return;
+                }
+                
+                FilterSettingsItems(searchText);
+            }
+        }
+
+        private void ShowAllSettingsItems()
+        {
+            var scrollViewer = this.Content as ScrollViewer;
+            if (scrollViewer == null) return;
+            
+            var stackPanel = scrollViewer.Content as StackPanel;
+            if (stackPanel == null) return;
+            
+            foreach (var child in stackPanel.Children)
+            {
+                if (child is AutoSuggestBox) continue;
+                
+                if (child is FrameworkElement element)
+                {
+                    element.Visibility = Visibility.Visible;
+                    
+                    if (element is SettingsExpander expander)
+                    {
+                        foreach (var expanderChild in expander.Items)
+                        {
+                            if (expanderChild is SettingsCard card)
+                            {
+                                card.Visibility = Visibility.Visible;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        private void FilterSettingsItems(string searchText)
+        {
+            var scrollViewer = this.Content as ScrollViewer;
+            if (scrollViewer == null) return;
+            
+            var stackPanel = scrollViewer.Content as StackPanel;
+            if (stackPanel == null) return;
+            
+            foreach (var child in stackPanel.Children)
+            {
+                if (child is AutoSuggestBox) continue;
+                
+                if (child is FrameworkElement element)
+                {
+                    element.Visibility = Visibility.Collapsed;
+                    
+                    if (element is SettingsExpander expander)
+                    {
+                        foreach (var expanderChild in expander.Items)
+                        {
+                            if (expanderChild is SettingsCard card)
+                            {
+                                card.Visibility = Visibility.Collapsed;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            TextBlock? currentHeader = null;
+            bool currentHeaderMatched = false;
+            
+            for (int i = 0; i < stackPanel.Children.Count; i++)
+            {
+                var child = stackPanel.Children[i];
+                
+                if (child is AutoSuggestBox) continue;
+                
+                if (child is FrameworkElement element)
+                {
+                    if (element is TextBlock textBlock)
+                    {
+                        currentHeader = textBlock;
+                        currentHeaderMatched = IsSettingsItemMatched(textBlock, searchText);
+                        
+                        if (currentHeaderMatched)
+                        {
+                            textBlock.Visibility = Visibility.Visible;
+                        }
+                    }
+                    else if (element is SettingsCard || element is SettingsExpander)
+                    {
+                        bool shouldShow = false;
+                        
+                        if (IsSettingsItemMatched(element, searchText))
+                        {
+                            shouldShow = true;
+                        }
+                        
+                        if (!shouldShow && currentHeaderMatched)
+                        {
+                            shouldShow = true;
+                        }
+                        
+                        if (element is SettingsExpander expander)
+                        {
+                            foreach (var expanderChild in expander.Items)
+                            {
+                                if (expanderChild is SettingsCard card)
+                                {
+                                    if (IsSettingsItemMatched(card, searchText) || currentHeaderMatched)
+                                    {
+                                        shouldShow = true;
+                                        card.Visibility = Visibility.Visible;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if (shouldShow)
+                        {
+                            element.Visibility = Visibility.Visible;
+                        }
+                    }
+                }
+            }
+        }
+        private bool IsSettingsItemMatched(FrameworkElement item, string searchText)
+        {
+            string itemText = GetSettingsItemText(item);
+            
+            if (string.IsNullOrEmpty(itemText))
+                return false;
+                
+            return itemText.ToLowerInvariant().Contains(searchText);
+        }
+        private string GetSettingsItemText(FrameworkElement item)
+        {
+            if (item is TextBlock textBlock)
+            {
+                return textBlock.Text;
+            }
+            else if (item is SettingsCard card)
+            {
+                return card.Header?.ToString() ?? string.Empty;
+            }
+            else if (item is SettingsExpander expander)
+            {
+                return expander.Header?.ToString() ?? string.Empty;
+            }
+            
+            return string.Empty;
         }
     }
 }

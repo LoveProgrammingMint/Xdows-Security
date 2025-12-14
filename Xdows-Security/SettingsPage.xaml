@@ -10,10 +10,17 @@
       mc:Ignorable="d">
     <ScrollViewer>
         <StackPanel Spacing="4" Margin="80,24,80,0">
-            <TextBlock Margin="0,8,0,8" l:Uids.Uid="SettingsPage_Appearance" />
+            <AutoSuggestBox x:Name="SettingsSearchBox"
+                            l:Uids.Uid="SettingsPage_Search"
+                            QueryIcon="Find"
+                            TextChanged="SettingsSearchBox_TextChanged"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Stretch" />
+            <TextBlock Margin="0,8,0,8" l:Uids.Uid="SettingsPage_Appearance" x:Name="Appearance_Header"/>
             <controls:SettingsCard
                                l:Uids.Uid="SettingsPage_Appearance_Theme"
-                               HeaderIcon="{ui:FontIcon Glyph=&#xE790;}">
+                               HeaderIcon="{ui:FontIcon Glyph=&#xE790;}"
+                               x:Name="Appearance_Theme">
                 <ComboBox x:Name="ThemeComboBox" SelectionChanged="ThemeComboBox_SelectionChanged">
                     <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Theme_ComboBox_System" />
                     <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Theme_ComboBox_Light" />
@@ -22,7 +29,8 @@
             </controls:SettingsCard>
             <controls:SettingsCard
                                l:Uids.Uid="SettingsPage_Appearance_Nav"
-                               HeaderIcon="{ui:FontIcon Glyph=&#xE700;}">
+                               HeaderIcon="{ui:FontIcon Glyph=&#xE700;}"
+                               x:Name="Appearance_Nav">
                 <ComboBox x:Name="NavComboBox" SelectionChanged="NavComboBox_SelectionChanged">
                     <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Nav_Left" />
                     <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Nav_Top" />
@@ -30,7 +38,8 @@
             </controls:SettingsCard>
             <controls:SettingsExpander
                     l:Uids.Uid="SettingsPage_Appearance_Backdrop"
-                    HeaderIcon="{ui:FontIcon Glyph=&#xEF1F;}">
+                    HeaderIcon="{ui:FontIcon Glyph=&#xEF1F;}"
+                    x:Name="Appearance_Backdrop">
                 <ComboBox x:Name="BackdropComboBox" SelectionChanged="BackdropComboBox_SelectionChanged">
                     <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Backdrop_Solid" Tag="Solid"/>
                     <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Backdrop_Mica" Tag="Mica" x:Name="MicaOption"/>
@@ -40,21 +49,24 @@
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                             l:Uids.Uid="SettingsPage_Appearance_Backdrop_Opacity"
-                            HeaderIcon="{ui:FontIcon Glyph=&#xF5ED;}">
+                            HeaderIcon="{ui:FontIcon Glyph=&#xF5ED;}"
+                            x:Name="Appearance_Backdrop_Opacity_Card">
                         <Slider x:Name="Appearance_Backdrop_Opacity" Value="100" ValueChanged="OpacitySlider_ValueChanged"/>
                     </controls:SettingsCard>
                 </controls:SettingsExpander.Items>
             </controls:SettingsExpander>
-            <TextBlock Margin="0,8,0,8" l:Uids.Uid="SettingsPage_Scan"/>
+            <TextBlock Margin="0,8,0,8" l:Uids.Uid="SettingsPage_Scan" x:Name="Scan_Header"/>
             <controls:SettingsCard
                             l:Uids.Uid="SettingsPage_Scan_ScanProgress"
-                            HeaderIcon="{ui:FontIcon Glyph=&#xF0B5;}">
+                            HeaderIcon="{ui:FontIcon Glyph=&#xF0B5;}"
+                            x:Name="Scan_ScanProgress">
                 <ToggleSwitch x:Name="ScanProgressToggle" Tag="ShowScanProgress" Toggled="Toggled_SaveToggleData" />
             </controls:SettingsCard>
             <controls:SettingsExpander
                             VerticalAlignment="Top"
                             l:Uids.Uid="SettingsPage_Scan_SouXiao"
-                            HeaderIcon="{ui:FontIcon Glyph=&#xF22C;}">
+                            HeaderIcon="{ui:FontIcon Glyph=&#xF22C;}"
+                            x:Name="Scan_SouXiao">
                 <ToggleSwitch x:Name="SouXiaoScanToggle" Tag="SouXiaoScan" Toggled="Toggled_SaveToggleData"  />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
@@ -66,7 +78,8 @@
             <controls:SettingsExpander
                             VerticalAlignment="Top"
                             l:Uids.Uid="SettingsPage_Scan_Local"
-                            HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
+                            HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}"
+                            x:Name="Scan_Local">
                 <ToggleSwitch x:Name="LocalScanToggle" Tag="LocalScan" Toggled="Toggled_SaveToggleData" />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
@@ -84,7 +97,8 @@
             <controls:SettingsExpander
                             VerticalAlignment="Top"
                             l:Uids.Uid="SettingsPage_Scan_JiSuSafeAX"
-                            HeaderIcon="{ui:FontIcon Glyph=&#xF003;}">
+                            HeaderIcon="{ui:FontIcon Glyph=&#xF003;}"
+                            x:Name="Scan_JiSuSafeAX">
                 <ToggleSwitch x:Name="JiSuSafeAXToggle" Tag="JiSuSafeAX" Toggled="Toggled_SaveToggleData"  />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard

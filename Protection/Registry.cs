@@ -84,7 +84,12 @@ namespace Xdows.Protection
                     _interceptCallBack = interceptCallBack;
                     _isEnabled = true;
 
-                    _ = Task.Run(async () => await MonitorRegistry());
+                    _monitorThread = new Thread(MonitorRegistry)
+                    {
+                        IsBackground = true,
+                        Name = "RegistryMonitor"
+                    };
+                    _monitorThread.Start();
 
                     LogEvent("✅ 注册表防护已启用");
                     return true;
@@ -133,7 +138,7 @@ namespace Xdows.Protection
             }
         }
 
-        private static async Task MonitorRegistry()
+        private static void MonitorRegistry()
         {
             // 创建初始快照
             var lastSnapshot = CreateRegistrySnapshot();
@@ -142,7 +147,7 @@ namespace Xdows.Protection
             {
                 try
                 {
-                    await Task.Delay(300); // 300ms检查间隔，更灵敏
+                    Thread.Sleep(300); // 300ms检查间隔，更灵敏
 
                     var currentSnapshot = CreateRegistrySnapshot();
                     var changes = CompareSnapshots(lastSnapshot, currentSnapshot);
@@ -160,7 +165,7 @@ namespace Xdows.Protection
                 catch (Exception ex)
                 {
                     LogEvent($"监控错误: {ex.Message}");
-                    await Task.Delay(1000);
+                    Thread.Sleep(1000);
                 }
             }
         }

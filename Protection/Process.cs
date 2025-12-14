@@ -129,10 +129,10 @@ namespace Xdows.Protection
                                             try { File.Move(path, path + ".virus"); } catch { }
                                         }
                                     }
-                                } 
+                                }
                                 catch { }
-                                
-                                Task.Run(() =>
+
+                                _ = Task.Run(() =>
                                 {
                                     interceptCallBack(Succeed, path, "Process");
                                 });

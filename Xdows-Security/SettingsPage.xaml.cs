@@ -1,3 +1,5 @@
+using CommunityToolkit.WinUI.Controls;
+using Compatibility.Windows.Storage;
 using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -8,17 +10,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Xml.Schema;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Xml.Schema;
 using Windows.ApplicationModel.Resources;
 using Windows.Globalization;
+using Windows.Security.Credentials.UI;
 using Windows.UI;
-using Compatibility.Windows.Storage;
 using WinUI3Localizer;
 using Xdows.Protection;
 using Xdows.UI.Dialogs;
-using System.Threading.Tasks;
-using CommunityToolkit.WinUI.Controls;
 
 namespace Xdows_Security
 {
@@ -130,7 +131,8 @@ namespace Xdows_Security
                  JiSuSafeAXToggle,
                  SouXiaoScanToggle,
                  CloudScanToggle,
-                 TrayVisibleToggle
+                 TrayVisibleToggle,
+                 DisabledVerifyToggle
                };
 
             foreach (var toggle in toggles)
@@ -669,6 +671,29 @@ namespace Xdows_Security
             }
             
             return string.Empty;
+        }
+        private bool DisabledVerifyToggleVerify = true;
+        private async void DisabledVerifyToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!DisabledVerifyToggleVerify || IsInitialize)
+            {
+                return;
+            }
+            if (DisabledVerifyToggle.IsOn) {
+                DisabledVerifyToggleVerify = false;
+                DisabledVerifyToggle.IsOn = false;
+                var result = await UserConsentVerifier.RequestVerificationAsync(string.Empty);
+                if (result == UserConsentVerificationResult.Verified)
+                {
+                    DisabledVerifyToggle.IsOn = true;
+                    Toggled_SaveToggleData(sender, e);
+                }
+                DisabledVerifyToggleVerify = true;
+            }
+            else
+            {
+                Toggled_SaveToggleData(sender, e);
+            }
         }
     }
 }

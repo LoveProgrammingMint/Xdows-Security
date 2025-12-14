@@ -1302,4 +1302,10 @@
   <data name="TrayMenu_Settings" xml:space="preserve">
     <value>设置</value>
   </data>
+  <data name="SettingsPage_Other_DisabledVerify.Header" xml:space="preserve">
+    <value>禁用验证</value>
+  </data>
+  <data name="SettingsPage_Other_DisabledVerify.Description" xml:space="preserve">
+    <value>禁用执行高危操作的验证</value>
+  </data>
 </root>

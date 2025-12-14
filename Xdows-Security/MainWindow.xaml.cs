@@ -22,6 +22,7 @@ using WinRT;
 using WinUI3Localizer;
 using WinUIEx;
 using Xdows_Security.ViewModel;
+using Windows.Security.Credentials.UI;
 
 namespace Xdows_Security
 {
@@ -62,7 +63,22 @@ namespace Xdows_Security
                     this.Activate();
                     this.GoToPage("Settings"); 
                 };
-                ((MenuFlyoutItem)flyout.Items[3]).Click += (s, e) => this.Close();
+                ((MenuFlyoutItem)flyout.Items[3]).Click += async (s, e) => {
+
+                    if (ApplicationData.Current.LocalSettings.Values.TryGetValue("DisabledVerify", out object? disabledVerify))
+                    {
+                        if ((bool)disabledVerify)
+                        {
+                            this.Close();
+                            return;
+                        }
+                        var result = await UserConsentVerifier.RequestVerificationAsync(string.Empty);
+                        if (result == UserConsentVerificationResult.Verified)
+                        {
+                            this.Close();
+                        }
+                    }
+                };
                 e.Flyout = flyout;
             };
             LogText.AddNewLog(LogLevel.INFO, "UI Interface", "MainWindow loaded successfully");
@@ -397,9 +413,23 @@ namespace Xdows_Security
                 {
                     e.Cancel = true;
                     this.Hide();
+                    return;
                 }
             }
-            
+            if (ApplicationData.Current.LocalSettings.Values.TryGetValue("DisabledVerify", out object? disabledVerify))
+            {
+                if (!(bool)disabledVerify)
+                {
+                    var verifyTask = UserConsentVerifier.RequestVerificationAsync(string.Empty);
+                    var result = verifyTask.AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
+                    if (result != UserConsentVerificationResult.Verified)
+                    {
+                        e.Cancel = true;
+                    }
+                    return;
+                }
+            }
+
         }
         private void nav_Loaded(object sender, RoutedEventArgs e)
         {

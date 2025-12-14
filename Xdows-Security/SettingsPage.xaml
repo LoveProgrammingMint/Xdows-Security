@@ -273,6 +273,11 @@
                             HeaderIcon="{ui:FontIcon Glyph=&#xE90E;}">
                 <ToggleSwitch x:Name="TrayVisibleToggle" Tag="TrayVisibleToggle" Toggled="TrayVisibleToggle_Toggled" />
             </controls:SettingsCard>
+            <controls:SettingsCard
+                            l:Uids.Uid="SettingsPage_Other_DisabledVerify"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xE72E;}">
+                <ToggleSwitch x:Name="DisabledVerifyToggle" Tag="DisabledVerify" Toggled="DisabledVerifyToggle_Toggled" />
+            </controls:SettingsCard>
             <controls:SettingsCard l:Uids.Uid="SettingsPage_Other_Feedback" x:Name="SettingsPage_Other_Feedback" HeaderIcon="{ui:FontIcon Glyph=&#xED15;}">
                 <Button l:Uids.Uid="AllPage_OpenLink" Click="Settings_Feedback_Click"/>
             </controls:SettingsCard>

@@ -1303,4 +1303,10 @@ If you do not accept it, please turn off the engine, or stop using and delete th
   <data name="TrayMenu_Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="SettingsPage_Other_DisabledVerify.Header" xml:space="preserve">
+    <value>Disabled Verify</value>
+  </data>
+  <data name="SettingsPage_Other_DisabledVerify.Description" xml:space="preserve">
+    <value>Disable verification for performing high-risk operations</value>
+  </data>
 </root>

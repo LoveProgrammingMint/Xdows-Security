@@ -389,7 +389,7 @@ namespace Xdows_Security
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"打开隔离区对话框失败: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Failed to open quarantine dialog: {ex.Message}");
             }
         }
 
@@ -406,9 +406,9 @@ namespace Xdows_Security
                 {
                     var emptyDialog = new ContentDialog
                     {
-                        Title = "隔离区为空",
-                        Content = "隔离区中没有文件需要清空。",
-                        CloseButtonText = "确定",
+                        Title = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_Empty_Title"),
+                        Content = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_Empty_Content"),
+                        CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                         XamlRoot = this.XamlRoot
                     };
                     await emptyDialog.ShowAsync();
@@ -417,10 +417,10 @@ namespace Xdows_Security
 
                 var confirmDialog = new ContentDialog
                 {
-                    Title = "确认清空",
-                    Content = $"确定要永久删除隔离区中的所有 {count} 个文件吗？此操作不可撤销。",
-                    PrimaryButtonText = "清空所有",
-                    CloseButtonText = "取消",
+                    Title = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearConfirm_Title"),
+                    Content = string.Format(Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearConfirm_Content"), count),
+                    PrimaryButtonText = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearConfirm_PrimaryButton"),
+                    CloseButtonText = Localizer.Get().GetLocalizedString("Button_Cancel"),
                     DefaultButton = ContentDialogButton.Close,
                     XamlRoot = this.XamlRoot
                 };
@@ -433,9 +433,9 @@ namespace Xdows_Security
                     {
                         var successDialog = new ContentDialog
                         {
-                            Title = "隔离区已清空",
-                            Content = "所有文件已从隔离区永久删除。",
-                            CloseButtonText = "确定",
+                            Title = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearSuccess_Title"),
+                            Content = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearSuccess_Content"),
+                            CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                             XamlRoot = this.XamlRoot
                         };
                         await successDialog.ShowAsync();
@@ -444,9 +444,9 @@ namespace Xdows_Security
                     {
                         var errorDialog = new ContentDialog
                         {
-                            Title = "清空失败",
-                            Content = "清空隔离区时发生错误，请重试。",
-                            CloseButtonText = "确定",
+                            Title = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearFailed_Title"),
+                            Content = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearFailed_Content"),
+                            CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                             XamlRoot = this.XamlRoot
                         };
                         await errorDialog.ShowAsync();
@@ -455,13 +455,13 @@ namespace Xdows_Security
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"清空隔离区失败: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Failed to clear quarantine: {ex.Message}");
                 
                 var errorDialog = new ContentDialog
                 {
-                    Title = "清空失败",
-                    Content = "清空隔离区时发生错误，请重试。",
-                    CloseButtonText = "确定",
+                    Title = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearFailed_Title"),
+                    Content = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearFailed_Content"),
+                    CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                     XamlRoot = this.XamlRoot
                 };
                 await errorDialog.ShowAsync();
@@ -484,7 +484,7 @@ namespace Xdows_Security
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"打开信任区对话框失败: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Failed to open trust dialog: {ex.Message}");
             }
         }
 
@@ -504,7 +504,7 @@ namespace Xdows_Security
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"打开添加信任项对话框失败: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Failed to open add trust dialog: {ex.Message}");
             }
         }
 

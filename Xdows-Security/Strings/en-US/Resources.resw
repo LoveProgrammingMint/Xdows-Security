@@ -1309,4 +1309,31 @@ If you do not accept it, please turn off the engine, or stop using and delete th
   <data name="SettingsPage_Other_DisabledVerify.Description" xml:space="preserve">
     <value>Disable verification for performing high-risk operations</value>
   </data>
+  <data name="SettingsPage_Quarantine_Empty_Title" xml:space="preserve">
+    <value>Quarantine is empty</value>
+  </data>
+  <data name="SettingsPage_Quarantine_Empty_Content" xml:space="preserve">
+    <value>There are no files in the quarantine to clear.</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearConfirm_Title" xml:space="preserve">
+    <value>Confirm Clear</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearConfirm_Content" xml:space="preserve">
+    <value>Are you sure you want to permanently delete all {0} files in the quarantine? This action cannot be undone.</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearConfirm_PrimaryButton" xml:space="preserve">
+    <value>Clear All</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearSuccess_Title" xml:space="preserve">
+    <value>Quarantine Cleared</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearSuccess_Content" xml:space="preserve">
+    <value>All files have been permanently deleted from the quarantine.</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearFailed_Title" xml:space="preserve">
+    <value>Clear Failed</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearFailed_Content" xml:space="preserve">
+    <value>An error occurred while clearing the quarantine. Please try again.</value>
+  </data>
 </root>

@@ -1308,4 +1308,31 @@
   <data name="SettingsPage_Other_DisabledVerify.Description" xml:space="preserve">
     <value>禁用执行高危操作的验证</value>
   </data>
+  <data name="SettingsPage_Quarantine_Empty_Title" xml:space="preserve">
+    <value>隔离区为空</value>
+  </data>
+  <data name="SettingsPage_Quarantine_Empty_Content" xml:space="preserve">
+    <value>隔离区中没有文件需要清空。</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearConfirm_Title" xml:space="preserve">
+    <value>确认清空</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearConfirm_Content" xml:space="preserve">
+    <value>确定要永久删除隔离区中的所有 {0} 个文件吗？此操作不可撤销。</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearConfirm_PrimaryButton" xml:space="preserve">
+    <value>清空所有</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearSuccess_Title" xml:space="preserve">
+    <value>隔离区已清空</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearSuccess_Content" xml:space="preserve">
+    <value>所有文件已从隔离区永久删除。</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearFailed_Title" xml:space="preserve">
+    <value>清空失败</value>
+  </data>
+  <data name="SettingsPage_Quarantine_ClearFailed_Content" xml:space="preserve">
+    <value>清空隔离区时发生错误，请重试。</value>
+  </data>
 </root>

@@ -3,13 +3,8 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.Storage;
-using Windows.Storage.Pickers;
-using Xdows.Protection;
 using WinUI3Localizer;
-using Microsoft.Windows.ApplicationModel.Resources;
+using Xdows.Protection;
 
 namespace Xdows_Security
 {
@@ -41,7 +36,7 @@ namespace Xdows_Security
         private void LoadTrustItems()
         {
             _trustItems.Clear();
-            
+
             var trustItems = TrustManager.GetTrustItems();
             foreach (var item in trustItems)
             {
@@ -70,8 +65,8 @@ namespace Xdows_Security
         private void ShowResultTip(string title, bool isSuccess)
         {
             ResultTeachingTip.Title = title;
-            ResultTeachingTip.Subtitle = isSuccess ? 
-                Localizer.Get().GetLocalizedString("Common_OperationSuccess") : 
+            ResultTeachingTip.Subtitle = isSuccess ?
+                Localizer.Get().GetLocalizedString("Common_OperationSuccess") :
                 Localizer.Get().GetLocalizedString("Common_OperationFailed");
             ResultTeachingTip.IsOpen = true;
         }
@@ -107,7 +102,7 @@ namespace Xdows_Security
 
             // 先关闭当前对话框
             this.Hide();
-            
+
             var confirmDialog = new ContentDialog
             {
                 Title = Localizer.Get().GetLocalizedString("TrustDialog_ConfirmClearTitle"),
@@ -121,11 +116,11 @@ namespace Xdows_Security
             if (await confirmDialog.ShowAsync() == ContentDialogResult.Primary)
             {
                 bool success = TrustManager.ClearTrust();
-                
+
                 // 刷新列表
                 LoadTrustItems();
                 UpdateStatusText();
-                
+
                 // 使用非阻塞提示而不是嵌套对话框
                 if (success)
                 {
@@ -136,7 +131,7 @@ namespace Xdows_Security
                     ShowResultTip(Localizer.Get().GetLocalizedString("TrustDialog_ClearFailedTitle"), false);
                 }
             }
-            
+
             // 重新显示当前对话框
             await this.ShowAsync();
         }
@@ -153,7 +148,7 @@ namespace Xdows_Security
 
                 // 先关闭当前对话框
                 this.Hide();
-                
+
                 var confirmDialog = new ContentDialog
                 {
                     Title = Localizer.Get().GetLocalizedString("TrustDialog_ConfirmRemoveTitle"),
@@ -167,11 +162,11 @@ namespace Xdows_Security
                 if (await confirmDialog.ShowAsync() == ContentDialogResult.Primary)
                 {
                     bool success = TrustManager.RemoveFromTrust(id);
-                    
+
                     // 刷新列表
                     LoadTrustItems();
                     UpdateStatusText();
-                    
+
                     // 使用非阻塞提示而不是嵌套对话框
                     if (success)
                     {
@@ -182,7 +177,7 @@ namespace Xdows_Security
                         ShowResultTip(Localizer.Get().GetLocalizedString("TrustDialog_RemoveFailedTitle"), false);
                     }
                 }
-                
+
                 // 重新显示当前对话框
                 await this.ShowAsync();
             }

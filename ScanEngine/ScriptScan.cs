@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Xdows.ScanEngine
 {
@@ -106,10 +101,10 @@ namespace Xdows.ScanEngine
 
                 // 检查是否包含可疑内容
                 var content = Encoding.ASCII.GetString(fileContent);
-                
+
                 // 检查是否指向系统目录外的可执行文件
-                if (content.Contains(".exe") && 
-                    (!content.Contains("System32", StringComparison.OrdinalIgnoreCase) && 
+                if (content.Contains(".exe") &&
+                    (!content.Contains("System32", StringComparison.OrdinalIgnoreCase) &&
                      !content.Contains("Program Files", StringComparison.OrdinalIgnoreCase)))
                 {
                     score += 15;
@@ -173,7 +168,7 @@ namespace Xdows.ScanEngine
             try
             {
                 var content = Encoding.UTF8.GetString(fileContent);
-                
+
                 // 通用脚本检查
                 score += CheckGenericScript(content, extra);
 
@@ -207,7 +202,7 @@ namespace Xdows.ScanEngine
             int score = 0;
 
             // 检查是否包含混淆代码
-            if (content.Contains("eval(") || content.Contains("Invoke-Expression") || 
+            if (content.Contains("eval(") || content.Contains("Invoke-Expression") ||
                 content.Contains("Execute(") || content.Contains("exec("))
             {
                 score += 20;
@@ -215,7 +210,7 @@ namespace Xdows.ScanEngine
             }
 
             // 检查是否包含编码内容
-            if (content.Contains("base64") || content.Contains("FromBase64String") || 
+            if (content.Contains("base64") || content.Contains("FromBase64String") ||
                 content.Contains("atob") || content.Contains("btoa"))
             {
                 score += 15;

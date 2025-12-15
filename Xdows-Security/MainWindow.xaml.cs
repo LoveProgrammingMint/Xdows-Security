@@ -7,22 +7,18 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.Windows.BadgeNotifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
+using Windows.Security.Credentials.UI;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
 using WinRT;
 using WinUI3Localizer;
 using WinUIEx;
-using Xdows_Security.ViewModel;
-using Windows.Security.Credentials.UI;
 
 namespace Xdows_Security
 {
@@ -59,11 +55,13 @@ namespace Xdows_Security
                 flyout.Items.Add(new MenuFlyoutSeparator());
                 flyout.Items.Add(new MenuFlyoutItem() { Text = Localizer.Get().GetLocalizedString("TrayMenu_Quit") });
                 ((MenuFlyoutItem)flyout.Items[0]).Click += (s, e) => this.Activate();
-                ((MenuFlyoutItem)flyout.Items[1]).Click += (s, e) => {
+                ((MenuFlyoutItem)flyout.Items[1]).Click += (s, e) =>
+                {
                     this.Activate();
-                    this.GoToPage("Settings"); 
+                    this.GoToPage("Settings");
                 };
-                ((MenuFlyoutItem)flyout.Items[3]).Click += async (s, e) => {
+                ((MenuFlyoutItem)flyout.Items[3]).Click += async (s, e) =>
+                {
                     if (ApplicationData.Current.LocalSettings.Values.TryGetValue("DisabledVerify", out object? disabledVerify))
                     {
                         if ((bool)disabledVerify)
@@ -114,7 +112,7 @@ namespace Xdows_Security
             }
 
             var backdrop = settings.Values["AppBackdrop"] as string;
-            ApplyBackdrop(backdrop ?? "Mica",false);
+            ApplyBackdrop(backdrop ?? "Mica", false);
             Activated -= MainWindow_Activated_FirstTime;
             //if (!App.IsRunAsAdmin())
             //{
@@ -139,7 +137,8 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             int navTheme = settings.Values.TryGetValue("AppNavTheme", out object raw) && raw is double d ?
                 (int)d : 0;
-            if (navTheme == 0) {
+            if (navTheme == 0)
+            {
                 if (nav.SettingsItem is NavigationViewItem setting)
                 {
                     setting.Content = Localizer.Get().GetLocalizedString("MainWindow_Nav_Settings");
@@ -187,7 +186,7 @@ namespace Xdows_Security
             var backdrop = settings.Values["AppBackdrop"] as string;
             if (backdrop != null)
             {
-                App.MainWindow?.ApplyBackdrop(backdrop,true);
+                App.MainWindow?.ApplyBackdrop(backdrop, true);
             }
         }
         public ApplicationTheme GetSystemTheme()
@@ -236,10 +235,11 @@ namespace Xdows_Security
             {
                 nav.Header = Localizer.Get().GetLocalizedString("MainWindow_Nav_Settings");
             }
-            else {
+            else
+            {
                 nav.Header = (nav.SelectedItem as NavigationViewItem)?.Content ?? string.Empty;
             }
-            NowPage = PageName; 
+            NowPage = PageName;
             var pageType = PageName switch
             {
                 "Home" => typeof(HomePage),
@@ -273,7 +273,7 @@ namespace Xdows_Security
                     }
                 }
             }
-                return null;
+            return null;
         }
         private void NavigationSelectionChanged()
         {
@@ -403,7 +403,7 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             var backdrop = settings.Values["AppBackdrop"] as string;
             if (backdrop != null)
-                ApplyBackdrop(backdrop,true);
+                ApplyBackdrop(backdrop, true);
         }
 
         private void Window_Closed()

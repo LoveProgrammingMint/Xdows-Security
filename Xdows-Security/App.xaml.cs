@@ -1,26 +1,19 @@
 using Compatibility.Windows.Storage;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.AppNotifications;
-using Microsoft.Windows.AppNotifications.Builder;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Globalization;
-using Xdows_Security.ViewModel;
 using WinUI3Localizer;
-using WinUIEx;
 using Xdows.Protection;
 using static Xdows.Protection.CallBack;
-using System.Net.Http;
 
 namespace Xdows_Security
 {
@@ -82,7 +75,8 @@ namespace Xdows_Security
             }
         }
     }
-    public class AppInfo { 
+    public class AppInfo
+    {
         public static readonly string AppName = "Xdows Security";
         public static readonly string AppVersion = "4.10-Dev";
         public static readonly string AppFeedback = "https://github.com/XTY64XTY12345/Xdows-Security/issues/new/choose";
@@ -360,7 +354,7 @@ namespace Xdows_Security
             {
                 // 初始化信任区管理器
                 Xdows.Protection.TrustManager.Initialize();
-                
+
                 await InitializeLocalizer();
                 InitializeMainWindow();
             }

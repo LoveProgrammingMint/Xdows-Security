@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Xdows.Protection
 {
@@ -17,43 +11,43 @@ namespace Xdows.Protection
         /// 信任项ID
         /// </summary>
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        
+
         /// <summary>
         /// 文件或文件夹路径
         /// </summary>
         public string Path { get; set; } = string.Empty;
-        
+
         /// <summary>
         /// 类型：文件或文件夹
         /// </summary>
         public TrustItemType Type { get; set; }
-        
+
         /// <summary>
         /// 文件名或文件夹名
         /// </summary>
         public string Name { get; set; } = string.Empty;
-        
+
         /// <summary>
         /// 添加时间
         /// </summary>
         public DateTime AddedDate { get; set; } = DateTime.Now;
-        
+
         /// <summary>
         /// 格式化的添加时间（用于显示）
         /// </summary>
         public string FormattedAddedDate => AddedDate.ToString("yyyy-MM-dd HH:mm:ss");
-        
+
         /// <summary>
         /// 文件大小（如果是文件）
         /// </summary>
         public long FileSize { get; set; }
-        
+
         /// <summary>
         /// 备注
         /// </summary>
         public string Note { get; set; } = string.Empty;
     }
-    
+
     /// <summary>
     /// 信任项类型枚举
     /// </summary>
@@ -62,7 +56,7 @@ namespace Xdows.Protection
         File,
         Folder
     }
-    
+
     /// <summary>
     /// 信任区管理器
     /// </summary>
@@ -70,7 +64,7 @@ namespace Xdows.Protection
     {
         private static readonly string TrustDataFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Xdows", "trust_data.json");
         private static List<TrustItem> _trustItems = new List<TrustItem>();
-        
+
         /// <summary>
         /// 初始化信任区
         /// </summary>
@@ -84,7 +78,7 @@ namespace Xdows.Protection
                 {
                     Directory.CreateDirectory(dataDir);
                 }
-                
+
                 // 加载信任区数据
                 LoadTrustData();
             }
@@ -93,7 +87,7 @@ namespace Xdows.Protection
                 System.Diagnostics.Debug.WriteLine($"初始化信任区失败: {ex.Message}");
             }
         }
-        
+
         /// <summary>
         /// 添加文件到信任区
         /// </summary>
@@ -106,15 +100,15 @@ namespace Xdows.Protection
             {
                 if (!File.Exists(path))
                     return false;
-                
+
                 // 检查是否已存在
                 if (IsPathTrusted(path))
                     return true;
-                
+
                 // 获取文件信息
                 FileInfo fileInfo = new FileInfo(path);
                 string fileName = Path.GetFileName(path);
-                
+
                 // 创建信任项
                 var trustItem = new TrustItem
                 {
@@ -125,13 +119,13 @@ namespace Xdows.Protection
                     FileSize = fileInfo.Length,
                     Note = note
                 };
-                
+
                 // 添加到列表
                 _trustItems.Add(trustItem);
-                
+
                 // 保存数据
                 SaveTrustData();
-                
+
                 return true;
             }
             catch (Exception ex)
@@ -140,7 +134,7 @@ namespace Xdows.Protection
                 return false;
             }
         }
-        
+
         /// <summary>
         /// 添加文件夹到信任区
         /// </summary>
@@ -153,15 +147,15 @@ namespace Xdows.Protection
             {
                 if (!Directory.Exists(path))
                     return false;
-                
+
                 // 检查是否已存在
                 if (IsPathTrusted(path))
                     return true;
-                
+
                 // 获取文件夹信息
                 DirectoryInfo dirInfo = new DirectoryInfo(path);
                 string folderName = Path.GetFileName(path);
-                
+
                 // 创建信任项
                 var trustItem = new TrustItem
                 {
@@ -171,13 +165,13 @@ namespace Xdows.Protection
                     AddedDate = DateTime.Now,
                     Note = note
                 };
-                
+
                 // 添加到列表
                 _trustItems.Add(trustItem);
-                
+
                 // 保存数据
                 SaveTrustData();
-                
+
                 return true;
             }
             catch (Exception ex)
@@ -186,7 +180,7 @@ namespace Xdows.Protection
                 return false;
             }
         }
-        
+
         /// <summary>
         /// 从信任区移除项目
         /// </summary>
@@ -199,12 +193,12 @@ namespace Xdows.Protection
                 var item = _trustItems.Find(t => t.Id == id);
                 if (item == null)
                     return false;
-                
+
                 _trustItems.Remove(item);
-                
+
                 // 保存数据
                 SaveTrustData();
-                
+
                 return true;
             }
             catch (Exception ex)
@@ -213,7 +207,7 @@ namespace Xdows.Protection
                 return false;
             }
         }
-        
+
         /// <summary>
         /// 获取所有信任项
         /// </summary>
@@ -222,7 +216,7 @@ namespace Xdows.Protection
         {
             return new List<TrustItem>(_trustItems);
         }
-        
+
         /// <summary>
         /// 检查路径是否在信任区中
         /// </summary>
@@ -232,11 +226,11 @@ namespace Xdows.Protection
         {
             if (string.IsNullOrEmpty(path))
                 return false;
-            
+
             // 检查直接匹配
             if (_trustItems.Any(t => string.Equals(t.Path, path, StringComparison.OrdinalIgnoreCase)))
                 return true;
-            
+
             // 检查文件是否在信任的文件夹中
             foreach (var item in _trustItems.Where(t => t.Type == TrustItemType.Folder))
             {
@@ -246,10 +240,10 @@ namespace Xdows.Protection
                     return true;
                 }
             }
-            
+
             return false;
         }
-        
+
         /// <summary>
         /// 清空信任区
         /// </summary>
@@ -259,10 +253,10 @@ namespace Xdows.Protection
             try
             {
                 _trustItems.Clear();
-                
+
                 // 保存数据
                 SaveTrustData();
-                
+
                 return true;
             }
             catch (Exception ex)
@@ -271,7 +265,7 @@ namespace Xdows.Protection
                 return false;
             }
         }
-        
+
         /// <summary>
         /// 保存信任区数据
         /// </summary>
@@ -284,7 +278,7 @@ namespace Xdows.Protection
                     WriteIndented = true,
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 };
-                
+
                 string json = JsonSerializer.Serialize(_trustItems, options);
                 File.WriteAllText(TrustDataFile, json);
             }
@@ -293,7 +287,7 @@ namespace Xdows.Protection
                 System.Diagnostics.Debug.WriteLine($"保存信任区数据失败: {ex.Message}");
             }
         }
-        
+
         /// <summary>
         /// 加载信任区数据
         /// </summary>
@@ -303,10 +297,10 @@ namespace Xdows.Protection
             {
                 if (!File.Exists(TrustDataFile))
                     return;
-                
+
                 string json = File.ReadAllText(TrustDataFile);
                 var items = JsonSerializer.Deserialize<List<TrustItem>>(json);
-                
+
                 if (items != null)
                 {
                     _trustItems = items;

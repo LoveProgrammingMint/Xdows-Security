@@ -4,19 +4,10 @@ using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.Windows.BadgeNotifications;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Xml.Schema;
-using Windows.ApplicationModel.Resources;
-using Windows.Globalization;
 using Windows.Security.Credentials.UI;
-using Windows.UI;
 using WinUI3Localizer;
 using Xdows.Protection;
 using Xdows.UI.Dialogs;
@@ -81,7 +72,7 @@ namespace Xdows_Security
         }
         private void Settings_Feedback_Click(object sender, RoutedEventArgs e)
         {
-            if(App.MainWindow != null)
+            if (App.MainWindow != null)
                 App.MainWindow.GoToBugReportPage(SettingsPage_Other_Feedback.Header.ToString());
         }
         private void RunProtection(object sender, RoutedEventArgs e)
@@ -198,7 +189,7 @@ namespace Xdows_Security
                 _ => 0
             };
 
-            NavComboBox.SelectedIndex = 
+            NavComboBox.SelectedIndex =
                 settings.Values.TryGetValue("AppNavTheme", out object raw) && raw is double d ?
                 (int)d : 0;
         }
@@ -343,7 +334,7 @@ namespace Xdows_Security
                     // 应用新背景
                     if (App.MainWindow != null)
                     {
-                        App.MainWindow.ApplyBackdrop(backdropType,false);
+                        App.MainWindow.ApplyBackdrop(backdropType, false);
                     }
                     Appearance_Backdrop_Opacity.IsEnabled = !(backdropType == "Solid");
                 }
@@ -357,7 +348,7 @@ namespace Xdows_Security
             var settings = ApplicationData.Current.LocalSettings;
             settings.Values["AppBackdropOpacity"] = slider.Value;
             if (App.MainWindow == null) return;
-            App.MainWindow.ApplyBackdrop(settings.Values["AppBackdrop"] as string ?? "Mica",false);
+            App.MainWindow.ApplyBackdrop(settings.Values["AppBackdrop"] as string ?? "Mica", false);
         }
 
         private void NavComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -401,7 +392,7 @@ namespace Xdows_Security
             try
             {
                 int count = QuarantineManager.GetQuarantineCount();
-                
+
                 if (count == 0)
                 {
                     var emptyDialog = new ContentDialog
@@ -428,7 +419,7 @@ namespace Xdows_Security
                 if (await confirmDialog.ShowAsync() == ContentDialogResult.Primary)
                 {
                     bool success = QuarantineManager.ClearQuarantine();
-                    
+
                     if (success)
                     {
                         var successDialog = new ContentDialog
@@ -456,7 +447,7 @@ namespace Xdows_Security
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Failed to clear quarantine: {ex.Message}");
-                
+
                 var errorDialog = new ContentDialog
                 {
                     Title = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearFailed_Title"),
@@ -519,13 +510,13 @@ namespace Xdows_Security
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
                 string searchText = sender.Text.ToLowerInvariant();
-                
+
                 if (string.IsNullOrWhiteSpace(searchText))
                 {
                     ShowAllSettingsItems();
                     return;
                 }
-                
+
                 FilterSettingsItems(searchText);
             }
         }
@@ -534,18 +525,18 @@ namespace Xdows_Security
         {
             var scrollViewer = this.Content as ScrollViewer;
             if (scrollViewer == null) return;
-            
+
             var stackPanel = scrollViewer.Content as StackPanel;
             if (stackPanel == null) return;
-            
+
             foreach (var child in stackPanel.Children)
             {
                 if (child is AutoSuggestBox) continue;
-                
+
                 if (child is FrameworkElement element)
                 {
                     element.Visibility = Visibility.Visible;
-                    
+
                     if (element is SettingsExpander expander)
                     {
                         foreach (var expanderChild in expander.Items)
@@ -563,18 +554,18 @@ namespace Xdows_Security
         {
             var scrollViewer = this.Content as ScrollViewer;
             if (scrollViewer == null) return;
-            
+
             var stackPanel = scrollViewer.Content as StackPanel;
             if (stackPanel == null) return;
-            
+
             foreach (var child in stackPanel.Children)
             {
                 if (child is AutoSuggestBox) continue;
-                
+
                 if (child is FrameworkElement element)
                 {
                     element.Visibility = Visibility.Collapsed;
-                    
+
                     if (element is SettingsExpander expander)
                     {
                         foreach (var expanderChild in expander.Items)
@@ -587,23 +578,23 @@ namespace Xdows_Security
                     }
                 }
             }
-            
+
             TextBlock? currentHeader = null;
             bool currentHeaderMatched = false;
-            
+
             for (int i = 0; i < stackPanel.Children.Count; i++)
             {
                 var child = stackPanel.Children[i];
-                
+
                 if (child is AutoSuggestBox) continue;
-                
+
                 if (child is FrameworkElement element)
                 {
                     if (element is TextBlock textBlock)
                     {
                         currentHeader = textBlock;
                         currentHeaderMatched = IsSettingsItemMatched(textBlock, searchText);
-                        
+
                         if (currentHeaderMatched)
                         {
                             textBlock.Visibility = Visibility.Visible;
@@ -612,17 +603,17 @@ namespace Xdows_Security
                     else if (element is SettingsCard || element is SettingsExpander)
                     {
                         bool shouldShow = false;
-                        
+
                         if (IsSettingsItemMatched(element, searchText))
                         {
                             shouldShow = true;
                         }
-                        
+
                         if (!shouldShow && currentHeaderMatched)
                         {
                             shouldShow = true;
                         }
-                        
+
                         if (element is SettingsExpander expander)
                         {
                             foreach (var expanderChild in expander.Items)
@@ -637,7 +628,7 @@ namespace Xdows_Security
                                 }
                             }
                         }
-                        
+
                         if (shouldShow)
                         {
                             element.Visibility = Visibility.Visible;
@@ -649,10 +640,10 @@ namespace Xdows_Security
         private bool IsSettingsItemMatched(FrameworkElement item, string searchText)
         {
             string itemText = GetSettingsItemText(item);
-            
+
             if (string.IsNullOrEmpty(itemText))
                 return false;
-                
+
             return itemText.ToLowerInvariant().Contains(searchText);
         }
         private string GetSettingsItemText(FrameworkElement item)
@@ -669,7 +660,7 @@ namespace Xdows_Security
             {
                 return expander.Header?.ToString() ?? string.Empty;
             }
-            
+
             return string.Empty;
         }
         private bool DisabledVerifyToggleVerify = true;
@@ -679,7 +670,8 @@ namespace Xdows_Security
             {
                 return;
             }
-            if (DisabledVerifyToggle.IsOn) {
+            if (DisabledVerifyToggle.IsOn)
+            {
                 DisabledVerifyToggleVerify = false;
                 DisabledVerifyToggle.IsOn = false;
                 var result = await UserConsentVerifier.RequestVerificationAsync(string.Empty);

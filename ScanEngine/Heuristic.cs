@@ -1,13 +1,5 @@
 using PeNet;
-using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
-using System.Security.Cryptography;
-using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using static Xdows.ScanEngine.ScanEngine;
@@ -16,7 +8,7 @@ namespace Xdows.ScanEngine
 {
     public static class Heuristic
     {
-        public static async Task<(int score, string extra)> Evaluate(string path,PeFile peFile, PEInfo peInfo, bool deepScan)
+        public static async Task<(int score, string extra)> Evaluate(string path, PeFile peFile, PEInfo peInfo, bool deepScan)
         {
             var extra = string.Empty;
             var score = 0;
@@ -24,7 +16,7 @@ namespace Xdows.ScanEngine
 
             var fileContent = peFile.RawFile.ToArray();
             var suspiciousData = new List<string>();
-            string[] docExts = { ".doc", ".ppt", ".xls", ".csv"};
+            string[] docExts = { ".doc", ".ppt", ".xls", ".csv" };
 
             if (docExts.Any(docExt => path.Contains(docExt)))
             {
@@ -33,7 +25,8 @@ namespace Xdows.ScanEngine
                     score += 10;
                     suspiciousData.Add("DocVirus");
                 }
-            }else if (fileExtension == ".fne")
+            }
+            else if (fileExtension == ".fne")
             {
                 score += 20;
                 suspiciousData.Add("EComponent");
@@ -61,33 +54,33 @@ namespace Xdows.ScanEngine
             }
             if (peFile.IsExe || peFile.IsDll || peFile.IsDriver) // .NET文件无法分析
             {
-                int code = await Task.Run(() => FileDigitallySignedAndValid(path,peFile, deepScan))
+                int code = await Task.Run(() => FileDigitallySignedAndValid(path, peFile, deepScan))
                                     .ConfigureAwait(false);
                 if (code == 50)
                     return (0, string.Empty);
                 score -= code;
-                
+
                 // 并行执行三个检查方法以提高性能
                 var resourceTask = CheckResourceSectionForPacking(peFile);
                 var exceptionTask = CheckExceptionHandling(peFile, peInfo);
                 var packingTask = CheckPackingSignatures(peFile);
-                
+
                 await Task.WhenAll(resourceTask, exceptionTask, packingTask).ConfigureAwait(false);
-                
+
                 int tempScore = await resourceTask;
                 if (tempScore > 0)
                 {
                     score += tempScore;
                     suspiciousData.Add("AbnormalResources");
                 }
-                
+
                 tempScore = await exceptionTask;
                 if (tempScore > 0)
                 {
                     score += tempScore;
                     suspiciousData.Add("ExceptionHandling");
                 }
-                
+
                 if (await packingTask)
                 {
                     score += 10;
@@ -102,7 +95,8 @@ namespace Xdows.ScanEngine
                     }
                     else
                     {
-                        if (DllScan.Scan(path, peInfo)) {
+                        if (DllScan.Scan(path, peInfo))
+                        {
                             suspiciousData.Add("DllVirus");
                             score += 20;
                         }
@@ -119,7 +113,8 @@ namespace Xdows.ScanEngine
                         score += 5;
                     }
                 }
-                if (peInfo.ImportsName != null) {
+                if (peInfo.ImportsName != null)
+                {
                     score += peInfo.ImportsName.Length <= 50 ? 5 : -5;
                     if (ContainsSuspiciousApi(peInfo.ImportsName, new[] { "GetOpenFileName", "GetSaveFileName" }))
                     {
@@ -309,19 +304,19 @@ namespace Xdows.ScanEngine
             if (deepScan)
             {
                 bool t1Result = false, t2Result = false, t3Result = false, t4Result = false, t5Result = false, t6Result = false;
-            Parallel.Invoke(
-                () => t1Result = ContainsSuspiciousContent(fileContent, new[] { ".sys" }),
-                () => t2Result = ContainsSuspiciousContent(fileContent, new[] { "Virtual" }),
-                () => t3Result = ContainsSuspiciousContent(fileContent, new[] { "BlackMoon" }),
-                () => t4Result = ContainsSuspiciousContent(fileContent, new[] {
+                Parallel.Invoke(
+                    () => t1Result = ContainsSuspiciousContent(fileContent, new[] { ".sys" }),
+                    () => t2Result = ContainsSuspiciousContent(fileContent, new[] { "Virtual" }),
+                    () => t3Result = ContainsSuspiciousContent(fileContent, new[] { "BlackMoon" }),
+                    () => t4Result = ContainsSuspiciousContent(fileContent, new[] {
                     "wsctrlsvc", "ESET", "zhudongfangyu", "avp", "avconsol",
                     "ASWSCAN", "KWatch", "QQPCTray", "360tray", "360sd", "ccSvcHst",
                     "f-secure", "KvMonXP", "RavMonD", "Mcshield", "ekrn", "kxetray",
                     "avcenter", "avguard", "Sophos", "safedog"
-                }),
-                () => t5Result = ContainsSuspiciousContent(fileContent, new[] { "DelegateExecute", "fodhelper.exe", "OSDATA" }),
-                () => t6Result = ContainsSuspiciousContent(fileContent, new[] { "sandboxie", "vmware - tray", "Detonate", "Vmware", "VMWARE", "Sandbox", "SANDBOX" })
-            );
+                    }),
+                    () => t5Result = ContainsSuspiciousContent(fileContent, new[] { "DelegateExecute", "fodhelper.exe", "OSDATA" }),
+                    () => t6Result = ContainsSuspiciousContent(fileContent, new[] { "sandboxie", "vmware - tray", "Detonate", "Vmware", "VMWARE", "Sandbox", "SANDBOX" })
+                );
 
                 // 合并结果
                 if (t1Result) { suspiciousData.Add("UseDriver"); score += 10; }
@@ -533,7 +528,7 @@ namespace Xdows.ScanEngine
                     return 50;
                 var auth = pe.SigningAuthenticodeCertificate;
                 if (auth == null) return 0;
-                
+
                 var chain = new X509Chain
                 {
                     ChainPolicy = {
@@ -557,7 +552,7 @@ namespace Xdows.ScanEngine
 
                 return chainOk ? 5 : 0;
             }
-            catch{ return 0; }
+            catch { return 0; }
         }
 
         private static bool IsSuspiciousDoc(byte[] fileContent)

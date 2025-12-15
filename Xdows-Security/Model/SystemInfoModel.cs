@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 namespace Xdows_Security.Model
 {
     public class SystemInfoModel

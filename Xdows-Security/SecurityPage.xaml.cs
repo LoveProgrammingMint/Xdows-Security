@@ -1,8 +1,6 @@
-using CommunityToolkit.WinUI;
 using Compatibility.Windows.Storage;
 using Microsoft.UI;
 using Microsoft.UI.Dispatching;
-using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
@@ -12,14 +10,12 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.DataTransfer;
 using WinUI3Localizer;
 using Xdows.Protection;
 
@@ -271,7 +267,8 @@ namespace Xdows_Security
             var clearButton = new Button { Content = Loc("SecurityPage_More_ClearAll"), IsEnabled = false };
             clearButton.Click += OnMoreScanClearClick;
 
-            items.CollectionChanged += (s, e) => {
+            items.CollectionChanged += (s, e) =>
+            {
                 clearButton.IsEnabled = items.Count > 0;
             };
 
@@ -536,7 +533,7 @@ namespace Xdows_Security
                         ScanMode.More => (Loc("SecurityPage_Area_More_Title"), $"{Loc("SecurityPage_Area_More_Detail")}{customPaths?.Count ?? 0}"),
                         _ => (Loc("SecurityPage_Area_Quick_Title"), Loc("SecurityPage_Area_Quick_Detail"))
                     };
-                    
+
                     // 使用Switch表达式计算当前项索引
                     currentItemIndex = mode switch
                     {
@@ -582,7 +579,7 @@ namespace Xdows_Security
 
                         _dispatcherQueue.TryEnqueue(() =>
                         {
-                                LogText.AddNewLog(LogLevel.INFO, "Security - ScanFile", file);
+                            LogText.AddNewLog(LogLevel.INFO, "Security - ScanFile", file);
                             try
                             {
                                 StatusText.Text = string.Format(tStatusText, file);
@@ -1068,7 +1065,8 @@ namespace Xdows_Security
             }
             catch (Exception ex)
             {
-                try{
+                try
+                {
                     LogText.AddNewLog(LogLevel.FATAL, "Security - FilesInfo - GetFailed", ex.Message);
                     var failDlg = new ContentDialog
                     {

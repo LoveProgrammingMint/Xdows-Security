@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using static Xdows.ScanEngine.ScanEngine;
+﻿using static Xdows.ScanEngine.ScanEngine;
 
 namespace Xdows.ScanEngine
 {
@@ -14,7 +11,8 @@ namespace Xdows.ScanEngine
                           e?.IndexOf("Scan", StringComparison.OrdinalIgnoreCase) >= 0 ||
                           e?.IndexOf("chromium", StringComparison.OrdinalIgnoreCase) >= 0 ||
                           e?.IndexOf("blink", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                          e?.IndexOf("Qt", StringComparison.OrdinalIgnoreCase) >= 0) == true) {
+                          e?.IndexOf("Qt", StringComparison.OrdinalIgnoreCase) >= 0) == true)
+            {
                 return false;
             }
             return info.ExportsName?

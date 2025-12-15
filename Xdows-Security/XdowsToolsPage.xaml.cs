@@ -1,16 +1,15 @@
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace Xdows_Security
 {
@@ -95,7 +94,7 @@ namespace Xdows_Security
                 using var p = System.Diagnostics.Process.GetProcessById(info.Id);
                 filePath = p.MainModule?.FileName ?? string.Empty;
             }
-            catch {}
+            catch { }
 
             // 创建对话框内容
             var sp = new StackPanel { Spacing = 8 };
@@ -189,7 +188,7 @@ namespace Xdows_Security
         {
             var selectedTab = e.AddedItems.FirstOrDefault() as TabViewItem;
             TabTitle.Text = selectedTab?.Header?.ToString();
-            
+
             if (selectedTab?.Header?.ToString() == "弹窗拦截")
             {
                 PopupTabTitle.Text = "弹窗拦截器";
@@ -279,7 +278,7 @@ namespace Xdows_Security
 
         private void InitializePopupRules()
         {
-            _popupRules = new List<PopupRule>{};
+            _popupRules = new List<PopupRule> { };
             ApplyPopupFilterAndSort();
         }
 
@@ -441,7 +440,7 @@ namespace Xdows_Security
         private void UpdatePopupBlocking()
         {
             var enabledRules = _popupRules.Where(r => r.IsEnabled).ToList();
-            
+
             if (enabledRules.Any())
             {
                 if (!_isPopupBlockingEnabled)
@@ -488,8 +487,9 @@ namespace Xdows_Security
                 CmdOutput.Text = "命令提示符启动成功，请输入相关命令。";
                 StartCmd();
             }
-            try { 
-            await _cmdProcess!.StandardInput.WriteLineAsync(cmd);
+            try
+            {
+                await _cmdProcess!.StandardInput.WriteLineAsync(cmd);
             }
             catch { }
             LogText.AddNewLog(LogLevel.INFO, "Xdows Tools - RunCommand", cmd);

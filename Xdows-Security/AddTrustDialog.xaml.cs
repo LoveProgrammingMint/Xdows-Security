@@ -3,9 +3,8 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.IO;
-using System.Threading.Tasks;
-using Xdows.Protection;
 using WinUI3Localizer;
+using Xdows.Protection;
 
 namespace Xdows_Security
 {
@@ -40,7 +39,7 @@ namespace Xdows_Security
         {
             string path = PathTextBox.Text.Trim();
             string note = NoteTextBox.Text.Trim();
-            
+
             if (string.IsNullOrEmpty(path))
             {
                 args.Cancel = true;
@@ -60,7 +59,7 @@ namespace Xdows_Security
                 {
                     success = TrustManager.AddFolderToTrust(path, note);
                 }
-                
+
                 if (!success)
                 {
                     args.Cancel = true;
@@ -95,7 +94,7 @@ namespace Xdows_Security
             {
                 _selectedType = TrustItemType.Folder;
             }
-            
+
             UpdatePreview();
         }
 
@@ -115,7 +114,7 @@ namespace Xdows_Security
                         EnsurePathExists = true,
                         Multiselect = false
                     };
-                    
+
                     // 添加所有文件类型过滤器
                     filePicker.Filters.Add(new CommonFileDialogFilter(
                         Localizer.Get().GetLocalizedString("AddTrustDialog_AllFiles_Filter"), "*.*"));
@@ -152,13 +151,13 @@ namespace Xdows_Security
         private void UpdatePreview()
         {
             string path = PathTextBox.Text.Trim();
-            
+
             // 确保PreviewText不为null
             if (PreviewText == null)
             {
                 return;
             }
-            
+
             if (string.IsNullOrEmpty(path))
             {
                 PreviewText.Text = Localizer.Get().GetLocalizedString("AddTrustDialog_Preview_SelectFile");
@@ -181,7 +180,7 @@ namespace Xdows_Security
                 string fileNotExistsText = Localizer.Get().GetLocalizedString("AddTrustDialog_Status_FileNotExists");
                 string folderExistsText = Localizer.Get().GetLocalizedString("AddTrustDialog_Status_FolderExists");
                 string folderNotExistsText = Localizer.Get().GetLocalizedString("AddTrustDialog_Status_FolderNotExists");
-                
+
                 if (_selectedType == TrustItemType.File)
                 {
                     if (File.Exists(path))
@@ -205,7 +204,7 @@ namespace Xdows_Security
                         var dirInfo = new DirectoryInfo(path);
                         int fileCount = Directory.GetFiles(path).Length;
                         int dirCount = Directory.GetDirectories(path).Length;
-                        
+
                         PreviewText.Text = $"{typeLabel}: {typeText}\n{nameLabel}: {dirInfo.Name}\n{pathLabel}: {path}\n{containsLabel}: {fileCount} {fileLabel}, {dirCount} {folderLabel}";
                         StatusText.Text = folderExistsText;
                         IsPrimaryButtonEnabled = true;

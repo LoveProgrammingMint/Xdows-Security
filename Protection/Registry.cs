@@ -1,14 +1,7 @@
 // Registry.cs
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Principal;
-using System.Text;
-using System.Threading;
 using Microsoft.Win32;
+using System.Diagnostics;
+using System.Security.Principal;
 using static Xdows.Protection.CallBack;
 
 #pragma warning disable CA1416 // 验证平台兼容性

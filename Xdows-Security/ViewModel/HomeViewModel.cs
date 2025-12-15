@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.ObjectModel;
@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using WinUI3Localizer;
 using Xdows_Security.Infrastructure;
-using Microsoft.UI.Xaml.Media;
 using Xdows_Security.Model;
 
 
@@ -31,7 +30,7 @@ namespace Xdows_Security.ViewModel
 
         public HomeViewModel()
         {
-            OsName = OsVersion = MemoryUsage = ProtectionStatus 
+            OsName = OsVersion = MemoryUsage = ProtectionStatus
                    = LastScanTime = ThreatCount = TotalScans = TotalThreats
                    = HomePageText = HomePageIcon = PomesLine = string.Empty;
             LogRaw = LogText.Text;

@@ -1,16 +1,9 @@
 using PeNet;
 using Self_Heuristic;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Security.Cryptography;
-using System.Text.Json;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 
 namespace Xdows.ScanEngine
 {
@@ -48,11 +41,12 @@ namespace Xdows.ScanEngine
             var peFile = new PeFile(path);
             var fileInfo = new PEInfo();
 
-            if (peFile.IsDll) {
+            if (peFile.IsDll)
+            {
                 var exports = peFile.ExportedFunctions;
                 if (exports != null)
                 {
-                    fileInfo.ExportsName = [.. exports.Select(exported => exported.Name?? string.Empty)];
+                    fileInfo.ExportsName = [.. exports.Select(exported => exported.Name ?? string.Empty)];
                 }
                 else
                 {
@@ -75,7 +69,7 @@ namespace Xdows.ScanEngine
                 fileInfo.ImportsName = Array.Empty<string>();
             }
 
-            var score = await Heuristic.Evaluate(path,peFile, fileInfo, deep);
+            var score = await Heuristic.Evaluate(path, peFile, fileInfo, deep);
             if (score.score >= 75)
             {
                 return ExtraData ? $"Xdows.local.code{score.score} {score.extra}" : $"Xdows.local.code{score.score}";
@@ -170,8 +164,8 @@ namespace Xdows.ScanEngine
                 //    }
                 //    else
                 //    {
-                        return (false, string.Empty);
-                    //}
+                return (false, string.Empty);
+                //}
                 //}
                 //catch (Exception)
                 //{

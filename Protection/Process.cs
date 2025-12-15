@@ -1,15 +1,7 @@
-using Xdows.ScanEngine;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 using static Xdows.Protection.CallBack;
 
 namespace Xdows.Protection
@@ -29,10 +21,10 @@ namespace Xdows.Protection
             {
                 return false;
             }
-            
+
             // 初始化隔离区
             QuarantineManager.Initialize();
-            
+
             if (IsEnabled())
                 return true;
             try
@@ -115,11 +107,11 @@ namespace Xdows.Protection
                                 bool Succeed = TryKillProcess(pid);
 
                                 // 使用隔离区功能而不是简单地重命名文件
-                                try 
-                                { 
+                                try
+                                {
                                     // 将文件添加到隔离区
                                     bool quarantineSuccess = QuarantineManager.AddToQuarantine(path, "Process Protection");
-                                    
+
                                     // 如果隔离成功，不需要重命名文件
                                     if (!quarantineSuccess)
                                     {
@@ -237,7 +229,7 @@ namespace Xdows.Protection
                 return false;
             }
         }
-        
+
 
     }
 }

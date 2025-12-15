@@ -64,7 +64,6 @@ namespace Xdows_Security
                     this.GoToPage("Settings"); 
                 };
                 ((MenuFlyoutItem)flyout.Items[3]).Click += async (s, e) => {
-
                     if (ApplicationData.Current.LocalSettings.Values.TryGetValue("DisabledVerify", out object? disabledVerify))
                     {
                         if ((bool)disabledVerify)
@@ -72,11 +71,19 @@ namespace Xdows_Security
                             this.Close();
                             return;
                         }
-                        var result = await UserConsentVerifier.RequestVerificationAsync(string.Empty);
-                        if (result == UserConsentVerificationResult.Verified)
+                        try
                         {
-                            this.Close();
+                            var result = await UserConsentVerifier.RequestVerificationAsync(string.Empty);
+
+                            if (result == UserConsentVerificationResult.DeviceNotPresent ||
+                            result == UserConsentVerificationResult.DisabledByPolicy ||
+                            result == UserConsentVerificationResult.NotConfiguredForUser ||
+                            result == UserConsentVerificationResult.Verified)
+                            {
+                                this.Close();
+                            }
                         }
+                        catch { }
                     }
                 };
                 e.Flyout = flyout;
@@ -422,9 +429,14 @@ namespace Xdows_Security
                 {
                     var verifyTask = UserConsentVerifier.RequestVerificationAsync(string.Empty);
                     var result = verifyTask.AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
-                    if (result != UserConsentVerificationResult.Verified)
+                    e.Cancel = true;
+
+                    if (result == UserConsentVerificationResult.DeviceNotPresent ||
+                    result == UserConsentVerificationResult.DisabledByPolicy ||
+                    result == UserConsentVerificationResult.NotConfiguredForUser ||
+                    result == UserConsentVerificationResult.Verified)
                     {
-                        e.Cancel = true;
+                        e.Cancel = false;
                     }
                     return;
                 }

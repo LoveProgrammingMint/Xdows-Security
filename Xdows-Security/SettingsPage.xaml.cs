@@ -683,7 +683,10 @@ namespace Xdows_Security
                 DisabledVerifyToggleVerify = false;
                 DisabledVerifyToggle.IsOn = false;
                 var result = await UserConsentVerifier.RequestVerificationAsync(string.Empty);
-                if (result == UserConsentVerificationResult.Verified)
+                if (result == UserConsentVerificationResult.DeviceNotPresent ||
+                result == UserConsentVerificationResult.DisabledByPolicy ||
+                result == UserConsentVerificationResult.NotConfiguredForUser ||
+                result == UserConsentVerificationResult.Verified)
                 {
                     DisabledVerifyToggle.IsOn = true;
                     Toggled_SaveToggleData(sender, e);

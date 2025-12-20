@@ -53,6 +53,21 @@
                             x:Name="Appearance_Backdrop_Opacity_Card">
                         <Slider x:Name="Appearance_Backdrop_Opacity" Value="100" ValueChanged="OpacitySlider_ValueChanged"/>
                     </controls:SettingsCard>
+                    <controls:SettingsCard
+                            l:Uids.Uid="SettingsPage_Appearance_BackgroundImage"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xE91B;}"
+                            x:Name="Appearance_BackgroundImage_Card">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button x:Name="ClearBackgroundImageButton" l:Uids.Uid="SettingsPage_Appearance_BackgroundImage_ClearButton" Click="ClearBackgroundImageButton_Click"/>
+                            <Button x:Name="SelectBackgroundImageButton" l:Uids.Uid="SettingsPage_Appearance_BackgroundImage_SelectButton" Click="SelectBackgroundImageButton_Click"/>
+                        </StackPanel>
+                    </controls:SettingsCard>
+                    <controls:SettingsCard
+                            l:Uids.Uid="SettingsPage_Appearance_BackgroundImageOpacity"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xE8BA;}"
+                            x:Name="Appearance_BackgroundImage_Opacity_Card">
+                        <Slider x:Name="BackgroundImageOpacitySlider" Value="30" Minimum="10" Maximum="100" ValueChanged="BackgroundImageOpacitySlider_ValueChanged"/>
+                    </controls:SettingsCard>
                 </controls:SettingsExpander.Items>
             </controls:SettingsExpander>
             <TextBlock Margin="0,8,0,8" l:Uids.Uid="SettingsPage_Scan" x:Name="Scan_Header"/>

@@ -1335,4 +1335,40 @@
   <data name="SettingsPage_Quarantine_ClearFailed_Content" xml:space="preserve">
     <value>清空隔离区时发生错误，请重试。</value>
   </data>
+  <data name="SettingsPage_Appearance_BackgroundImage.Header" xml:space="preserve">
+    <value>背景图片</value>
+  </data>
+  <data name="SettingsPage_Appearance_BackgroundImage.Description" xml:space="preserve">
+    <value>设置该软件的背景图片</value>
+  </data>
+  <data name="SettingsPage_Appearance_BackgroundImage_ClearButton.Content" xml:space="preserve">
+    <value>清空</value>
+  </data>
+  <data name="SettingsPage_Appearance_BackgroundImage_SelectButton.Content" xml:space="preserve">
+    <value>选择</value>
+  </data>
+  <data name="SettingsPage_Appearance_BackgroundImageOpacity.Header" xml:space="preserve">
+    <value>图片透明</value>
+  </data>
+  <data name="SettingsPage_Appearance_BackgroundImageOpacity.Description" xml:space="preserve">
+    <value>设置背景图片的不透明</value>
+  </data>
+  <data name="SettingsPage_BackgroundImage_Error_Title" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="SettingsPage_BackgroundImage_SelectError_Content" xml:space="preserve">
+    <value>无法设置背景图片: {0}</value>
+  </data>
+  <data name="SettingsPage_BackgroundImage_ClearError_Content" xml:space="preserve">
+    <value>无法清空背景图片: {0}</value>
+  </data>
+  <data name="SettingsPage_BackgroundImage_SelectDialog_Title" xml:space="preserve">
+    <value>选择背景图片</value>
+  </data>
+  <data name="SettingsPage_BackgroundImage_ImageFiles" xml:space="preserve">
+    <value>图片文件</value>
+  </data>
+  <data name="SettingsPage_BackgroundImage_AllFiles" xml:space="preserve">
+    <value>所有文件</value>
+  </data>
 </root>

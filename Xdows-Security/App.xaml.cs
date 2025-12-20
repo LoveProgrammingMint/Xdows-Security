@@ -26,7 +26,7 @@ namespace Xdows_Security
 
     public static class Updater
     {
-        private static readonly HttpClient _httpClient = new HttpClient();
+        private static readonly HttpClient _httpClient = new();
 
         static Updater()
         {
@@ -89,7 +89,7 @@ namespace Xdows_Security
             return true;
         }
 
-        public static InterceptCallBack interceptCallBack = (bool isSucceed, string path, string type) =>
+        public static InterceptCallBack interceptCallBack = (isSucceed, path, type) =>
         {
             LogText.AddNewLog(LogLevel.WARN, "Protection", isSucceed
                 ? $"InterceptProcess：{Path.GetFileName(path)}"
@@ -367,7 +367,7 @@ namespace Xdows_Security
         {
             try
             {
-                MainWindow = MainWindow ?? new MainWindow();
+                MainWindow ??= new MainWindow();
                 MainWindow.Activate();
             }
             catch (Exception ex)
@@ -388,7 +388,7 @@ namespace Xdows_Security
         public static bool IsRunAsAdmin()
         {
             WindowsIdentity identity = WindowsIdentity.GetCurrent();
-            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            WindowsPrincipal principal = new(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
         private async Task InitializeLocalizer()

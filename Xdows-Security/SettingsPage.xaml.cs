@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Windows.Security.Credentials.UI;
 using WinUI3Localizer;
 using Xdows.Protection;
@@ -24,6 +25,7 @@ namespace Xdows_Security
             LoadThemeSetting();
             LoadBackdropSetting();
             LoadScanSetting();
+            LoadBackgroundImageSetting();
             Settings_About_Name.Text = AppInfo.AppName;
             Settings_About_Version.Text = AppInfo.AppVersion;
             Settings_About_Feedback.NavigateUri = new Uri(AppInfo.AppFeedback);
@@ -72,8 +74,7 @@ namespace Xdows_Security
         }
         private void Settings_Feedback_Click(object sender, RoutedEventArgs e)
         {
-            if (App.MainWindow != null)
-                App.MainWindow.GoToBugReportPage(SettingsPage_Other_Feedback.Header.ToString());
+            App.MainWindow?.GoToBugReportPage(SettingsPage_Other_Feedback.Header.ToString());
         }
         private void RunProtection(object sender, RoutedEventArgs e)
         {
@@ -162,7 +163,7 @@ namespace Xdows_Security
                 savedLanguage = "en-US";
             }
 
-            foreach (ComboBoxItem item in LanguageComboBox.Items)
+            foreach (ComboBoxItem item in LanguageComboBox.Items.Cast<ComboBoxItem>())
             {
                 if (item.Tag as string == savedLanguage)
                 {
@@ -198,9 +199,8 @@ namespace Xdows_Security
             if (IsInitialize) return;
             if (LanguageComboBox.SelectedItem is ComboBoxItem selectedItem)
             {
-                var newLanguage = selectedItem.Tag as string;
                 var currentLanguage = Localizer.Get().GetCurrentLanguage();
-                if (newLanguage == null) return;
+                if (selectedItem.Tag is not string newLanguage) return;
                 if (newLanguage != currentLanguage)
                 {
                     ApplicationData.Current.LocalSettings.Values["AppLanguage"] = newLanguage;
@@ -297,6 +297,7 @@ namespace Xdows_Security
         private void LoadBackdropSetting()
         {
             var settings = ApplicationData.Current.LocalSettings;
+
             var savedBackdrop = settings.Values["AppBackdrop"] as string;
 
             Appearance_Backdrop_Opacity.IsEnabled = !(savedBackdrop == "Solid");
@@ -305,7 +306,7 @@ namespace Xdows_Security
 
             bool found = false;
 
-            foreach (ComboBoxItem item in BackdropComboBox.Items)
+            foreach (ComboBoxItem item in BackdropComboBox.Items.Cast<ComboBoxItem>())
             {
                 if (item.Tag as string == savedBackdrop)
                 {
@@ -317,6 +318,22 @@ namespace Xdows_Security
             if (!found)
             {
                 BackdropComboBox.SelectedIndex = MicaController.IsSupported() ? 1 : 3;
+            }
+        }
+
+        private async void LoadBackgroundImageSetting()
+        {
+            try
+            {
+                bool hasBackgroundImage = ApplicationData.HasBackgroundImage();
+                var settings = ApplicationData.Current.LocalSettings;
+                var backdropType = settings.Values["AppBackdrop"] as string ?? "Solid";
+                var opacityValue = settings.Values["AppBackgroundImageOpacity"] as double? ?? 30.0;
+                BackgroundImageOpacitySlider.Value = opacityValue;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"加载背景图片设置失败: {ex.Message}");
             }
         }
 
@@ -332,10 +349,7 @@ namespace Xdows_Security
                     settings.Values["AppBackdrop"] = backdropType;
 
                     // 应用新背景
-                    if (App.MainWindow != null)
-                    {
-                        App.MainWindow.ApplyBackdrop(backdropType, false);
-                    }
+                    App.MainWindow?.ApplyBackdrop(backdropType, false);
                     Appearance_Backdrop_Opacity.IsEnabled = !(backdropType == "Solid");
                 }
                 catch { }
@@ -689,6 +703,79 @@ namespace Xdows_Security
             {
                 Toggled_SaveToggleData(sender, e);
             }
+        }
+        private async void SelectBackgroundImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            using var dlg = new Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog
+            {
+                Title = Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_SelectDialog_Title"),
+                Filters =
+                {
+                    new Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogFilter(Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_ImageFiles"), "*.jpg;*.jpeg;*.png;*.bmp;*.gif"),
+                    new Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogFilter(Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_AllFiles"), "*.*")
+                },
+                EnsureFileExists = true
+            };
+
+            if (dlg.ShowDialog() == Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult.Ok)
+            {
+                try
+                {
+                    string imagePath = dlg.FileName;
+
+                    // 保存背景图片到配置目录
+                    await ApplicationData.SaveBackgroundImageAsync(imagePath);
+
+                    // 应用背景图片
+                    App.MainWindow?.ApplyBackgroundImage(imagePath);
+                }
+                catch (Exception ex)
+                {
+                    var errorDialog = new ContentDialog
+                    {
+                        Title = Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_Error_Title"),
+                        Content = string.Format(Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_SelectError_Content"), ex.Message),
+                        CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
+                        XamlRoot = this.XamlRoot
+                    };
+                    await errorDialog.ShowAsync();
+                }
+            }
+        }
+
+        private async void ClearBackgroundImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // 删除背景图片
+                await ApplicationData.DeleteBackgroundImageAsync();
+
+                // 清除背景图片
+                App.MainWindow?.ClearBackgroundImage();
+            }
+            catch (Exception ex)
+            {
+                var errorDialog = new ContentDialog
+                {
+                    Title = Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_Error_Title"),
+                    Content = string.Format(Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_ClearError_Content"), ex.Message),
+                    CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
+                    XamlRoot = this.XamlRoot
+                };
+                await errorDialog.ShowAsync();
+            }
+        }
+
+        private void BackgroundImageOpacitySlider_ValueChanged(object sender, RoutedEventArgs e)
+        {
+            if (IsInitialize || sender is not Slider slider) return;
+
+            // 保存透明度设置
+            var settings = ApplicationData.Current.LocalSettings;
+            settings.Values["AppBackgroundImageOpacity"] = slider.Value;
+
+            // 应用新的透明度
+            App.MainWindow?.UpdateBackgroundImageOpacity(slider.Value / 100.0);
         }
     }
 }

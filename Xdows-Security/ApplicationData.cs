@@ -20,6 +20,84 @@ namespace Compatibility.Windows.Storage
         public ApplicationDataContainer LocalSettings { get; } = new ApplicationDataContainer();
 
         public StorageFolder LocalFolder => StorageFolder.LocalFolderInstance;
+
+        // 背景图片管理方法
+        private static readonly string BackgroundImageFileName = "background_image.jpg";
+        private static readonly string BackgroundImageConfigKey = "AppBackgroundImagePath";
+
+        public static async Task SaveBackgroundImageAsync(string sourceImagePath)
+        {
+            try
+            {
+                var localFolder = ApplicationData.Current.LocalFolder;
+                string targetPath = IO.Path.Combine(localFolder.Path, BackgroundImageFileName);
+
+                // 复制图片到配置目录
+                File.Copy(sourceImagePath, targetPath, true);
+
+                // 保存路径到设置
+                ApplicationData.Current.LocalSettings.Values[BackgroundImageConfigKey] = targetPath;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"保存背景图片失败: {ex.Message}", ex);
+            }
+        }
+
+        public static async Task<string?> GetBackgroundImagePathAsync()
+        {
+            try
+            {
+                var settings = ApplicationData.Current.LocalSettings;
+                if (settings.Values.TryGetValue(BackgroundImageConfigKey, out object? pathObj) &&
+                    pathObj is string path &&
+                    File.Exists(path))
+                {
+                    return path;
+                }
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public static async Task DeleteBackgroundImageAsync()
+        {
+            try
+            {
+                var settings = ApplicationData.Current.LocalSettings;
+                if (settings.Values.TryGetValue(BackgroundImageConfigKey, out object? pathObj) &&
+                    pathObj is string path)
+                {
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+                    settings.Values.Remove(BackgroundImageConfigKey);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"删除背景图片失败: {ex.Message}", ex);
+            }
+        }
+
+        public static bool HasBackgroundImage()
+        {
+            try
+            {
+                var settings = ApplicationData.Current.LocalSettings;
+                return settings.Values.TryGetValue(BackgroundImageConfigKey, out object? pathObj) &&
+                       pathObj is string path &&
+                       File.Exists(path);
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
     #endregion
 

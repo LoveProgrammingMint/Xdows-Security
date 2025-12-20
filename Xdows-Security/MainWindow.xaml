@@ -33,7 +33,7 @@
                     SelectionChanged="{x:Bind NavigationSelectionChanged}"
                     IsBackButtonVisible="Collapsed"
                     IsBackEnabled="False"
-                    Loaded="nav_Loaded"
+                    Loaded="Nav_Loaded"
                     Margin="0,48,0,0">
             <NavigationView.MenuItems>
                 <NavigationViewItem l:Uids.Uid="MainWindow_Nav_Home" Tag="Home">

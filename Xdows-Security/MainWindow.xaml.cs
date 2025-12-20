@@ -89,7 +89,7 @@ namespace Xdows_Security
             LogText.AddNewLog(LogLevel.INFO, "UI Interface", "MainWindow loaded successfully");
         }
 
-        private void MainWindow_Activated_FirstTime(object sender, WindowActivatedEventArgs args)
+        private async void MainWindow_Activated_FirstTime(object sender, WindowActivatedEventArgs args)
         {
             var settings = ApplicationData.Current.LocalSettings;
 
@@ -113,6 +113,17 @@ namespace Xdows_Security
 
             var backdrop = settings.Values["AppBackdrop"] as string;
             ApplyBackdrop(backdrop ?? "Mica", false);
+
+            // 加载背景图片（如果有的话）
+            if (ApplicationData.HasBackgroundImage())
+            {
+                var backgroundImagePath = await ApplicationData.GetBackgroundImagePathAsync();
+                if (backgroundImagePath != null)
+                {
+                    ApplyBackgroundImage(backgroundImagePath);
+                }
+            }
+
             Activated -= MainWindow_Activated_FirstTime;
             //if (!App.IsRunAsAdmin())
             //{
@@ -183,8 +194,7 @@ namespace Xdows_Security
             }
             var settings = ApplicationData.Current.LocalSettings;
 
-            var backdrop = settings.Values["AppBackdrop"] as string;
-            if (backdrop != null)
+            if (settings.Values["AppBackdrop"] is string backdrop)
             {
                 App.MainWindow?.ApplyBackdrop(backdrop, true);
             }
@@ -304,6 +314,10 @@ namespace Xdows_Security
             IsInputActive = true
         };
 
+        // 背景图片相关字段
+        private ImageBrush? _backgroundImageBrush;
+        private string? _currentBackgroundImagePath;
+
         public void ApplyBackdrop(string backdropType, bool compulsory)
         {
             try
@@ -323,9 +337,20 @@ namespace Xdows_Security
                 if (backdropType == "Solid")
                 {
                     this.SystemBackdrop = null;
-                    RootGrid.Background = GetCurrentTheme() == ElementTheme.Dark
-                        ? new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x20, 0x20))
-                        : new SolidColorBrush(Colors.White);
+
+                    // 检查是否有背景图片
+                    if (ApplicationData.HasBackgroundImage())
+                    {
+                        // 如果有背景图片，使用背景图片
+                        UpdateBackgroundImage();
+                    }
+                    else
+                    {
+                        // 否则使用默认纯色背景
+                        RootGrid.Background = GetCurrentTheme() == ElementTheme.Dark
+                            ? new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x20, 0x20))
+                            : new SolidColorBrush(Colors.White);
+                    }
                     return;
                 }
 
@@ -371,6 +396,12 @@ namespace Xdows_Security
                     _controller.AddSystemBackdropTarget(_target);
                     _controller.SetSystemBackdropConfiguration(_config);
                 }
+
+                // 检查是否有背景图片，如果有则应用
+                if (ApplicationData.HasBackgroundImage())
+                {
+                    UpdateBackgroundImage();
+                }
             }
             catch
             {
@@ -398,11 +429,101 @@ namespace Xdows_Security
             }
             _target = null;
         }
+
+        public async void ApplyBackgroundImage(string imagePath)
+        {
+            try
+            {
+                _currentBackgroundImagePath = imagePath;
+
+                // 创建ImageBrush
+                var bitmapImage = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage();
+                var file = await Windows.Storage.StorageFile.GetFileFromPathAsync(imagePath);
+                using (var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read))
+                {
+                    await bitmapImage.SetSourceAsync(stream);
+                }
+
+                _backgroundImageBrush = new ImageBrush
+                {
+                    ImageSource = bitmapImage,
+                    Stretch = Microsoft.UI.Xaml.Media.Stretch.UniformToFill
+                };
+
+                // 获取透明度设置
+                var settings = ApplicationData.Current.LocalSettings;
+                var opacityValue = settings.Values["AppBackgroundImageOpacity"] as double? ?? 30.0;
+                _backgroundImageBrush.Opacity = opacityValue / 100.0;
+
+                // 应用背景图片
+                UpdateBackgroundImage();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"应用背景图片失败: {ex.Message}");
+            }
+        }
+
+        public void ClearBackgroundImage()
+        {
+            try
+            {
+                _currentBackgroundImagePath = null;
+                _backgroundImageBrush = null;
+
+                // 重新应用当前的背景材质
+                var settings = ApplicationData.Current.LocalSettings;
+                var backdropType = settings.Values["AppBackdrop"] as string ?? "Mica";
+                ApplyBackdrop(backdropType, true);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"清除背景图片失败: {ex.Message}");
+            }
+        }
+
+        private void UpdateBackgroundImage()
+        {
+            if (RootGrid == null || _backgroundImageBrush == null) return;
+
+            try
+            {
+                // 获取当前背景类型
+                var settings = ApplicationData.Current.LocalSettings;
+                var backdropType = settings.Values["AppBackdrop"] as string ?? "Solid";
+
+                // 获取透明度设置
+                var opacityValue = settings.Values["AppBackgroundImageOpacity"] as double? ?? 30.0;
+                _backgroundImageBrush.Opacity = opacityValue / 100.0;
+
+                if (backdropType == "Solid")
+                {
+                    // 如果是纯色背景，直接设置背景图片
+                    RootGrid.Background = _backgroundImageBrush;
+                }
+                else
+                {
+                    // 对于非纯色背景，使用半透明图片背景
+                    if (_backgroundImageBrush != null)
+                    {
+                        RootGrid.Background = _backgroundImageBrush;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"更新背景图片失败: {ex.Message}");
+            }
+        }
+
+        public void UpdateBackgroundImageOpacity(double opacity)
+        {
+            _backgroundImageBrush?.Opacity = opacity;
+        }
         private void OnThemeChanged(FrameworkElement sender, object args)
         {
             var settings = ApplicationData.Current.LocalSettings;
-            var backdrop = settings.Values["AppBackdrop"] as string;
-            if (backdrop != null)
+            if (settings.Values["AppBackdrop"] is string backdrop)
                 ApplyBackdrop(backdrop, true);
         }
 
@@ -443,7 +564,7 @@ namespace Xdows_Security
             }
 
         }
-        private void nav_Loaded(object sender, RoutedEventArgs e)
+        private void Nav_Loaded(object sender, RoutedEventArgs e)
         {
             LoadLocalizerData();
         }

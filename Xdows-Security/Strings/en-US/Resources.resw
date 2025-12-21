@@ -363,6 +363,42 @@
   <data name="SettingsPage_Other_CheckUpdate.Description" xml:space="preserve">
     <value>Check for updates to software components</value>
   </data>
+  <data name="SettingsPage_Other_Config.Header" xml:space="preserve">
+    <value>Configuration</value>
+  </data>
+  <data name="SettingsPage_Other_Config.Description" xml:space="preserve">
+    <value>Manage this application's configuration files</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Location.Header" xml:space="preserve">
+    <value>Configuration Location</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Location.Description" xml:space="preserve">
+    <value>Open the folder containing configuration files</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Reset.Header" xml:space="preserve">
+    <value>Reset Configuration</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Reset.Description" xml:space="preserve">
+    <value>Reset the application's configuration files</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Location_OpenFailed_Title" xml:space="preserve">
+    <value>Open configuration failed</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Location_OpenFailed_Content" xml:space="preserve">
+    <value>Unable to open configuration folder: {0}</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Reset_Confirm_Title" xml:space="preserve">
+    <value>Confirm Reset Configuration</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Reset_Confirm_Content" xml:space="preserve">
+    <value>Delete the configuration folder and restart the app? This action cannot be undone.</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Reset_DeleteFailed_Title" xml:space="preserve">
+    <value>Delete Configuration Failed</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Reset_DeleteFailed_Content" xml:space="preserve">
+    <value>Failed to delete configuration folder: {0}</value>
+  </data>
   <data name="SettingsPage_Appearance.Text" xml:space="preserve">
     <value>Appearance</value>
   </data>
@@ -1362,5 +1398,14 @@ If you do not accept it, please turn off the engine, or stop using and delete th
   </data>
   <data name="SettingsPage_BackgroundImage_ClearError_Content" xml:space="preserve">
     <value>Failed to clear background image: {0}</value>
+  </data>
+  <data name="SettingsPage_BackgroundImage_SelectDialog_Title" xml:space="preserve">
+    <value>Choose Background Photo</value>
+  </data>
+  <data name="SettingsPage_BackgroundImage_ImageFiles" xml:space="preserve">
+    <value>Photo Files</value>
+  </data>
+  <data name="SettingsPage_BackgroundImage_AllFiles" xml:space="preserve">
+    <value>All Files</value>
   </data>
 </root>

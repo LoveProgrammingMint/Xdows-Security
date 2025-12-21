@@ -114,10 +114,10 @@ namespace Xdows_Security
             var backdrop = settings.Values["AppBackdrop"] as string;
             ApplyBackdrop(backdrop ?? "Mica", false);
 
-            // 加载背景图片（如果有的话）
-            if (ApplicationData.HasBackgroundImage())
+
+            if (ApplicationData.HasFile("background_image"))
             {
-                var backgroundImagePath = await ApplicationData.GetBackgroundImagePathAsync();
+                var backgroundImagePath = await ApplicationData.ReadFileAsync("background_image");
                 if (backgroundImagePath != null)
                 {
                     ApplyBackgroundImage(backgroundImagePath);
@@ -337,20 +337,13 @@ namespace Xdows_Security
                 if (backdropType == "Solid")
                 {
                     this.SystemBackdrop = null;
-
-                    // 检查是否有背景图片
-                    if (ApplicationData.HasBackgroundImage())
+                    if (ApplicationData.HasFile("background_image"))
                     {
-                        // 如果有背景图片，使用背景图片
                         UpdateBackgroundImage();
                     }
-                    else
-                    {
-                        // 否则使用默认纯色背景
-                        RootGrid.Background = GetCurrentTheme() == ElementTheme.Dark
-                            ? new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x20, 0x20))
-                            : new SolidColorBrush(Colors.White);
-                    }
+                    RootGrid.Background = GetCurrentTheme() == ElementTheme.Dark
+                         ? new SolidColorBrush(Color.FromArgb(0xFF, 0x20, 0x20, 0x20))
+                         : new SolidColorBrush(Colors.White);
                     return;
                 }
 
@@ -398,9 +391,10 @@ namespace Xdows_Security
                 }
 
                 // 检查是否有背景图片，如果有则应用
-                if (ApplicationData.HasBackgroundImage())
+                if (ApplicationData.HasFile("background_image"))
                 {
                     UpdateBackgroundImage();
+
                 }
             }
             catch
@@ -458,10 +452,7 @@ namespace Xdows_Security
                 // 应用背景图片
                 UpdateBackgroundImage();
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"应用背景图片失败: {ex.Message}");
-            }
+            catch { }
         }
 
         public void ClearBackgroundImage()
@@ -470,16 +461,11 @@ namespace Xdows_Security
             {
                 _currentBackgroundImagePath = null;
                 _backgroundImageBrush = null;
-
-                // 重新应用当前的背景材质
                 var settings = ApplicationData.Current.LocalSettings;
                 var backdropType = settings.Values["AppBackdrop"] as string ?? "Mica";
                 ApplyBackdrop(backdropType, true);
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"清除背景图片失败: {ex.Message}");
-            }
+            catch { }
         }
 
         private void UpdateBackgroundImage()
@@ -490,30 +476,12 @@ namespace Xdows_Security
             {
                 // 获取当前背景类型
                 var settings = ApplicationData.Current.LocalSettings;
-                var backdropType = settings.Values["AppBackdrop"] as string ?? "Solid";
-
                 // 获取透明度设置
                 var opacityValue = settings.Values["AppBackgroundImageOpacity"] as double? ?? 30.0;
                 _backgroundImageBrush.Opacity = opacityValue / 100.0;
-
-                if (backdropType == "Solid")
-                {
-                    // 如果是纯色背景，直接设置背景图片
-                    RootGrid.Background = _backgroundImageBrush;
-                }
-                else
-                {
-                    // 对于非纯色背景，使用半透明图片背景
-                    if (_backgroundImageBrush != null)
-                    {
-                        RootGrid.Background = _backgroundImageBrush;
-                    }
-                }
+                RootGrid.Background = _backgroundImageBrush;
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"更新背景图片失败: {ex.Message}");
-            }
+            catch { }
         }
 
         public void UpdateBackgroundImageOpacity(double opacity)

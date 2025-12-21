@@ -21,35 +21,51 @@ namespace Compatibility.Windows.Storage
 
         public StorageFolder LocalFolder => StorageFolder.LocalFolderInstance;
 
-        // 背景图片管理方法
-        private static readonly string BackgroundImageFileName = "background_image.jpg";
-        private static readonly string BackgroundImageConfigKey = "AppBackgroundImagePath";
+        // 文件管理方法 - 通用文件操作
+        private static readonly string FilesConfigKeyPrefix = "AppFile_";
 
-        public static async Task SaveBackgroundImageAsync(string sourceImagePath)
+        /// <summary>
+        /// 将文件保存到配置目录中，文件名为键值
+        /// </summary>
+        /// <param name="key">文件键名</param>
+        /// <param name="sourceFilePath">源文件路径</param>
+        /// <returns>保存后的文件路径</returns>
+        public static async Task<string> WriteFileAsync(string key, string sourceFilePath)
         {
             try
             {
                 var localFolder = ApplicationData.Current.LocalFolder;
-                string targetPath = IO.Path.Combine(localFolder.Path, BackgroundImageFileName);
+                string fileName = SanitizeFileName(key);
+                string targetPath = IO.Path.Combine(localFolder.Path, fileName);
 
-                // 复制图片到配置目录
-                File.Copy(sourceImagePath, targetPath, true);
+                // 确保目录存在
+                Directory.CreateDirectory(IO.Path.GetDirectoryName(targetPath)!);
 
-                // 保存路径到设置
-                ApplicationData.Current.LocalSettings.Values[BackgroundImageConfigKey] = targetPath;
+                // 复制文件到配置目录
+                File.Copy(sourceFilePath, targetPath, true);
+
+                // 保存文件路径到设置
+                string configKey = FilesConfigKeyPrefix + key;
+                ApplicationData.Current.LocalSettings.Values[configKey] = targetPath;
+
+                return targetPath;
             }
-            catch (Exception ex)
-            {
-                throw new Exception($"保存背景图片失败: {ex.Message}", ex);
-            }
+            catch { return string.Empty; }
         }
 
-        public static async Task<string?> GetBackgroundImagePathAsync()
+        /// <summary>
+        /// 读取配置目录中的文件（文件名为键值）
+        /// </summary>
+        /// <param name="key">文件键名</param>
+        /// <returns>文件路径，如果文件不存在则返回null</returns>
+        public static async Task<string?> ReadFileAsync(string key)
         {
             try
             {
+                string configKey = FilesConfigKeyPrefix + key;
                 var settings = ApplicationData.Current.LocalSettings;
-                if (settings.Values.TryGetValue(BackgroundImageConfigKey, out object? pathObj) &&
+                
+                if (settings.Values.TryGetValue(configKey, out object? pathObj) &&
                     pathObj is string path &&
                     File.Exists(path))
                 {
@@ -63,33 +79,45 @@ namespace Compatibility.Windows.Storage
             }
         }
 
-        public static async Task DeleteBackgroundImageAsync()
+        /// <summary>
+        /// 删除配置目录中的文件（文件名为键值）
+        /// </summary>
+        /// <param name="key">文件键名</param>
+        public static async Task DeleteFileAsync(string key)
         {
             try
             {
+                string configKey = FilesConfigKeyPrefix + key;
                 var settings = ApplicationData.Current.LocalSettings;
-                if (settings.Values.TryGetValue(BackgroundImageConfigKey, out object? pathObj) &&
+                
+                if (settings.Values.TryGetValue(configKey, out object? pathObj) &&
                     pathObj is string path)
                 {
                     if (File.Exists(path))
                     {
                         File.Delete(path);
                     }
-                    settings.Values.Remove(BackgroundImageConfigKey);
+                    settings.Values.Remove(configKey);
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception($"删除背景图片失败: {ex.Message}", ex);
+                throw new Exception($"删除文件失败: {ex.Message}", ex);
             }
         }
 
-        public static bool HasBackgroundImage()
+        /// <summary>
+        /// 检查文件是否存在
+        /// </summary>
+        /// <param name="key">文件键名</param>
+        /// <returns>文件是否存在</returns>
+        public static bool HasFile(string key)
         {
             try
             {
+                string configKey = FilesConfigKeyPrefix + key;
                 var settings = ApplicationData.Current.LocalSettings;
-                return settings.Values.TryGetValue(BackgroundImageConfigKey, out object? pathObj) &&
+                return settings.Values.TryGetValue(configKey, out object? pathObj) &&
                        pathObj is string path &&
                        File.Exists(path);
             }
@@ -98,6 +126,24 @@ namespace Compatibility.Windows.Storage
                 return false;
             }
         }
+
+        /// <summary>
+        /// 清理文件名，移除非法字符
+        /// </summary>
+        /// <param name="fileName">原始文件名</param>
+        /// <returns>清理后的文件名</returns>
+        private static string SanitizeFileName(string fileName)
+        {
+            // 移除文件路径中的非法字符
+            string invalid = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
+            foreach (char c in invalid)
+            {
+                fileName = fileName.Replace(c.ToString(), "_");
+            }
+            return fileName;
+        }
+
+
     }
     #endregion
 

@@ -306,6 +306,23 @@
             </controls:SettingsCard>
             <controls:SettingsExpander
                             VerticalAlignment="Top"
+                            l:Uids.Uid="SettingsPage_Other_Config"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xF259;}">
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard
+                        l:Uids.Uid="SettingsPage_Other_Config_Location"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE8DA;}">
+                        <Button l:Uids.Uid="AllPage_OpenLink" x:Name="OpenConfigLocationButton" Click="OpenConfigLocationButton_Click"/>
+                    </controls:SettingsCard>
+                    <controls:SettingsCard
+                        l:Uids.Uid="SettingsPage_Other_Config_Reset"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xEBC4;}">
+                        <Button l:Uids.Uid="AllPage_OpenLink" x:Name="ResetConfigButton" Click="ResetConfigButton_Click"/>
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
+            <controls:SettingsExpander
+                            VerticalAlignment="Top"
                             l:Uids.Uid="SettingsPage_Other_About"
                             IsExpanded="True"
                             HeaderIcon="{ui:FontIcon Glyph=&#xE946;}">

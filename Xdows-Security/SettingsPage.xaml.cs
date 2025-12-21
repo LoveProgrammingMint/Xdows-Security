@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Diagnostics;
 using Windows.Security.Credentials.UI;
 using WinUI3Localizer;
 using Xdows.Protection;
@@ -325,7 +326,6 @@ namespace Xdows_Security
         {
             try
             {
-                bool hasBackgroundImage = ApplicationData.HasBackgroundImage();
                 var settings = ApplicationData.Current.LocalSettings;
                 var backdropType = settings.Values["AppBackdrop"] as string ?? "Solid";
                 var opacityValue = settings.Values["AppBackgroundImageOpacity"] as double? ?? 30.0;
@@ -722,9 +722,8 @@ namespace Xdows_Security
                 try
                 {
                     string imagePath = dlg.FileName;
-
-                    // 保存背景图片到配置目录
-                    await ApplicationData.SaveBackgroundImageAsync(imagePath);
+                    string key = "background_image";
+                    await ApplicationData.WriteFileAsync(key, imagePath);
 
                     // 应用背景图片
                     App.MainWindow?.ApplyBackgroundImage(imagePath);
@@ -747,11 +746,11 @@ namespace Xdows_Security
         {
             try
             {
-                // 删除背景图片
-                await ApplicationData.DeleteBackgroundImageAsync();
-
-                // 清除背景图片
-                App.MainWindow?.ClearBackgroundImage();
+                if (ApplicationData.HasFile("background_image"))
+                {
+                    await ApplicationData.DeleteFileAsync("background_image");
+                    App.MainWindow?.ClearBackgroundImage();
+                }
             }
             catch (Exception ex)
             {
@@ -763,6 +762,80 @@ namespace Xdows_Security
                     XamlRoot = this.XamlRoot
                 };
                 await errorDialog.ShowAsync();
+            }
+        }
+
+        private async void OpenConfigLocationButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var path = ApplicationData.Current.LocalFolder.Path;
+                await Windows.System.Launcher.LaunchFolderPathAsync(path);
+            }
+            catch (Exception ex)
+            {
+                var errorDialog = new ContentDialog
+                {
+                    Title = Localizer.Get().GetLocalizedString("SettingsPage_Other_Config_Location_OpenFailed_Title"),
+                    Content = string.Format(Localizer.Get().GetLocalizedString("SettingsPage_Other_Config_Location_OpenFailed_Content"), ex.Message),
+                    CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
+                    XamlRoot = this.XamlRoot
+                };
+                await errorDialog.ShowAsync();
+            }
+        }
+
+        private async void ResetConfigButton_Click(object sender, RoutedEventArgs e)
+        {
+            var confirmDialog = new ContentDialog
+            {
+                Title = Localizer.Get().GetLocalizedString("SettingsPage_Other_Config_Reset_Confirm_Title"),
+                Content = Localizer.Get().GetLocalizedString("SettingsPage_Other_Config_Reset_Confirm_Content"),
+                PrimaryButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
+                CloseButtonText = Localizer.Get().GetLocalizedString("Button_Cancel"),
+                XamlRoot = this.XamlRoot,
+                PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+            };
+
+            if (await confirmDialog.ShowAsync() == ContentDialogResult.Primary)
+            {
+                try
+                {
+                    var path = ApplicationData.Current.LocalFolder.Path;
+                    if (Directory.Exists(path))
+                    {
+                        Directory.Delete(path, true);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var errorDialog = new ContentDialog
+                    {
+                        Title = Localizer.Get().GetLocalizedString("SettingsPage_Other_Config_Reset_DeleteFailed_Title"),
+                        Content = string.Format(Localizer.Get().GetLocalizedString("SettingsPage_Other_Config_Reset_DeleteFailed_Content"), ex.Message),
+                        CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
+                        XamlRoot = this.XamlRoot
+                    };
+                    await errorDialog.ShowAsync();
+                    return;
+                }
+
+                try
+                {
+                    var current = Process.GetCurrentProcess().MainModule?.FileName;
+                    if (!string.IsNullOrEmpty(current))
+                    {
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = current,
+                            UseShellExecute = true
+                        });
+                    }
+                }
+                catch { }
+
+                App.MainWindow?.Close();
+                Environment.Exit(0);
             }
         }
 

@@ -363,6 +363,42 @@
   <data name="SettingsPage_Other_CheckUpdate.Description" xml:space="preserve">
     <value>检测软件相关组件的更新</value>
   </data>
+  <data name="SettingsPage_Other_Config.Header" xml:space="preserve">
+    <value>配置管理</value>
+  </data>
+  <data name="SettingsPage_Other_Config.Description" xml:space="preserve">
+    <value>管理这个软件的配置文件</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Location.Header" xml:space="preserve">
+    <value>配置位置</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Location.Description" xml:space="preserve">
+    <value>打开配置文件所在位置</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Reset.Header" xml:space="preserve">
+    <value>重置配置</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Reset.Description" xml:space="preserve">
+    <value>重置此软件的配置文件</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Location_OpenFailed_Title" xml:space="preserve">
+    <value>打开配置位置失败</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Location_OpenFailed_Content" xml:space="preserve">
+    <value>无法打开配置目录: {0}</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Reset_Confirm_Title" xml:space="preserve">
+    <value>确认重置配置</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Reset_Confirm_Content" xml:space="preserve">
+    <value>是否删除配置文件所在目录并重启应用？此操作无法恢复。</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Reset_DeleteFailed_Title" xml:space="preserve">
+    <value>删除配置失败</value>
+  </data>
+  <data name="SettingsPage_Other_Config_Reset_DeleteFailed_Content" xml:space="preserve">
+    <value>删除配置目录时出错: {0}</value>
+  </data>
   <data name="SettingsPage_Appearance.Text" xml:space="preserve">
     <value>外观</value>
   </data>
@@ -1210,7 +1246,7 @@
     <value>文件</value>
   </data>
   <data name="TrustItem_Type_Folder" xml:space="preserve">
-    <value>文件目录</value>
+    <value>目录</value>
   </data>
   <data name="Common_OperationSuccess" xml:space="preserve">
     <value>操作成功</value>

@@ -68,7 +68,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\**" />
+    <Content Remove="Views\**" />
+    <EmbeddedResource Remove="Views\**" />
+    <None Remove="Views\**" />
+    <Page Remove="Views\**" />
     <PRIResource Remove="Resources\**" />
+    <PRIResource Remove="Views\**" />
   </ItemGroup>
   <ItemGroup>
     <PRIResource Update="Strings\en-US\Resources.resw">
@@ -83,10 +89,6 @@
     <PRIResource Update="Strings\zh-HANS\Resources.resw">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </PRIResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Utils\" />
-    <Folder Include="Views\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="G:\NuGet\microsoft.windowsappsdk.foundation\1.8.250906002\buildTransitive\..\include\MddBootstrapAutoInitializer.cs" />

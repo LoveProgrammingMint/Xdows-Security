@@ -1,0 +1,64 @@
+<UserControl
+    x:Class="Xdows_Security.Views.CommandPromptView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="300"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <CommandBar Grid.Row="0">
+            <CommandBar.Content>
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="CmdTabTitle"
+                               Margin="12,16,0,0"
+                               FontSize="16"
+                               Text="命令提示符"/>
+                </Grid>
+            </CommandBar.Content>
+            <AppBarButton Icon="Clear" Label="清空输出" Click="ClearOutput_Click"/>
+            <AppBarButton Icon="Copy" Label="复制输出" Click="CopyOutput_Click"/>
+        </CommandBar>
+        <Border Grid.Row="1" Margin="16,8,16,0" BorderThickness="1">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <TextBox x:Name="CmdOutput"
+                         IsReadOnly="True"
+                         TextWrapping="Wrap"
+                         FontSize="12"
+                         Text="命令提示符启动成功，请输入相关命令。"
+                         AcceptsReturn="True"
+                         VerticalAlignment="Stretch"
+                         HorizontalAlignment="Stretch"
+                         Padding="12"
+                         Margin="0"/>
+            </ScrollViewer>
+        </Border>
+        <Grid Grid.Row="2" Margin="16,5,16,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="CmdInput"
+                     PlaceholderText="输入命令..."
+                     KeyDown="CmdInput_KeyDown"
+                     VerticalAlignment="Center"
+                     Height="30"/>
+            <Button x:Name="ExecuteButton"
+                    Grid.Column="1"
+                    Content="执行"
+                    Click="ExecuteButton_Click"
+                    MinWidth="80"
+                    Height="30"
+                    Style="{StaticResource AccentButtonStyle}"
+                    Margin="8,0,0,0"/>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -24,8 +24,10 @@ namespace Xdows.Protection
 
             _isMonitoring = true;
             _toastCallBack = toastCallBack;
-            _monitorThread = new Thread(StartMonitoring);
-            _monitorThread.IsBackground = true;
+            _monitorThread = new Thread(StartMonitoring)
+            {
+                IsBackground = true
+            };
             _monitorThread.Start();
 
             return true;
@@ -100,7 +102,7 @@ namespace Xdows.Protection
                 Thread.Sleep(1000);
             }
         }
-        static bool IsFileAccessible(string path)
+        private static bool IsFileAccessible(string path)
         {
             try
             {

@@ -1,4 +1,3 @@
-// Registry.cs
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.Security.Principal;
@@ -12,15 +11,15 @@ namespace Xdows.Protection
     {
         private static bool _isEnabled;
         private static Thread? _monitorThread;
-        private static readonly object _lock = new object();
-        private static readonly HashSet<string> _whitelist = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private static readonly Lock _lock = new();
+        private static readonly HashSet<string> _whitelist = new(StringComparer.OrdinalIgnoreCase);
         private static InterceptCallBack? _interceptCallBack;
         private static readonly string _configDirectory;
         private static readonly string _logFile;
 
         // 关键监控路径
-        private static readonly string[] _criticalPaths = new[]
-        {
+        private static readonly string[] _criticalPaths =
+        [
             @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
             @"SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce",
             @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run",
@@ -28,11 +27,11 @@ namespace Xdows.Protection
             @"SYSTEM\CurrentControlSet\Services",
             @"SOFTWARE\Classes\exefile\shell\open\command",
             @"SOFTWARE\Classes\batfile\shell\open\command"
-        };
+        ];
 
         // 恶意特征
-        private static readonly string[] _maliciousPatterns = new[]
-        {
+        private static readonly string[] _maliciousPatterns =
+        [
             "cmd.exe /c",
             "powershell.exe -enc",
             "powershell.exe -e ",
@@ -42,7 +41,7 @@ namespace Xdows.Protection
             "bitsadmin.exe /transfer",
             "regsvr32.exe /s",
             "schtasks.exe /create"
-        };
+        ];
 
         static RegistryProtection()
         {
@@ -238,7 +237,7 @@ namespace Xdows.Protection
                 string registryPath = newEntry.Key;
                 var newValues = newEntry.Value;
 
-                if (!oldSnapshot.ContainsKey(registryPath))
+                if (!oldSnapshot.TryGetValue(registryPath, out Dictionary<string, object>? oldValues))
                 {
                     // 全新注册表路径
                     foreach (var valuePair in newValues)
@@ -256,12 +255,11 @@ namespace Xdows.Protection
                 }
                 else
                 {
-                    var oldValues = oldSnapshot[registryPath];
 
                     // 检查新值或修改的值
                     foreach (var valuePair in newValues)
                     {
-                        if (!oldValues.ContainsKey(valuePair.Key))
+                        if (!oldValues.TryGetValue(valuePair.Key, out object? value))
                         {
                             // 新值
                             changes.Add(new RegistryChange
@@ -274,14 +272,14 @@ namespace Xdows.Protection
                                 ProcessId = currentProcess.Item2
                             });
                         }
-                        else if (!AreValuesEqual(oldValues[valuePair.Key], valuePair.Value))
+                        else if (!AreValuesEqual(value, valuePair.Value))
                         {
                             // 值被修改
                             changes.Add(new RegistryChange
                             {
                                 Path = registryPath,
                                 ValueName = valuePair.Key,
-                                OldValue = oldValues[valuePair.Key],
+                                OldValue = value,
                                 NewValue = valuePair.Value,
                                 ProcessName = currentProcess.Item1,
                                 ProcessId = currentProcess.Item2
@@ -355,7 +353,7 @@ namespace Xdows.Protection
                 foreach (var whitelistItem in _whitelist)
                 {
                     if (!string.IsNullOrEmpty(whitelistItem) &&
-                        change.Path.IndexOf(whitelistItem, StringComparison.OrdinalIgnoreCase) >= 0)
+                        change.Path.Contains(whitelistItem, StringComparison.OrdinalIgnoreCase))
                     {
                         return true;
                     }
@@ -369,7 +367,7 @@ namespace Xdows.Protection
         {
             if (string.IsNullOrEmpty(value)) return false;
             value = value.ToLowerInvariant();
-            return _maliciousPatterns.Any(pattern => value.Contains(pattern.ToLowerInvariant()));
+            return _maliciousPatterns.Any(pattern => value.Contains(pattern, StringComparison.InvariantCultureIgnoreCase));
         }
 
         private static void RestoreOriginalValue(RegistryChange change)
@@ -437,7 +435,7 @@ namespace Xdows.Protection
                     foreach (var line in lines)
                     {
                         var trimmed = line.Trim();
-                        if (!string.IsNullOrEmpty(trimmed) && !trimmed.StartsWith("#"))
+                        if (!string.IsNullOrEmpty(trimmed) && !trimmed.StartsWith('#'))
                         {
                             _whitelist.Add(trimmed);
                         }

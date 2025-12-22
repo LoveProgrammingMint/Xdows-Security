@@ -43,7 +43,7 @@ namespace Xdows.ScanEngine
                 return (score, string.Join(" ", extra));
             }).ConfigureAwait(false);
         }
-        unsafe static string GetExtString(string path)
+        private static unsafe string GetExtString(string path)
         {
             if (string.IsNullOrEmpty(path)) return string.Empty;
 

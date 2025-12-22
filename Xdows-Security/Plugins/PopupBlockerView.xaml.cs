@@ -2,18 +2,18 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace Xdows_Security.Views
 {
     public sealed partial class PopupBlockerView : UserControl
     {
         private List<PopupRule> _popupRules = new();
-        private PopupBlocker _popupBlocker = new();
+        private readonly PopupBlocker _popupBlocker = new();
         private bool _isPopupBlockingEnabled = false;
 
         public PopupBlockerView()

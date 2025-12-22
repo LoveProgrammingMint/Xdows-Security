@@ -19,7 +19,7 @@ namespace Compatibility.Windows.Storage
 
         public ApplicationDataContainer LocalSettings { get; } = new ApplicationDataContainer();
 
-        public StorageFolder LocalFolder => StorageFolder.LocalFolderInstance;
+        public static StorageFolder LocalFolder => StorageFolder.LocalFolderInstance;
 
         // 文件管理方法 - 通用文件操作
         private static readonly string FilesConfigKeyPrefix = "AppFile_";
@@ -34,7 +34,7 @@ namespace Compatibility.Windows.Storage
         {
             try
             {
-                var localFolder = ApplicationData.Current.LocalFolder;
+                var localFolder = LocalFolder;
                 string fileName = SanitizeFileName(key);
                 string targetPath = IO.Path.Combine(localFolder.Path, fileName);
 
@@ -64,7 +64,7 @@ namespace Compatibility.Windows.Storage
             {
                 string configKey = FilesConfigKeyPrefix + key;
                 var settings = ApplicationData.Current.LocalSettings;
-                
+
                 if (settings.Values.TryGetValue(configKey, out object? pathObj) &&
                     pathObj is string path &&
                     File.Exists(path))
@@ -89,7 +89,7 @@ namespace Compatibility.Windows.Storage
             {
                 string configKey = FilesConfigKeyPrefix + key;
                 var settings = ApplicationData.Current.LocalSettings;
-                
+
                 if (settings.Values.TryGetValue(configKey, out object? pathObj) &&
                     pathObj is string path)
                 {
@@ -168,12 +168,12 @@ namespace Compatibility.Windows.Storage
         }
 
         public ApplicationDataContainerValues Values { get; }
-
+        private readonly JsonSerializerOptions jsonSerializerOptions = new() { WriteIndented = true };
         internal void Save()
         {
             try
             {
-                var json = JsonSerializer.Serialize(_dict, new JsonSerializerOptions { WriteIndented = true });
+                var json = JsonSerializer.Serialize(_dict, jsonSerializerOptions);
                 File.WriteAllText(StorePath, json);
             }
             catch { /* 随它去 */ }
@@ -196,7 +196,7 @@ namespace Compatibility.Windows.Storage
     #endregion
 
     #region ApplicationDataContainerValues
-    public sealed class ApplicationDataContainerValues : IDictionary<string, object>, IReadOnlyDictionary<string, object>
+    public sealed partial class ApplicationDataContainerValues : IDictionary<string, object>, IReadOnlyDictionary<string, object>
     {
         private readonly ApplicationDataContainer _owner;
         private Dictionary<string, JsonElement> Dict => _owner._dict;
@@ -219,7 +219,7 @@ namespace Compatibility.Windows.Storage
         }
 
         public ICollection<string> Keys => Dict.Keys;
-        public ICollection<object> Values => Dict.Values.Select(ParseJsonElement).ToArray();
+        public ICollection<object> Values => [.. Dict.Values.Select(ParseJsonElement)];
         public int Count => Dict.Count;
         public bool IsReadOnly => false;
 
@@ -290,7 +290,7 @@ namespace Compatibility.Windows.Storage
     #region StorageFolder / StorageFile / 枚举 等（未改动）
     public sealed class StorageFolder
     {
-        internal static readonly StorageFolder LocalFolderInstance = new StorageFolder
+        internal static readonly StorageFolder LocalFolderInstance = new()
         {
             Path = IO.Path.GetDirectoryName(ApplicationDataContainer.StorePath)!
         };
@@ -322,7 +322,7 @@ namespace Compatibility.Windows.Storage
             if (File.Exists(full) && option == CreationCollisionOption.FailIfExists)
                 throw new IOException("File already exists");
             Directory.CreateDirectory(IO.Path.GetDirectoryName(full)!);
-            File.WriteAllBytes(full, Array.Empty<byte>());
+            File.WriteAllBytes(full, []);
             return new StorageFile { Path = full };
         }
 

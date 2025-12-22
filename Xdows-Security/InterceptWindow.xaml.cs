@@ -12,7 +12,7 @@ namespace Xdows_Security
     {
         private string? _originalFilePath;
         private string? _virusFilePath;
-        private string? _type;
+        private readonly string? _type;
 
         // 静态字典用于跟踪已打开的窗口
         private static readonly Dictionary<string, InterceptWindow> _openWindows = new Dictionary<string, InterceptWindow>();

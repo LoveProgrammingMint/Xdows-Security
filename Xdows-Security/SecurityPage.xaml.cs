@@ -613,7 +613,7 @@ namespace Xdows_Security
 
                                     else
                                     {
-                                        var SouXiaoRuleEngineResult = SouXiaoEngine.ScanFileByRuleEngine(file);
+                                        var SouXiaoRuleEngineResult = Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan.ScanFileByRuleEngine(file);
                                         if (SouXiaoEngineResult.IsVirus)
                                         {
                                             Result = SouXiaoEngineResult.Result;

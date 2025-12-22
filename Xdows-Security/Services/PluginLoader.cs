@@ -1,9 +1,9 @@
+using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Microsoft.UI.Xaml;
 using Xdows_Security.Plugins;
 
 namespace Xdows_Security.Services

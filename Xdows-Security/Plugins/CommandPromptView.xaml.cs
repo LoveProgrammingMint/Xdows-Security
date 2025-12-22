@@ -1,9 +1,8 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Text;
 
 namespace Xdows_Security.Views
 {

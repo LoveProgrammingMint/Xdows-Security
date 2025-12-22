@@ -71,7 +71,7 @@ namespace Xdows.Protection
             return _cts is { IsCancellationRequested: false };
         }
 
-        private static readonly List<int> _oldPids = new List<int>();
+        private static readonly List<int> _oldPids = [];
 
         private static async Task MonitorNewProcessesLoop(InterceptCallBack interceptCallBack, CancellationToken token)
         {
@@ -127,7 +127,7 @@ namespace Xdows.Protection
                                 _ = Task.Run(() =>
                                 {
                                     interceptCallBack(Succeed, path, "Process");
-                                });
+                                }, token);
                             }
                         }
 
@@ -155,11 +155,10 @@ namespace Xdows.Protection
         {
             const int maxCount = 512;
             int[] pids = new int[maxCount];
-            int neededBytes;
 
             while (true)
             {
-                if (!EnumProcesses(pids, pids.Length * 4, out neededBytes))
+                if (!EnumProcesses(pids, pids.Length * 4, out int neededBytes))
                     throw new Win32Exception();
 
                 int returnedCount = neededBytes / 4;
@@ -172,7 +171,7 @@ namespace Xdows.Protection
                 Array.Resize(ref pids, pids.Length + 128);
             }
 
-            return pids.Where(id => id > 0).Distinct().ToList();
+            return [.. pids.Where(id => id > 0).Distinct()];
         }
 
         [DllImport("psapi.dll", SetLastError = true)]
@@ -204,7 +203,7 @@ namespace Xdows.Protection
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
 
-        [DllImport("kernel32.dll", SetLastError = true)]
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool QueryFullProcessImageName(
             IntPtr hProcess,

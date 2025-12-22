@@ -50,7 +50,7 @@ namespace Xdows.ScanEngine
                 }
                 else
                 {
-                    fileInfo.ExportsName = Array.Empty<string>();
+                    fileInfo.ExportsName = [];
                 }
             }
             var importedFunctions = peFile.ImportedFunctions;
@@ -60,13 +60,13 @@ namespace Xdows.ScanEngine
                     .Where(import => import.Name != null)
                     .ToList();
 
-                fileInfo.ImportsDll = validImports.Select(import => import.DLL).ToArray();
+                fileInfo.ImportsDll = [.. validImports.Select(import => import.DLL)];
                 fileInfo.ImportsName = [.. validImports.Select(import => import.Name ?? string.Empty)];
             }
             else
             {
-                fileInfo.ImportsDll = Array.Empty<string>();
-                fileInfo.ImportsName = Array.Empty<string>();
+                fileInfo.ImportsDll = [];
+                fileInfo.ImportsName = [];
             }
 
             var score = await Heuristic.Evaluate(path, peFile, fileInfo, deep);
@@ -78,7 +78,7 @@ namespace Xdows.ScanEngine
         }
         //public static string SignedAndValid = string.Empty;
 
-        private static readonly System.Net.Http.HttpClient s_httpClient = new System.Net.Http.HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+        private static readonly System.Net.Http.HttpClient s_httpClient = new() { Timeout = TimeSpan.FromSeconds(10) };
         public static async Task<(int statusCode, string? result)> CzkCloudScanAsync(string path, string apiKey)
         {
             var client = s_httpClient;
@@ -131,8 +131,8 @@ namespace Xdows.ScanEngine
         public class SouXiaoEngineScan
         {
             private Core? SouXiaoCore;
-            private SouRule.SouRuleEngine? SouRuleEngine;
-            private Boolean IsDebug = false;
+            private readonly SouRule.SouRuleEngine? SouRuleEngine;
+            private readonly Boolean IsDebug = false;
 
             public bool Initialize()
             {
@@ -149,7 +149,7 @@ namespace Xdows.ScanEngine
                 }
             }
 
-            public (bool IsVirus, string Result) ScanFileByRuleEngine(string path)
+            public static (bool IsVirus, string Result) ScanFileByRuleEngine(string path)
             {
                 //try
                 //{

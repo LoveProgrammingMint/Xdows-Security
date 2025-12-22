@@ -4,7 +4,7 @@ namespace Xdows_Security.Model
     public class SystemInfoModel
     {
         [StructLayout(LayoutKind.Sequential)]
-        struct MEMORYSTATUSEX
+        private struct MEMORYSTATUSEX
         {
             public uint dwLength, dwMemoryLoad;
             public ulong ullTotalPhys, ullAvailPhys, ullTotalPageFile,
@@ -12,7 +12,7 @@ namespace Xdows_Security.Model
                          ullAvailExtendedVirtual;
         }
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
+        private static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
 
         public (bool ok, uint load, string display) GetMemory()
         {

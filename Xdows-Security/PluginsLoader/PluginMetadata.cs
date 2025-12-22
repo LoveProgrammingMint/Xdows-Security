@@ -1,5 +1,3 @@
-using System;
-
 namespace Xdows_Security.Plugins
 {
     public record PluginMetadata

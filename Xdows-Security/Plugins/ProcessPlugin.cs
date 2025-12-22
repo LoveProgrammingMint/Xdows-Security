@@ -1,6 +1,5 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Xdows_Security.Plugins;
 using Xdows_Security.Views;
 
 namespace Xdows_Security.Plugins
@@ -12,10 +11,11 @@ namespace Xdows_Security.Plugins
         public string Name => "进程管理器";
 
         public string Version => "1.0.0";
-        public IconSource Icon => new FontIconSource {
+        public IconSource Icon => new FontIconSource
+        {
             Glyph = "\uE9D9"
         };
-        public PluginMetadata Metadata => new PluginMetadata
+        public PluginMetadata Metadata => new()
         {
             Id = Id,
             Name = Name,

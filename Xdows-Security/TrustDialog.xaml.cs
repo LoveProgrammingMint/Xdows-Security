@@ -10,7 +10,7 @@ namespace Xdows_Security
 {
     public sealed partial class TrustDialog : ContentDialog
     {
-        private ObservableCollection<TrustItemViewModel> _trustItems = new ObservableCollection<TrustItemViewModel>();
+        private readonly ObservableCollection<TrustItemViewModel> _trustItems = new ObservableCollection<TrustItemViewModel>();
         public new string Title => Localizer.Get().GetLocalizedString("TrustDialog_Title");
         public new string CloseButtonText => Localizer.Get().GetLocalizedString("TrustDialog_CloseButton");
 

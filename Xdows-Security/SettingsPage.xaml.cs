@@ -6,9 +6,9 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Diagnostics;
 using Windows.Security.Credentials.UI;
 using WinUI3Localizer;
 using Xdows.Protection;
@@ -18,7 +18,7 @@ namespace Xdows_Security
 {
     public sealed partial class SettingsPage : Page
     {
-        private bool IsInitialize = true;
+        private readonly bool IsInitialize = true;
         public SettingsPage()
         {
             this.InitializeComponent();
@@ -97,7 +97,7 @@ namespace Xdows_Security
             if (string.IsNullOrWhiteSpace(key)) return;
             if (toggle.IsOn && (key == "CzkCloudScan" || key == "CloudScan"))
             {
-                var dialog = new ContentDialog
+                _ = new ContentDialog
                 {
                     Title = Localizer.Get().GetLocalizedString("SettingsPage_Scan_Cloud_Disclaimer_Title"),
                     Content = Localizer.Get().GetLocalizedString("SettingsPage_Scan_Cloud_Disclaimer_Text"),
@@ -260,7 +260,14 @@ namespace Xdows_Security
                     await Windows.System.Launcher.LaunchUriAsync(new Uri(update.DownloadUrl));
                 }
             }
-            catch { }
+            catch {
+                try
+                {
+                    UpdateTeachingTip.ActionButtonContent = Localizer.Get().GetLocalizedString("Button_Confirm");
+                    UpdateTeachingTip.IsOpen = !UpdateTeachingTip.IsOpen;
+                }
+                catch { }
+            }
             finally
             {
                 UpdateButton.IsEnabled = true;
@@ -292,7 +299,7 @@ namespace Xdows_Security
             {
                 rootElement.RequestedTheme = selectedTheme;
             }
-            App.MainWindow.UpdateTheme(selectedTheme);
+            MainWindow.UpdateTheme(selectedTheme);
         }
 
         private void LoadBackdropSetting()
@@ -593,7 +600,6 @@ namespace Xdows_Security
                 }
             }
 
-            TextBlock? currentHeader = null;
             bool currentHeaderMatched = false;
 
             for (int i = 0; i < stackPanel.Children.Count; i++)
@@ -606,7 +612,6 @@ namespace Xdows_Security
                 {
                     if (element is TextBlock textBlock)
                     {
-                        currentHeader = textBlock;
                         currentHeaderMatched = IsSettingsItemMatched(textBlock, searchText);
 
                         if (currentHeaderMatched)
@@ -651,16 +656,16 @@ namespace Xdows_Security
                 }
             }
         }
-        private bool IsSettingsItemMatched(FrameworkElement item, string searchText)
+        private static bool IsSettingsItemMatched(FrameworkElement item, string searchText)
         {
             string itemText = GetSettingsItemText(item);
 
             if (string.IsNullOrEmpty(itemText))
                 return false;
 
-            return itemText.ToLowerInvariant().Contains(searchText);
+            return itemText.Contains(searchText, StringComparison.InvariantCultureIgnoreCase);
         }
-        private string GetSettingsItemText(FrameworkElement item)
+        private static string GetSettingsItemText(FrameworkElement item)
         {
             if (item is TextBlock textBlock)
             {
@@ -769,7 +774,7 @@ namespace Xdows_Security
         {
             try
             {
-                var path = ApplicationData.Current.LocalFolder.Path;
+                var path = ApplicationData.LocalFolder.Path;
                 await Windows.System.Launcher.LaunchFolderPathAsync(path);
             }
             catch (Exception ex)
@@ -801,7 +806,7 @@ namespace Xdows_Security
             {
                 try
                 {
-                    var path = ApplicationData.Current.LocalFolder.Path;
+                    var path = ApplicationData.LocalFolder.Path;
                     if (Directory.Exists(path))
                     {
                         Directory.Delete(path, true);

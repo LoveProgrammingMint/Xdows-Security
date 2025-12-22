@@ -157,13 +157,13 @@ namespace Xdows_Security
                 }
             }
         }
-        public void UpdateTheme(ElementTheme selectedTheme)
+        public static void UpdateTheme(ElementTheme selectedTheme)
         {
             App.Theme = selectedTheme;
             var window = App.MainWindow;
             if (window is not null)
             {
-                var appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(
+                _ = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(
                     Microsoft.UI.Win32Interop.GetWindowIdFromWindow(
                         WinRT.Interop.WindowNative.GetWindowHandle(window)
                     )
@@ -199,14 +199,14 @@ namespace Xdows_Security
                 App.MainWindow?.ApplyBackdrop(backdrop, true);
             }
         }
-        public ApplicationTheme GetSystemTheme()
+        public static ApplicationTheme GetSystemTheme()
         {
             var settings = new UISettings();
             var systemBackground = settings.GetColorValue(UIColorType.Background);
 
             return IsLightColor(systemBackground) ? ApplicationTheme.Light : ApplicationTheme.Dark;
         }
-        private bool IsLightColor(Windows.UI.Color color)
+        private static bool IsLightColor(Windows.UI.Color color)
         {
             double luminance = (0.2126 * color.R + 0.7152 * color.G + 0.0722 * color.B) / 255;
             return luminance > 0.5;
@@ -267,7 +267,7 @@ namespace Xdows_Security
             nav.SelectedItem = null;
             navContainer.Navigate(typeof(BugReportPage));
         }
-        private NavigationViewItem? FindNavigationItemByTag(IList<object> items, string targetTag)
+        private static NavigationViewItem? FindNavigationItemByTag(IList<object> items, string targetTag)
         {
             foreach (var item in items)
             {

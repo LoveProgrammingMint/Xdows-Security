@@ -1,6 +1,5 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Xdows_Security.Plugins;
 using Xdows_Security.Views;
 
 namespace Xdows_Security.Plugins
@@ -13,8 +12,8 @@ namespace Xdows_Security.Plugins
         public IconSource Icon => new FontIconSource
         {
             Glyph = "\uE756"
-        }; 
-        public PluginMetadata Metadata => new PluginMetadata
+        };
+        public PluginMetadata Metadata => new()
         {
             Id = Id,
             Name = Name,

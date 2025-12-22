@@ -4,7 +4,7 @@ namespace Xdows.ScanEngine
 {
     public static class DllScan
     {
-        public static bool Scan(string path, PEInfo info)
+        public static bool Scan(PEInfo info)
         {
             if (info.ExportsName?
                 .Any(e => e?.IndexOf("Py", StringComparison.OrdinalIgnoreCase) >= 0 ||

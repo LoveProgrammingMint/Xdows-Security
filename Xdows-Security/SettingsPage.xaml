@@ -333,6 +333,9 @@
                     <controls:SettingsCard l:Uids.Uid="SettingsPage_Other_About_Version" HeaderIcon="{ui:FontIcon Glyph=&#xE7B8;}">
                         <TextBlock x:Name="Settings_About_Version"/>
                     </controls:SettingsCard>
+                    <controls:SettingsCard l:Uids.Uid="SettingsPage_Other_About_Developer" HeaderIcon="{ui:FontIcon Glyph=&#xEC7A;}">
+                        <TextBlock l:Uids.Uid="SettingsPage_Other_About_Developer_Text"/>
+                    </controls:SettingsCard>
                     <controls:SettingsCard l:Uids.Uid="SettingsPage_Other_About_Feedback" HeaderIcon="{ui:FontIcon Glyph=&#xED15;}">
                         <HyperlinkButton l:Uids.Uid="AllPage_OpenLink" x:Name="Settings_About_Feedback"/>
                     </controls:SettingsCard>

@@ -1407,4 +1407,10 @@
   <data name="SettingsPage_BackgroundImage_AllFiles" xml:space="preserve">
     <value>所有文件</value>
   </data>
+  <data name="SettingsPage_Other_About_Developer.Header" xml:space="preserve">
+    <value>开发团队</value>
+  </data>
+  <data name="SettingsPage_Other_About_Developer_Text.Text" xml:space="preserve">
+    <value>零度枫铸</value>
+  </data>
 </root>

@@ -1408,4 +1408,10 @@ If you do not accept it, please turn off the engine, or stop using and delete th
   <data name="SettingsPage_BackgroundImage_AllFiles" xml:space="preserve">
     <value>All Files</value>
   </data>
+  <data name="SettingsPage_Other_About_Developer.Header" xml:space="preserve">
+    <value>Developer</value>
+  </data>
+  <data name="SettingsPage_Other_About_Developer_Text.Text" xml:space="preserve">
+    <value>IceZero Studio</value>
+  </data>
 </root>

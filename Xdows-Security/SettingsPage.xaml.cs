@@ -228,12 +228,13 @@ namespace Xdows_Security
                     UpdateTeachingTip.IsOpen = !UpdateTeachingTip.IsOpen;
                     return;
                 }
-                var box = new TextBlock
+                var box = new CommunityToolkit.WinUI.UI.Controls.MarkdownTextBlock
                 {
                     Text = update.Content,
                     IsTextSelectionEnabled = true,
                     TextWrapping = TextWrapping.Wrap,
-                    Margin = new Thickness(12)
+                    Margin = new Thickness(12),
+                    Background = null
                 };
                 var scrollViewer = new ScrollViewer
                 {

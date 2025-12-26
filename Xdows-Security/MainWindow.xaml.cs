@@ -193,11 +193,7 @@ namespace Xdows_Security
                 }
             }
             var settings = ApplicationData.Current.LocalSettings;
-
-            if (settings.Values["AppBackdrop"] is string backdrop)
-            {
-                App.MainWindow?.ApplyBackdrop(backdrop, true);
-            }
+            App.MainWindow?.ApplyBackdrop(settings.Values["AppBackdrop"] as string ?? "Mica", true);
         }
         public static ApplicationTheme GetSystemTheme()
         {

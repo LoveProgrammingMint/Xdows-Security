@@ -133,7 +133,7 @@ namespace Xdows_Security
             }
 
             // 重新显示当前对话框
-            await this.ShowAsync();
+            _ = this.ShowAsync();
         }
 
         /// <summary>

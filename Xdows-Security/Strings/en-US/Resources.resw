@@ -1011,13 +1011,13 @@ If you do not accept it, please turn off the engine, or stop using and delete th
   <data name="QuarantineDialog_VirusName" xml:space="preserve">
     <value>Virus Name</value>
   </data>
-  <data name="QuarantineDialog_Restore" xml:space="preserve">
+  <data name="QuarantineDialog_Restore.Content" xml:space="preserve">
     <value>Restore</value>
   </data>
-  <data name="QuarantineDialog_Delete" xml:space="preserve">
+  <data name="QuarantineDialog_Delete.Content" xml:space="preserve">
     <value>Delete</value>
   </data>
-  <data name="QuarantineDialog_ClearAll" xml:space="preserve">
+  <data name="QuarantineDialog_ClearAll.Content" xml:space="preserve">
     <value>Clear All</value>
   </data>
   <data name="QuarantineDialog_Empty_Title" xml:space="preserve">

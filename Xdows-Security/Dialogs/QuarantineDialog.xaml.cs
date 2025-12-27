@@ -15,15 +15,12 @@ namespace Xdows.UI.Dialogs
         // 本地化属性
         public string DialogTitle => Localizer.Get().GetLocalizedString("QuarantineDialog_Title");
         public string DialogCloseButtonText => Localizer.Get().GetLocalizedString("Button_Confirm");
-        public string RestoreButtonText => Localizer.Get().GetLocalizedString("QuarantineDialog_Restore");
-        public string DeleteButtonText => Localizer.Get().GetLocalizedString("QuarantineDialog_Delete");
-        public string ClearAllButtonText => Localizer.Get().GetLocalizedString("QuarantineDialog_ClearAll");
         public string CountText
         {
             get
             {
                 string format = Localizer.Get().GetLocalizedString("QuarantineDialog_TotalItems");
-                return $"{format}{_quarantineItems.Count}";
+                return string.Format(format, _quarantineItems.Count);
             }
         }
 
@@ -146,6 +143,7 @@ namespace Xdows.UI.Dialogs
             {
                 try
                 {
+                    this.Hide();
                     // 确认删除
                     ContentDialog confirmDialog = new ContentDialog
                     {
@@ -221,6 +219,10 @@ namespace Xdows.UI.Dialogs
                         $"{Localizer.Get().GetLocalizedString("QuarantineDialog_DeleteError")}: {ex.Message}",
                         button);
                 }
+                finally
+                {
+                    _ = this.ShowAsync();
+                }
             }
         }
 
@@ -231,6 +233,7 @@ namespace Xdows.UI.Dialogs
         {
             try
             {
+                this.Hide();
                 if (_quarantineItems.Count == 0)
                 {
                     ShowResultTip(
@@ -283,6 +286,10 @@ namespace Xdows.UI.Dialogs
                     Localizer.Get().GetLocalizedString("QuarantineDialog_ClearFailed"),
                     Localizer.Get().GetLocalizedString("QuarantineDialog_ClearFailedMessage"),
                     ClearAllButton);
+            }
+            finally
+            {
+                _ = this.ShowAsync();
             }
         }
 

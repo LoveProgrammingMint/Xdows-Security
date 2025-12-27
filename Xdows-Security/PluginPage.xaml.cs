@@ -10,7 +10,7 @@ namespace Xdows_Security
     public sealed partial class PluginPage : Page
     {
         private readonly PSystem _pSystem = new();
-        ObservableCollection<PluginItem> PluginItems { get; } = new();
+        ObservableCollection<PluginItem> PluginItems { get; } = [];
 
         public PluginPage()
         {
@@ -27,16 +27,19 @@ namespace Xdows_Security
         private void LoadPlugins()
         {
             PluginItems.Clear();
-           
-            _pSystem.LoadPlugin("Test");
-            var plugins = _pSystem.GetPlugins() ?? new System.Collections.Generic.List<PSystem.Plugin>();
+            var pluginsList = PSystem.GetPluginsList();
+            foreach (var pluginPath in pluginsList)
+            {
+                _pSystem.LoadPlugin(pluginPath);
+            }
+            var plugins = _pSystem.GetPlugins() ?? [];
             foreach (var p in plugins)
             {
                 PluginItems.Add(new PluginItem
                 {
                     Name = p.Name ?? "Unknown",
                     Description = p.Config?.Description ?? "未提供描述",
-                    ShortName = (p.Name?.Length > 2) ? p.Name.Substring(0, 2).ToUpperInvariant() : (p.Name ?? "PL"),
+                    ShortName = (p.Name?.Length > 2) ? p.Name[..2].ToUpperInvariant() : (p.Name ?? "PL"),
                     SourcePlugin = p
                 });
             }
@@ -46,18 +49,18 @@ namespace Xdows_Security
         {
             if (sender is Button btn && btn.Tag is PluginItem item && item.SourcePlugin?.PluginPage != null)
             {
-                var dialog = new ContentDialog
-                {
-                    Title = item.Name,
-                    XamlRoot = this.XamlRoot,
-                    PrimaryButtonText = "关闭",
-                    Content = item.SourcePlugin.PluginPage,
-                    DefaultButton = ContentDialogButton.Primary
-                };
-
                 try
                 {
+                    var dialog = new ContentDialog
+                    {
+                        Title = item.Name,
+                        XamlRoot = this.XamlRoot,
+                        PrimaryButtonText = "关闭",
+                        Content = item.SourcePlugin.PluginPage,
+                        DefaultButton = ContentDialogButton.Primary
+                    };
                     await dialog.ShowAsync();
+                    App.MainWindow?.GoToPage("Xdows-Tools");
                 }
                 catch (Exception ex)
                 {
@@ -66,7 +69,8 @@ namespace Xdows_Security
                         Title = "打开插件失败",
                         XamlRoot = this.XamlRoot,
                         Content = ex.Message,
-                        PrimaryButtonText = "确定"
+                        PrimaryButtonText = "确定",
+                        DefaultButton = ContentDialogButton.Primary
                     };
                     await err.ShowAsync();
                 }
@@ -83,7 +87,8 @@ namespace Xdows_Security
                     Content = $"确认要卸载插件 \"{item.Name}\" 吗？",
                     PrimaryButtonText = "卸载",
                     CloseButtonText = "取消",
-                    XamlRoot = this.XamlRoot
+                    XamlRoot = this.XamlRoot,
+                    DefaultButton = ContentDialogButton.Close
                 };
 
                 var result = await confirm.ShowAsync();

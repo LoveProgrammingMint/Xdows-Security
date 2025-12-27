@@ -47,11 +47,11 @@ namespace PluginSystem
 
         public Assembly Load(string Name)
         {
-            if (!File.Exists($".\\Plugin\\{Name}\\Plugin.dll")) state = LoadState.Borken;
+            if (!File.Exists($".\\Plugin\\{Name}\\PluginFramework.dll")) state = LoadState.Borken;
 
             try
             {
-                Assembly asm = Assembly.LoadFrom($".\\Plugin\\{Name}\\Plugin.dll");
+                Assembly asm = Assembly.LoadFrom($".\\Plugin\\{Name}\\PluginFramework.dll");
                 return asm;
             }
             catch (Exception)
@@ -59,19 +59,18 @@ namespace PluginSystem
                 state = LoadState.Borken;
                 throw;
             }
-            return null;
         }
-
         public void LoadConfig(string Name)
         {
             if (string.IsNullOrEmpty(Name)) state = LoadState.NotFound;
 
             if (!File.Exists($".\\Plugin\\{Name}")) state = LoadState.NotFound;
-
-            string json = File.ReadAllText($".\\Plugin\\{Name}\\Information.json");
-            Debug.WriteLine(json+"@@@");
-            config = JsonSerializer.Deserialize<Config>(json);
-            Console.WriteLine(json);
+            try
+            {
+                string json = File.ReadAllText($".\\Plugin\\{Name}\\Information.json");
+                config = JsonSerializer.Deserialize<Config>(json);
+            }
+            catch { }
         }
     }
 }

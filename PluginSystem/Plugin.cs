@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -52,7 +53,28 @@ namespace PluginSystem
             }
 
         }
+        public static string[] GetPluginsList()
+        {
+            string pluginBaseDir = @".\Plugin";
+            var validFolderNames = new List<string>();
 
+            if (!Directory.Exists(pluginBaseDir))
+                return [.. validFolderNames];
+
+            foreach (string folderPath in Directory.GetDirectories(pluginBaseDir))
+            {
+                string folderName = Path.GetFileName(folderPath);
+                string dllPath = Path.Combine(folderPath, "PluginFramework.dll");
+                string jsonPath = Path.Combine(folderPath, "Information.json");
+
+                if (File.Exists(dllPath) && File.Exists(jsonPath))
+                {
+                    validFolderNames.Add(folderName);
+                }
+            }
+
+            return [.. validFolderNames];
+        }
         public class Plugin
         {
             public Config Config { get; set; }

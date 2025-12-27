@@ -10,7 +10,7 @@ namespace Xdows.UI.Dialogs
 {
     public sealed partial class QuarantineDialog : ContentDialog
     {
-        private List<Xdows.Protection.QuarantineItem> _quarantineItems = new List<Xdows.Protection.QuarantineItem>();
+        private List<Xdows.Protection.QuarantineItem> _quarantineItems = [];
 
         // 本地化属性
         public string DialogTitle => Localizer.Get().GetLocalizedString("QuarantineDialog_Title");
@@ -145,7 +145,7 @@ namespace Xdows.UI.Dialogs
                 {
                     this.Hide();
                     // 确认删除
-                    ContentDialog confirmDialog = new ContentDialog
+                    ContentDialog confirmDialog = new()
                     {
                         Title = Localizer.Get().GetLocalizedString("QuarantineDialog_Delete_Confirm_Title"),
                         Content = Localizer.Get().GetLocalizedString("QuarantineDialog_Delete_Confirm_Message"),
@@ -244,7 +244,7 @@ namespace Xdows.UI.Dialogs
                 }
 
                 // 确认清空
-                ContentDialog confirmDialog = new ContentDialog
+                ContentDialog confirmDialog = new()
                 {
                     Title = Localizer.Get().GetLocalizedString("QuarantineDialog_ClearAll_Confirm_Title"),
                     Content = Localizer.Get().GetLocalizedString("QuarantineDialog_ClearAll_Confirm_Message"),

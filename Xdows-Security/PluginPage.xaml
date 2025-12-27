@@ -9,64 +9,61 @@
     xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
+    <ScrollViewer>
+        <Grid Padding="16" Margin="64,0,64,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-    <Grid Padding="16">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <TextBlock Text="插件" FontSize="20" FontWeight="SemiBold" Margin="4"/>
-
-        <GridView
+            <GridView
             x:Name="PluginGridView"
             Grid.Row="1"
             IsItemClickEnabled="False"
             SelectionMode="None"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            Margin="0,12,0,0">
+            Margin="0,4,0,0">
 
-            <GridView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" ItemWidth="300" ItemHeight="150"/>
-                </ItemsPanelTemplate>
-            </GridView.ItemsPanel>
+                <GridView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" ItemWidth="300" ItemHeight="150"/>
+                    </ItemsPanelTemplate>
+                </GridView.ItemsPanel>
 
-            <GridView.ItemTemplate>
-                <DataTemplate>
-                    <Border
+                <GridView.ItemTemplate>
+                    <DataTemplate>
+
+                        <controls:SettingsCard
                         CornerRadius="10"
-                        Background="{ThemeResource SystemControlBackgroundBaseLowBrush}"
-                        BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
-                        BorderThickness="0.5"
                         Margin="8"
                         Padding="12"
                         Width="280"
                         Height="140">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="48"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="48"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                            <Border Grid.Column="0" Width="48" Height="48" CornerRadius="8" Background="{ThemeResource SystemControlForegroundAccentBrush}" HorizontalAlignment="Left" VerticalAlignment="Top">
-                                <TextBlock Text="{Binding ShortName}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold"/>
-                            </Border>
+                                <Border Grid.Column="0" Width="48" Height="48" CornerRadius="8" Background="{ThemeResource SystemControlForegroundAccentBrush}" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                    <TextBlock Text="{Binding ShortName}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                </Border>
 
-                            <StackPanel Grid.Column="1" Margin="12,0,0,0">
-                                <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
-                                <TextBlock Text="{Binding Description}" FontSize="12" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" TextWrapping="Wrap" Margin="0,6,0,0" MaxHeight="48"/>
+                                <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                    <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="{Binding Description}" FontSize="12" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" TextWrapping="Wrap" Margin="0,6,0,0" MaxHeight="48"/>
 
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
-                                    <Button Content="打开" Click="OpenButton_Click" Tag="{Binding}" Margin="0,0,8,0"/>
-                                    <Button Content="卸载" Click="UnloadButton_Click" Tag="{Binding}" />
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                                        <Button Content="打开" Click="OpenButton_Click" Tag="{Binding}" Margin="0,0,8,0"/>
+                                        <Button Content="卸载" Click="UnloadButton_Click" Tag="{Binding}" />
+                                    </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </GridView.ItemTemplate>
-        </GridView>
-    </Grid>
+                            </Grid>
+                        </controls:SettingsCard>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+            </GridView>
+        </Grid>
+    </ScrollViewer>
 </Page>

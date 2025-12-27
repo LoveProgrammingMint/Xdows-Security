@@ -58,7 +58,7 @@ namespace PluginSystem
             public Assembly Assembly { get; set; }
             public string Name { get; set; }
             public Type Type { get; set; }
-            public Grid PluginPage { get; set; }
+            public Page PluginPage { get; set; }
         }
     }
 }

@@ -40,14 +40,14 @@ namespace PluginSystem
         public LoadState state;
         public Type type;
 
-        public Grid GetGrid(Assembly asm)
+        public Page GetGrid(Assembly asm)
         {
             Type t = asm.GetType(config.EntryAddress);
 
             object obj = Activator.CreateInstance(t);
 
             MethodInfo mi = t.GetMethod(config.EntryFunction);
-            return (Grid)mi.Invoke(obj, []);
+            return (Page)mi.Invoke(obj, []);
         }
 
         public Assembly Load(string Name)

@@ -711,7 +711,7 @@
   <data name="HomePage_NumberOfThreats.Text" xml:space="preserve">
     <value>威胁数量: </value>
   </data>
-  <data name="AllPage_Undefined.Text" xml:space="preserve">
+  <data name="AllPage_Undefined" xml:space="preserve">
     <value>未定义</value>
   </data>
   <data name="SettingsPage_Scan_SouXiao.Header" xml:space="preserve">

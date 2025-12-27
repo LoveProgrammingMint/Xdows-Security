@@ -110,7 +110,7 @@ namespace Xdows_Security.ViewModel
         [RelayCommand]
         private void LogLevelFilter(string[]? selected)
         {
-            SelectedLogFilters = selected ?? Array.Empty<string>();
+            SelectedLogFilters = selected ?? [];
             _log.Reload(LogRaw, SelectedLogFilters);
         }
         #endregion
@@ -170,7 +170,14 @@ namespace Xdows_Security.ViewModel
             ProtectionColor = ok
             ? new SolidColorBrush(Microsoft.UI.ColorHelper.FromArgb(255, 78, 201, 176))   // 绿 78, 201, 176
             : new SolidColorBrush(Microsoft.UI.ColorHelper.FromArgb(255, 241, 82, 98));  // 红 241, 82, 98
-            LastScanTime = _prot.LastScanTime ?? "—";
+            if (_prot.LastScanTime == null || _prot.LastScanTime == string.Empty)
+            {
+                LastScanTime = WinUI3Localizer.Localizer.Get().GetLocalizedString("AllPage_Undefined");
+            }
+            else
+            {
+                LastScanTime = _prot.LastScanTime;
+            }
             ThreatCount = _prot.ThreatCount.ToString();
         }
 

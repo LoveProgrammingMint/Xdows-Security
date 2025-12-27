@@ -711,7 +711,7 @@ Why not try XIGUA Security?</value>
   <data name="HomePage_NumberOfThreats.Text" xml:space="preserve">
     <value>Number of Threats: </value>
   </data>
-  <data name="AllPage_Undefined.Text" xml:space="preserve">
+  <data name="AllPage_Undefined" xml:space="preserve">
     <value>Undefined</value>
   </data>
   <data name="SettingsPage_Scan_SouXiao.Header" xml:space="preserve">

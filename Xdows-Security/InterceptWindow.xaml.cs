@@ -65,12 +65,12 @@ namespace Xdows_Security
                 }
                 else
                 {
-                    ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined.Text");
+                    ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined");
                 }
             }
             catch (Exception ex)
             {
-                ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined.Text");
+                ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined");
                 LogText.AddNewLog(LogLevel.ERROR, "InterceptWindow - SetFileInfo", ex.Message);
             }
 
@@ -353,12 +353,12 @@ namespace Xdows_Security
                 }
                 else
                 {
-                    ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined.Text");
+                    ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined");
                 }
             }
             catch (Exception ex)
             {
-                ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined.Text");
+                ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined");
                 LogText.AddNewLog(LogLevel.ERROR, "InterceptWindow - InitializeUI", ex.Message);
             }
         }

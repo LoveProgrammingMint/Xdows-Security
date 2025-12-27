@@ -27,19 +27,14 @@
 
                 <GridView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" ItemWidth="300" ItemHeight="150"/>
+                        <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal"/>
                     </ItemsPanelTemplate>
                 </GridView.ItemsPanel>
 
                 <GridView.ItemTemplate>
                     <DataTemplate>
 
-                        <controls:SettingsCard
-                        CornerRadius="10"
-                        Margin="8"
-                        Padding="12"
-                        Width="280"
-                        Height="140">
+                        <controls:SettingsCard>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="48"/>

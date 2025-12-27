@@ -36,8 +36,9 @@ namespace PluginSystem
 
     internal class Loader
     {
-        Config config;
-        LoadState state;
+        public Config config;
+        public LoadState state;
+        public Type type;
 
         public Grid GetGrid(Assembly asm)
         {

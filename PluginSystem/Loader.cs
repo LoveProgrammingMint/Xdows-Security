@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,17 +16,11 @@ namespace PluginSystem
     
     public class Config
     {
-        [JsonPropertyName("Name")]
         public string Name { get; set; }
-
-        [JsonPropertyName("NameSpase")]
-        public string NameSpase { get; set; }
-
-        [JsonPropertyName("EntryAddress")]
+        public string NameSpase { get; set; }  
         public string EntryAddress { get; set; }
-
-        [JsonPropertyName("EntryFunction")]
         public string EntryFunction { get; set; }
+        public string Description { get; set; }
     }
     public enum LoadState
     {
@@ -62,6 +57,7 @@ namespace PluginSystem
             catch (Exception)
             {
                 state = LoadState.Borken;
+                throw;
             }
             return null;
         }
@@ -72,15 +68,10 @@ namespace PluginSystem
 
             if (!File.Exists($".\\Plugin\\{Name}")) state = LoadState.NotFound;
 
-            try
-            {
-                string json = File.ReadAllText($".\\Plugin\\{Name}\\Information.json");
-                config = JsonSerializer.Deserialize<Config>(json);
-            }
-            catch (Exception)
-            {
-                state = LoadState.Borken;
-            }
+            string json = File.ReadAllText($".\\Plugin\\{Name}\\Information.json");
+            Debug.WriteLine(json+"@@@");
+            config = JsonSerializer.Deserialize<Config>(json);
+            Console.WriteLine(json);
         }
     }
 }

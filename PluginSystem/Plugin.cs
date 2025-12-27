@@ -14,6 +14,7 @@ namespace PluginSystem
         public LoadState LoadPlugin(string PluginName)
         {
             Loader loader = new();
+            loader.LoadConfig(PluginName);
             var asm = loader.Load(PluginName);
             if (asm == null) return loader.state;
             Plugin plugin = new()
@@ -59,6 +60,7 @@ namespace PluginSystem
             public string Name { get; set; }
             public Type Type { get; set; }
             public Page PluginPage { get; set; }
+            
         }
     }
 }

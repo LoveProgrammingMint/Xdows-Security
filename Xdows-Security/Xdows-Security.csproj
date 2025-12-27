@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
@@ -37,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PluginSystem\PluginSystem.csproj" />
     <ProjectReference Include="..\Protection\Protection.csproj" />
     <ProjectReference Include="..\ScanEngine\ScanEngine.csproj" />
   </ItemGroup>

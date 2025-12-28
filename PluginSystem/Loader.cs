@@ -1,23 +1,16 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace PluginSystem
 {
-    
+
     public class Config
     {
         public string Name { get; set; }
-        public string NameSpase { get; set; }  
+        public string NameSpase { get; set; }
         public string EntryAddress { get; set; }
         public string EntryFunction { get; set; }
         public string Description { get; set; }
@@ -37,12 +30,19 @@ namespace PluginSystem
 
         public Page GetGrid(Assembly asm)
         {
-            Type t = asm.GetType(config.EntryAddress);
+            try
+            {
+                Type t = asm.GetType(config.EntryAddress);
 
-            object obj = Activator.CreateInstance(t);
+                object obj = Activator.CreateInstance(t);
 
-            MethodInfo mi = t.GetMethod(config.EntryFunction);
-            return (Page)mi.Invoke(obj, []);
+                MethodInfo mi = t.GetMethod(config.EntryFunction);
+                return (Page)mi.Invoke(obj, []);
+            }
+            catch
+            {
+                return new Page();
+            }
         }
 
         public Assembly Load(string Name)

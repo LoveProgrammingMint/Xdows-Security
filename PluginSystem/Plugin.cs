@@ -2,10 +2,7 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PluginSystem
 {
@@ -82,7 +79,7 @@ namespace PluginSystem
             public string Name { get; set; }
             public Type Type { get; set; }
             public Page PluginPage { get; set; }
-            
+
         }
     }
 }

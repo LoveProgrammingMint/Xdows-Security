@@ -111,17 +111,28 @@ namespace Xdows_Security
                 grid.Background = new SolidColorBrush(Colors.Transparent);
             }
 
-            var backdrop = settings.Values["AppBackdrop"] as string;
-            ApplyBackdrop(backdrop ?? "Mica", false);
+            var backdrop = settings.Values["AppBackdrop"] as string ?? "Mica";
 
-
-            if (ApplicationData.HasFile("background_image"))
+            var dq = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+            if (dq != null)
             {
-                var backgroundImagePath = await ApplicationData.ReadFileAsync("background_image");
-                if (backgroundImagePath != null)
+                dq.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, async () =>
                 {
-                    ApplyBackgroundImage(backgroundImagePath);
-                }
+                    try
+                    {
+                        ApplyBackdrop(backdrop, false);
+
+                        if (ApplicationData.HasFile("background_image"))
+                        {
+                            var backgroundImagePath = await ApplicationData.ReadFileAsync("background_image");
+                            if (backgroundImagePath != null)
+                            {
+                                _ = ApplyBackgroundImageAsync(backgroundImagePath);
+                            }
+                        }
+                    }
+                    catch { }
+                });
             }
 
             Activated -= MainWindow_Activated_FirstTime;
@@ -420,13 +431,13 @@ namespace Xdows_Security
             _target = null;
         }
 
-        public async void ApplyBackgroundImage(string imagePath)
+        public async System.Threading.Tasks.Task ApplyBackgroundImageAsync(string imagePath)
         {
             try
             {
                 _currentBackgroundImagePath = imagePath;
 
-                // 创建ImageBrush
+                // 创建ImageBrush (do UI work on dispatcher)
                 var bitmapImage = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage();
                 var file = await Windows.Storage.StorageFile.GetFileFromPathAsync(imagePath);
                 using (var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read))
@@ -446,7 +457,15 @@ namespace Xdows_Security
                 _backgroundImageBrush.Opacity = opacityValue / 100.0;
 
                 // 应用背景图片
-                UpdateBackgroundImage();
+                // Ensure UpdateBackgroundImage runs on the UI thread
+                var dq = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+                if (dq != null)
+                {
+                    dq.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+                    {
+                        UpdateBackgroundImage();
+                    });
+                }
             }
             catch { }
         }

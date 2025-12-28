@@ -154,7 +154,7 @@ namespace Xdows_Security
             RegistryToggle.IsOn = RegistryProtection.IsEnabled();
         }
 
-        private void LoadLanguageSetting()
+        private async void LoadLanguageSetting()
         {
             var settings = ApplicationData.Current.LocalSettings;
 
@@ -173,7 +173,7 @@ namespace Xdows_Security
                 }
             }
         }
-        private void LoadThemeSetting()
+        private async void LoadThemeSetting()
         {
             var settings = ApplicationData.Current.LocalSettings;
 
@@ -261,7 +261,8 @@ namespace Xdows_Security
                     await Windows.System.Launcher.LaunchUriAsync(new Uri(update.DownloadUrl));
                 }
             }
-            catch {
+            catch
+            {
                 try
                 {
                     UpdateTeachingTip.ActionButtonContent = Localizer.Get().GetLocalizedString("Button_Confirm");
@@ -303,7 +304,7 @@ namespace Xdows_Security
             MainWindow.UpdateTheme(selectedTheme);
         }
 
-        private void LoadBackdropSetting()
+        private async void LoadBackdropSetting()
         {
             var settings = ApplicationData.Current.LocalSettings;
 
@@ -732,7 +733,7 @@ namespace Xdows_Security
                     await ApplicationData.WriteFileAsync(key, imagePath);
 
                     // 应用背景图片
-                    App.MainWindow?.ApplyBackgroundImage(imagePath);
+                    App.MainWindow?.ApplyBackgroundImageAsync(imagePath);
                 }
                 catch (Exception ex)
                 {

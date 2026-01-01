@@ -261,7 +261,7 @@ namespace Xdows_Security
             {
                 "Home" => typeof(HomePage),
                 "Security" => typeof(SecurityPage),
-                "Xdows-Tools" => typeof(PluginPage),
+                "Xdows-Tools" => typeof(XdowsToolsPage),
                 "Settings" => typeof(SettingsPage),
                 _ => typeof(HomePage)
             };

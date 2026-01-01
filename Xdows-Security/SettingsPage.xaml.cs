@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Security.Credentials.UI;
 using WinUI3Localizer;
 using Xdows.Protection;
@@ -18,47 +19,153 @@ namespace Xdows_Security
 {
     public sealed partial class SettingsPage : Page
     {
-        private readonly bool IsInitialize = true;
+        private bool IsInitialize = true;
+
         public SettingsPage()
         {
             this.InitializeComponent();
-            LoadLanguageSetting();
-            LoadThemeSetting();
-            LoadBackdropSetting();
-            LoadScanSetting();
-            LoadBackgroundImageSetting();
-            Settings_About_Name.Text = AppInfo.AppName;
-            Settings_About_Version.Text = AppInfo.AppVersion;
-            Settings_About_Feedback.NavigateUri = new Uri(AppInfo.AppFeedback);
-            Settings_About_Website.NavigateUri = new Uri(AppInfo.AppWebsite);
-            if (App.GetCzkCloudApiKey() == string.Empty)
-            {
-                CzkCloudScanToggle.IsOn = false;
-                CzkCloudScanToggle.IsEnabled = false;
-            }
 
-            // 检查AX_API.exe是否存在
-            string axApiPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AX_API", "AX_API.exe");
-            if (!File.Exists(axApiPath))
-            {
-                JiSuSafeAXToggle.IsOn = false;
-                JiSuSafeAXToggle.IsEnabled = false;
-            }
+            _ = InitializeAsync();
+        }
 
-            //if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "model.onnx")) {
-            //SouXiaoScanToggle.IsOn = false;
-            //SouXiaoScanToggle.IsEnabled = false;
-            //ProcessToggle.IsOn = false;
-            //ProcessToggle.IsEnabled = false;
-            //FilesToggle.IsOn = false;
-            //FilesToggle.IsEnabled = false;
-            //}
-            if (!App.IsRunAsAdmin())
+        private async Task InitializeAsync()
+        {
+            this.DispatcherQueue.TryEnqueue(() =>
             {
-                RegistryToggle.IsEnabled = false;
-                RegistryToggle.IsOn = false;
-            }
-            IsInitialize = false;
+                try
+                {
+                    Settings_About_Name.Text = AppInfo.AppName;
+                    Settings_About_Version.Text = AppInfo.AppVersion;
+                    Settings_About_Feedback.NavigateUri = new Uri(AppInfo.AppFeedback);
+                    Settings_About_Website.NavigateUri = new Uri(AppInfo.AppWebsite);
+                    if (App.GetCzkCloudApiKey() == string.Empty)
+                    {
+                        if (CzkCloudScanToggle != null)
+                        {
+                            CzkCloudScanToggle.IsOn = false;
+                            CzkCloudScanToggle.IsEnabled = false;
+                        }
+                    }
+
+                    if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AX_API", "AX_API.exe")))
+                    {
+                        if (JiSuSafeAXToggle != null)
+                        {
+                            JiSuSafeAXToggle.IsOn = false;
+                            JiSuSafeAXToggle.IsEnabled = false;
+                        }
+                    }
+
+                    if (!App.IsRunAsAdmin())
+                    {
+                        if (RegistryToggle != null)
+                        {
+                            RegistryToggle.IsEnabled = false;
+                            RegistryToggle.IsOn = false;
+                        }
+                    }
+                    _ = Task.Run(async () => await LoadScanSettingAsync());
+                    _ = Task.Run(async () => await LoadLanguageSettingAsync());
+                    _ = Task.Run(async () => await LoadThemeSettingAsync());
+                    _ = Task.Run(async () => await LoadBackdropSettingAsync());
+                    _ = Task.Run(async () => await LoadBackgroundImageSettingAsync());
+                }
+                catch { }
+                finally
+                {
+                    IsInitialize = false;
+                }
+            });
+        }
+
+        private Task LoadScanSettingAsync()
+        {
+            var tcs = new TaskCompletionSource<object?>();
+            this.DispatcherQueue.TryEnqueue(() =>
+            {
+                try
+                {
+                    LoadScanSetting();
+                    tcs.SetResult(null);
+                }
+                catch (Exception ex)
+                {
+                    tcs.SetException(ex);
+                }
+            });
+            return tcs.Task;
+        }
+
+        private Task LoadLanguageSettingAsync()
+        {
+            var tcs = new TaskCompletionSource<object?>();
+            this.DispatcherQueue.TryEnqueue(() =>
+            {
+                try
+                {
+                    LoadLanguageSetting();
+                    tcs.SetResult(null);
+                }
+                catch (Exception ex)
+                {
+                    tcs.SetException(ex);
+                }
+            });
+            return tcs.Task;
+        }
+
+        private Task LoadThemeSettingAsync()
+        {
+            var tcs = new TaskCompletionSource<object?>();
+            this.DispatcherQueue.TryEnqueue(() =>
+            {
+                try
+                {
+                    LoadThemeSetting();
+                    tcs.SetResult(null);
+                }
+                catch (Exception ex)
+                {
+                    tcs.SetException(ex);
+                }
+            });
+            return tcs.Task;
+        }
+
+        private Task LoadBackdropSettingAsync()
+        {
+            var tcs = new TaskCompletionSource<object?>();
+            this.DispatcherQueue.TryEnqueue(() =>
+            {
+                try
+                {
+                    LoadBackdropSetting();
+                    tcs.SetResult(null);
+                }
+                catch (Exception ex)
+                {
+                    tcs.SetException(ex);
+                }
+            });
+            return tcs.Task;
+        }
+
+        private Task LoadBackgroundImageSettingAsync()
+        {
+            var tcs = new TaskCompletionSource<object?>();
+            this.DispatcherQueue.TryEnqueue(() =>
+            {
+                try
+                {
+                    LoadBackgroundImageSetting();
+                    tcs.SetResult(null);
+                }
+                catch (Exception ex)
+                {
+                    tcs.SetException(ex);
+                }
+            });
+            return tcs.Task;
         }
         private void RunProtectionWithToggle(ToggleSwitch toggle, int runId)
         {

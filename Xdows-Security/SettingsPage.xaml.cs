@@ -30,7 +30,7 @@ namespace Xdows_Security
 
         private async Task InitializeAsync()
         {
-            this.DispatcherQueue.TryEnqueue(() =>
+            this.DispatcherQueue.TryEnqueue(async () =>
             {
                 try
                 {
@@ -38,37 +38,32 @@ namespace Xdows_Security
                     Settings_About_Version.Text = AppInfo.AppVersion;
                     Settings_About_Feedback.NavigateUri = new Uri(AppInfo.AppFeedback);
                     Settings_About_Website.NavigateUri = new Uri(AppInfo.AppWebsite);
+
                     if (App.GetCzkCloudApiKey() == string.Empty)
                     {
-                        if (CzkCloudScanToggle != null)
-                        {
-                            CzkCloudScanToggle.IsOn = false;
-                            CzkCloudScanToggle.IsEnabled = false;
-                        }
+                        CzkCloudScanToggle?.IsOn = false;
+                        CzkCloudScanToggle?.IsEnabled = false;
                     }
 
                     if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AX_API", "AX_API.exe")))
                     {
-                        if (JiSuSafeAXToggle != null)
-                        {
-                            JiSuSafeAXToggle.IsOn = false;
-                            JiSuSafeAXToggle.IsEnabled = false;
-                        }
+                        JiSuSafeAXToggle?.IsOn = false;
+                        JiSuSafeAXToggle?.IsEnabled = false;
                     }
 
                     if (!App.IsRunAsAdmin())
                     {
-                        if (RegistryToggle != null)
-                        {
-                            RegistryToggle.IsEnabled = false;
-                            RegistryToggle.IsOn = false;
-                        }
+                        RegistryToggle?.IsEnabled = false;
+                        RegistryToggle?.IsOn = false;
                     }
-                    _ = Task.Run(async () => await LoadScanSettingAsync());
-                    _ = Task.Run(async () => await LoadLanguageSettingAsync());
-                    _ = Task.Run(async () => await LoadThemeSettingAsync());
-                    _ = Task.Run(async () => await LoadBackdropSettingAsync());
-                    _ = Task.Run(async () => await LoadBackgroundImageSettingAsync());
+
+                    await Task.WhenAll(
+                        LoadScanSettingAsync(),
+                        LoadLanguageSettingAsync(),
+                        LoadThemeSettingAsync(),
+                        LoadBackdropSettingAsync(),
+                        LoadBackgroundImageSettingAsync()
+                    );
                 }
                 catch { }
                 finally
@@ -77,7 +72,6 @@ namespace Xdows_Security
                 }
             });
         }
-
         private Task LoadScanSettingAsync()
         {
             var tcs = new TaskCompletionSource<object?>();

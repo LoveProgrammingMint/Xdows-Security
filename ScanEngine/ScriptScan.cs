@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Xdows.ScanEngine
+namespace ScanEngine
 {
     public static class ScriptScan
     {

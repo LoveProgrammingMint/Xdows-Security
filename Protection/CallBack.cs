@@ -1,4 +1,4 @@
-﻿namespace Xdows.Protection
+﻿namespace Protection
 {
     public static class CallBack
     {

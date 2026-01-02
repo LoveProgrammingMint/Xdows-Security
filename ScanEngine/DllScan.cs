@@ -1,6 +1,6 @@
-﻿using static Xdows.ScanEngine.ScanEngine;
+﻿using static ScanEngine.ScanEngine;
 
-namespace Xdows.ScanEngine
+namespace ScanEngine
 {
     public static class DllScan
     {

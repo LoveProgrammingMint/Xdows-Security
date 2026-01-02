@@ -1,11 +1,11 @@
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.Security.Principal;
-using static Xdows.Protection.CallBack;
+using static Protection.CallBack;
 
 #pragma warning disable CA1416 // 验证平台兼容性
 
-namespace Xdows.Protection
+namespace Protection
 {
     public static class RegistryProtection
     {

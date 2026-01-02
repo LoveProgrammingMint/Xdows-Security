@@ -1,16 +1,16 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Protection;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using WinUI3Localizer;
-using Xdows.Protection;
 
 namespace Xdows.UI.Dialogs
 {
     public sealed partial class QuarantineDialog : ContentDialog
     {
-        private List<Xdows.Protection.QuarantineItem> _quarantineItems = [];
+        private List<QuarantineItem> _quarantineItems = [];
 
         // 本地化属性
         public string DialogTitle => Localizer.Get().GetLocalizedString("QuarantineDialog_Title");
@@ -66,7 +66,7 @@ namespace Xdows.UI.Dialogs
         /// </summary>
         private async void RestoreButton_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.Tag is Xdows.Protection.QuarantineItem item)
+            if (sender is Button button && button.Tag is QuarantineItem item)
             {
                 try
                 {
@@ -139,7 +139,7 @@ namespace Xdows.UI.Dialogs
         /// </summary>
         private async void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.Tag is Xdows.Protection.QuarantineItem item)
+            if (sender is Button button && button.Tag is QuarantineItem item)
             {
                 try
                 {

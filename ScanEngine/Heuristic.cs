@@ -2,9 +2,9 @@ using PeNet;
 using System.Buffers;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using static Xdows.ScanEngine.ScanEngine;
+using static ScanEngine.ScanEngine;
 
-namespace Xdows.ScanEngine
+namespace ScanEngine
 {
     public static class Heuristic
     {

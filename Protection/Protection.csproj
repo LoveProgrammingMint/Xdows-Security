@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ScanEngine\ScanEngine.csproj" />
+    <ProjectReference Include="..\TrustQuarantine\TrustQuarantine.csproj" />
   </ItemGroup>
   
   <ItemGroup>

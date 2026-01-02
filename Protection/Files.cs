@@ -1,6 +1,6 @@
-using static Xdows.Protection.CallBack;
-
-namespace Xdows.Protection
+using TrustQuarantine;
+using static Protection.CallBack;
+namespace Protection
 {
     public static class FilesProtection
     {
@@ -8,10 +8,10 @@ namespace Xdows.Protection
         private static InterceptCallBack? _toastCallBack;
         private static Thread? _monitorThread;
         private static bool _isMonitoring = false;
-        private static Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan? SouXiaoEngine;
+        private static ScanEngine.ScanEngine.SouXiaoEngineScan? SouXiaoEngine;
         public static bool Enable(InterceptCallBack toastCallBack)
         {
-            SouXiaoEngine ??= new Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan();
+            SouXiaoEngine ??= new ScanEngine.ScanEngine.SouXiaoEngineScan();
             SouXiaoEngine.Initialize();
 
             // 初始化隔离区

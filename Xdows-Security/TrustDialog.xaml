@@ -1,70 +1,24 @@
-<ContentDialog
-    x:Class="Xdows_Security.TrustDialog"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Xdows_Security"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:l="using:WinUI3Localizer"
-    mc:Ignorable="d"
-    l:Uids.Uid="TrustDialog"
-    Title="{x:Bind Title}"
-    CloseButtonText="{x:Bind CloseButtonText}"
-    DefaultButton="Primary"
-    Width="800"
-    Height="600"
-    CornerRadius="8">
+<ContentDialog x:Class="Xdows_Security.TrustDialog"
+               xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+               Title="信任区管理"
+               PrimaryButtonText="添加"
+               SecondaryButtonText="关闭"
+               xmlns:local="using:TrustQuarantine">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        <!-- 信任项列表 -->
-        <ListView x:Name="TrustListView" Grid.Row="1" SelectionMode="Single" Margin="0,0,0,16">
+    <StackPanel>
+        <ListView x:Name="TrustListView">
             <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Padding="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <!-- 图标 -->
-                        <FontIcon Grid.Column="0" Glyph="{Binding TypeIcon}" FontSize="20" Margin="0,0,12,0"/>
-                        
-                        <!-- 信息 -->
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding Name}" Style="{StaticResource SubtitleTextBlockStyle}" TextTrimming="CharacterEllipsis"/>
-                            <TextBlock Text="{Binding Path}" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
-                            <TextBlock Text="{Binding FormattedAddedDate}" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
-                        </StackPanel>
-                        
-                        <!-- 操作按钮 -->
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                            <Button Click="RemoveButton_Click" Tag="{Binding Id}" Margin="8,0,0,0" l:Uids.Uid="TrustDialog_RemoveButton"/>
-                        </StackPanel>
-                    </Grid>
+                <DataTemplate x:DataType="local:TrustItemModel">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Path}" />
+                        <TextBlock Text="{Binding Hash}" />
+                    </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
 
-        <!-- 状态信息 -->
-        <TextBlock x:Name="StatusText" Grid.Row="2" HorizontalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" l:Uids.Uid="TrustDialog_EmptyStatus"/>
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="16,16,0,0">
-            <Button x:Name="AddButton" Click="AddButton_Click" Margin="0,0,8,0" Style="{ThemeResource AccentButtonStyle}" l:Uids.Uid="TrustDialog_AddButton"/>
-            <Button x:Name="ClearButton" Click="ClearButton_Click" l:Uids.Uid="TrustDialog_ClearButton"/>
-        </StackPanel>
-        
-        <!-- 结果提示 TeachingTip -->
-        <TeachingTip x:Name="ResultTeachingTip"
-                      Target="{x:Bind ClearButton}"
-                      IsLightDismissEnabled="True"
-                      IsOpen="False">
-        </TeachingTip>
-    </Grid>
+        <Button Content="添加信任项" Click="AddButton_Click" />
+        <Button Content="清空信任区" Click="ClearButton_Click" />
+    </StackPanel>
 </ContentDialog>

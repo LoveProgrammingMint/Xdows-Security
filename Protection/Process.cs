@@ -2,9 +2,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
-using static Xdows.Protection.CallBack;
+using TrustQuarantine;
+using static Protection.CallBack;
 
-namespace Xdows.Protection
+namespace Protection
 {
     public static class ProcessProtection
     {
@@ -12,10 +13,10 @@ namespace Xdows.Protection
 
         private static CancellationTokenSource? _cts = null;
         private static Task? _monitorTask = null;
-        private static Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan? SouXiaoEngine;
+        private static ScanEngine.ScanEngine.SouXiaoEngineScan? SouXiaoEngine;
         public static bool Enable(InterceptCallBack toastCallBack)
         {
-            SouXiaoEngine ??= new Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan();
+            SouXiaoEngine ??= new ScanEngine.ScanEngine.SouXiaoEngineScan();
             SouXiaoEngine.Initialize();
             if (SouXiaoEngine == null)
             {

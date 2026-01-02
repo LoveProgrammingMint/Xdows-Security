@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
-namespace Xdows.ScanEngine
+namespace ScanEngine
 {
     public static class ScanEngine
     {

@@ -3,7 +3,7 @@ namespace Xdows_Security.Model
 {
     public class ProtectionModel
     {
-        public bool IsProtected => Protection.IsOpen();
+        public bool IsProtected => ProtectionStatus.IsOpen();
         public string LastScanTime
         {
             get => ApplicationData.Current.LocalSettings.Values["LastScanTime"] as string ?? "";

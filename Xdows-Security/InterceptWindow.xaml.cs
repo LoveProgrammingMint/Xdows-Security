@@ -264,14 +264,14 @@ namespace Xdows_Security
                             string originalPath = _originalFilePath ?? string.Empty;
 
                             // 尝试从隔离区管理器恢复文件
-                            var quarantineItems = Xdows.Protection.QuarantineManager.GetQuarantineItems();
+                            var quarantineItems = Protection.QuarantineManager.GetQuarantineItems();
                             var quarantineItem = quarantineItems.Find(q => q.QuarantinePath == quarantinePath || q.OriginalPath == originalPath);
 
                             if (quarantineItem != null)
                             {
                                 // 从隔离区恢复文件
                                 string itemId = Path.GetFileName(quarantineItem.QuarantinePath);
-                                bool success = Xdows.Protection.QuarantineManager.RestoreFromQuarantine(itemId);
+                                bool success = Protection.QuarantineManager.RestoreFromQuarantine(itemId);
 
                                 if (success)
                                 {

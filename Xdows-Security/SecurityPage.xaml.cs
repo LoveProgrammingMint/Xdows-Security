@@ -16,8 +16,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using TrustQuarantine;
 using WinUI3Localizer;
-using Xdows.Protection;
 
 namespace Xdows_Security
 {
@@ -422,7 +422,7 @@ namespace Xdows_Security
             bool UseSouXiaoScan = settings.Values["SouXiaoScan"] as bool? ?? false;
             bool UseJiSuSafeAX = settings.Values["JiSuSafeAX"] as bool? ?? false;
 
-            var SouXiaoEngine = new Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan();
+            var SouXiaoEngine = new ScanEngine.ScanEngine.SouXiaoEngineScan();
             if (UseSouXiaoScan)
             {
                 if (!SouXiaoEngine.Initialize())
@@ -613,7 +613,7 @@ namespace Xdows_Security
 
                                     else
                                     {
-                                        var SouXiaoRuleEngineResult = Xdows.ScanEngine.ScanEngine.SouXiaoEngineScan.ScanFileByRuleEngine(file);
+                                        var SouXiaoRuleEngineResult = ScanEngine.ScanEngine.SouXiaoEngineScan.ScanFileByRuleEngine(file);
                                         if (SouXiaoEngineResult.IsVirus)
                                         {
                                             Result = SouXiaoEngineResult.Result;
@@ -625,7 +625,7 @@ namespace Xdows_Security
                             {
                                 if (UseLocalScan)
                                 {
-                                    string localResult = await Xdows.ScanEngine.ScanEngine.LocalScanAsync(file, DeepScan, ExtraData);
+                                    string localResult = await ScanEngine.ScanEngine.LocalScanAsync(file, DeepScan, ExtraData);
 
                                     if (!string.IsNullOrEmpty(localResult))
                                     {
@@ -638,7 +638,7 @@ namespace Xdows_Security
                             {
                                 if (UseJiSuSafeAX)
                                 {
-                                    var jiSuSafeAXResult = await Xdows.ScanEngine.ScanEngine.AXScanFileAsync(file);
+                                    var jiSuSafeAXResult = await ScanEngine.ScanEngine.AXScanFileAsync(file);
                                     if (!string.IsNullOrEmpty(jiSuSafeAXResult.result) && jiSuSafeAXResult.statusCode == 200)
                                     {
                                         Result = $"JiSuSafeAX.{jiSuSafeAXResult.result}";
@@ -650,7 +650,7 @@ namespace Xdows_Security
                             {
                                 if (UseCloudScan)
                                 {
-                                    var cloudResult = await Xdows.ScanEngine.ScanEngine.CloudScanAsync(file);
+                                    var cloudResult = await ScanEngine.ScanEngine.CloudScanAsync(file);
                                     System.Diagnostics.Debug.WriteLine(cloudResult.result);
                                     if (cloudResult.result == "virus_file")
                                     {
@@ -662,7 +662,7 @@ namespace Xdows_Security
                             {
                                 if (UseCzkCloudScan)
                                 {
-                                    var czkCloudResult = await Xdows.ScanEngine.ScanEngine.CzkCloudScanAsync(file, App.GetCzkCloudApiKey());
+                                    var czkCloudResult = await ScanEngine.ScanEngine.CzkCloudScanAsync(file, App.GetCzkCloudApiKey());
                                     if (czkCloudResult.result != "safe")
                                     {
                                         Result = czkCloudResult.result ?? string.Empty;
@@ -833,7 +833,7 @@ namespace Xdows_Security
                 try
                 {
                     // 添加文件到信任区
-                    bool success = Xdows.Protection.TrustManager.AddFileToTrust(row.FilePath, row.VirusName);
+                    bool success = await TrustManager.AddToTrust(row.FilePath);
 
                     // 显示结果
                     var resultDialog = new ContentDialog
@@ -903,7 +903,7 @@ namespace Xdows_Security
                     string actionTaken = "";
 
                     // 首先尝试加入隔离区
-                    if (Xdows.Protection.QuarantineManager.AddToQuarantine(row.FilePath, row.VirusName))
+                    if (Protection.QuarantineManager.AddToQuarantine(row.FilePath, row.VirusName))
                     {
                         actionTaken = Localizer.Get().GetLocalizedString("SecurityPage_HandleAction_Quarantined");
                         handled = true;

@@ -4,6 +4,7 @@ using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Protection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +13,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Security.Credentials.UI;
 using WinUI3Localizer;
-using Xdows.Protection;
 using Xdows.UI.Dialogs;
 
 namespace Xdows_Security
@@ -164,7 +164,7 @@ namespace Xdows_Security
         private void RunProtectionWithToggle(ToggleSwitch toggle, int runId)
         {
             toggle.Toggled -= RunProtection;
-            if (!Protection.Run(runId))
+            if (!ProtectionStatus.Run(runId))
                 toggle.IsOn = !toggle.IsOn;
             if (runId == 0)
                 toggle.IsOn = ProcessProtection.IsEnabled();
@@ -608,19 +608,19 @@ namespace Xdows_Security
         /// </summary>
         private async void Trust_AddButton_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var dialog = new AddTrustDialog
-                {
-                    XamlRoot = this.XamlRoot
-                };
+            //try
+            //{
+            //    var dialog = new AddTrustDialog
+            //    {
+            //        XamlRoot = this.XamlRoot
+            //    };
 
-                await dialog.ShowAsync();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Failed to open add trust dialog: {ex.Message}");
-            }
+            //    await dialog.ShowAsync();
+            //}
+            //catch (Exception ex)
+            //{
+            //    System.Diagnostics.Debug.WriteLine($"Failed to open add trust dialog: {ex.Message}");
+            //}
         }
 
         private void TrayVisibleToggle_Toggled(object sender, RoutedEventArgs e)

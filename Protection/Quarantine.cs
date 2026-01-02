@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text.Json;
 
-namespace Xdows.Protection
+namespace Protection
 {
     /// <summary>
     /// 隔离区项目模型

@@ -1,5 +1,6 @@
 using Compatibility.Windows.Storage;
 using Microsoft.UI.Xaml;
+using Protection;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -12,8 +13,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using WinUI3Localizer;
-using Xdows.Protection;
-using static Xdows.Protection.CallBack;
+using static Protection.CallBack;
 
 namespace Xdows_Security
 {
@@ -82,7 +82,7 @@ namespace Xdows_Security
         public static readonly string AppFeedback = "https://github.com/XTY64XTY12345/Xdows-Security/issues/new/choose";
         public static readonly string AppWebsite = "https://xty64xty.netlify.app/";
     }
-    public static class Protection
+    public static class ProtectionStatus
     {
         public static bool IsOpen()
         {
@@ -111,34 +111,34 @@ namespace Xdows_Security
                     if (ProcessProtection.IsEnabled())
                     {
                         LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Disable ProcessProtection ...");
-                        return Xdows.Protection.ProcessProtection.Disable();
+                        return Protection.ProcessProtection.Disable();
                     }
                     else
                     {
                         LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Enable ProcessProtection ...");
-                        return Xdows.Protection.ProcessProtection.Enable(interceptCallBack);
+                        return Protection.ProcessProtection.Enable(interceptCallBack);
                     }
                 case 1:
                     if (FilesProtection.IsEnabled())
                     {
                         LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Disable FilesProtection ...");
-                        return Xdows.Protection.FilesProtection.Disable();
+                        return Protection.FilesProtection.Disable();
                     }
                     else
                     {
                         LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Enable FilesProtection ...");
-                        return Xdows.Protection.FilesProtection.Enable(interceptCallBack);
+                        return Protection.FilesProtection.Enable(interceptCallBack);
                     }
                 case 4:
                     if (RegistryProtection.IsEnabled())
                     {
                         LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Disable RegistryProtection ...");
-                        return Xdows.Protection.RegistryProtection.Disable();
+                        return Protection.RegistryProtection.Disable();
                     }
                     else
                     {
                         LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Enable RegistryProtection ...");
-                        return Xdows.Protection.RegistryProtection.Enable(interceptCallBack);
+                        return Protection.RegistryProtection.Enable(interceptCallBack);
                     }
                 default:
                     return false;
@@ -352,9 +352,6 @@ namespace Xdows_Security
         {
             try
             {
-                // 初始化信任区管理器
-                Xdows.Protection.TrustManager.Initialize();
-
                 await InitializeLocalizer();
                 InitializeMainWindow();
             }

@@ -1143,54 +1143,6 @@
   <data name="QuarantineDialog_OperationResult" xml:space="preserve">
     <value>操作结果</value>
   </data>
-  <data name="TrustDialog_Title" xml:space="preserve">
-    <value>信任区</value>
-  </data>
-  <data name="TrustDialog_CloseButton" xml:space="preserve">
-    <value>关闭</value>
-  </data>
-  <data name="TrustDialog_EmptyStatus" xml:space="preserve">
-    <value>信任区中没有项目</value>
-  </data>
-  <data name="TrustDialog_TotalCount" xml:space="preserve">
-    <value>共 {0} 个信任项</value>
-  </data>
-  <data name="TrustDialog_ConfirmClearTitle" xml:space="preserve">
-    <value>确定清空</value>
-  </data>
-  <data name="TrustDialog_ConfirmClearContent" xml:space="preserve">
-    <value>确定要清空信任区吗？将删除</value>
-  </data>
-  <data name="TrustDialog_ConfirmClearItems" xml:space="preserve">
-    <value>个信任项</value>
-  </data>
-  <data name="TrustDialog_ClearAll" xml:space="preserve">
-    <value>全部清空</value>
-  </data>
-  <data name="TrustDialog_ClearSuccessTitle" xml:space="preserve">
-    <value>清空成功</value>
-  </data>
-  <data name="TrustDialog_ClearFailedTitle" xml:space="preserve">
-    <value>清空失败</value>
-  </data>
-  <data name="TrustDialog_ConfirmRemoveTitle" xml:space="preserve">
-    <value>确定删除</value>
-  </data>
-  <data name="TrustDialog_ConfirmRemoveContent" xml:space="preserve">
-    <value>确定要移除</value>
-  </data>
-  <data name="TrustDialog_ConfirmRemoveSuffix" xml:space="preserve">
-    <value>吗？</value>
-  </data>
-  <data name="TrustDialog_Remove" xml:space="preserve">
-    <value>移除</value>
-  </data>
-  <data name="TrustDialog_RemoveSuccessTitle" xml:space="preserve">
-    <value>移除成功</value>
-  </data>
-  <data name="TrustDialog_RemoveFailedTitle" xml:space="preserve">
-    <value>移除失败</value>
-  </data>
   <data name="AddTrustDialog_Title" xml:space="preserve">
     <value>添加到信任区</value>
   </data>
@@ -1242,12 +1194,6 @@
   <data name="AddTrustDialog_Status_FolderNotExists" xml:space="preserve">
     <value>目录不存在，无法添加</value>
   </data>
-  <data name="TrustItem_Type_File" xml:space="preserve">
-    <value>文件</value>
-  </data>
-  <data name="TrustItem_Type_Folder" xml:space="preserve">
-    <value>目录</value>
-  </data>
   <data name="Common_OperationSuccess" xml:space="preserve">
     <value>操作成功</value>
   </data>
@@ -1274,15 +1220,6 @@
   </data>
   <data name="QuarantineDialog_ClearFailedMessage" xml:space="preserve">
     <value>清空隔离区时发生错误</value>
-  </data>
-  <data name="TrustDialog_AddButton.Content" xml:space="preserve">
-    <value>添加文件/目录</value>
-  </data>
-  <data name="TrustDialog_ClearButton.Content" xml:space="preserve">
-    <value>清空信任区</value>
-  </data>
-  <data name="TrustDialog_RemoveButton.Content" xml:space="preserve">
-    <value>移除</value>
   </data>
   <data name="AddTrustDialog_AddButton.Content" xml:space="preserve">
     <value>添加</value>

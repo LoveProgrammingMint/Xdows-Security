@@ -1,5 +1,6 @@
 using Compatibility.Windows.Storage;
 using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace TrustQuarantine
 {
@@ -7,20 +8,27 @@ namespace TrustQuarantine
     {
         private static readonly string TrustDataKey = "TrustData";
 
-        // 获取所有信任项
         public static List<TrustItemModel> GetTrustItems()
         {
             var trustItems = new List<TrustItemModel>();
 
-            if (ApplicationData.Current.LocalSettings.Values[TrustDataKey] is List<Dictionary<string, string>> savedData)
+            if (ApplicationData.Current.LocalSettings.Values[TrustDataKey] is string savedDataJson)
             {
-                foreach (var item in savedData)
+                try
                 {
-                    if (item.TryGetValue("Path", out string? value) && item.TryGetValue("Hash", out string? value1))
+                    var savedData = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(savedDataJson);
+                    if (savedData != null)
                     {
-                        trustItems.Add(new TrustItemModel(value, value1));
+                        foreach (var item in savedData)
+                        {
+                            if (item.TryGetValue("Path", out string? path) && item.TryGetValue("Hash", out string? hash))
+                            {
+                                trustItems.Add(new TrustItemModel(path, hash));
+                            }
+                        }
                     }
                 }
+                catch { }
             }
 
             return trustItems;
@@ -61,6 +69,7 @@ namespace TrustQuarantine
 
             return true;
         }
+
         public static bool IsPathTrusted(string path)
         {
             var trustItems = GetTrustItems();
@@ -86,13 +95,17 @@ namespace TrustQuarantine
         // 保存信任项到本地存储
         private static async Task SaveTrustItemsAsync(List<TrustItemModel> trustItems)
         {
+            // 将信任项序列化为 JSON 字符串
             var itemsToSave = trustItems.Select(item => new Dictionary<string, string>
             {
                 { "Path", item.Path },
                 { "Hash", item.Hash }
             }).ToList();
 
-            ApplicationData.Current.LocalSettings.Values[TrustDataKey] = itemsToSave;
+            string jsonString = JsonSerializer.Serialize(itemsToSave);
+
+            // 将序列化后的 JSON 字符串保存到本地设置
+            ApplicationData.Current.LocalSettings.Values[TrustDataKey] = jsonString;
         }
     }
 }

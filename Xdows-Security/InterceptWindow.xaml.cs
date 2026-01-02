@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using TrustQuarantine;
 using WinUI3Localizer;
 
 namespace Xdows_Security
@@ -264,14 +265,13 @@ namespace Xdows_Security
                             string originalPath = _originalFilePath ?? string.Empty;
 
                             // 尝试从隔离区管理器恢复文件
-                            var quarantineItems = Protection.QuarantineManager.GetQuarantineItems();
-                            var quarantineItem = quarantineItems.Find(q => q.QuarantinePath == quarantinePath || q.OriginalPath == originalPath);
+                            var quarantineItems = QuarantineManager.GetQuarantineItems();
+                            var quarantineItem = quarantineItems.Find(q => q.SourcePath == originalPath);
 
                             if (quarantineItem != null)
                             {
                                 // 从隔离区恢复文件
-                                string itemId = Path.GetFileName(quarantineItem.QuarantinePath);
-                                bool success = Protection.QuarantineManager.RestoreFromQuarantine(itemId);
+                                bool success = await QuarantineManager.RestoreFile(quarantineItem.FileHash);
 
                                 if (success)
                                 {

@@ -14,9 +14,6 @@ namespace Protection
             SouXiaoEngine ??= new ScanEngine.ScanEngine.SouXiaoEngineScan();
             SouXiaoEngine.Initialize();
 
-            // 初始化隔离区
-            QuarantineManager.Initialize();
-
             if (_isMonitoring || SouXiaoEngine == null)
             {
                 return false;
@@ -119,7 +116,7 @@ namespace Protection
                 return false;
             }
         }
-        private static void OnChanged(object sender, FileSystemEventArgs e)
+        private static async void OnChanged(object sender, FileSystemEventArgs e)
         {
             try
             {
@@ -146,16 +143,16 @@ namespace Protection
                     try
                     {
                         // 将文件添加到隔离区
-                        bool success = QuarantineManager.AddToQuarantine(e.FullPath, "未知病毒");
+                        bool success = await QuarantineManager.AddToQuarantine(e.FullPath, "未知病毒");
 
-                        Task.Run(() =>
+                        _ = Task.Run(() =>
                         {
                             _toastCallBack?.Invoke(success, e.FullPath, "Process");
                         });
                     }
                     catch
                     {
-                        Task.Run(() =>
+                        _ = Task.Run(() =>
                         {
                             _toastCallBack?.Invoke(false, e.FullPath, "Process");
                         });

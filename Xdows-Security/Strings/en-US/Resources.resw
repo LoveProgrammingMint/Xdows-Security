@@ -996,93 +996,6 @@ If you do not accept it, please turn off the engine, or stop using and delete th
   <data name="BugReportPage_FileSent" xml:space="preserve">
     <value>[File sent] </value>
   </data>
-  <data name="QuarantineDialog_Title" xml:space="preserve">
-    <value>Quarantine</value>
-  </data>
-  <data name="QuarantineDialog_TotalItems" xml:space="preserve">
-    <value>Total {0} quarantined items</value>
-  </data>
-  <data name="QuarantineDialog_FileName" xml:space="preserve">
-    <value>File Name</value>
-  </data>
-  <data name="QuarantineDialog_FilePath" xml:space="preserve">
-    <value>File Path</value>
-  </data>
-  <data name="QuarantineDialog_QuarantineDate" xml:space="preserve">
-    <value>Quarantine Date</value>
-  </data>
-  <data name="QuarantineDialog_VirusName" xml:space="preserve">
-    <value>Virus Name</value>
-  </data>
-  <data name="QuarantineDialog_Restore.Content" xml:space="preserve">
-    <value>Restore</value>
-  </data>
-  <data name="QuarantineDialog_Delete.Content" xml:space="preserve">
-    <value>Delete</value>
-  </data>
-  <data name="QuarantineDialog_ClearAll.Content" xml:space="preserve">
-    <value>Clear All</value>
-  </data>
-  <data name="QuarantineDialog_Empty_Title" xml:space="preserve">
-    <value>Quarantine is empty</value>
-  </data>
-  <data name="QuarantineDialog_Empty_Message" xml:space="preserve">
-    <value>There are currently no quarantined files</value>
-  </data>
-  <data name="QuarantineDialog_Restore_Confirm_Title" xml:space="preserve">
-    <value>Confirm Restore</value>
-  </data>
-  <data name="QuarantineDialog_Restore_Confirm_Message" xml:space="preserve">
-    <value>Are you sure you want to restore this file? After restoration, the file will return to its original location.</value>
-  </data>
-  <data name="QuarantineDialog_Restore_Success_Title" xml:space="preserve">
-    <value>Restore Successful</value>
-  </data>
-  <data name="QuarantineDialog_Restore_Success_Message" xml:space="preserve">
-    <value>File has been successfully restored to its original location</value>
-  </data>
-  <data name="QuarantineDialog_Restore_Failed_Title" xml:space="preserve">
-    <value>Restore Failed</value>
-  </data>
-  <data name="QuarantineDialog_Restore_Failed_Message" xml:space="preserve">
-    <value>Failed to restore file. Please check if the file exists or if permissions are sufficient</value>
-  </data>
-  <data name="QuarantineDialog_Delete_Confirm_Title" xml:space="preserve">
-    <value>Confirm Delete</value>
-  </data>
-  <data name="QuarantineDialog_Delete_Confirm_Message" xml:space="preserve">
-    <value>Are you sure you want to permanently delete this file? This action cannot be undone.</value>
-  </data>
-  <data name="QuarantineDialog_Delete_Success_Title" xml:space="preserve">
-    <value>Delete Successful</value>
-  </data>
-  <data name="QuarantineDialog_Delete_Success_Message" xml:space="preserve">
-    <value>File has been permanently deleted</value>
-  </data>
-  <data name="QuarantineDialog_Delete_Failed_Title" xml:space="preserve">
-    <value>Delete Failed</value>
-  </data>
-  <data name="QuarantineDialog_Delete_Failed_Message" xml:space="preserve">
-    <value>Failed to delete file. Please check permissions</value>
-  </data>
-  <data name="QuarantineDialog_ClearAll_Confirm_Title" xml:space="preserve">
-    <value>Confirm Clear Quarantine</value>
-  </data>
-  <data name="QuarantineDialog_ClearAll_Confirm_Message" xml:space="preserve">
-    <value>Are you sure you want to permanently delete all quarantined files? This action cannot be undone.</value>
-  </data>
-  <data name="QuarantineDialog_ClearAll_Success_Title" xml:space="preserve">
-    <value>Clear Successful</value>
-  </data>
-  <data name="QuarantineDialog_ClearAll_Success_Message" xml:space="preserve">
-    <value>All quarantined files have been permanently deleted</value>
-  </data>
-  <data name="QuarantineDialog_ClearAll_Failed_Title" xml:space="preserve">
-    <value>Clear Failed</value>
-  </data>
-  <data name="QuarantineDialog_ClearAll_Failed_Message" xml:space="preserve">
-    <value>Failed to clear quarantine area, please try again</value>
-  </data>
   <data name="SecurityPage_MenuItem_Trust.Text" xml:space="preserve">
     <value>Trust File</value>
   </data>
@@ -1144,9 +1057,6 @@ If you do not accept it, please turn off the engine, or stop using and delete th
   <data name="SecurityPage_Area_Resume_Detail" xml:space="preserve">
     <value>Scan has been resumed, continuing to scan</value>
   </data>
-  <data name="QuarantineDialog_OperationResult" xml:space="preserve">
-    <value>Operation Result</value>
-  </data>
   <data name="Common_OperationSuccess" xml:space="preserve">
     <value>Operation Successful</value>
   </data>
@@ -1155,24 +1065,6 @@ If you do not accept it, please turn off the engine, or stop using and delete th
   </data>
   <data name="Common_Cancel" xml:space="preserve">
     <value>Cancel</value>
-  </data>
-  <data name="QuarantineDialog_OperationFailed" xml:space="preserve">
-    <value>Operation Failed</value>
-  </data>
-  <data name="QuarantineDialog_InvalidPath" xml:space="preserve">
-    <value>Invalid Path</value>
-  </data>
-  <data name="QuarantineDialog_RestoreError" xml:space="preserve">
-    <value>Restore Error</value>
-  </data>
-  <data name="QuarantineDialog_DeleteError" xml:space="preserve">
-    <value>Delete Error</value>
-  </data>
-  <data name="QuarantineDialog_ClearFailed" xml:space="preserve">
-    <value>Clear Failed</value>
-  </data>
-  <data name="QuarantineDialog_ClearFailedMessage" xml:space="preserve">
-    <value>An error occurred while clearing the quarantine area</value>
   </data>
   <data name="AllPage_Status" xml:space="preserve">
     <value>Enable,Disabled</value>

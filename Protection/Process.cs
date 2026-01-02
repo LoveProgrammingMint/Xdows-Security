@@ -23,9 +23,6 @@ namespace Protection
                 return false;
             }
 
-            // 初始化隔离区
-            QuarantineManager.Initialize();
-
             if (IsEnabled())
                 return true;
             try
@@ -111,7 +108,7 @@ namespace Protection
                                 try
                                 {
                                     // 将文件添加到隔离区
-                                    bool quarantineSuccess = QuarantineManager.AddToQuarantine(path, "Process Protection");
+                                    bool quarantineSuccess = await QuarantineManager.AddToQuarantine(path, "Process Protection");
 
                                     // 如果隔离成功，不需要重命名文件
                                     if (!quarantineSuccess)

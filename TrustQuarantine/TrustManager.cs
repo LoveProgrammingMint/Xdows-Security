@@ -72,8 +72,18 @@ namespace TrustQuarantine
 
         public static bool IsPathTrusted(string path)
         {
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+                return false;
+            string hash;
+            using (var sha256 = SHA256.Create())
+            using (var stream = File.OpenRead(path))
+            {
+                var hashBytes = sha256.ComputeHash(stream);
+                hash = Convert.ToHexStringLower(hashBytes);
+            }
             var trustItems = GetTrustItems();
-            return trustItems.Any(item => item.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
+            return trustItems.Any(item =>
+                string.Equals(item.Hash, hash, StringComparison.OrdinalIgnoreCase));
         }
 
         // 清空信任区

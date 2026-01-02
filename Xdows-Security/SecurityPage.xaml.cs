@@ -903,7 +903,7 @@ namespace Xdows_Security
                     string actionTaken = "";
 
                     // 首先尝试加入隔离区
-                    if (Protection.QuarantineManager.AddToQuarantine(row.FilePath, row.VirusName))
+                    if (await QuarantineManager.AddToQuarantine(row.FilePath, row.VirusName))
                     {
                         actionTaken = Localizer.Get().GetLocalizedString("SecurityPage_HandleAction_Quarantined");
                         handled = true;

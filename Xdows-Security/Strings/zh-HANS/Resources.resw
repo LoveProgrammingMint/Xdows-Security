@@ -995,93 +995,6 @@
   <data name="BugReportPage_FileSent" xml:space="preserve">
     <value>[已发送文件] </value>
   </data>
-  <data name="QuarantineDialog_Title" xml:space="preserve">
-    <value>隔离区</value>
-  </data>
-  <data name="QuarantineDialog_TotalItems" xml:space="preserve">
-    <value>共 {0} 个隔离项</value>
-  </data>
-  <data name="QuarantineDialog_FileName" xml:space="preserve">
-    <value>文件名</value>
-  </data>
-  <data name="QuarantineDialog_FilePath" xml:space="preserve">
-    <value>文件路径</value>
-  </data>
-  <data name="QuarantineDialog_QuarantineDate" xml:space="preserve">
-    <value>隔离日期</value>
-  </data>
-  <data name="QuarantineDialog_VirusName" xml:space="preserve">
-    <value>病毒名称</value>
-  </data>
-  <data name="QuarantineDialog_Restore.Content" xml:space="preserve">
-    <value>恢复</value>
-  </data>
-  <data name="QuarantineDialog_Delete.Content" xml:space="preserve">
-    <value>删除</value>
-  </data>
-  <data name="QuarantineDialog_ClearAll.Content" xml:space="preserve">
-    <value>清空所有</value>
-  </data>
-  <data name="QuarantineDialog_Empty_Title" xml:space="preserve">
-    <value>隔离区为空</value>
-  </data>
-  <data name="QuarantineDialog_Empty_Message" xml:space="preserve">
-    <value>当前没有隔离的文件</value>
-  </data>
-  <data name="QuarantineDialog_Restore_Confirm_Title" xml:space="preserve">
-    <value>确定恢复</value>
-  </data>
-  <data name="QuarantineDialog_Restore_Confirm_Message" xml:space="preserve">
-    <value>确定要恢复此文件吗？恢复后文件将返回原位置。</value>
-  </data>
-  <data name="QuarantineDialog_Restore_Success_Title" xml:space="preserve">
-    <value>恢复成功</value>
-  </data>
-  <data name="QuarantineDialog_Restore_Success_Message" xml:space="preserve">
-    <value>文件已成功恢复到原位置</value>
-  </data>
-  <data name="QuarantineDialog_Restore_Failed_Title" xml:space="preserve">
-    <value>恢复失败</value>
-  </data>
-  <data name="QuarantineDialog_Restore_Failed_Message" xml:space="preserve">
-    <value>恢复文件失败，请检查文件是否存在或权限是否足够</value>
-  </data>
-  <data name="QuarantineDialog_Delete_Confirm_Title" xml:space="preserve">
-    <value>确定删除</value>
-  </data>
-  <data name="QuarantineDialog_Delete_Confirm_Message" xml:space="preserve">
-    <value>确定要永久删除此文件吗？此操作不可撤销。</value>
-  </data>
-  <data name="QuarantineDialog_Delete_Success_Title" xml:space="preserve">
-    <value>删除成功</value>
-  </data>
-  <data name="QuarantineDialog_Delete_Success_Message" xml:space="preserve">
-    <value>文件已永久删除</value>
-  </data>
-  <data name="QuarantineDialog_Delete_Failed_Title" xml:space="preserve">
-    <value>删除失败</value>
-  </data>
-  <data name="QuarantineDialog_Delete_Failed_Message" xml:space="preserve">
-    <value>删除文件失败，请检查权限</value>
-  </data>
-  <data name="QuarantineDialog_ClearAll_Confirm_Title" xml:space="preserve">
-    <value>确定清空隔离区</value>
-  </data>
-  <data name="QuarantineDialog_ClearAll_Confirm_Message" xml:space="preserve">
-    <value>确定要永久删除所有隔离文件吗？此操作不可撤销。</value>
-  </data>
-  <data name="QuarantineDialog_ClearAll_Success_Title" xml:space="preserve">
-    <value>清空成功</value>
-  </data>
-  <data name="QuarantineDialog_ClearAll_Success_Message" xml:space="preserve">
-    <value>所有隔离文件已永久删除</value>
-  </data>
-  <data name="QuarantineDialog_ClearAll_Failed_Title" xml:space="preserve">
-    <value>清空失败</value>
-  </data>
-  <data name="QuarantineDialog_ClearAll_Failed_Message" xml:space="preserve">
-    <value>清空隔离区失败，请重试</value>
-  </data>
   <data name="SecurityPage_MenuItem_Trust.Text" xml:space="preserve">
     <value>信任文件</value>
   </data>
@@ -1143,9 +1056,6 @@
   <data name="SecurityPage_Area_Resume_Detail" xml:space="preserve">
     <value>扫描已恢复，正在继续扫描</value>
   </data>
-  <data name="QuarantineDialog_OperationResult" xml:space="preserve">
-    <value>操作结果</value>
-  </data>
   <data name="Common_OperationSuccess" xml:space="preserve">
     <value>操作成功</value>
   </data>
@@ -1154,24 +1064,6 @@
   </data>
   <data name="Common_Cancel" xml:space="preserve">
     <value>取消</value>
-  </data>
-  <data name="QuarantineDialog_OperationFailed" xml:space="preserve">
-    <value>操作失败</value>
-  </data>
-  <data name="QuarantineDialog_InvalidPath" xml:space="preserve">
-    <value>无效的路径</value>
-  </data>
-  <data name="QuarantineDialog_RestoreError" xml:space="preserve">
-    <value>恢复错误</value>
-  </data>
-  <data name="QuarantineDialog_DeleteError" xml:space="preserve">
-    <value>删除错误</value>
-  </data>
-  <data name="QuarantineDialog_ClearFailed" xml:space="preserve">
-    <value>清空失败</value>
-  </data>
-  <data name="QuarantineDialog_ClearFailedMessage" xml:space="preserve">
-    <value>清空隔离区时发生错误</value>
   </data>
   <data name="AllPage_Status" xml:space="preserve">
     <value>已启用,已禁用</value>

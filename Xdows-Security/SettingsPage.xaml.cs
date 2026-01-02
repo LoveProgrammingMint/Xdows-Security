@@ -4,6 +4,7 @@ using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Protection;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using TrustQuarantine;
 using Windows.Security.Credentials.UI;
 using WinUI3Localizer;
 using Xdows.UI.Dialogs;
@@ -582,10 +584,6 @@ namespace Xdows_Security
                 await errorDialog.ShowAsync();
             }
         }
-
-        /// <summary>
-        /// 信任区查看按钮点击事件
-        /// </summary>
         private async void Trust_ViewButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -595,32 +593,26 @@ namespace Xdows_Security
                     XamlRoot = this.XamlRoot
                 };
 
-                await dialog.ShowAsync();
+                _ = dialog.ShowAsync();
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Failed to open trust dialog: {ex.Message}");
-            }
+            catch { }
         }
-
-        /// <summary>
-        /// 信任区添加按钮点击事件
-        /// </summary>
         private async void Trust_AddButton_Click(object sender, RoutedEventArgs e)
         {
-            //try
-            //{
-            //    var dialog = new AddTrustDialog
-            //    {
-            //        XamlRoot = this.XamlRoot
-            //    };
-
-            //    await dialog.ShowAsync();
-            //}
-            //catch (Exception ex)
-            //{
-            //    System.Diagnostics.Debug.WriteLine($"Failed to open add trust dialog: {ex.Message}");
-            //}
+            try
+            {
+                using var dlg = new CommonOpenFileDialog
+                {
+                    Title = Localizer.Get().GetLocalizedString("TrustDialog_SelectFile_Title"),
+                    IsFolderPicker = false,
+                    EnsurePathExists = true,
+                };
+                if (dlg.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    bool success = await TrustManager.AddToTrust(dlg.FileName);
+                }
+            }
+            catch { }
         }
 
         private void TrayVisibleToggle_Toggled(object sender, RoutedEventArgs e)

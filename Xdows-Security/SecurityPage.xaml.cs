@@ -596,7 +596,7 @@ namespace Xdows_Security
                             // 检查文件是否在信任区中
                             if (TrustManager.IsPathTrusted(file))
                             {
-                                LogText.AddNewLog(LogLevel.INFO, "Security - Find", "Is Trusted (Path)");
+                                LogText.AddNewLog(LogLevel.INFO, "Security - Find", "Is Trusted");
                                 _filesSafe++;
                                 continue;
                             }

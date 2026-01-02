@@ -150,6 +150,9 @@
   <data name="SecurityPage_SelectFile_Title" xml:space="preserve">
     <value>选择文件</value>
   </data>
+  <data name="TrustDialog_SelectFile_Title" xml:space="preserve">
+    <value>选择文件</value>
+  </data>
   <data name="SecurityPage_GetFailed_Text" xml:space="preserve">
     <value>获取失败</value>
   </data>
@@ -265,13 +268,13 @@
     <value>单独扫描指定文件</value>
   </data>
   <data name="SecurityPage_Area_File_Detail" xml:space="preserve">
-    <value>正在检测：{0}</value>
+    <value>正在检测：</value>
   </data>
   <data name="SecurityPage_Area_Folder_Title" xml:space="preserve">
     <value>单独扫描指定目录</value>
   </data>
   <data name="SecurityPage_Area_Folder_Detail" xml:space="preserve">
-    <value>正在检测：{0}</value>
+    <value>正在检测：</value>
   </data>
   <data name="SecurityPage_Area_More_Title" xml:space="preserve">
     <value>更多扫描 - 自定义路径</value>
@@ -1143,57 +1146,6 @@
   <data name="QuarantineDialog_OperationResult" xml:space="preserve">
     <value>操作结果</value>
   </data>
-  <data name="AddTrustDialog_Title" xml:space="preserve">
-    <value>添加到信任区</value>
-  </data>
-  <data name="AddTrustDialog_SelectFile_Title" xml:space="preserve">
-    <value>选择文件</value>
-  </data>
-  <data name="AddTrustDialog_SelectFolder_Title" xml:space="preserve">
-    <value>选择目录</value>
-  </data>
-  <data name="AddTrustDialog_AllFiles_Filter" xml:space="preserve">
-    <value>所有文件</value>
-  </data>
-  <data name="AddTrustDialog_Error_SelectFile" xml:space="preserve">
-    <value>请选择要添加的文件或文件夹</value>
-  </data>
-  <data name="AddTrustDialog_Error_AddFailed" xml:space="preserve">
-    <value>添加失败</value>
-  </data>
-  <data name="AddTrustDialog_Error_BrowseFailed" xml:space="preserve">
-    <value>浏览失败</value>
-  </data>
-  <data name="AddTrustDialog_Preview_SelectFile" xml:space="preserve">
-    <value>请选择文件或目录</value>
-  </data>
-  <data name="AddTrustDialog_Label_Name" xml:space="preserve">
-    <value>名称</value>
-  </data>
-  <data name="AddTrustDialog_Label_Size" xml:space="preserve">
-    <value>大小</value>
-  </data>
-  <data name="AddTrustDialog_Label_Contains" xml:space="preserve">
-    <value>包含</value>
-  </data>
-  <data name="AddTrustDialog_Label_File" xml:space="preserve">
-    <value>文件</value>
-  </data>
-  <data name="AddTrustDialog_Label_Folder" xml:space="preserve">
-    <value>目录</value>
-  </data>
-  <data name="AddTrustDialog_Status_FileExists" xml:space="preserve">
-    <value>文件存在，可以添加</value>
-  </data>
-  <data name="AddTrustDialog_Status_FileNotExists" xml:space="preserve">
-    <value>文件不存在，无法添加</value>
-  </data>
-  <data name="AddTrustDialog_Status_FolderExists" xml:space="preserve">
-    <value>目录存在，可以添加</value>
-  </data>
-  <data name="AddTrustDialog_Status_FolderNotExists" xml:space="preserve">
-    <value>目录不存在，无法添加</value>
-  </data>
   <data name="Common_OperationSuccess" xml:space="preserve">
     <value>操作成功</value>
   </data>
@@ -1220,42 +1172,6 @@
   </data>
   <data name="QuarantineDialog_ClearFailedMessage" xml:space="preserve">
     <value>清空隔离区时发生错误</value>
-  </data>
-  <data name="AddTrustDialog_AddButton.Content" xml:space="preserve">
-    <value>添加</value>
-  </data>
-  <data name="AddTrustDialog_CancelButton.Content" xml:space="preserve">
-    <value>取消</value>
-  </data>
-  <data name="AddTrustDialog_Description.Text" xml:space="preserve">
-    <value>选择要添加到信任区的文件或文件夹：</value>
-  </data>
-  <data name="AddTrustDialog_PathPlaceholder.PlaceholderText" xml:space="preserve">
-    <value>输入文件或目录路径...</value>
-  </data>
-  <data name="AddTrustDialog_BrowseButton.Content" xml:space="preserve">
-    <value>浏览...</value>
-  </data>
-  <data name="AddTrustDialog_Type_File.Content" xml:space="preserve">
-    <value>文件</value>
-  </data>
-  <data name="AddTrustDialog_Type_Folder.Content" xml:space="preserve">
-    <value>目录</value>
-  </data>
-  <data name="AddTrustDialog_Label_Type.Text" xml:space="preserve">
-    <value>类型</value>
-  </data>
-  <data name="AddTrustDialog_Label_Path.Text" xml:space="preserve">
-    <value>路径</value>
-  </data>
-  <data name="AddTrustDialog_Label_Note.Text" xml:space="preserve">
-    <value>备注</value>
-  </data>
-  <data name="AddTrustDialog_NotePlaceholder.PlaceholderText" xml:space="preserve">
-    <value>输入可选备注...</value>
-  </data>
-  <data name="AddTrustDialog_Preview_Title.Text" xml:space="preserve">
-    <value>预览</value>
   </data>
   <data name="AllPage_Status" xml:space="preserve">
     <value>已启用,已禁用</value>
@@ -1349,5 +1265,29 @@
   </data>
   <data name="SettingsPage_Other_About_Developer_Text.Text" xml:space="preserve">
     <value>零度枫铸</value>
+  </data>
+  <data name="Button_Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="TrustDialog_Dialog.Title" xml:space="preserve">
+    <value>信任区</value>
+  </data>
+  <data name="TrustDialog_AddButton.Content" xml:space="preserve">
+    <value>添加</value>
+  </data>
+  <data name="TrustDialog_AddMenuItem.Text" xml:space="preserve">
+    <value>添加</value>
+  </data>
+  <data name="TrustDialog_DeleteButton.Content" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="TrustDialog_DeleteMenuItem.Text" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="TrustDialog_ClearButton.Content" xml:space="preserve">
+    <value>清空</value>
+  </data>
+  <data name="TrustDialog_ClearMenuItem.Text" xml:space="preserve">
+    <value>清空</value>
   </data>
 </root>

@@ -1,25 +1,37 @@
 <ContentDialog x:Class="Xdows_Security.TrustDialog"
                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-               Title="信任区管理"
-               PrimaryButtonText="关闭"
+               xmlns:l="using:WinUI3Localizer"
                DefaultButton="Primary"
                CornerRadius="8"
+               l:Uids.Uid="TrustDialog_Dialog"
                xmlns:local="using:TrustQuarantine">
 
     <StackPanel>
-        <ListView x:Name="TrustListView">
+        <ListView x:Name="TrustListView" SelectionMode="Multiple">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local:TrustItemModel">
-                    <StackPanel>
-                        <TextBlock Text="{Binding Path}" />
-                        <TextBlock Text="{Binding Hash}" />
+                    <StackPanel> 
+                        <TextBlock Text="{Binding Path}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding Hash}" IsTextSelectionEnabled="True" VerticalAlignment="Center" FontSize="10"/>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
+
+            <ListView.ContextFlyout>
+                <MenuFlyout>
+                    <MenuFlyoutItem l:Uids.Uid="TrustDialog_DeleteMenuItem" Click="DeleteMenuItem_Click"/>
+                    <MenuFlyoutSeparator />
+                    <MenuFlyoutItem l:Uids.Uid="TrustDialog_AddMenuItem" Click="AddMenuItem_Click"/>
+                    <MenuFlyoutItem l:Uids.Uid="TrustDialog_ClearMenuItem" Click="ClearMenuItem_Click"/>
+                </MenuFlyout>
+            </ListView.ContextFlyout>
         </ListView>
 
-        <Button Content="添加信任项" Click="AddButton_Click" />
-        <Button Content="清空信任区" Click="ClearButton_Click" />
+        <StackPanel Margin="0,24,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button l:Uids.Uid="TrustDialog_AddButton" Click="AddMenuItem_Click" Margin="0,0,4,0" />
+            <Button l:Uids.Uid="TrustDialog_DeleteButton" Click="DeleteMenuItem_Click"/>
+            <Button l:Uids.Uid="TrustDialog_ClearButton" Click="ClearMenuItem_Click"/>
+        </StackPanel>
     </StackPanel>
 </ContentDialog>

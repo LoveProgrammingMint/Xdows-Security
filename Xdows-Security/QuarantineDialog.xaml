@@ -3,8 +3,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:TrustQuarantine"
-    Title="隔离区"
-    PrimaryButtonText="关闭"
+    xmlns:l="using:WinUI3Localizer"
+    l:Uids.Uid="QuarantineDialog_Dialog"
     DefaultButton="Primary"
     CornerRadius="8">
 
@@ -14,11 +14,10 @@
                   Margin="0,0,0,12">
             <ListView.ContextFlyout>
                 <MenuFlyout>
-                    <MenuFlyoutItem Text="恢复" Click="RestoreButton_Click"/>
-                    <MenuFlyoutItem Text="删除" Click="DeleteMenuItem_Click"/>
-                    <MenuFlyoutSeparator/>
-                    <MenuFlyoutItem Text="添加" Click="AddMenuItem_Click"/>
-                    <MenuFlyoutItem Text="清空" Click="ClearMenuItem_Click"/>
+                    <MenuFlyoutItem l:Uids.Uid="QuarantineDialog_RestoreMenuItem" Click="RestoreMenuItem_Click"/>
+                    <MenuFlyoutItem l:Uids.Uid="QuarantineDialog_DeleteMenuItem"  Click="DeleteMenuItem_Click"/>
+                    <MenuFlyoutSeparator />
+                    <MenuFlyoutItem l:Uids.Uid="QuarantineDialog_ClearMenuItem"   Click="ClearMenuItem_Click"/>
                 </MenuFlyout>
             </ListView.ContextFlyout>
 
@@ -40,11 +39,10 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="6">
-            <Button Content="恢复" Click="RestoreButton_Click"/>
-            <Button Content="删除" Click="DeleteMenuItem_Click"/>
-            <Button Content="添加" Click="AddButton_Click"/>
-            <Button Content="清空" Click="ClearButton_Click"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
+            <Button l:Uids.Uid="QuarantineDialog_RestoreButton" Click="RestoreMenuItem_Click"/>
+            <Button l:Uids.Uid="QuarantineDialog_DeleteButton"  Click="DeleteMenuItem_Click"/>
+            <Button l:Uids.Uid="QuarantineDialog_ClearButton"   Click="ClearMenuItem_Click"/>
         </StackPanel>
     </StackPanel>
 </ContentDialog>

@@ -22,16 +22,16 @@
                 <MenuFlyout>
                     <MenuFlyoutItem l:Uids.Uid="TrustDialog_DeleteMenuItem" Click="DeleteMenuItem_Click"/>
                     <MenuFlyoutSeparator />
-                    <MenuFlyoutItem l:Uids.Uid="TrustDialog_AddMenuItem" Click="AddMenuItem_Click"/>
-                    <MenuFlyoutItem l:Uids.Uid="TrustDialog_ClearMenuItem" Click="ClearMenuItem_Click"/>
+                    <MenuFlyoutItem l:Uids.Uid="TrustDialog_AddMenuItem"    Click="AddMenuItem_Click"/>
+                    <MenuFlyoutItem l:Uids.Uid="TrustDialog_ClearMenuItem"  Click="ClearMenuItem_Click"/>
                 </MenuFlyout>
             </ListView.ContextFlyout>
         </ListView>
 
-        <StackPanel Margin="0,24,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button l:Uids.Uid="TrustDialog_AddButton" Click="AddMenuItem_Click" Margin="0,0,4,0" />
+        <StackPanel Margin="0,24,0,0" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
+            <Button l:Uids.Uid="TrustDialog_AddButton"    Click="AddMenuItem_Click"/>
             <Button l:Uids.Uid="TrustDialog_DeleteButton" Click="DeleteMenuItem_Click"/>
-            <Button l:Uids.Uid="TrustDialog_ClearButton" Click="ClearMenuItem_Click"/>
+            <Button l:Uids.Uid="TrustDialog_ClearButton"  Click="ClearMenuItem_Click"/>
         </StackPanel>
     </StackPanel>
 </ContentDialog>

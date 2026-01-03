@@ -721,7 +721,7 @@ Why not try XIGUA Security?</value>
     <value>SouXiao Engine</value>
   </data>
   <data name="SettingsPage_Scan_SouXiao_Develop.Description" xml:space="preserve">
-    <value>Officially maintained by Xdows Security - IceZero Studio.</value>
+    <value>Officially maintained by IceZero Studio.</value>
   </data>
   <data name="SettingsPage_Appearance_Backdrop_Opacity.Description" xml:space="preserve">
     <value>Modify the opacity of the main window</value>
@@ -1165,22 +1165,43 @@ If you do not accept it, please turn off the engine, or stop using and delete th
   <data name="TrustDialog_Dialog.Title" xml:space="preserve">
     <value>Trust Zone</value>
   </data>
+  <data name="QuarantineDialog_Dialog.Title" xml:space="preserve">
+    <value>Quarantine</value>
+  </data>
   <data name="TrustDialog_AddButton.Content" xml:space="preserve">
     <value>Add</value>
+  </data>
+  <data name="QuarantineDialog_RestoreButton.Content" xml:space="preserve">
+    <value>Restore</value>
   </data>
   <data name="TrustDialog_AddMenuItem.Text" xml:space="preserve">
     <value>Add</value>
   </data>
+  <data name="QuarantineDialog_RestoreMenuItem.Text" xml:space="preserve">
+    <value>Restore</value>
+  </data>
   <data name="TrustDialog_DeleteButton.Content" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="QuarantineDialog_DeleteButton.Content" xml:space="preserve">
     <value>Delete</value>
   </data>
   <data name="TrustDialog_DeleteMenuItem.Text" xml:space="preserve">
     <value>Delete</value>
   </data>
+  <data name="QuarantineDialog_DeleteMenuItem.Text" xml:space="preserve">
+    <value>Delete</value>
+  </data>
   <data name="TrustDialog_ClearButton.Content" xml:space="preserve">
     <value>Clear</value>
   </data>
+  <data name="QuarantineDialog_ClearButton.Content" xml:space="preserve">
+    <value>Clear</value>
+  </data>
   <data name="TrustDialog_ClearMenuItem.Text" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="QuarantineDialog_ClearMenuItem.Text" xml:space="preserve">
     <value>Clear</value>
   </data>
 </root>

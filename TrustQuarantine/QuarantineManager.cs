@@ -6,37 +6,45 @@ namespace TrustQuarantine
 {
     public static class QuarantineManager
     {
-        private const string QuarantineDataKey = "QuarantineData";
-
-        // 建议：固定 JsonOptions，避免后续扩展字段时不一致
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
             WriteIndented = false,
             PropertyNameCaseInsensitive = true
         };
+        private static string QuarantineFolderPath => Path.Combine(ApplicationData.LocalFolder.Path, "Quarantine");
 
-        public static List<QuarantineItemModel> GetQuarantineItems()
+        private static void EnsureQuarantineFolderExists()
         {
-            if (ApplicationData.Current.LocalSettings.Values[QuarantineDataKey] is not string json ||
-                string.IsNullOrWhiteSpace(json))
+            if (!Directory.Exists(QuarantineFolderPath))
             {
-                return [];
-            }
-
-            try
-            {
-                return JsonSerializer.Deserialize<List<QuarantineItemModel>>(json, JsonOptions) ?? [];
-            }
-            catch
-            {
-                // 数据坏了就当空
-                return [];
+                Directory.CreateDirectory(QuarantineFolderPath);
             }
         }
+        public static List<QuarantineItemModel> GetQuarantineItems()
+        {
+            var quarantineItems = new List<QuarantineItemModel>();
+            EnsureQuarantineFolderExists();
 
-        /// <summary>
-        /// 添加文件到隔离区：读取原文件 -> AES 加密保存 -> 持久化 -> 删除原文件
-        /// </summary>
+            foreach (var file in Directory.GetFiles(QuarantineFolderPath))
+            {
+                try
+                {
+                    // 读取每个文件的内容
+                    string json = File.ReadAllText(file);
+                    var item = JsonSerializer.Deserialize<QuarantineItemModel>(json, JsonOptions);
+                    if (item != null)
+                    {
+                        quarantineItems.Add(item);
+                    }
+                }
+                catch
+                {
+                    // 如果某个文件读取失败，跳过
+                }
+            }
+
+            return quarantineItems;
+        }
         public static async Task<bool> AddToQuarantine(string filePath, string threatName)
         {
             if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath)) return false;
@@ -48,8 +56,7 @@ namespace TrustQuarantine
                 var current = GetQuarantineItems();
                 if (current.Any(x => string.Equals(x.FileHash, fileHash, StringComparison.OrdinalIgnoreCase)))
                 {
-                    // 已存在：仍然删除原文件？这里选择不删，避免误删
-                    return true;
+                    return true; // 如果文件已经在隔离区中，则不重复添加
                 }
 
                 byte[] fileData = await File.ReadAllBytesAsync(filePath);
@@ -71,10 +78,12 @@ namespace TrustQuarantine
                     IV = Convert.ToBase64String(aes.IV)
                 };
 
-                current.Add(item);
-                await SaveQuarantineItemsAsync(current);
+                // 隔离区每个文件都存为一个独立的 JSON 文件
+                string quarantineItemFilePath = Path.Combine(QuarantineFolderPath, $"{fileHash}.json");
+                string json = JsonSerializer.Serialize(item, JsonOptions);
+                await File.WriteAllTextAsync(quarantineItemFilePath, json);
 
-                // 入库成功后再删原文件
+                // 删除原文件
                 File.Delete(filePath);
                 return true;
             }
@@ -83,10 +92,6 @@ namespace TrustQuarantine
                 return false;
             }
         }
-
-        /// <summary>
-        /// 从隔离区恢复文件（解密写回原路径，如冲突则改名），并从隔离区移除该项
-        /// </summary>
         public static async Task<bool> RestoreFile(string fileHash)
         {
             if (string.IsNullOrWhiteSpace(fileHash)) return false;
@@ -99,7 +104,7 @@ namespace TrustQuarantine
             {
                 string targetPath = item.SourcePath;
 
-                // 目标路径冲突：自动改名
+                // 如果目标路径已经存在，自动重命名
                 if (File.Exists(targetPath))
                 {
                     string dir = Path.GetDirectoryName(targetPath) ?? "";
@@ -114,8 +119,13 @@ namespace TrustQuarantine
                 byte[] plain = DecryptData(item.FileData, key, iv);
                 await File.WriteAllBytesAsync(targetPath, plain);
 
-                current.Remove(item);
-                await SaveQuarantineItemsAsync(current);
+                // 恢复文件后，从隔离区移除对应记录
+                string quarantineItemFilePath = Path.Combine(QuarantineFolderPath, $"{fileHash}.json");
+                if (File.Exists(quarantineItemFilePath))
+                {
+                    File.Delete(quarantineItemFilePath);
+                }
+
                 return true;
             }
             catch
@@ -123,53 +133,50 @@ namespace TrustQuarantine
                 return false;
             }
         }
-
-        /// <summary>
-        /// 单独删除隔离项（仅移除隔离记录，不恢复文件）
-        /// </summary>
         public static async Task<bool> DeleteItem(string fileHash)
         {
             if (string.IsNullOrWhiteSpace(fileHash)) return false;
 
-            var current = GetQuarantineItems();
-            int removed = current.RemoveAll(x => string.Equals(x.FileHash, fileHash, StringComparison.OrdinalIgnoreCase));
-            if (removed <= 0) return false;
+            string quarantineItemFilePath = Path.Combine(QuarantineFolderPath, $"{fileHash}.json");
 
-            await SaveQuarantineItemsAsync(current);
-            return true;
+            if (File.Exists(quarantineItemFilePath))
+            {
+                File.Delete(quarantineItemFilePath);
+                return true;
+            }
+
+            return false;
         }
-
-        /// <summary>
-        /// 批量删除隔离项
-        /// </summary>
         public static async Task<int> DeleteItems(IEnumerable<string> fileHashes)
         {
             var set = new HashSet<string>(fileHashes.Where(s => !string.IsNullOrWhiteSpace(s)),
                                           StringComparer.OrdinalIgnoreCase);
             if (set.Count == 0) return 0;
 
-            var current = GetQuarantineItems();
-            int before = current.Count;
-            current.RemoveAll(x => set.Contains(x.FileHash));
-            int removed = before - current.Count;
-
-            if (removed > 0)
-                await SaveQuarantineItemsAsync(current);
+            int removed = 0;
+            foreach (var fileHash in set)
+            {
+                string quarantineItemFilePath = Path.Combine(QuarantineFolderPath, $"{fileHash}.json");
+                if (File.Exists(quarantineItemFilePath))
+                {
+                    File.Delete(quarantineItemFilePath);
+                    removed++;
+                }
+            }
 
             return removed;
         }
-
         public static async Task<bool> ClearQuarantine()
         {
-            await SaveQuarantineItemsAsync([]);
-            return true;
-        }
+            if (Directory.Exists(QuarantineFolderPath))
+            {
+                foreach (var file in Directory.GetFiles(QuarantineFolderPath))
+                {
+                    File.Delete(file); // 删除所有文件
+                }
+            }
 
-        private static async Task SaveQuarantineItemsAsync(List<QuarantineItemModel> items)
-        {
-            string json = JsonSerializer.Serialize(items, JsonOptions);
-            ApplicationData.Current.LocalSettings.Values[QuarantineDataKey] = json;
-            await Task.CompletedTask;
+            return true;
         }
 
         private static async Task<string> CalculateFileHashAsync(string filePath)

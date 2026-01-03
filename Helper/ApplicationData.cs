@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.Collections;
 using System.Text.Json;
-using System.Threading.Tasks;
 using IO = System.IO;
 
 #pragma warning disable CS8601, CS8603, CS8766, CS1998, CS0114, CS8643, CS8613, CS8619, CS8767
@@ -287,7 +282,7 @@ namespace Compatibility.Windows.Storage
     }
     #endregion
 
-    #region StorageFolder / StorageFile / 枚举 等（未改动）
+    #region StorageFolder / StorageFile / 枚举 等
     public sealed class StorageFolder
     {
         internal static readonly StorageFolder LocalFolderInstance = new()

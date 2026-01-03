@@ -649,7 +649,7 @@
     <value>额外数据</value>
   </data>
   <data name="SettingsPage_Scan_Local_ExtraData.Description" xml:space="preserve">
-    <value>病毒名称中增加额外数据的选拔赛</value>
+    <value>病毒名称中显示威胁文件额外数据</value>
   </data>
   <data name="HomePage_Pomes" xml:space="preserve">
     <value>光是宇宙的标点，黑洞是它故意留的省略号.
@@ -721,7 +721,7 @@
     <value>SouXiao 本地引擎</value>
   </data>
   <data name="SettingsPage_Scan_SouXiao_Develop.Description" xml:space="preserve">
-    <value>由 Xdows Security - 零度枫铸工作室维护</value>
+    <value>由 零度枫铸工作室 维护</value>
   </data>
   <data name="SettingsPage_Appearance_Backdrop_Opacity.Description" xml:space="preserve">
     <value>修改主窗口的不透明度</value>
@@ -1164,22 +1164,43 @@
   <data name="TrustDialog_Dialog.Title" xml:space="preserve">
     <value>信任区</value>
   </data>
+  <data name="QuarantineDialog_Dialog.Title" xml:space="preserve">
+    <value>隔离区</value>
+  </data>
   <data name="TrustDialog_AddButton.Content" xml:space="preserve">
     <value>添加</value>
+  </data>
+  <data name="QuarantineDialog_RestoreButton.Content" xml:space="preserve">
+    <value>恢复</value>
   </data>
   <data name="TrustDialog_AddMenuItem.Text" xml:space="preserve">
     <value>添加</value>
   </data>
+  <data name="QuarantineDialog_RestoreMenuItem.Text" xml:space="preserve">
+    <value>恢复</value>
+  </data>
   <data name="TrustDialog_DeleteButton.Content" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="QuarantineDialog_DeleteButton.Content" xml:space="preserve">
     <value>删除</value>
   </data>
   <data name="TrustDialog_DeleteMenuItem.Text" xml:space="preserve">
     <value>删除</value>
   </data>
+  <data name="QuarantineDialog_DeleteMenuItem.Text" xml:space="preserve">
+    <value>删除</value>
+  </data>
   <data name="TrustDialog_ClearButton.Content" xml:space="preserve">
     <value>清空</value>
   </data>
+  <data name="QuarantineDialog_ClearButton.Content" xml:space="preserve">
+    <value>清空</value>
+  </data>
   <data name="TrustDialog_ClearMenuItem.Text" xml:space="preserve">
+    <value>清空</value>
+  </data>
+  <data name="QuarantineDialog_ClearMenuItem.Text" xml:space="preserve">
     <value>清空</value>
   </data>
 </root>

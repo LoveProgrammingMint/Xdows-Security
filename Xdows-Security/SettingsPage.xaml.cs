@@ -488,10 +488,6 @@ namespace Xdows_Security
             }
             catch { }
         }
-
-        /// <summary>
-        /// 隔离区查看按钮点击事件
-        /// </summary>
         private async void Quarantine_ViewButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -503,85 +499,11 @@ namespace Xdows_Security
 
                 await dialog.ShowAsync();
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Failed to open quarantine dialog: {ex.Message}");
-            }
+            catch { }
         }
-
-        /// <summary>
-        /// 隔离区清空按钮点击事件
-        /// </summary>
         private async void Quarantine_ClearButton_Click(object sender, RoutedEventArgs e)
         {
-            //try
-            //{
-            //    int count = QuarantineManager.GetQuarantineCount();
-
-            //    if (count == 0)
-            //    {
-            //        var emptyDialog = new ContentDialog
-            //        {
-            //            Title = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_Empty_Title"),
-            //            Content = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_Empty_Content"),
-            //            CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
-            //            XamlRoot = this.XamlRoot
-            //        };
-            //        await emptyDialog.ShowAsync();
-            //        return;
-            //    }
-
-            //    var confirmDialog = new ContentDialog
-            //    {
-            //        Title = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearConfirm_Title"),
-            //        Content = string.Format(Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearConfirm_Content"), count),
-            //        PrimaryButtonText = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearConfirm_PrimaryButton"),
-            //        CloseButtonText = Localizer.Get().GetLocalizedString("Button_Cancel"),
-            //        DefaultButton = ContentDialogButton.Close,
-            //        XamlRoot = this.XamlRoot
-            //    };
-
-            //    if (await confirmDialog.ShowAsync() == ContentDialogResult.Primary)
-            //    {
-            //        bool success = await QuarantineManager.ClearQuarantine();
-
-            //        if (success)
-            //        {
-            //            var successDialog = new ContentDialog
-            //            {
-            //                Title = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearSuccess_Title"),
-            //                Content = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearSuccess_Content"),
-            //                CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
-            //                XamlRoot = this.XamlRoot
-            //            };
-            //            await successDialog.ShowAsync();
-            //        }
-            //        else
-            //        {
-            //            var errorDialog = new ContentDialog
-            //            {
-            //                Title = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearFailed_Title"),
-            //                Content = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearFailed_Content"),
-            //                CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
-            //                XamlRoot = this.XamlRoot
-            //            };
-            //            await errorDialog.ShowAsync();
-            //        }
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    System.Diagnostics.Debug.WriteLine($"Failed to clear quarantine: {ex.Message}");
-
-            //    var errorDialog = new ContentDialog
-            //    {
-            //        Title = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearFailed_Title"),
-            //        Content = Localizer.Get().GetLocalizedString("SettingsPage_Quarantine_ClearFailed_Content"),
-            //        CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
-            //        XamlRoot = this.XamlRoot
-            //    };
-            //    await errorDialog.ShowAsync();
-            //}
+            _ = QuarantineManager.ClearQuarantine();
         }
         private async void Trust_ViewButton_Click(object sender, RoutedEventArgs e)
         {

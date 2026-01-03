@@ -494,7 +494,8 @@ namespace Xdows_Security
             {
                 var dialog = new QuarantineDialog
                 {
-                    XamlRoot = this.XamlRoot
+                    XamlRoot = this.XamlRoot,
+                    RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                 };
 
                 await dialog.ShowAsync();
@@ -511,7 +512,8 @@ namespace Xdows_Security
             {
                 var dialog = new TrustDialog
                 {
-                    XamlRoot = this.XamlRoot
+                    XamlRoot = this.XamlRoot,
+                    RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                 };
 
                 _ = dialog.ShowAsync();

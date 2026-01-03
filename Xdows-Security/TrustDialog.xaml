@@ -13,7 +13,7 @@
                 <DataTemplate x:DataType="local:TrustItemModel">
                     <StackPanel> 
                         <TextBlock Text="{Binding Path}" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding Hash}" IsTextSelectionEnabled="True" VerticalAlignment="Center" FontSize="10"/>
+                        <TextBlock Text="{Binding Hash}" Opacity="0.75" IsTextSelectionEnabled="True" VerticalAlignment="Center" FontSize="10"/>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>

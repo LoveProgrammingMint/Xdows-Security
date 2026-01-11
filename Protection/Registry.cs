@@ -7,7 +7,7 @@ using static Protection.CallBack;
 
 namespace Protection
 {
-    public static class RegistryProtection
+    public class RegistryProtection : IProtectionModel
     {
         private static bool _isEnabled;
         private static Thread? _monitorThread;
@@ -16,7 +16,7 @@ namespace Protection
         private static InterceptCallBack? _interceptCallBack;
         private static readonly string _configDirectory;
         private static readonly string _logFile;
-
+        public string Name => "RegistryProtection";
         // 关键监控路径
         private static readonly string[] _criticalPaths =
         [
@@ -51,7 +51,7 @@ namespace Protection
             LoadConfiguration();
         }
 
-        public static bool IsEnabled()
+        public bool IsEnabled()
         {
             lock (_lock)
             {
@@ -59,7 +59,7 @@ namespace Protection
             }
         }
 
-        public static bool Enable(InterceptCallBack interceptCallBack)
+        public bool Enable(InterceptCallBack interceptCallBack)
         {
             lock (_lock)
             {
@@ -95,7 +95,7 @@ namespace Protection
             }
         }
 
-        public static bool Disable()
+        public bool Disable()
         {
             lock (_lock)
             {

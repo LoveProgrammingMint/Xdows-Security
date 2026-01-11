@@ -5,7 +5,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Protection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -167,12 +166,7 @@ namespace Xdows_Security
             toggle.Toggled -= RunProtection;
             if (!ProtectionStatus.Run(runId))
                 toggle.IsOn = !toggle.IsOn;
-            if (runId == 0)
-                toggle.IsOn = ProcessProtection.IsEnabled();
-            if (runId == 1)
-                toggle.IsOn = FilesProtection.IsEnabled();
-            if (runId == 4)
-                toggle.IsOn = RegistryProtection.IsEnabled();
+            toggle.IsOn = ProtectionStatus.IsRun(runId);
             toggle.Toggled += RunProtection;
         }
         private void Settings_Feedback_Click(object sender, RoutedEventArgs e)
@@ -251,9 +245,9 @@ namespace Xdows_Security
                 Appearance_Backdrop_Opacity.Value = 100;
             }
 
-            ProcessToggle.IsOn = ProcessProtection.IsEnabled();
-            FilesToggle.IsOn = FilesProtection.IsEnabled();
-            RegistryToggle.IsOn = RegistryProtection.IsEnabled();
+            ProcessToggle.IsOn = ProtectionStatus.IsRun(0);
+            FilesToggle.IsOn = ProtectionStatus.IsRun(1);
+            RegistryToggle.IsOn = ProtectionStatus.IsRun(4);
         }
 
         private async void LoadLanguageSetting()

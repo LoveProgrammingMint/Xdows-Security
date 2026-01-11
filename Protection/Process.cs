@@ -7,14 +7,14 @@ using static Protection.CallBack;
 
 namespace Protection
 {
-    public static class ProcessProtection
+    public class ProcessProtection : IProtectionModel
     {
         // 感谢 XiaoWeiSecurity 对开源杀毒软件项目（特别是主动防御）的巨大贡献！！
-
         private static CancellationTokenSource? _cts = null;
         private static Task? _monitorTask = null;
         private static ScanEngine.ScanEngine.SouXiaoEngineScan? SouXiaoEngine;
-        public static bool Enable(InterceptCallBack toastCallBack)
+        public string Name => "ProcessProtection";
+        public bool Enable(InterceptCallBack toastCallBack)
         {
             SouXiaoEngine ??= new ScanEngine.ScanEngine.SouXiaoEngineScan();
             SouXiaoEngine.Initialize();
@@ -36,7 +36,7 @@ namespace Protection
                 return false;
             }
         }
-        public static bool Disable()
+        public bool Disable()
         {
             if (!IsEnabled())
                 return true;
@@ -64,7 +64,7 @@ namespace Protection
 
             return true;
         }
-        public static bool IsEnabled()
+        public bool IsEnabled()
         {
             return _cts is { IsCancellationRequested: false };
         }

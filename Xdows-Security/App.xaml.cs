@@ -102,47 +102,39 @@ namespace Xdows_Security
             });
             // Notifications.ShowNotification("发现威胁", content, path);
         };
-
+        public static IProtectionModel ProcessProtection { get; } = new ProcessProtection();
+        public static IProtectionModel FilesProtection { get; } = new FilesProtection();
+        public static IProtectionModel RegistryProtection { get; } = new RegistryProtection();
         public static bool Run(int RunID)
         {
-            switch (RunID)
+            IProtectionModel? protectionModel = RunIDToIProtectionModel(RunID);
+            if (protectionModel == null) return false;
+            if (protectionModel.IsEnabled())
             {
-                case 0:
-                    if (ProcessProtection.IsEnabled())
-                    {
-                        LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Disable ProcessProtection ...");
-                        return Protection.ProcessProtection.Disable();
-                    }
-                    else
-                    {
-                        LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Enable ProcessProtection ...");
-                        return Protection.ProcessProtection.Enable(interceptCallBack);
-                    }
-                case 1:
-                    if (FilesProtection.IsEnabled())
-                    {
-                        LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Disable FilesProtection ...");
-                        return Protection.FilesProtection.Disable();
-                    }
-                    else
-                    {
-                        LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Enable FilesProtection ...");
-                        return Protection.FilesProtection.Enable(interceptCallBack);
-                    }
-                case 4:
-                    if (RegistryProtection.IsEnabled())
-                    {
-                        LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Disable RegistryProtection ...");
-                        return Protection.RegistryProtection.Disable();
-                    }
-                    else
-                    {
-                        LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Enable RegistryProtection ...");
-                        return Protection.RegistryProtection.Enable(interceptCallBack);
-                    }
-                default:
-                    return false;
+                LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Disable {protectionModel.Name} ...");
+                return protectionModel.Disable();
             }
+            else
+            {
+                LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Enable {protectionModel.Name} ...");
+                return protectionModel.Enable(interceptCallBack);
+            }
+        }
+        public static bool IsRun(int RunID)
+        {
+            IProtectionModel? protectionModel = RunIDToIProtectionModel(RunID);
+            if (protectionModel == null) return false;
+            return protectionModel.IsEnabled();
+        }
+        private static IProtectionModel? RunIDToIProtectionModel(int RunID)
+        {
+            return RunID switch
+            {
+                0 => ProcessProtection,
+                1 => FilesProtection,
+                4 => RegistryProtection,
+                _ => null
+            };
         }
     }
 

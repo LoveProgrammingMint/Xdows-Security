@@ -2,14 +2,15 @@ using TrustQuarantine;
 using static Protection.CallBack;
 namespace Protection
 {
-    public static class FilesProtection
+    public class FilesProtection : IProtectionModel
     {
         private static FileSystemWatcher[]? _watchers;
         private static InterceptCallBack? _toastCallBack;
         private static Thread? _monitorThread;
         private static bool _isMonitoring = false;
         private static ScanEngine.ScanEngine.SouXiaoEngineScan? SouXiaoEngine;
-        public static bool Enable(InterceptCallBack toastCallBack)
+        public string Name => "FilesProtection";
+        public bool Enable(InterceptCallBack toastCallBack)
         {
             SouXiaoEngine ??= new ScanEngine.ScanEngine.SouXiaoEngineScan();
             SouXiaoEngine.Initialize();
@@ -30,7 +31,7 @@ namespace Protection
             return true;
         }
 
-        public static bool Disable()
+        public bool Disable()
         {
             if (!_isMonitoring)
             {
@@ -57,7 +58,7 @@ namespace Protection
             return true;
         }
 
-        public static bool IsEnabled()
+        public bool IsEnabled()
         {
             try { return _isMonitoring; } catch { return false; }
         }

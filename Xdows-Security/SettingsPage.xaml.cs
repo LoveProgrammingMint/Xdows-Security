@@ -248,6 +248,72 @@ namespace Xdows_Security
             ProcessToggle.IsOn = ProtectionStatus.IsRun(0);
             FilesToggle.IsOn = ProtectionStatus.IsRun(1);
             RegistryToggle.IsOn = ProtectionStatus.IsRun(4);
+
+            // Load scan index mode setting (default Parallel) without direct XAML field access
+            try
+            {
+                var mode = settings.Values.TryGetValue("ScanIndexMode", out object raw) && raw is string s ? s : "Parallel";
+                var combo = this.FindName("ScanIndexModeComboBox") as ComboBox;
+                if (combo != null)
+                {
+                    foreach (var obj in combo.Items)
+                    {
+                        if (obj is ComboBoxItem item && (item.Tag as string) == mode)
+                        {
+                            combo.SelectedItem = item;
+                            break;
+                        }
+                    }
+                    // If Parallel mode, disable ScanProgress toggle
+                    try
+                    {
+                        var toggle = this.FindName("ScanProgressToggle") as ToggleSwitch;
+                        if (toggle != null)
+                        {
+                            if (mode == "Parallel")
+                            {
+                                toggle.IsOn = false;
+                                toggle.IsEnabled = false;
+                            }
+                            else
+                            {
+                                toggle.IsEnabled = true;
+                            }
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+        }
+
+        private void ScanIndexModeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (IsInitialize) return;
+            if (sender is ComboBox combo && combo.SelectedItem is ComboBoxItem item && item.Tag is string tag)
+            {
+                var settings = ApplicationData.Current.LocalSettings;
+                settings.Values["ScanIndexMode"] = tag;
+                // If Parallel mode selected, disable ScanProgress toggle in UI and set setting false
+                try
+                {
+                    var toggle = this.FindName("ScanProgressToggle") as ToggleSwitch;
+                    if (toggle != null)
+                    {
+                        if (tag == "Parallel")
+                        {
+                            toggle.IsOn = false;
+                            toggle.IsEnabled = false;
+                            settings.Values["ShowScanProgress"] = false;
+                        }
+                        else
+                        {
+                            toggle.IsEnabled = true;
+                        }
+                    }
+                }
+                catch { }
+            }
         }
 
         private async void LoadLanguageSetting()

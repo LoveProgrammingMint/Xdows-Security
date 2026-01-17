@@ -636,10 +636,10 @@
   <data name="SettingsPage_Appearance_Backdrop_Mica.Content" xml:space="preserve">
     <value>云母</value>
   </data>
-  <data name="SettingsPage_Scan_ScanProgress.Header" xml:space="preserve">
+  <data name="SettingsPage_Scan_IndexMode_ScanProgress.Header" xml:space="preserve">
     <value>显示扫描进度</value>
   </data>
-  <data name="SettingsPage_Scan_ScanProgress.Description" xml:space="preserve">
+  <data name="SettingsPage_Scan_IndexMode_ScanProgress.Description" xml:space="preserve">
     <value>关闭此项会加快扫描速度，在扫描很多文件时这将会很有用</value>
   </data>
   <data name="HomePage_TextBlock_Close" xml:space="preserve">
@@ -1202,5 +1202,17 @@
   </data>
   <data name="QuarantineDialog_ClearMenuItem.Text" xml:space="preserve">
     <value>清空</value>
+  </data>
+  <data name="SettingsPage_Scan_IndexMode.Header" xml:space="preserve">
+    <value>索引模式</value>
+  </data>
+  <data name="SettingsPage_Scan_IndexMode.Description" xml:space="preserve">
+    <value>设置软件在扫描时的索引方式，索引可能会影响扫描速度</value>
+  </data>
+  <data name="SettingsPage_Scan_IndexMode_Parallel.Content" xml:space="preserve">
+    <value>并行</value>
+  </data>
+  <data name="SettingsPage_Scan_IndexMode_After.Content" xml:space="preserve">
+    <value>独立</value>
   </data>
 </root>

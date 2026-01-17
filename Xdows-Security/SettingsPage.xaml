@@ -71,12 +71,23 @@
                 </controls:SettingsExpander.Items>
             </controls:SettingsExpander>
             <TextBlock Margin="0,8,0,8" l:Uids.Uid="SettingsPage_Scan" x:Name="Scan_Header"/>
-            <controls:SettingsCard
-                            l:Uids.Uid="SettingsPage_Scan_ScanProgress"
+            <controls:SettingsExpander
+                            l:Uids.Uid="SettingsPage_Scan_IndexMode"
+                            HeaderIcon="{ui:FontIcon Glyph=&#xE773;}"
+                            x:Name="Scan_IndexMode">
+                <ComboBox x:Name="ScanIndexModeComboBox" SelectionChanged="ScanIndexModeComboBox_SelectionChanged">
+                    <ComboBoxItem l:Uids.Uid="SettingsPage_Scan_IndexMode_Parallel" Tag="Parallel" />
+                    <ComboBoxItem l:Uids.Uid="SettingsPage_Scan_IndexMode_After" Tag="After" />
+                </ComboBox>
+                <controls:SettingsExpander.Items>
+                    <controls:SettingsCard
+                            l:Uids.Uid="SettingsPage_Scan_IndexMode_ScanProgress"
                             HeaderIcon="{ui:FontIcon Glyph=&#xF0B5;}"
                             x:Name="Scan_ScanProgress">
-                <ToggleSwitch x:Name="ScanProgressToggle" Tag="ShowScanProgress" Toggled="Toggled_SaveToggleData" />
-            </controls:SettingsCard>
+                        <ToggleSwitch x:Name="ScanProgressToggle" Tag="ShowScanProgress" Toggled="Toggled_SaveToggleData" />
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.Items>
+            </controls:SettingsExpander>
             <controls:SettingsExpander
                             VerticalAlignment="Top"
                             l:Uids.Uid="SettingsPage_Scan_SouXiao"

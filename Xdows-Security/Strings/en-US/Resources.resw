@@ -636,10 +636,10 @@
   <data name="SettingsPage_Appearance_Backdrop_Mica.Content" xml:space="preserve">
     <value>Mica</value>
   </data>
-  <data name="SettingsPage_Scan_ScanProgress.Header" xml:space="preserve">
+  <data name="SettingsPage_Scan_IndexMode_ScanProgress.Header" xml:space="preserve">
     <value>Display Progress</value>
   </data>
-  <data name="SettingsPage_Scan_ScanProgress.Description" xml:space="preserve">
+  <data name="SettingsPage_Scan_IndexMode_ScanProgress.Description" xml:space="preserve">
     <value>Disabling this option will increase the scanning speed, especially when scanning a large number of files</value>
   </data>
   <data name="HomePage_TextBlock_Close" xml:space="preserve">
@@ -1203,5 +1203,17 @@ If you do not accept it, please turn off the engine, or stop using and delete th
   </data>
   <data name="QuarantineDialog_ClearMenuItem.Text" xml:space="preserve">
     <value>Clear</value>
+  </data>
+  <data name="SettingsPage_Scan_IndexMode.Header" xml:space="preserve">
+    <value>IndexMode</value>
+  </data>
+  <data name="SettingsPage_Scan_IndexMode.Description" xml:space="preserve">
+    <value>Set the indexing method for the software during scanning; the indexing may affect the scanning speed.</value>
+  </data>
+  <data name="SettingsPage_Scan_IndexMode_Parallel.Content" xml:space="preserve">
+    <value>Parallel</value>
+  </data>
+  <data name="SettingsPage_Scan_IndexMode_After.Content" xml:space="preserve">
+    <value>After</value>
   </data>
 </root>

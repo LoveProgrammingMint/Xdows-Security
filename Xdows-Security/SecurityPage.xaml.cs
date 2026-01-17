@@ -247,6 +247,51 @@ namespace Xdows_Security
 
             await StartScanAsync(((MenuFlyoutItem)sender).Text, mode);
         }
+        private IEnumerable<string> EnumerateFilesStreaming(ScanMode mode, string? userPath, IReadOnlyList<string>? customPaths)
+        {
+            switch (mode)
+            {
+                case ScanMode.Quick:
+                    foreach (var f in EnumerateQuickScanFiles()) yield return f;
+                    yield break;
+                case ScanMode.Full:
+                    foreach (var drive in DriveInfo.GetDrives())
+                    {
+                        if (!drive.IsReady || drive.DriveType is DriveType.CDRom or DriveType.Network)
+                            continue;
+                        foreach (var file in SafeEnumerateFiles(drive.RootDirectory.FullName, new HashSet<string>(StringComparer.OrdinalIgnoreCase)))
+                            yield return file;
+                    }
+                    yield break;
+                case ScanMode.File:
+                    if (userPath != null && System.IO.File.Exists(userPath)) yield return userPath;
+                    yield break;
+                case ScanMode.Folder:
+                    if (userPath != null && Directory.Exists(userPath))
+                    {
+                        foreach (var f in SafeEnumerateFolder(userPath)) yield return f;
+                    }
+                    yield break;
+                case ScanMode.More:
+                    if (customPaths != null)
+                    {
+                        foreach (var p in customPaths)
+                        {
+                            if (Directory.Exists(p))
+                            {
+                                foreach (var f in SafeEnumerateFolder(p)) yield return f;
+                            }
+                            else if (System.IO.File.Exists(p))
+                            {
+                                yield return p;
+                            }
+                        }
+                    }
+                    yield break;
+                default:
+                    yield break;
+            }
+        }
 
         private async Task<IReadOnlyList<string>> ShowMoreScanDialogAsync()
         {
@@ -414,6 +459,7 @@ namespace Xdows_Security
 
             var settings = ApplicationData.Current.LocalSettings;
             bool showScanProgress = settings.Values["ShowScanProgress"] as bool? ?? false;
+            string scanIndexMode = settings.Values["ScanIndexMode"] as string ?? "Parallel";
             bool DeepScan = settings.Values["DeepScan"] as bool? ?? false;
             bool ExtraData = settings.Values["ExtraData"] as bool? ?? false;
             bool UseLocalScan = settings.Values["LocalScan"] as bool? ?? false;
@@ -517,9 +563,23 @@ namespace Xdows_Security
             {
                 try
                 {
-                    var files = EnumerateFiles(mode, userPath, customPaths);
+                    var filesList = EnumerateFiles(mode, userPath, customPaths);
                     int ThisId = ScanId;
-                    int total = files.Count();
+                    bool parallelIndex = scanIndexMode == "Parallel";
+
+                    IEnumerable<string> files; // actual enumerable to iterate
+                    int total = 0;
+                    if (parallelIndex)
+                    {
+                        // Use streaming enumeration to start scanning while indexing
+                        files = EnumerateFilesStreaming(mode, userPath, customPaths);
+                        total = 0; // unknown
+                    }
+                    else
+                    {
+                        files = filesList;
+                        total = filesList.Count();
+                    }
                     var startTime = DateTime.Now;
                     int finished = 0;
                     int currentItemIndex = 0;

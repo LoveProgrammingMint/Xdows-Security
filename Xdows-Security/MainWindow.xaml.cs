@@ -62,26 +62,24 @@ namespace Xdows_Security
                 };
                 ((MenuFlyoutItem)flyout.Items[3]).Click += async (s, e) =>
                 {
-                    if (ApplicationData.Current.LocalSettings.Values.TryGetValue("DisabledVerify", out object? disabledVerify))
+                    bool disabledVerify = false;
+                    if (ApplicationData.Current.LocalSettings.Values.TryGetValue("DisabledVerify", out object? isDisabledVerify))
                     {
-                        if ((bool)disabledVerify)
+                        disabledVerify = (bool)isDisabledVerify;
+                    }
+                    if (!disabledVerify)
+                    {
+                        var verifyTask = UserConsentVerifier.RequestVerificationAsync(string.Empty);
+                        var result = verifyTask.AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
+
+                        if (result == UserConsentVerificationResult.DeviceNotPresent ||
+                        result == UserConsentVerificationResult.DisabledByPolicy ||
+                        result == UserConsentVerificationResult.NotConfiguredForUser ||
+                        result == UserConsentVerificationResult.Verified)
                         {
                             this.Close();
-                            return;
                         }
-                        try
-                        {
-                            var result = await UserConsentVerifier.RequestVerificationAsync(string.Empty);
-
-                            if (result == UserConsentVerificationResult.DeviceNotPresent ||
-                            result == UserConsentVerificationResult.DisabledByPolicy ||
-                            result == UserConsentVerificationResult.NotConfiguredForUser ||
-                            result == UserConsentVerificationResult.Verified)
-                            {
-                                this.Close();
-                            }
-                        }
-                        catch { }
+                        return;
                     }
                 };
                 e.Flyout = flyout;
@@ -527,25 +525,26 @@ namespace Xdows_Security
                     return;
                 }
             }
-            if (ApplicationData.Current.LocalSettings.Values.TryGetValue("DisabledVerify", out object? disabledVerify))
+            bool disabledVerify = false;
+            if (ApplicationData.Current.LocalSettings.Values.TryGetValue("DisabledVerify", out object? isDisabledVerify))
             {
-                if (!(bool)disabledVerify)
-                {
-                    var verifyTask = UserConsentVerifier.RequestVerificationAsync(string.Empty);
-                    var result = verifyTask.AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
-                    e.Cancel = true;
-
-                    if (result == UserConsentVerificationResult.DeviceNotPresent ||
-                    result == UserConsentVerificationResult.DisabledByPolicy ||
-                    result == UserConsentVerificationResult.NotConfiguredForUser ||
-                    result == UserConsentVerificationResult.Verified)
-                    {
-                        e.Cancel = false;
-                    }
-                    return;
-                }
+                disabledVerify = (bool)isDisabledVerify;
             }
+            if (!disabledVerify)
+            {
+                var verifyTask = UserConsentVerifier.RequestVerificationAsync(string.Empty);
+                var result = verifyTask.AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
+                e.Cancel = true;
 
+                if (result == UserConsentVerificationResult.DeviceNotPresent ||
+                result == UserConsentVerificationResult.DisabledByPolicy ||
+                result == UserConsentVerificationResult.NotConfiguredForUser ||
+                result == UserConsentVerificationResult.Verified)
+                {
+                    e.Cancel = false;
+                }
+                return;
+            }
         }
         private void Nav_Loaded(object sender, RoutedEventArgs e)
         {

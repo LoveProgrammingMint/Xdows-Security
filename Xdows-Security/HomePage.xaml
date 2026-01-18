@@ -48,7 +48,11 @@
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         CornerRadius="8" Padding="16">
                     <StackPanel>
-                        <TextBlock l:Uids.Uid="HomePage_Scan" FontSize="18" FontWeight="Bold" Margin="0,0,0,8"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                            <FontIcon Glyph="&#xE9D2;" FontSize="20" 
+                                          VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock l:Uids.Uid="HomePage_Scan" FontSize="18" FontWeight="Bold"/>
+                        </StackPanel>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -82,7 +86,11 @@
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         CornerRadius="8" Padding="16">
                     <StackPanel>
-                        <TextBlock l:Uids.Uid="HomePage_ProtectionStatus" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                            <FontIcon Glyph="&#xF738;" FontSize="20" 
+                                          VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock l:Uids.Uid="HomePage_ProtectionStatus" FontSize="18" FontWeight="Bold"/>
+                        </StackPanel>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -119,7 +127,13 @@
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         CornerRadius="8" Padding="16">
                     <StackPanel>
-                        <TextBlock l:Uids.Uid="HomePage_SystemInfo" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                            <FontIcon Glyph="&#xE770;" FontSize="20" 
+                                          VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock l:Uids.Uid="HomePage_SystemInfo" 
+                                           FontSize="18" FontWeight="Bold" 
+                                           VerticalAlignment="Center"/>
+                        </StackPanel>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -155,7 +169,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ===== 日志 ===== -->
+                <!-- ===== 运行日志 ===== -->
                 <Border Margin="0,0,0,16"
                         BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultSolid}"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -163,10 +177,17 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <TextBlock l:Uids.Uid="HomePage_LogsHeader" FontSize="18" FontWeight="Bold"/>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,32,0,8">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal">
+                            <FontIcon Glyph="&#xE8F1;" FontSize="20" 
+                                          VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock l:Uids.Uid="HomePage_LogsHeader" 
+                                           FontSize="18" FontWeight="Bold" 
+                                           VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" Margin="0,8,0,8">
                             <Button l:Uids.Uid="HomePage_ClearLog"
                                     Command="{x:Bind Vm.ClearLogCommand}"/>
                             <Button l:Uids.Uid="HomePage_ExportLog"
@@ -209,7 +230,7 @@
                             </DropDownButton>
                         </StackPanel>
 
-                        <ScrollViewer Grid.Row="1" Height="216" x:Name="LogScroll">
+                        <ScrollViewer Grid.Row="2" Height="216" x:Name="LogScroll">
                             <ItemsRepeater ItemsSource="{x:Bind Vm.LogLines}">
                                 <ItemsRepeater.Layout>
                                     <StackLayout Spacing="0"/>

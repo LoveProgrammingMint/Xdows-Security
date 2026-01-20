@@ -32,18 +32,15 @@
 
                 <Grid Grid.Row="1" Margin="0,12,0,0">
                     <Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto"/>
 						<ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-					<Button Grid.Column="0" x:Name="FileBtn" l:Uids.Uid="BugReportPage_FileButton" Width="56" Margin="0,0,4,0" Click="FileBtn_Click"/>
-
 					<TextBox x:Name="InputBox"
-                             Grid.Column="1"
+                             Grid.Column="0"
                              l:Uids.Uid="BugReportPage_Input"
                              KeyDown="InputBox_KeyDown"/>
                     <Button x:Name="SendBtn"
-                            Grid.Column="2"
+                            Grid.Column="1"
                             Margin="8,0,0,0"
                             l:Uids.Uid="BugReportPage_SendButton"
 							Style="{StaticResource AccentButtonStyle}"
@@ -57,13 +54,19 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock x:Name="StatusTxt"
                        Grid.Column="0"
                        l:Uids.Uid="BugReportPage_NotConnected"
                        VerticalAlignment="Center"/>
-            <Button x:Name="ReconnectBtn"
+            <Button x:Name="SettingsBtn"
                     Grid.Column="1"
+                    Content="设置"
+                    Margin="0,0,8,0"
+                    Click="SettingsBtn_Click"/>
+            <Button x:Name="ReconnectBtn"
+                    Grid.Column="2"
                     l:Uids.Uid="BugReportPage_ReconnectButton"
                     Click="ReconnectBtn_Click"/>
         </Grid>

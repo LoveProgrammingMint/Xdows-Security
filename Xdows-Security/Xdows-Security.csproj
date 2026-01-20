@@ -13,7 +13,8 @@
     <SelfContained>true</SelfContained>
     <PublishReadyToRun>true</PublishReadyToRun>
     <WindowsPackageType>None</WindowsPackageType>
-	<LangVersion>preview</LangVersion>
+    <LangVersion>preview</LangVersion>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
   </PropertyGroup>
 
   <ItemGroup>

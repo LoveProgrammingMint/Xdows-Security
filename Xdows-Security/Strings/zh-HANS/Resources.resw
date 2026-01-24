@@ -977,9 +977,6 @@
   <data name="BugReportPage_NotConnected" xml:space="preserve">
     <value>未连接</value>
   </data>
-  <data name="BugReportPage_FileButton.Content" xml:space="preserve">
-    <value>文件</value>
-  </data>
   <data name="BugReportPage_SendButton.Content" xml:space="preserve">
     <value>发送</value>
   </data>
@@ -988,12 +985,6 @@
   </data>
   <data name="BugReportPage_ConnectionFailedMessage" xml:space="preserve">
     <value>连接失败: </value>
-  </data>
-  <data name="BugReportPage_FileTooLarge" xml:space="preserve">
-    <value>文件超过 20 KB，已拒绝</value>
-  </data>
-  <data name="BugReportPage_FileSent" xml:space="preserve">
-    <value>[已发送文件] </value>
   </data>
   <data name="SecurityPage_MenuItem_Trust.Text" xml:space="preserve">
     <value>信任文件</value>
@@ -1214,5 +1205,80 @@
   </data>
   <data name="SettingsPage_Scan_IndexMode_After.Content" xml:space="preserve">
     <value>独立</value>
+  </data>
+  <data name="BugReportPage_FailedInit" xml:space="preserve">
+    <value>初始化TCP客户端失败: {0}</value>
+  </data>
+  <data name="BugReportPage_SetUsernameFailed" xml:space="preserve">
+    <value>设置用户名失败: {0}</value>
+  </data>
+  <data name="BugReportPage_Reconnecting" xml:space="preserve">
+    <value>连接已断开，正在尝试重新连接...</value>
+  </data>
+  <data name="BugReportPage_JoinedChannel" xml:space="preserve">
+    <value>已加入反馈频道</value>
+  </data>
+  <data name="BugReportPage_NoHistoryMessages" xml:space="preserve">
+    <value>已连接到服务器，但没有历史消息</value>
+  </data>
+  <data name="BugReportPage_HandleRegisterFailed" xml:space="preserve">
+    <value>处理 register_success 失败: {0}</value>
+  </data>
+  <data name="BugReportPage_UsernameDialog_Title" xml:space="preserve">
+    <value>反馈频道设置</value>
+  </data>
+  <data name="BugReportPage_UsernameDialog_Content" xml:space="preserve">
+    <value>请输入您的用户名以连接到反馈频道</value>
+  </data>
+  <data name="BugReportPage_UsernameDialog_Connect" xml:space="preserve">
+    <value>连接</value>
+  </data>
+  <data name="BugReportPage_UsernameLabel" xml:space="preserve">
+    <value>用户名:</value>
+  </data>
+  <data name="BugReportPage_UsernamePlaceholder" xml:space="preserve">
+    <value>请输入用户名</value>
+  </data>
+  <data name="BugReportPage_UsernameEmpty" xml:space="preserve">
+    <value>用户名不能为空</value>
+  </data>
+  <data name="BugReportPage_AllRead" xml:space="preserve">
+    <value>全部已读</value>
+  </data>
+  <data name="BugReportPage_ReadCountFormat" xml:space="preserve">
+    <value>{0}人已读</value>
+  </data>
+  <data name="BugReportPage_TcpNotInitialized" xml:space="preserve">
+    <value>TCP客户端未初始化</value>
+  </data>
+  <data name="BugReportPage_Me" xml:space="preserve">
+    <value>我</value>
+  </data>
+  <data name="BugReportPage_SettingsDialog_Title" xml:space="preserve">
+    <value>反馈设置</value>
+  </data>
+  <data name="BugReportPage_HostLabel" xml:space="preserve">
+    <value>服务器地址:</value>
+  </data>
+  <data name="BugReportPage_PortLabel" xml:space="preserve">
+    <value>端口:</value>
+  </data>
+  <data name="BugReportPage_SettingSaved" xml:space="preserve">
+    <value>设置已保存，正在重新连接...</value>
+  </data>
+  <data name="BugReportPage_SettingSaveFailed" xml:space="preserve">
+    <value>保存设置失败: {0}</value>
+  </data>
+  <data name="BugReportPage_ConnectionFailedAlert" xml:space="preserve">
+    <value>连接失败，请检查网络或稍后再试</value>
+  </data>
+  <data name="BugReportPage_LeavingChannel" xml:space="preserve">
+    <value>已离开反馈频道</value>
+  </data>
+  <data name="BugReportPage_ErrorFormat" xml:space="preserve">
+    <value>错误: {0}</value>
+  </data>
+  <data name="BugReportPage_SettingsButton.Content" xml:space="preserve">
+    <value>设置</value>
   </data>
 </root>

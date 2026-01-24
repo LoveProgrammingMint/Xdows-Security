@@ -58,12 +58,11 @@
             </Grid.ColumnDefinitions>
             <TextBlock x:Name="StatusTxt"
                        Grid.Column="0"
-                       l:Uids.Uid="BugReportPage_NotConnected"
                        VerticalAlignment="Center"/>
             <Button x:Name="SettingsBtn"
                     Grid.Column="1"
-                    Content="设置"
                     Margin="0,0,8,0"
+                    l:Uids.Uid="BugReportPage_SettingsButton"
                     Click="SettingsBtn_Click"/>
             <Button x:Name="ReconnectBtn"
                     Grid.Column="2"

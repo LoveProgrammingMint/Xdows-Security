@@ -85,9 +85,11 @@ namespace Xdows_Security
                 string jsonStr = Encoding.UTF8.GetString(messageData);
                 return JsonSerializer.Deserialize<Dictionary<string, object>>(jsonStr, CachedJsonOptions);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return null;
+                System.Diagnostics.Debug.WriteLine($"解码消息异常: {ex.Message}");
+                // 重新抛出异常，让调用方处理
+                throw;
             }
         }
     }
@@ -203,13 +205,22 @@ namespace Xdows_Security
 
                 // 连接到服务器
                 await _tcpClient.ConnectAsync(_serverHost, _serverPort);
+                
+                // 检查_tcpClient是否仍然有效
+                if (_tcpClient == null)
+                {
+                    OnError?.Invoke(this, "连接建立失败");
+                    Cleanup();
+                    return false;
+                }
+                
                 _stream = _tcpClient.GetStream();
 
                 // 等待一小段时间确保连接完全建立
                 await Task.Delay(100);
 
                 // 检查连接是否仍然有效
-                if (!_tcpClient.Connected || _stream == null)
+                if (_tcpClient == null || !_tcpClient.Connected || _stream == null)
                 {
                     OnError?.Invoke(this, "连接建立失败");
                     Cleanup();
@@ -410,26 +421,102 @@ namespace Xdows_Security
 
             // 在连接过程中允许发送注册消息
             if (!_isConnected && message["type"]?.ToString() != "register")
-                return;
-
-            try
             {
-                byte[] messageBytes = TCPMessageProtocol.EncodeMessage(message);
-
-                // 使用锁确保线程安全
-                lock (_stream)
+                // 尝试自动重连
+                bool reconnectSuccess = await AttemptReconnectAsync();
+                if (!reconnectSuccess)
                 {
-                    _stream.Write(messageBytes, 0, messageBytes.Length);
-                    _stream.Flush();
+                    OnError?.Invoke(this, "未连接到服务器，重连失败");
+                    return;
                 }
             }
-            catch (Exception ex)
+
+            int retryCount = 0;
+            const int maxRetries = 7;
+            
+            while (retryCount < maxRetries)
             {
-                // 连接可能已断开，更新状态
-                _isConnected = false;
-                OnError?.Invoke(this, $"发送消息失败: {ex.Message}");
-                OnDisconnected?.Invoke(this, "连接已断开");
+                try
+                {
+                    byte[] messageBytes = TCPMessageProtocol.EncodeMessage(message);
+
+                    // 使用锁确保线程安全
+                    lock (_stream)
+                    {
+                        _stream.Write(messageBytes, 0, messageBytes.Length);
+                        _stream.Flush();
+                    }
+                    
+                    // 发送成功，退出循环
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    retryCount++;
+                    System.Diagnostics.Debug.WriteLine($"发送消息失败 (尝试 {retryCount}/{maxRetries}): {ex.Message}");
+                    
+                    // 如果是最后一次尝试，更新状态并触发错误
+                    if (retryCount >= maxRetries)
+                    {
+                        // 连接可能已断开，更新状态
+                        _isConnected = false;
+                        OnError?.Invoke(this, $"发送消息失败: {ex.Message}");
+                        
+                        // 清理连接资源
+                        Cleanup();
+                        break;
+                    }
+                    
+                    // 等待600毫秒后重试
+                    await Task.Delay(600);
+                }
             }
+        }
+        
+        private async Task<bool> AttemptReconnectAsync()
+        {
+            int retryCount = 0;
+            const int maxRetries = 7;
+            
+            while (retryCount < maxRetries)
+            {
+                try
+                {
+                    System.Diagnostics.Debug.WriteLine($"尝试重新连接 (尝试 {retryCount + 1}/{maxRetries})");
+                    
+                    // 清理现有连接
+                    Cleanup();
+                    
+                    // 尝试重新连接
+                    bool connectSuccess = await ConnectAsync();
+                    if (connectSuccess)
+                    {
+                        System.Diagnostics.Debug.WriteLine("重新连接成功");
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"重连尝试失败 (尝试 {retryCount + 1}/{maxRetries}): {ex.Message}");
+                    
+                    // 如果是NullReferenceException，可能是_tcpClient被设置为null
+                    if (ex is NullReferenceException)
+                    {
+                        System.Diagnostics.Debug.WriteLine("检测到NullReferenceException，可能是_tcpClient为null");
+                    }
+                }
+                
+                retryCount++;
+                
+                // 如果不是最后一次尝试，等待500毫秒
+                if (retryCount < maxRetries)
+                {
+                    await Task.Delay(600);
+                }
+            }
+            
+            System.Diagnostics.Debug.WriteLine("所有重连尝试均失败");
+            return false;
         }
         private async Task HeartbeatLoopAsync()
         {
@@ -470,32 +557,81 @@ namespace Xdows_Security
 
             try
             {
+                int retryCount = 0;
+                const int maxRetries = 5;
+                
                 while (!_cts.Token.IsCancellationRequested && _isConnected)
                 {
-                    var message = await TCPMessageProtocol.DecodeMessageAsync(_stream);
-                    if (message == null)
+                    try
                     {
-                        // 连接已关闭
-                        break;
+                        var message = await TCPMessageProtocol.DecodeMessageAsync(_stream);
+                        if (message == null)
+                        {
+                            // 连接已关闭或解码失败
+                            break;
+                        }
+
+                        // 重置重试计数器
+                        retryCount = 0;
+
+                        // 记录接收到的消息
+                        System.Diagnostics.Debug.WriteLine($"客户端接收到消息: {System.Text.Json.JsonSerializer.Serialize(message)}");
+
+                        // 处理心跳包
+                        if (message.TryGetValue("type", out var typeObj) && typeObj.ToString() == "pong")
+                        {
+                            continue;
+                        }
+
+                        // 触发消息接收事件
+                        OnMessageReceived?.Invoke(this, message);
                     }
-
-                    // 记录接收到的消息
-                    System.Diagnostics.Debug.WriteLine($"客户端接收到消息: {System.Text.Json.JsonSerializer.Serialize(message)}");
-
-                    // 处理心跳包
-                    if (message.TryGetValue("type", out var typeObj) && typeObj.ToString() == "pong")
+                    catch (Exception decodeEx)
                     {
-                        continue;
+                        // 解码消息时出错，记录错误并继续尝试
+                        System.Diagnostics.Debug.WriteLine($"解码消息异常: {decodeEx.Message}");
+                        
+                        // 增加重试计数
+                        retryCount++;
+                        
+                        // 如果达到最大重试次数，断开连接
+                        if (retryCount >= maxRetries)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"达到最大重试次数 {maxRetries}，断开连接");
+                            OnError?.Invoke(this, $"连续 {maxRetries} 次解码失败，断开连接");
+                            break;
+                        }
+                        
+                        // 如果是IO异常，说明连接可能已断开
+                        if (decodeEx is System.IO.IOException)
+                        {
+                            // 检查是否是"由于线程退出或应用程序请求，已中止 I/O 操作"这类异常
+                            if (decodeEx.Message.Contains("线程退出") || decodeEx.Message.Contains("应用程序请求"))
+                            {
+                                System.Diagnostics.Debug.WriteLine("检测到连接正常关闭，不显示错误");
+                            }
+                            else
+                            {
+                                OnError?.Invoke(this, $"连接已断开: {decodeEx.Message}");
+                            }
+                            
+                            // 清理连接资源
+                            Cleanup();
+                            break;
+                        }
+                        
+                        // 等待600毫秒后重试
+                        System.Diagnostics.Debug.WriteLine($"解码失败，等待600毫秒后重试 ({retryCount}/{maxRetries})");
+                        await Task.Delay(600, _cts.Token);
                     }
-
-                    // 触发消息接收事件
-                    OnMessageReceived?.Invoke(this, message);
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"接收消息循环出错: {ex.Message}");
                 OnError?.Invoke(this, $"接收消息时出错: {ex.Message}");
+                // 不立即触发断开事件，让UI控制状态显示
+                // OnDisconnected?.Invoke(this, "连接已断开");
             }
             finally
             {
@@ -503,7 +639,8 @@ namespace Xdows_Security
                 if (_isConnected)
                 {
                     _isConnected = false;
-                    OnDisconnected?.Invoke(this, "连接已断开");
+                    // 不立即触发断开事件，让UI控制状态显示
+                    // OnDisconnected?.Invoke(this, "连接已断开");
                 }
             }
         }

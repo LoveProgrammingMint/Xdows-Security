@@ -13,12 +13,12 @@ namespace Xdows_Security
     public sealed partial class BugReportPage : Page
     {
         private FeedbackTCPClient? _tcpClient;
-        private readonly Dictionary<string, string> _userAvatars = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _userAvatars = [];
         private string _currentUsername = "";
         private DispatcherTimer? _refreshTimer;
         private bool _isAutoRefresh = false;
         private DateTime _lastServerMessageTime = DateTime.Now;
-        private readonly Queue<string> _pendingMessages = new Queue<string>();
+        private readonly Queue<string> _pendingMessages = new();
 
 
         public BugReportPage()

@@ -314,7 +314,7 @@ namespace ScanEngine
                     "f-secure", "KvMonXP", "RavMonD", "Mcshield", "ekrn", "kxetray",
                     "avcenter", "avguard", "Sophos", "safedog"
                     ]),
-                    () => t5Result = ContainsSuspiciousContent(fileContent, ["DelegateExecute", "fodhelper.exe", "OSDATA"]),
+                    () => t5Result = ContainsSuspiciousContent(fileContent, ["DelegateExecute", "fodhelper.exe", "OSDATA", "wow64log.dll"]),
                     () => t6Result = ContainsSuspiciousContent(fileContent, ["sandboxie", "vmware - tray", "Detonate", "Vmware", "VMWARE", "Sandbox", "SANDBOX"])
                 );
 
@@ -323,7 +323,7 @@ namespace ScanEngine
                 if (t2Result) { score += 20; }
                 if (t3Result) { suspiciousData.Add("BlackMoon"); score += 15; }
                 if (t4Result) { suspiciousData.Add("AVKiller"); score += 20; }
-                if (t5Result) { suspiciousData.Add("BugsExploit"); score += 20; }
+                if (t5Result) { suspiciousData.Add("BugsExploit"); score += 30; }
                 if (t6Result) { suspiciousData.Add("SandboxBypass"); score += 20; }
             }
 

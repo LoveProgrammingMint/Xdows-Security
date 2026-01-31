@@ -35,7 +35,7 @@ namespace Xdows_Security
         public SolidColorBrush ThreatCountBackground { get; set; } = new SolidColorBrush(Colors.Red);
     }
 
-    public class MoreScanItem : INotifyPropertyChanged
+    public partial class MoreScanItem : INotifyPropertyChanged
     {
         private string _path = string.Empty;
         private bool _isFolder;
@@ -1257,7 +1257,7 @@ namespace Xdows_Security
                 if (!scanned.Add(currentDir))
                     continue;
 
-                IEnumerable<string>? entries = null;
+                IEnumerable<string>? entries;
                 try
                 {
                     entries = Directory.EnumerateFileSystemEntries(currentDir);

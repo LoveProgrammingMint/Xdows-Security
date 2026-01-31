@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
@@ -15,6 +15,8 @@
     <WindowsPackageType>None</WindowsPackageType>
     <LangVersion>preview</LangVersion>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <PublishAot>True</PublishAot>
+    <PublishTrimmed>False</PublishTrimmed>
   </PropertyGroup>
 
   <ItemGroup>

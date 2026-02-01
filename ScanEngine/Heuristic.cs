@@ -12,46 +12,49 @@ namespace ScanEngine
         {
             var extra = string.Empty;
             var score = 0;
-            var fileExtension = GetExtString(path);
+            var suspiciousData = new List<string>();
+
+            var fileExtension = GetExtStrings(path);
 
             var fileContent = peFile.RawFile.ToArray();
-            var suspiciousData = new List<string>();
-            string[] docExts = [".doc", ".ppt", ".xls", ".csv"];
-
-            if (docExts.Any(docExt => path.Contains(docExt)))
+            if (fileExtension.Length > 0)
             {
-                if (IsSuspiciousDoc(fileContent))
+                string[] docExts = [".doc", ".ppt", ".xls", ".csv"];
+                if (docExts.Any(docExt => path.Contains(docExt)))
                 {
-                    score += 10;
-                    suspiciousData.Add("DocVirus");
-                }
-            }
-            else if (fileExtension == ".fne")
-            {
-                score += 20;
-                suspiciousData.Add("EComponent");
-            }
-            string[] mediaExts = [".jpg", ".bmp", ".gif", ".avi", ".wmv", ".rar", ".zip"];
-
-            if (mediaExts.Any(mediaExt => path.Contains(mediaExt)))
-            {
-                score += 20;// 谁家好人在文件路径里放这些东西啊
-            }
-            if (fileExtension == ".exe" &&
-                (path.Contains(@"\Start Menu\Programs\Startup\", StringComparison.OrdinalIgnoreCase) ||
-                 path.Contains(@"\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\", StringComparison.OrdinalIgnoreCase)))
-            {
-                try
-                {
-                    var attrs = File.GetAttributes(path);
-                    if ((attrs & FileAttributes.Hidden) != 0)
+                    if (IsSuspiciousDoc(fileContent))
                     {
-                        score += 20;
-                        suspiciousData.Add("StartupHidden");
+                        score += 10;
+                        suspiciousData.Add("DocVirus");
                     }
                 }
-                catch { }
+                else if (fileExtension[^1] == ".fne")
+                {
+                    score += 20;
+                    suspiciousData.Add("EComponent");
+                }
+
+                if (fileExtension.Length > 1 && fileExtension[^1] != ".bak")
+                {
+                    score += 20;
+                }
+                if (fileExtension[^1] == ".exe" &&
+                    (path.Contains(@"\Start Menu\Programs\Startup\", StringComparison.OrdinalIgnoreCase) ||
+                     path.Contains(@"\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\", StringComparison.OrdinalIgnoreCase)))
+                {
+                    try
+                    {
+                        var attrs = File.GetAttributes(path);
+                        if ((attrs & FileAttributes.Hidden) != 0)
+                        {
+                            score += 20;
+                            suspiciousData.Add("StartupHidden");
+                        }
+                    }
+                    catch { }
+                }
             }
+
             if (peFile.IsExe || peFile.IsDll || peFile.IsDriver) // .NET文件无法分析
             {
                 int code = await Task.Run(() => FileDigitallySignedAndValid(path, peFile))
@@ -424,27 +427,41 @@ namespace ScanEngine
                 return Math.Min(score, 15);
             }).ConfigureAwait(false);
         }
-        private static unsafe string GetExtString(string path)
+        private static unsafe string[] GetExtStrings(string path)
         {
-            if (string.IsNullOrEmpty(path)) return string.Empty;
-
+            if (string.IsNullOrEmpty(path)) return [];
             fixed (char* p = path)
             {
-                char* dot = null, slash = p;
+                List<string> extensions = [];
+                char* slash = p + path.Length;
                 for (char* c = p + path.Length - 1; c >= p; c--)
                 {
-                    if (*c == '.') { dot = c; break; }
-                    if (*c == '\\' || *c == '/') slash = c;
+                    if (*c == '\\' || *c == '/')
+                    {
+                        slash = c;
+                    }
+                    if (*c == '.')
+                    {
+                        if (c > slash)
+                        {
+                            char* extStart = c + 1;
+                            if (extStart < slash)
+                            {
+                                int extLength = (int)(slash - extStart);
+                                Span<char> extBuf = new Span<char>(new char[extLength]);
+                                ReadOnlySpan<char> src = new(extStart, extLength);
+                                src.ToLowerInvariant(extBuf);
+                                extensions.Add(new string(extBuf));
+                            }
+                        }
+                    }
                 }
-                if (dot == null || dot < slash) return string.Empty;
 
-                int len = (int)(p + path.Length - dot);
-                Span<char> buf = stackalloc char[len];
-                ReadOnlySpan<char> src = new(dot, len);
-                src.ToLowerInvariant(buf);
-                return buf.ToString();
+                return [.. extensions];
             }
         }
+
+
         private static readonly HashSet<string> _trustedThumbprints = new(StringComparer.OrdinalIgnoreCase)
            {
                "3B77DB29AC72AA6B5880ECB2ED5EC1EC6601D847",

@@ -479,10 +479,10 @@ namespace Xdows_Security
             {
                 rootElement.RequestedTheme = selectedTheme;
             }
-            MainWindow.UpdateTheme(selectedTheme);//加盖史山ing...
+            MainWindow.UpdateTheme(selectedTheme);
         }
 
-        public void UpdateThemeforLoad(ElementTheme Theme) => MainWindow.UpdateTheme(Theme); //细节：语法糖
+        public void UpdateThemeforLoad(ElementTheme Theme) => MainWindow.UpdateTheme(Theme);
 
         private async void LoadBackdropSetting()
         {

@@ -101,7 +101,7 @@ namespace Xdows_Security
                     {
                         rootElement.RequestedTheme = themeValue;
                     }
-                    UpdateTheme(themeValue);//?
+                    UpdateTheme(themeValue);
                     LogText.AddNewLog(LogLevel.DEBUG, "UI Interface", $"{themeValue}");
                 }
             }

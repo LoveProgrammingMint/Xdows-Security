@@ -448,10 +448,10 @@ namespace ScanEngine
                             if (extStart < slash)
                             {
                                 int extLength = (int)(slash - extStart);
-                                Span<char> extBuf = new Span<char>(new char[extLength]);
+                                Span<char> extBuf = new(new char[extLength]);
                                 ReadOnlySpan<char> src = new(extStart, extLength);
                                 src.ToLowerInvariant(extBuf);
-                                extensions.Add(new string(extBuf));
+                                extensions.Add(new string(extBuf).ToLower());
                             }
                         }
                     }

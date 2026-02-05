@@ -58,11 +58,11 @@ namespace Xdows_Security
                     }
 
                     await Task.WhenAll(
-                        LoadScanSettingAsync(),
-                        LoadLanguageSettingAsync(),
-                        LoadThemeSettingAsync(),
-                        LoadBackdropSettingAsync(),
-                        LoadBackgroundImageSettingAsync()
+                        LoadScanSettingAsync,
+                        LoadLanguageSettingAsync,
+                        LoadThemeSettingAsync,
+                        LoadBackdropSettingAsync,
+                        LoadBackgroundImageSettingAsync
                     );
                 }
                 catch { }
@@ -72,95 +72,111 @@ namespace Xdows_Security
                 }
             });
         }
-        private Task LoadScanSettingAsync()
+        private Task LoadScanSettingAsync
         {
-            var tcs = new TaskCompletionSource<object?>();
-            this.DispatcherQueue.TryEnqueue(() =>
+            get
             {
-                try
+                var tcs = new TaskCompletionSource<object?>();
+                this.DispatcherQueue.TryEnqueue(() =>
                 {
-                    LoadScanSetting();
-                    tcs.SetResult(null);
-                }
-                catch (Exception ex)
-                {
-                    tcs.SetException(ex);
-                }
-            });
-            return tcs.Task;
+                    try
+                    {
+                        LoadScanSetting();
+                        tcs.SetResult(null);
+                    }
+                    catch (Exception ex)
+                    {
+                        tcs.SetException(ex);
+                    }
+                });
+                return tcs.Task;
+            }
         }
 
-        private Task LoadLanguageSettingAsync()
+        private Task LoadLanguageSettingAsync
         {
-            var tcs = new TaskCompletionSource<object?>();
-            this.DispatcherQueue.TryEnqueue(() =>
+            get
             {
-                try
+                var tcs = new TaskCompletionSource<object?>();
+                this.DispatcherQueue.TryEnqueue(() =>
                 {
-                    LoadLanguageSetting();
-                    tcs.SetResult(null);
-                }
-                catch (Exception ex)
-                {
-                    tcs.SetException(ex);
-                }
-            });
-            return tcs.Task;
+                    try
+                    {
+                        LoadLanguageSetting();
+                        tcs.SetResult(null);
+                    }
+                    catch (Exception ex)
+                    {
+                        tcs.SetException(ex);
+                    }
+                });
+                return tcs.Task;
+            }
         }
 
-        private Task LoadThemeSettingAsync()
+        private Task LoadThemeSettingAsync
         {
-            var tcs = new TaskCompletionSource<object?>();
-            this.DispatcherQueue.TryEnqueue(() =>
+            get
             {
-                try
+                var tcs = new TaskCompletionSource<object?>();
+                this.DispatcherQueue.TryEnqueue(() =>
                 {
-                    LoadThemeSetting();
-                    tcs.SetResult(null);
-                }
-                catch (Exception ex)
-                {
-                    tcs.SetException(ex);
-                }
-            });
-            return tcs.Task;
+                    try
+                    {
+                        LoadThemeSetting();
+                        tcs.SetResult(null);
+                    }
+                    catch (Exception ex)
+                    {
+                        tcs.SetException(ex);
+                    }
+                });
+                return tcs.Task;
+            }
         }
 
-        private Task LoadBackdropSettingAsync()
+        private Task LoadBackdropSettingAsync
         {
-            var tcs = new TaskCompletionSource<object?>();
-            this.DispatcherQueue.TryEnqueue(() =>
+            get
             {
-                try
+                var tcs = new TaskCompletionSource<object?>();
+                this.DispatcherQueue.TryEnqueue(() =>
                 {
-                    LoadBackdropSetting();
-                    tcs.SetResult(null);
-                }
-                catch (Exception ex)
-                {
-                    tcs.SetException(ex);
-                }
-            });
-            return tcs.Task;
+                    try
+                    {
+                        LoadBackdropSetting();
+                        tcs.SetResult(null);
+                    }
+                    catch (Exception ex)
+                    {
+                        tcs.SetException(ex);
+                    }
+                });
+                return tcs.Task;
+            }
         }
 
-        private Task LoadBackgroundImageSettingAsync()
+        private Task LoadBackgroundImageSettingAsync
         {
-            var tcs = new TaskCompletionSource<object?>();
-            this.DispatcherQueue.TryEnqueue(() =>
+            get
             {
-                try
+                var tcs = new TaskCompletionSource<object?>();
+                this.DispatcherQueue.TryEnqueue(() =>
                 {
-                    LoadBackgroundImageSetting();
-                    tcs.SetResult(null);
-                }
-                catch (Exception ex)
-                {
-                    tcs.SetException(ex);
-                }
-            });
-            return tcs.Task;
+                    try
+                    {
+                        LoadBackgroundImageSetting();
+                        tcs.SetResult(null);
+                    }
+                    catch (Exception ex)
+                    {
+                        tcs.SetException(ex);
+                    }
+                });
+                return tcs.Task;
+            }
         }
+
         private void RunProtectionWithToggle(ToggleSwitch toggle, int runId)
         {
             toggle.Toggled -= RunProtection;

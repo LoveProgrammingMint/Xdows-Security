@@ -112,9 +112,7 @@ namespace Xdows_Security
             var backdrop = settings.Values["AppBackdrop"] as string ?? "Mica";
 
             var dq = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-            if (dq != null)
-            {
-                dq.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, async () =>
+            dq?.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, async () =>
                 {
                     try
                     {
@@ -131,7 +129,6 @@ namespace Xdows_Security
                     }
                     catch { }
                 });
-            }
 
             Activated -= MainWindow_Activated_FirstTime;
             //if (!App.IsRunAsAdmin())
@@ -457,13 +454,10 @@ namespace Xdows_Security
                 // 应用背景图片
                 // Ensure UpdateBackgroundImage runs on the UI thread
                 var dq = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-                if (dq != null)
-                {
-                    dq.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+                dq?.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
                     {
                         UpdateBackgroundImage();
                     });
-                }
             }
             catch { }
         }

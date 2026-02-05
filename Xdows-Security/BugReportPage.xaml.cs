@@ -405,9 +405,9 @@ namespace Xdows_Security
                 messageDict.TryGetValue("read_by_count", out var readCountObj) &&
                 messageDict.TryGetValue("total_users", out var totalUsersObj))
             {
-                string messageId = idObj.ToString() ?? "";
-                int readCount = int.TryParse(readCountObj.ToString(), out int rc) ? rc : 0;
-                int totalUsers = int.TryParse(totalUsersObj.ToString(), out int tu) ? tu : 0;
+                _ = idObj.ToString() ?? "";
+                _ = int.TryParse(readCountObj.ToString(), out int rc) ? rc : 0;
+                _ = int.TryParse(totalUsersObj.ToString(), out int tu) ? tu : 0;
             }
         }
 

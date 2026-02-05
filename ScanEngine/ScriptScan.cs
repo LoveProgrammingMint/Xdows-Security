@@ -59,7 +59,7 @@ namespace ScanEngine
 
                 int len = (int)(p + path.Length - dot);
                 Span<char> buf = stackalloc char[len];
-                ReadOnlySpan<char> src = new ReadOnlySpan<char>(dot, len);
+                ReadOnlySpan<char> src = new(dot, len);
                 src.ToLowerInvariant(buf);
                 return buf.ToString();
             }
@@ -274,7 +274,7 @@ namespace ScanEngine
             }
 
             // 检查是否包含大量弹窗
-            if (Regex.Matches(content, @"(msgbox|alert|messagebox|showmessage)", RegexOptions.IgnoreCase).Count > 5)
+            if (Regex.Count(content, @"(msgbox|alert|messagebox|showmessage)", RegexOptions.IgnoreCase) > 5)
             {
                 score += 20;
                 extra.Add("MultiplePopups");
@@ -496,7 +496,7 @@ namespace ScanEngine
             }
 
             // 检查是否创建多个批处理文件
-            if (Regex.Matches(content, @"echo\s+.*>>.*\.bat", RegexOptions.IgnoreCase).Count > 3)
+            if (Regex.Count(content, @"echo\s+.*>>.*\.bat", RegexOptions.IgnoreCase) > 3)
             {
                 score += 20;
                 extra.Add("MultipleBatchCreation");
@@ -607,7 +607,7 @@ namespace ScanEngine
         /// </summary>
         private static bool IsScriptFile(string extension)
         {
-            string[] scriptExtensions = {
+            string[] scriptExtensions = [
                 ".ps1", ".psm1", ".psd1",  // PowerShell
                 ".vbs", ".vbe",            // VBScript
                 ".js", ".jse",              // JavaScript
@@ -617,7 +617,7 @@ namespace ScanEngine
                 ".pl", ".pm",               // Perl
                 ".rb",                      // Ruby
                 ".php", ".phtml", ".php3", ".php4", ".php5"  // PHP
-            };
+            ];
 
             return scriptExtensions.Contains(extension);
         }

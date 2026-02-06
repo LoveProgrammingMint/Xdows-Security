@@ -937,8 +937,9 @@ namespace Xdows_Security
                             }
 
                         }
-                        catch
+                        catch (Exception ex)
                         {
+                            LogText.AddNewLog(LogLevel.WARN, "Security - ScanFailed", ex.Message);
                         }
 
                         finished++;

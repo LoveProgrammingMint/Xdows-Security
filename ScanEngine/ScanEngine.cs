@@ -63,49 +63,26 @@ namespace ScanEngine
         }
         public class SouXiaoEngineScan
         {
-            private Core? SouXiaoCore;
-            private readonly SouRule.SouRuleEngine? SouRuleEngine;
-            private readonly Boolean IsDebug = false;
+            private LiuLiV5Classifier? SouXiaoCore;
+            private readonly Boolean IsDebug = true;
 
             public bool Initialize()
             {
                 try
                 {
-                    SouXiaoCore = new(0.75, Directory.GetCurrentDirectory());
-                    //SouRuleEngine = new();
-                    //if (!SouRuleEngine.Initialization) { return false; }
+                    SouXiaoCore = new(Directory.GetCurrentDirectory()+"\\LiuLi.onnx");
                     return true;
                 }
                 catch (Exception)
                 {
+                    if (IsDebug) { throw; }
                     return false;
                 }
             }
 
             public static (bool IsVirus, string Result) ScanFileByRuleEngine(string path)
             {
-                //try
-                //{
-                //    if (SouRuleEngine == null)
-                //    {
-                //        throw new InvalidOperationException("SouXiaoRule is not initialized.");
-                //    }
-                //    bool scanResult = SouRuleEngine.ScanFile(path);
-                //    if (scanResult)
-                //    {
-                //        return (true, "SouXiaoRule.Hit");
-                //    }
-                //    else
-                //    {
                 return (false, string.Empty);
-                //}
-                //}
-                //catch (Exception)
-                //{
-                //    if (IsDebug) { throw; }
-
-                //    return (false, string.Empty);
-                //}
             }
 
             public (bool IsVirus, string Result) ScanFile(string path)
@@ -116,10 +93,10 @@ namespace ScanEngine
                     {
                         throw new InvalidOperationException("SouXiaoCore is not initialized.");
                     }
-                    bool scanResult = SouXiaoCore.Run(path);
+                    bool scanResult = SouXiaoCore.Predict(path);
                     if (scanResult)
                     {
-                        return (true, "SouXiao.Hit");
+                        return (true, "SouXiao.Heuristic.LIULIv5");
                     }
                     else
                     {
@@ -134,6 +111,8 @@ namespace ScanEngine
                 }
             }
         }
+
+
         public static async Task<(int statusCode, string? result)> AXScanFileAsync(string targetFilePath)
         {
             if (!File.Exists(targetFilePath))

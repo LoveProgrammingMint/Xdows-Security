@@ -34,10 +34,6 @@ namespace Xdows_Security
             this.ExtendsContentIntoTitleBar = true;
             AppWindow.SetIcon("logo.ico");
             this.AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
-            if (ExtendsContentIntoTitleBar)
-            {
-                this.SetTitleBar(CustomTitleBar);
-            }
             nav.SelectedItem = nav.MenuItems.OfType<NavigationViewItem>().First();
             Activated += MainWindow_Activated_FirstTime;
             Title = AppInfo.AppName;

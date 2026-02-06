@@ -170,26 +170,15 @@ namespace Xdows_Security
                 );
 
                 var titleBar = window.AppWindow.TitleBar;
+                // 修改的是标题栏按钮 “× ▢ -” 的字体颜色 By XTY64XTY
                 if (titleBar is not null)
                 {
-                    if (selectedTheme == ElementTheme.Dark)
+                    titleBar.ButtonForegroundColor = selectedTheme switch
                     {
-                        titleBar.ButtonForegroundColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
-                    }
-                    else if (selectedTheme == ElementTheme.Light)
-                    {
-                        titleBar.ButtonForegroundColor = Windows.UI.Color.FromArgb(255, 0, 0, 0);
-                    }
-                    else if (GetSystemTheme() == 0)
-                    {
-
-                        titleBar.ButtonForegroundColor = Windows.UI.Color.FromArgb(255, 0, 0, 0);
-
-                    }
-                    else
-                    {
-                        titleBar.ButtonForegroundColor = Windows.UI.Color.FromArgb(255, 255, 255, 255);
-                    }
+                        ElementTheme.Dark => Windows.UI.Color.FromArgb(255, 255, 255, 255),
+                        ElementTheme.Light => Windows.UI.Color.FromArgb(255, 0, 0, 0),
+                        _ => GetSystemTheme() == 0 ? Windows.UI.Color.FromArgb(255, 0, 0, 0) : Windows.UI.Color.FromArgb(255, 255, 255, 255)
+                    };
                 }
             }
             var settings = ApplicationData.Current.LocalSettings;

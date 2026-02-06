@@ -2,6 +2,7 @@
 using Microsoft.ML.OnnxRuntime.Tensors;
 using System;
 using System.Buffers;
+using PeNet;
 using System.IO;
 using System.Linq;
 
@@ -15,6 +16,16 @@ namespace Self_Heuristic
         private const int INPUT_SIZE = 3 * 64 * 64;
         public bool Predict(string imagePath)
         {
+            try
+            {
+                if (WinTrust.VerifyFileSignature(imagePath) || !PeFile.IsPeFile(imagePath))
+                    return false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
             var bytePool = ArrayPool<byte>.Shared;
             byte[] byteBuffer = bytePool.Rent(INPUT_SIZE);
 

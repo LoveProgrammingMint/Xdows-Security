@@ -40,10 +40,6 @@ git clone https://github.com/XTY64XTY12345/Xdows-Security
 ```
 3. Open with VS and build
 
-> Unable to build
-> 
-> Because the SouXiao provider `Mint` does not open source its related content, simply remove references related to SouXiao
-
 ### Copyright Notice
 
 This project is licensed under the MIT License, please see [LICENSE](LICENSE.txt) for details.

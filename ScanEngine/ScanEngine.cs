@@ -70,7 +70,7 @@ namespace ScanEngine
             {
                 try
                 {
-                    SouXiaoCore = new(Directory.GetCurrentDirectory()+"\\LiuLi.onnx");
+                    SouXiaoCore = new(Directory.GetCurrentDirectory() + "\\LiuLi.onnx");
                     return true;
                 }
                 catch (Exception)

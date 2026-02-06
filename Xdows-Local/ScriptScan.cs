@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace ScanEngine
+namespace Xdows_Local
 {
     public static class ScriptScan
     {
@@ -11,37 +11,35 @@ namespace ScanEngine
         /// <param name="filePath">文件路径</param>
         /// <param name="fileContent">文件内容</param>
         /// <returns>评分和额外信息</returns>
-        public static async Task<(int score, string extra)> ScanScriptFileAsync(string filePath, byte[] fileContent)
+        public static (int score, string extra) ScanScriptFile(string filePath, byte[] fileContent)
         {
-            return await Task.Run(() =>
-            {
-                int score = 0;
-                var extra = new List<string>();
-                var fileExtension = GetExtString(filePath);
-                if (IsSuspiciousBat(fileContent))
-                {
-                    score += 10;
-                    extra.Add("CamouflageBat");
-                }
-                // 检查快捷方式文件
-                if (fileExtension == ".lnk")
-                {
-                    var lnkResult = CheckShortcutFile(filePath, fileContent);
-                    score += lnkResult.score;
-                    if (!string.IsNullOrEmpty(lnkResult.extra))
-                        extra.Add(lnkResult.extra);
-                }
-                // 检查脚本文件
-                else if (IsScriptFile(fileExtension))
-                {
-                    var scriptResult = CheckScriptFile(fileExtension, fileContent);
-                    score += scriptResult.score;
-                    if (!string.IsNullOrEmpty(scriptResult.extra))
-                        extra.Add(scriptResult.extra);
-                }
 
-                return (score, string.Join(" ", extra));
-            }).ConfigureAwait(false);
+            int score = 0;
+            var extra = new List<string>();
+            var fileExtension = GetExtString(filePath);
+            if (IsSuspiciousBat(fileContent))
+            {
+                score += 10;
+                extra.Add("CamouflageBat");
+            }
+            // 检查快捷方式文件
+            if (fileExtension == ".lnk")
+            {
+                var lnkResult = CheckShortcutFile(filePath, fileContent);
+                score += lnkResult.score;
+                if (!string.IsNullOrEmpty(lnkResult.extra))
+                    extra.Add(lnkResult.extra);
+            }
+            // 检查脚本文件
+            else if (IsScriptFile(fileExtension))
+            {
+                var scriptResult = CheckScriptFile(fileExtension, fileContent);
+                score += scriptResult.score;
+                if (!string.IsNullOrEmpty(scriptResult.extra))
+                    extra.Add(scriptResult.extra);
+            }
+
+            return (score, string.Join(" ", extra));
         }
         private static unsafe string GetExtString(string path)
         {

@@ -2,13 +2,13 @@ using PeNet;
 using System.Buffers;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using static ScanEngine.ScanEngine;
+using static Xdows_Local.Core;
 
-namespace ScanEngine
+namespace Xdows_Local
 {
     public static class Heuristic
     {
-        public static async Task<(int score, string extra)> Evaluate(string path, PeFile peFile, PEInfo peInfo, bool deepScan)
+        public static (int score, string extra) Evaluate(string path, PeFile peFile, PEInfo peInfo, bool deepScan)
         {
             var extra = string.Empty;
             var score = 0;
@@ -57,53 +57,33 @@ namespace ScanEngine
 
             if (peFile.IsExe || peFile.IsDll || peFile.IsDriver) // .NET文件无法分析
             {
-                int code = await Task.Run(() => FileDigitallySignedAndValid(path, peFile))
-                                    .ConfigureAwait(false);
+                int code = FileDigitallySignedAndValid(path, peFile);
                 if (code == 50)
                     return (0, string.Empty);
                 score -= code;
 
-                // 并行执行三个检查方法以提高性能
                 var resourceTask = CheckResourceSectionForPacking(peFile);
                 var exceptionTask = CheckExceptionHandling(peInfo);
                 var packingTask = CheckPackingSignatures(peFile);
 
-                await Task.WhenAll(resourceTask, exceptionTask, packingTask).ConfigureAwait(false);
-
-                int tempScore = await resourceTask;
+                int tempScore = resourceTask;
                 if (tempScore > 0)
                 {
                     score += tempScore;
                     suspiciousData.Add("AbnormalResources");
                 }
 
-                tempScore = await exceptionTask;
+                tempScore = exceptionTask;
                 if (tempScore > 0)
                 {
                     score += tempScore;
                     suspiciousData.Add("ExceptionHandling");
                 }
 
-                if (await packingTask)
+                if (packingTask)
                 {
                     score += 10;
                     suspiciousData.Add("PackingSignatures");
-                }
-                if (peFile.IsDll)
-                {
-                    if (peInfo.ExportsName == null)
-                    {
-                        score += 5;
-                        suspiciousData.Add("CamouflagedDLL");
-                    }
-                    else
-                    {
-                        if (DllScan.Scan(peInfo))
-                        {
-                            suspiciousData.Add("DllVirus");
-                            score += 20;
-                        }
-                    }
                 }
                 if (peFile.IsDotNet || peFile.IsDriver)
                 {
@@ -335,97 +315,89 @@ namespace ScanEngine
 
             return (score, extra);
         }
-        public static async Task<bool> CheckPackingSignatures(PeFile pe)
+        public static bool CheckPackingSignatures(PeFile pe)
         {
-            return await Task.Run(() =>
-            {
-                var raw = pe.RawFile.ToArray();
-                if (raw.Length > 0x40 &&
-                    raw[0x40] == 0x55 && raw[0x41] == 0x50 &&
-                    raw[0x42] == 0x58 && raw[0x43] == 0x30)
-                    return true;
-                uint ep = pe.ImageNtHeaders?.OptionalHeader.AddressOfEntryPoint ?? 0;
-                if (ep > raw.Length * 0.8)
-                    return true;
+            var raw = pe.RawFile.ToArray();
+            if (raw.Length > 0x40 &&
+                raw[0x40] == 0x55 && raw[0x41] == 0x50 &&
+                raw[0x42] == 0x58 && raw[0x43] == 0x30)
+                return true;
+            uint ep = pe.ImageNtHeaders?.OptionalHeader.AddressOfEntryPoint ?? 0;
+            if (ep > raw.Length * 0.8)
+                return true;
 
-                return false;
-            }).ConfigureAwait(false);
+            return false;
         }
-        public static async Task<int> CheckResourceSectionForPacking(PeFile pe)
+        public static int CheckResourceSectionForPacking(PeFile pe)
         {
-            return await Task.Run(() =>
+            int score = 0;
+            var resRva = pe.ImageNtHeaders?.OptionalHeader.DataDirectory[2].VirtualAddress ?? 0;
+            if (resRva == 0) score += 10;
+            else if (resRva < 4096) score += 5;
+            var rsrc = pe.ImageSectionHeaders?
+                         .FirstOrDefault(s => s.Name
+                                             .TrimEnd('\0')
+                                             .Equals(".rsrc", StringComparison.OrdinalIgnoreCase));
+            if (rsrc != null)
             {
-                int score = 0;
-                var resRva = pe.ImageNtHeaders?.OptionalHeader.DataDirectory[2].VirtualAddress ?? 0;
-                if (resRva == 0) score += 10;
-                else if (resRva < 4096) score += 5;
-                var rsrc = pe.ImageSectionHeaders?
-                             .FirstOrDefault(s => s.Name
-                                                 .TrimEnd('\0')
-                                                 .Equals(".rsrc", StringComparison.OrdinalIgnoreCase));
-                if (rsrc != null)
-                {
-                    if (rsrc.VirtualSize == 0 || rsrc.SizeOfRawData == 0)
-                        score += 10;
-                    else if (rsrc.VirtualSize > 1024 * 1024)
-                        score += 5;
-                    else if (rsrc.SizeOfRawData < 1024 && rsrc.VirtualSize > 1024)
-                        score += 15;
-                }
+                if (rsrc.VirtualSize == 0 || rsrc.SizeOfRawData == 0)
+                    score += 10;
+                else if (rsrc.VirtualSize > 1024 * 1024)
+                    score += 5;
+                else if (rsrc.SizeOfRawData < 1024 && rsrc.VirtualSize > 1024)
+                    score += 15;
+            }
 
-                return score;
-            }).ConfigureAwait(false);
+            return score;
         }
-        public static async Task<int> CheckExceptionHandling(PEInfo info)
+        public static int CheckExceptionHandling(PEInfo info)
         {
-            return await Task.Run(() =>
+
+            if (info?.ImportsName == null) return 0;
+
+            int score = 0;
+
+            var exceptionAPIs = new[]
             {
-                if (info?.ImportsName == null) return 0;
-
-                int score = 0;
-
-                var exceptionAPIs = new[]
-                {
                 "vectoredexceptionhandler", "unhandledexceptionfilter",
                 "setunhandledexceptionfilter", "addvectoredexceptionhandler",
                 "removevectoredexceptionhandler", "raiseexception",
                 "rtladdvectoredexceptionhandler", "rtlremovevectoredexceptionhandler"
                  };
 
-                var antiDebugAPIs = new[]
-                {
+            var antiDebugAPIs = new[]
+            {
                 "isdebuggerpresent", "checkremotedebuggerpresent",
                 "debugactiveprocess", "debugactiveprocessstop",
                 "ntqueryinformationprocess", "ntsetinformationthread",
                 "outputdebugstring", "debugbreak"
             };
 
-                var memoryAPIs = new[]
-                {
+            var memoryAPIs = new[]
+            {
                 "virtualprotect", "virtualprotectex", "virtuallock",
                 "virtualunlock", "fluskinstructioncache", "getwriteaccess"
             };
 
-                foreach (var func in info.ImportsName.Select(f => f.ToLower()))
+            foreach (var func in info.ImportsName.Select(f => f.ToLower()))
+            {
+                if (exceptionAPIs.Any(api => func.Contains(api)))
                 {
-                    if (exceptionAPIs.Any(api => func.Contains(api)))
-                    {
-                        score += 2;
-                    }
-
-                    if (antiDebugAPIs.Any(api => func.Contains(api)))
-                    {
-                        score += 4;
-                    }
-
-                    if (memoryAPIs.Any(api => func.Contains(api)))
-                    {
-                        score += 3;
-                    }
+                    score += 2;
                 }
 
-                return Math.Min(score, 15);
-            }).ConfigureAwait(false);
+                if (antiDebugAPIs.Any(api => func.Contains(api)))
+                {
+                    score += 4;
+                }
+
+                if (memoryAPIs.Any(api => func.Contains(api)))
+                {
+                    score += 3;
+                }
+            }
+
+            return Math.Min(score, 15);
         }
         private static unsafe string[] GetExtStrings(string path)
         {

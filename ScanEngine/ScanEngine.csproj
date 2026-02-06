@@ -4,16 +4,12 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="PeNet" Version="5.1.0" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SouXiao_Self-Heuristic\Self-Heuristic.csproj" />
     <ProjectReference Include="..\SouXiao_SouRule\SouRule.csproj" />
+    <ProjectReference Include="..\Xdows-Local\Xdows-Local.csproj" />
   </ItemGroup>
 
 	<ItemGroup>

@@ -63,7 +63,11 @@ namespace Xdows_Security
                     {
                         disabledVerify = (bool)isDisabledVerify;
                     }
-                    if (!disabledVerify)
+                    if (disabledVerify)
+                    {
+                        this.Close();
+                    }
+                    else
                     {
                         var verifyTask = UserConsentVerifier.RequestVerificationAsync(string.Empty);
                         var result = verifyTask.AsTask().ConfigureAwait(false).GetAwaiter().GetResult();

@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="using:CommunityToolkit.WinUI"
-    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls" xmlns:model="using:Xdows_Security.Model"
     mc:Ignorable="d">
     <ScrollViewer>
         <Grid Padding="16" Margin="64,0,64,0">
@@ -32,7 +32,7 @@
                 </GridView.ItemsPanel>
 
                 <GridView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="model:PluginItem">
 
                         <controls:SettingsCard>
                             <Grid>
@@ -42,16 +42,16 @@
                                 </Grid.ColumnDefinitions>
 
                                 <Border Grid.Column="0" Width="48" Height="48" CornerRadius="8" Background="{ThemeResource SystemControlForegroundAccentBrush}" HorizontalAlignment="Left" VerticalAlignment="Top">
-                                    <TextBlock Text="{Binding ShortName}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{x:Bind ShortName}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold"/>
                                 </Border>
 
                                 <StackPanel Grid.Column="1" Margin="12,0,0,0">
-                                    <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock Text="{Binding Description}" FontSize="12" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" TextWrapping="Wrap" Margin="0,6,0,0" MaxHeight="48"/>
+                                    <TextBlock Text="{x:Bind Name}" FontSize="15" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="{x:Bind Description}" FontSize="12" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" TextWrapping="Wrap" Margin="0,6,0,0" MaxHeight="48"/>
 
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
-                                        <Button Content="打开" Click="OpenButton_Click" Tag="{Binding}" Margin="0,0,8,0"/>
-                                        <Button Content="卸载" Click="UnloadButton_Click" Tag="{Binding}" />
+                                        <Button Content="打开" Click="OpenButton_Click" Tag="{x:Bind}" Margin="0,0,8,0"/>
+                                        <Button Content="卸载" Click="UnloadButton_Click" Tag="{x:Bind}" />
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>

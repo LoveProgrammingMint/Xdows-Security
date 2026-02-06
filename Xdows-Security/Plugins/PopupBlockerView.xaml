@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:Xdows_Security.Views"
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
@@ -33,7 +34,7 @@
         </CommandBar>
         <ListView x:Name="PopupRuleList" Grid.Row="1" SelectionMode="Single" Margin="0,16,0,0">
             <ListView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="local:PopupRule">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -41,10 +42,10 @@
                             <ColumnDefinition Width="120"/>
                             <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{Binding Title}" FontSize="14" TextWrapping="Wrap"/>
-                        <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{Binding ProcessName}" FontSize="14"/>
-                        <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="{Binding Status}" FontSize="14"/>
-                        <ToggleSwitch Grid.Column="3" IsOn="{Binding IsEnabled}" Toggled="PopupRuleToggle_Toggled" MinWidth="60"/>
+                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{x:Bind Title}" FontSize="14" TextWrapping="Wrap"/>
+                        <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{x:Bind ProcessName}" FontSize="14"/>
+                        <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="{x:Bind Status}" FontSize="14"/>
+                        <ToggleSwitch Grid.Column="3" IsOn="{x:Bind IsEnabled, Mode=TwoWay}" Toggled="PopupRuleToggle_Toggled" MinWidth="60"/>
                         <Grid.ContextFlyout>
                             <MenuFlyout>
                                 <MenuFlyoutItem Text="编辑规则" Click="EditPopupRule_Click">

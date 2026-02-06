@@ -24,13 +24,13 @@
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local:QuarantineItemModel">
                     <StackPanel Spacing="2" Padding="8,6">
-                        <TextBlock Text="{Binding SourcePath}" TextWrapping="WrapWholeWords"/>
-                        <TextBlock Text="{Binding FileHash}"
+                        <TextBlock Text="{x:Bind SourcePath}" TextWrapping="WrapWholeWords"/>
+                        <TextBlock Text="{x:Bind FileHash}" 
                                    FontSize="10"
                                    Opacity="0.75"
                                    IsTextSelectionEnabled="True"
                                    TextWrapping="NoWrap"/>
-                        <TextBlock Text="{Binding ThreatName}"
+                        <TextBlock Text="{x:Bind ThreatName}"
                                    FontSize="12"
                                    Opacity="0.8"
                                    TextWrapping="NoWrap"/>

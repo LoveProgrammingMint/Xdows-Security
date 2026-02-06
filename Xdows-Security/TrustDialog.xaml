@@ -12,8 +12,8 @@
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local:TrustItemModel">
                     <StackPanel> 
-                        <TextBlock Text="{Binding Path}" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding Hash}" Opacity="0.75" IsTextSelectionEnabled="True" VerticalAlignment="Center" FontSize="10"/>
+                        <TextBlock Text="{x:Bind Path}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{x:Bind Hash}" Opacity="0.75" IsTextSelectionEnabled="True" VerticalAlignment="Center" FontSize="10"/>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>

@@ -28,15 +28,15 @@
                          From="0.8" To="0" Duration="0:0:0.2"/>
         </Storyboard>
 
-        <DataTemplate x:Key="MoreScanListTemplate">
+        <DataTemplate x:Key="MoreScanListTemplate" x:DataType="local:MoreScanItem">
             <Grid Padding="0,8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <FontIcon Grid.Column="0" Glyph="{Binding IconGlyph}" Margin="0,0,8,0" FontSize="16"/>
-                <TextBlock Grid.Column="1" Text="{Binding Path}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                <FontIcon Grid.Column="0" Glyph="{x:Bind IconGlyph}" Margin="0,0,8,0" FontSize="16"/>
+                <TextBlock Grid.Column="1" Text="{x:Bind Path}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
             </Grid>
         </DataTemplate>
     </Page.Resources>
@@ -206,37 +206,37 @@
           DoubleTapped="VirusList_DoubleTapped" 
           Grid.ColumnSpan="2">
                 <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="local:VirusRow">
+                <DataTemplate x:DataType="local:VirusRow">
                         <Grid Padding="12,6">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*" MinWidth="300"/>
                                 <ColumnDefinition Width="*" MinWidth="150"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" 
-                           Text="{Binding FilePath}" 
+                           Text="{x:Bind FilePath}" 
                            TextTrimming="CharacterEllipsis"/>
                             <TextBlock Grid.Column="1" 
-                           Text="{Binding VirusName}"/>
+                           Text="{x:Bind VirusName}"/>
                             <Grid.ContextFlyout>
                                 <MenuFlyout>
                                     <MenuFlyoutItem  l:Uids.Uid="SecurityPage_MenuItem_Details" 
-                                        Command="{Binding ShowDetailsCommand}"
-                                        CommandParameter="{Binding}">
+                                        Command="{x:Bind ShowDetailsCommand}"
+                                        CommandParameter="{x:Bind}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE946;" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
                                     <MenuFlyoutSeparator/>
                                     <MenuFlyoutItem  l:Uids.Uid="SecurityPage_MenuItem_Trust" 
-                                        Command="{Binding TrustCommand}"
-                                        CommandParameter="{Binding}">
+                                        Command="{x:Bind TrustCommand}"
+                                        CommandParameter="{x:Bind}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE73E;" />
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
                                     <MenuFlyoutItem l:Uids.Uid="SecurityPage_MenuItem_Handle" 
-                                        Command="{Binding HandleCommand}"
-                                        CommandParameter="{Binding}">
+                                        Command="{x:Bind HandleCommand}"
+                                        CommandParameter="{x:Bind}">
                                         <MenuFlyoutItem.Icon>
                                             <FontIcon Glyph="&#xE74D;" />
                                         </MenuFlyoutItem.Icon>

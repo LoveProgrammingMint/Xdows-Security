@@ -199,54 +199,20 @@
 
             <TextBlock Name="StatusText" Grid.Row="5" Margin="0,8,0,0" FontSize="14" TextWrapping="Wrap" Grid.ColumnSpan="2"/>
 
-            <ListView Name="VirusList" 
-          Grid.Row="6" 
-          Margin="-28,10,0,8" 
-          Visibility="Collapsed" 
-          DoubleTapped="VirusList_DoubleTapped" 
-          Grid.ColumnSpan="2">
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="local:VirusRow">
-                        <Grid Padding="12,6">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*" MinWidth="300"/>
-                                <ColumnDefinition Width="*" MinWidth="150"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" 
-                           Text="{Binding FilePath}" 
-                           TextTrimming="CharacterEllipsis"/>
-                            <TextBlock Grid.Column="1" 
-                           Text="{Binding VirusName}"/>
-                            <Grid.ContextFlyout>
-                                <MenuFlyout>
-                                    <MenuFlyoutItem  l:Uids.Uid="SecurityPage_MenuItem_Details" 
-                                        Command="{Binding ShowDetailsCommand}"
-                                        CommandParameter="{Binding}">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon Glyph="&#xE946;" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutSeparator/>
-                                    <MenuFlyoutItem  l:Uids.Uid="SecurityPage_MenuItem_Trust" 
-                                        Command="{Binding TrustCommand}"
-                                        CommandParameter="{Binding}">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon Glyph="&#xE73E;" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem l:Uids.Uid="SecurityPage_MenuItem_Handle" 
-                                        Command="{Binding HandleCommand}"
-                                        CommandParameter="{Binding}">
-                                        <MenuFlyoutItem.Icon>
-                                            <FontIcon Glyph="&#xE74D;" />
-                                        </MenuFlyoutItem.Icon>
-                                    </MenuFlyoutItem>
-                                </MenuFlyout>
-                            </Grid.ContextFlyout>
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+            <ScrollViewer Grid.Row="6" 
+              Grid.ColumnSpan="2" 
+              Margin="-28,10,0,8"
+              VerticalScrollBarVisibility="Auto">
+                <ItemsControl Name="VirusItemsControl" 
+                  Visibility="Collapsed">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </ScrollViewer>
+            
         </Grid>
     </ScrollViewer>
 </Page>

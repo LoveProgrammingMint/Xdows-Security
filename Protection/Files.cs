@@ -130,20 +130,17 @@ namespace Protection
                     return;
                 }
 
-                // 检查文件是否在信任区中
                 if (TrustManager.IsPathTrusted(e.FullPath))
                 {
                     return;
                 }
 
-                bool isVirus = false;
-                isVirus = SouXiaoEngine.ScanFile(e.FullPath).IsVirus;
-                if (isVirus)
+                var (IsVirus, Result) = SouXiaoEngine.ScanFile(e.FullPath);
+                if (IsVirus)
                 {
                     try
                     {
-                        // 将文件添加到隔离区（不使用后缀回退）
-                        bool success = await QuarantineManager.AddToQuarantine(e.FullPath, "未知病毒");
+                        bool success = await QuarantineManager.AddToQuarantine(e.FullPath, Result);
 
                         _ = Task.Run(() =>
                         {

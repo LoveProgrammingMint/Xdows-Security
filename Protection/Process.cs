@@ -98,16 +98,16 @@ namespace Protection
                             if (TrustManager.IsPathTrusted(path))
                                 continue;
 
-                            bool isVirus = SouXiaoEngine.ScanFile(path).IsVirus;
+                            var (IsVirus, Result) = SouXiaoEngine.ScanFile(path);
 
-                            if (isVirus)
+                            if (IsVirus)
                             {
                                 bool Succeed = TryKillProcess(pid);
 
                                 try
                                 {
-                                    await QuarantineManager.AddToQuarantine(path, "Process Protection");
-                                    //bool quarantineSuccess = await QuarantineManager.AddToQuarantine(path, "Process Protection");
+                                    await QuarantineManager.AddToQuarantine(path, Result);
+                                    //bool quarantineSuccess = await QuarantineManager.AddToQuarantine(path, Result);
                                     //if (!quarantineSuccess)
                                     //{
                                     //    // 隔离失败，仅记录到调试输出

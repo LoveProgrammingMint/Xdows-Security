@@ -123,7 +123,6 @@ namespace Protection
             {
                 if (
                     e.FullPath.Contains("\\AppData\\Local\\Temp", StringComparison.OrdinalIgnoreCase) ||
-                    Path.GetExtension(e.FullPath).Equals(".virus", StringComparison.OrdinalIgnoreCase) ||
                     !IsFileAccessible(e.FullPath) ||
                     SouXiaoEngine == null
                 )
@@ -143,7 +142,7 @@ namespace Protection
                 {
                     try
                     {
-                        // 将文件添加到隔离区
+                        // 将文件添加到隔离区（不使用后缀回退）
                         bool success = await QuarantineManager.AddToQuarantine(e.FullPath, "未知病毒");
 
                         _ = Task.Run(() =>

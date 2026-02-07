@@ -1,11 +1,9 @@
 ﻿using System.Runtime.InteropServices;
-using System;
-using System.IO;
 
 namespace Self_Heuristic;
 
 
-    internal static class WinTrust
+internal static class WinTrust
 {
 
     [StructLayout(LayoutKind.Sequential)]
@@ -55,13 +53,13 @@ namespace Self_Heuristic;
         public IntPtr pSIPClientData;
         public uint dwUIChoice;
         public uint fdwRevocationChecks;
-        public uint dwUnionChoice;   
+        public uint dwUnionChoice;
         public IntPtr pFile;
         public IntPtr pCatalog;
         public IntPtr pBlob;
         public IntPtr pSgnr;
         public IntPtr pCert;
-        public uint dwStateAction;   
+        public uint dwStateAction;
         public IntPtr hWVTStateData;
         public IntPtr pwszURLReference;
         public uint dwProvFlags;

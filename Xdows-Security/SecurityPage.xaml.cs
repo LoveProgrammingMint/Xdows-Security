@@ -138,9 +138,10 @@ namespace Xdows_Security
             _currentResults?.Add(row);
         }
 
-        // 将原来的 OnTrustClick 改为内部方法
-        private async Task OnTrustClickInternal(VirusRow row)
+        private async Task OnTrustClickInternal(VirusRow? row)
         {
+            if (row is null) return;
+
             var confirmDialog = new ContentDialog
             {
                 Title = Localizer.Get().GetLocalizedString("SecurityPage_TrustConfirm_Title"),
@@ -200,9 +201,9 @@ namespace Xdows_Security
             }
         }
 
-        private async Task OnHandleClickInternal(VirusRow row)
+        private async Task OnHandleClickInternal(VirusRow? row)
         {
-            if (_currentResults is null) return;
+            if (_currentResults is null || row is null) return;
 
             var dialog = new ContentDialog
             {
@@ -239,15 +240,15 @@ namespace Xdows_Security
                         {
                             try
                             {
-                                string directory = Path.GetDirectoryName(row.FilePath) ?? "";
-                                string fileName = Path.GetFileNameWithoutExtension(row.FilePath);
-                                string extension = Path.GetExtension(row.FilePath);
-                                string newFileName = $"{fileName}_virus_{DateTime.Now:yyyyMMddHHmmss}{extension}";
-                                string newPath = Path.Combine(directory, newFileName);
-
-                                File.Move(row.FilePath, newPath);
-                                actionTaken = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_HandleAction_Renamed"), newFileName);
-                                handled = true;
+                                if (await QuarantineManager.AddToQuarantine(row.FilePath, row.VirusName))
+                                {
+                                    actionTaken = Localizer.Get().GetLocalizedString("SecurityPage_HandleAction_Quarantined");
+                                    handled = true;
+                                }
+                                else
+                                {
+                                    actionTaken = Localizer.Get().GetLocalizedString("SecurityPage_HandleAction_Failed");
+                                }
                             }
                             catch
                             {
@@ -1224,10 +1225,11 @@ namespace Xdows_Security
             }
         }
 
-        private async Task ShowDetailsDialog(VirusRow row)
+        private async Task ShowDetailsDialog(VirusRow? row)
         {
             try
             {
+                if (row is null) return;
                 bool isDetailsPause = PauseScanButton.Visibility == Visibility.Visible && PauseScanButton.IsEnabled;
                 if (isDetailsPause)
                 {

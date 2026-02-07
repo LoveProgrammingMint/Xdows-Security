@@ -1,9 +1,8 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using PluginSystem;
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
-using PluginSystem;
 
 namespace Xdows_Security
 {

@@ -15,15 +15,11 @@ namespace Xdows_Security
         private string? _virusFilePath;
         private readonly string? _type;
 
-        // 静态字典用于跟踪已打开的窗口
         private static readonly Dictionary<string, InterceptWindow> _openWindows = new Dictionary<string, InterceptWindow>();
 
         public static void ShowOrActivate(bool isSucceed, string path, string type)
         {
-            // 创建唯一的键（路径+类型）
             string key = $"{path}|{type}";
-
-            // 如果已经存在相同文件的窗口，激活它而不是创建新窗口
             if (_openWindows.TryGetValue(key, out var existingWindow))
             {
                 try
@@ -33,81 +29,12 @@ namespace Xdows_Security
                 }
                 catch
                 {
-                    // 如果窗口已关闭但未从字典中移除，移除它
                     _openWindows.Remove(key);
                 }
             }
-
-            // 创建新窗口
             var w = new InterceptWindow(isSucceed, path, type, key);
             w.Activate();
             // SetIcon("logo.ico");
-        }
-
-        private void SetFileInfo(string path)
-        {
-            _originalFilePath = path;
-            if (File.Exists(path))
-                _virusFilePath = path;
-            else if (File.Exists(path + ".virus"))
-                _virusFilePath = path + ".virus";
-            else
-                _virusFilePath = path;
-            System.Diagnostics.Debug.WriteLine(_virusFilePath);
-            ProcessPath.Text = path;
-            ProcessName.Text = System.IO.Path.GetFileName(path);
-
-            try
-            {
-                if (File.Exists(_virusFilePath))
-                {
-                    var fileInfo = new FileInfo(_virusFilePath);
-                    ModifyDate.Text = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
-                }
-                else
-                {
-                    ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined");
-                }
-            }
-            catch (Exception ex)
-            {
-                ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined");
-                LogText.AddNewLog(LogLevel.ERROR, "InterceptWindow - SetFileInfo", ex.Message);
-            }
-
-            try
-            {
-                if (File.Exists(_virusFilePath))
-                {
-                    FileIcon.Source = SetIcon(_virusFilePath);
-                }
-                else
-                {
-                    // fallback: keep default or placeholder icon
-                }
-            }
-            catch (Exception ex)
-            {
-                LogText.AddNewLog(LogLevel.ERROR, "InterceptWindow - LoadIcon", ex.Message);
-            }
-        }
-
-        public Microsoft.UI.Xaml.Media.Imaging.BitmapImage SetIcon(string path)
-        {
-            var fileIcon = System.Drawing.Icon.ExtractAssociatedIcon(path);
-            if (fileIcon == null) return new Microsoft.UI.Xaml.Media.Imaging.BitmapImage();
-            using (var bitmap = fileIcon.ToBitmap())
-            {
-                using (var memoryStream = new System.IO.MemoryStream())
-                {
-                    bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
-                    memoryStream.Position = 0;
-
-                    var bitmapImage = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage();
-                    bitmapImage.SetSource(memoryStream.AsRandomAccessStream());
-                    return bitmapImage;
-                }
-            }
         }
 
         private InterceptWindow(bool isSucceed, string path, string type, string key)
@@ -121,78 +48,29 @@ namespace Xdows_Security
 
             // 将窗口添加到静态字典
             _openWindows[key] = this;
-
             try
             {
                 Localizer.Get().LanguageChanged += Localizer_LanguageChanged;
                 UpdateWindowTitle();
             }
             catch { }
-
-            // 注册窗口关闭事件，从字典中移除
             this.Closed += (sender, e) =>
             {
                 Localizer.Get().LanguageChanged -= Localizer_LanguageChanged;
                 _openWindows.Remove(key);
             };
-
-            SetFileInfo(path);
             _type = type;
-
-            // 根据类型设置图标
             if (_type == "Reg")
             {
-                // 使用系统注册表编辑器图标
-                try
-                {
-                    string regeditPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "regedit.exe");
-                    if (File.Exists(regeditPath))
-                    {
-                        FileIcon.Source = SetIcon(regeditPath);
-                    }
-                    else
-                    {
-                        FileIcon.Source = SetIcon(path);
-                    }
-                }
-                catch
-                {
-                    // 如果获取失败，使用默认图标
-                    if (File.Exists(path))
-                    {
-                        FileIcon.Source = SetIcon(path);
-                    }
-                }
-            }
-            else
-            {
-                // 原有的动态获取图标逻辑
-                if (File.Exists(path))
-                {
-                    FileIcon.Source = SetIcon(path);
-                }
-            }
-
-            // 根据类型调整界面文本
-            if (_type == "Reg")
-            {
-                // 将"SouXiao 引擎"文本更改为"内置规则"
                 EngineNameText.Text = Localizer.Get().GetLocalizedString("InterceptWindow_EngineName_Registry");
             }
-
-            // 根据类型调整按钮状态
             if (_type == "Reg")
             {
                 ScanButton.IsEnabled = false;
-                ModifyDateBox.Visibility = Visibility.Collapsed;
                 SecurityAdviceBox.Visibility = Visibility.Collapsed;
                 Grid.SetColumn(EngineBox, 0);
             }
-
-            // 更新本地化标题
             UpdateWindowTitle();
-
-            // 初始化其他UI元素
             InitializeUI(path);
         }
 
@@ -216,13 +94,80 @@ namespace Xdows_Security
         {
             if (sender is MenuFlyoutItem menuItem)
             {
-                await (menuItem.Tag.ToString() switch
+                var tag = menuItem.Tag?.ToString();
+                switch (tag)
                 {
-                    "Delete" => DeleteFile(),
-                    "Restore" => RestoreFile(),
-                    "Disable" => DisableProtection(),
-                    _ => Task.CompletedTask
-                });
+                    case "Delete":
+                        await DeleteFile();
+                        break;
+                    case "Restore":
+                        await RestoreFile();
+                        break;
+                    case "Disable":
+                        await DisableProtection();
+                        break;
+                    case "Trust":
+                        await AddToTrust();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private async Task AddToTrust()
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(_originalFilePath))
+                {
+                    await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Trust_Failed_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Trust_Failed_Message"));
+                    return;
+                }
+                var quarantineItems = QuarantineManager.GetQuarantineItems();
+                var qi = quarantineItems.Find(q => string.Equals(q.SourcePath, _originalFilePath, StringComparison.OrdinalIgnoreCase));
+                if (qi != null)
+                {
+                    bool added = await TrustManager.AddToTrustByHash(_originalFilePath, qi.FileHash);
+                    if (!added)
+                    {
+                        await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Trust_Failed_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Trust_Failed_Message"));
+                        return;
+                    }
+                    bool restored = await QuarantineManager.RestoreFile(qi.FileHash);
+                    if (restored)
+                    {
+                        await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Trust_Success_Title"), string.Format(Localizer.Get().GetLocalizedString("InterceptWindow_Trust_Success_Message"), _originalFilePath));
+                        this.Close();
+                        return;
+                    }
+                    await TrustManager.RemoveFromTrust(_originalFilePath);
+                    await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Trust_Failed_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Trust_Failed_Message"));
+                    return;
+                }
+
+                if (File.Exists(_originalFilePath))
+                {
+                    bool success = await TrustManager.AddToTrust(_originalFilePath);
+                    if (success)
+                    {
+                        await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Trust_Success_Title"), string.Format(Localizer.Get().GetLocalizedString("InterceptWindow_Trust_Success_Message"), _originalFilePath));
+                        this.Close();
+                        return;
+                    }
+                    else
+                    {
+                        await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Trust_Failed_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Trust_Failed_Message"));
+                        return;
+                    }
+                }
+
+                await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Trust_Failed_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Trust_Failed_Message"));
+            }
+            catch (Exception ex)
+            {
+                await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Trust_Failed_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Trust_Failed_Message"));
+                LogText.AddNewLog(LogLevel.ERROR, "InterceptWindow - AddToTrust - Failed", ex.ToString());
             }
         }
 
@@ -230,16 +175,25 @@ namespace Xdows_Security
         {
             try
             {
-                if (File.Exists(_virusFilePath))
+                var quarantineItems = QuarantineManager.GetQuarantineItems();
+                var item = quarantineItems.Find(q => string.Equals(q.SourcePath, _originalFilePath, StringComparison.OrdinalIgnoreCase));
+                if (item != null)
                 {
-                    File.Delete(_virusFilePath);
-                    await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Delete_Success_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Delete_Success_Message"));
-                    this.Close();
+                    bool success = await QuarantineManager.DeleteItem(item.FileHash);
+                    if (success)
+                    {
+                        await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Delete_Success_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Delete_Success_Message"));
+                        this.Close();
+                        return;
+                    }
+                    else
+                    {
+                        await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Delete_Failed_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Delete_Failed_Message"));
+                        return;
+                    }
                 }
-                else
-                {
-                    await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Delete_NoFile_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Delete_NoFile_Message"));
-                }
+
+                await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Delete_NoFile_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Delete_NoFile_Message"));
             }
             catch (Exception ex)
             {
@@ -254,51 +208,33 @@ namespace Xdows_Security
             {
                 if (_type != "Reg")
                 {
-                    // 文件类型的恢复逻辑
-                    if (File.Exists(_virusFilePath))
+                    // 文件类型的恢复逻辑：仅使用隔离区恢复，不依赖任何本地后缀或本地文件
+                    var quarantineItems = QuarantineManager.GetQuarantineItems();
+                    QuarantineItemModel? found = null;
+
+                    if (!string.IsNullOrWhiteSpace(_originalFilePath))
                     {
-                        // 检查是否是隔离区文件
-                        if (_virusFilePath.EndsWith(".virus"))
-                        {
-                            // 尝试从隔离区恢复文件
-                            string quarantinePath = _virusFilePath;
-                            string originalPath = _originalFilePath ?? string.Empty;
-
-                            // 尝试从隔离区管理器恢复文件
-                            var quarantineItems = QuarantineManager.GetQuarantineItems();
-                            var quarantineItem = quarantineItems.Find(q => q.SourcePath == originalPath);
-
-                            if (quarantineItem != null)
-                            {
-                                // 从隔离区恢复文件
-                                bool success = await QuarantineManager.RestoreFile(quarantineItem.FileHash);
-
-                                if (success)
-                                {
-                                    await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Success_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Success_Message"));
-                                    this.Close();
-                                    return;
-                                }
-                            }
-                        }
-
-                        // 如果不是隔离区文件或隔离区恢复失败，使用原有逻辑
-                        string restoredPath = _virusFilePath.Replace(".virus", "");
-
-                        if (File.Exists(restoredPath))
-                        {
-                            File.Delete(restoredPath);
-                        }
-
-                        File.Move(_virusFilePath, restoredPath);
-
-                        await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Success_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Success_Message"));
-                        this.Close();
+                        found = quarantineItems.Find(q => string.Equals(q.SourcePath, _originalFilePath, StringComparison.OrdinalIgnoreCase));
                     }
-                    else
+
+                    if (found != null)
                     {
-                        await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Restore_NoFile_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Restore_NoFile_Message"));
+                        bool success = await QuarantineManager.RestoreFile(found.FileHash);
+                        if (success)
+                        {
+                            await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Success_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Success_Message"));
+                            this.Close();
+                            return;
+                        }
+                        else
+                        {
+                            await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Failed_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Restore_Failed_Message"));
+                            return;
+                        }
                     }
+
+                    // 隔离区中未找到对应项，提示未找到文件
+                    await ShowMessageDialog(Localizer.Get().GetLocalizedString("InterceptWindow_Restore_NoFile_Title"), Localizer.Get().GetLocalizedString("InterceptWindow_Restore_NoFile_Message"));
                 }
             }
             catch (Exception ex)
@@ -340,32 +276,13 @@ namespace Xdows_Security
 
         private void InitializeUI(string path)
         {
-            // 设置文件路径和名称
             ProcessPath.Text = path;
             ProcessName.Text = System.IO.Path.GetFileName(path);
-
-            try
-            {
-                if (File.Exists(_virusFilePath))
-                {
-                    var fileInfo = new FileInfo(_virusFilePath);
-                    ModifyDate.Text = fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
-                }
-                else
-                {
-                    ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined");
-                }
-            }
-            catch (Exception ex)
-            {
-                ModifyDate.Text = Localizer.Get().GetLocalizedString("AllPage_Undefined");
-                LogText.AddNewLog(LogLevel.ERROR, "InterceptWindow - InitializeUI", ex.Message);
-            }
         }
 
         private async Task ShowMessageDialog(string title, string message)
         {
-            ContentDialog dialog = new ContentDialog
+            ContentDialog dialog = new()
             {
                 Title = title,
                 Content = message,

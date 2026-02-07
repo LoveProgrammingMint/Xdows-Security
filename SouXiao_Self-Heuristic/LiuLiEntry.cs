@@ -1,10 +1,7 @@
 ﻿using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
-using System;
-using System.Buffers;
 using PeNet;
-using System.IO;
-using System.Linq;
+using System.Buffers;
 
 namespace Self_Heuristic
 {

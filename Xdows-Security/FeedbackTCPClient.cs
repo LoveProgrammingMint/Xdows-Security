@@ -205,7 +205,7 @@ namespace Xdows_Security
 
                 // 连接到服务器
                 await _tcpClient.ConnectAsync(_serverHost, _serverPort);
-                
+
                 // 检查_tcpClient是否仍然有效
                 if (_tcpClient == null)
                 {
@@ -213,7 +213,7 @@ namespace Xdows_Security
                     Cleanup();
                     return false;
                 }
-                
+
                 _stream = _tcpClient.GetStream();
 
                 // 等待一小段时间确保连接完全建立
@@ -433,7 +433,7 @@ namespace Xdows_Security
 
             int retryCount = 0;
             const int maxRetries = 7;
-            
+
             while (retryCount < maxRetries)
             {
                 try
@@ -446,7 +446,7 @@ namespace Xdows_Security
                         _stream.Write(messageBytes, 0, messageBytes.Length);
                         _stream.Flush();
                     }
-                    
+
                     // 发送成功，退出循环
                     return;
                 }
@@ -454,39 +454,39 @@ namespace Xdows_Security
                 {
                     retryCount++;
                     System.Diagnostics.Debug.WriteLine($"发送消息失败 (尝试 {retryCount}/{maxRetries}): {ex.Message}");
-                    
+
                     // 如果是最后一次尝试，更新状态并触发错误
                     if (retryCount >= maxRetries)
                     {
                         // 连接可能已断开，更新状态
                         _isConnected = false;
                         OnError?.Invoke(this, $"发送消息失败: {ex.Message}");
-                        
+
                         // 清理连接资源
                         Cleanup();
                         break;
                     }
-                    
+
                     // 等待600毫秒后重试
                     await Task.Delay(600);
                 }
             }
         }
-        
+
         private async Task<bool> AttemptReconnectAsync()
         {
             int retryCount = 0;
             const int maxRetries = 7;
-            
+
             while (retryCount < maxRetries)
             {
                 try
                 {
                     System.Diagnostics.Debug.WriteLine($"尝试重新连接 (尝试 {retryCount + 1}/{maxRetries})");
-                    
+
                     // 清理现有连接
                     Cleanup();
-                    
+
                     // 尝试重新连接
                     bool connectSuccess = await ConnectAsync();
                     if (connectSuccess)
@@ -498,23 +498,23 @@ namespace Xdows_Security
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine($"重连尝试失败 (尝试 {retryCount + 1}/{maxRetries}): {ex.Message}");
-                    
+
                     // 如果是NullReferenceException，可能是_tcpClient被设置为null
                     if (ex is NullReferenceException)
                     {
                         System.Diagnostics.Debug.WriteLine("检测到NullReferenceException，可能是_tcpClient为null");
                     }
                 }
-                
+
                 retryCount++;
-                
+
                 // 如果不是最后一次尝试，等待500毫秒
                 if (retryCount < maxRetries)
                 {
                     await Task.Delay(600);
                 }
             }
-            
+
             System.Diagnostics.Debug.WriteLine("所有重连尝试均失败");
             return false;
         }
@@ -559,7 +559,7 @@ namespace Xdows_Security
             {
                 int retryCount = 0;
                 const int maxRetries = 5;
-                
+
                 while (!_cts.Token.IsCancellationRequested && _isConnected)
                 {
                     try
@@ -590,10 +590,10 @@ namespace Xdows_Security
                     {
                         // 解码消息时出错，记录错误并继续尝试
                         System.Diagnostics.Debug.WriteLine($"解码消息异常: {decodeEx.Message}");
-                        
+
                         // 增加重试计数
                         retryCount++;
-                        
+
                         // 如果达到最大重试次数，断开连接
                         if (retryCount >= maxRetries)
                         {
@@ -601,7 +601,7 @@ namespace Xdows_Security
                             OnError?.Invoke(this, $"连续 {maxRetries} 次解码失败，断开连接");
                             break;
                         }
-                        
+
                         // 如果是IO异常，说明连接可能已断开
                         if (decodeEx is System.IO.IOException)
                         {
@@ -614,12 +614,12 @@ namespace Xdows_Security
                             {
                                 OnError?.Invoke(this, $"连接已断开: {decodeEx.Message}");
                             }
-                            
+
                             // 清理连接资源
                             Cleanup();
                             break;
                         }
-                        
+
                         // 等待600毫秒后重试
                         System.Diagnostics.Debug.WriteLine($"解码失败，等待600毫秒后重试 ({retryCount}/{maxRetries})");
                         await Task.Delay(600, _cts.Token);

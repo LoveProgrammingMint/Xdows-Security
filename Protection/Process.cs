@@ -104,23 +104,20 @@ namespace Protection
                             {
                                 bool Succeed = TryKillProcess(pid);
 
-                                // 使用隔离区功能而不是简单地重命名文件
                                 try
                                 {
-                                    // 将文件添加到隔离区
-                                    bool quarantineSuccess = await QuarantineManager.AddToQuarantine(path, "Process Protection");
-
-                                    // 如果隔离成功，不需要重命名文件
-                                    if (!quarantineSuccess)
-                                    {
-                                        // 如果隔离失败，回退到原来的重命名方式
-                                        if (!Path.GetExtension(path).Equals(".virus", StringComparison.OrdinalIgnoreCase))
-                                        {
-                                            try { File.Move(path, path + ".virus"); } catch { }
-                                        }
-                                    }
+                                    await QuarantineManager.AddToQuarantine(path, "Process Protection");
+                                    //bool quarantineSuccess = await QuarantineManager.AddToQuarantine(path, "Process Protection");
+                                    //if (!quarantineSuccess)
+                                    //{
+                                    //    // 隔离失败，仅记录到调试输出
+                                    //    System.Diagnostics.Debug.WriteLine($"ProcessProtection: Failed to quarantine: {path}");
+                                    //}
                                 }
-                                catch { }
+                                catch //(Exception ex)
+                                {
+                                    //System.Diagnostics.Debug.WriteLine($"ProcessProtection exception: {ex}");
+                                }
 
                                 _ = Task.Run(() =>
                                 {

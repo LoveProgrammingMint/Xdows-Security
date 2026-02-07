@@ -324,6 +324,21 @@
   <data name="SecurityPage_Details_LocateButton" xml:space="preserve">
     <value>Locate File</value>
   </data>
+  <data name="InterceptWindow_TrustMenu.Text" xml:space="preserve">
+    <value>Add to Trusted</value>
+  </data>
+  <data name="InterceptWindow_Trust_Success_Title" xml:space="preserve">
+    <value>Trusted</value>
+  </data>
+  <data name="InterceptWindow_Trust_Success_Message" xml:space="preserve">
+    <value>The file {0} has been added to trust.</value>
+  </data>
+  <data name="InterceptWindow_Trust_Failed_Title" xml:space="preserve">
+    <value>Trust Failed</value>
+  </data>
+  <data name="InterceptWindow_Trust_Failed_Message" xml:space="preserve">
+    <value>Failed to add file to trust.</value>
+  </data>
   <data name="SecurityPage_LocateFailed_Title" xml:space="preserve">
     <value>Locate Failed</value>
   </data>
@@ -860,9 +875,6 @@ Why not try XIGUA Security?</value>
   </data>
   <data name="InterceptWindow_HeaderSubtitle" xml:space="preserve">
     <value>Suspicious program intercepted. Please take action.</value>
-  </data>
-  <data name="InterceptWindow_ModifyDateCaption" xml:space="preserve">
-    <value>Modified</value>
   </data>
   <data name="InterceptWindow_EngineCaption" xml:space="preserve">
     <value>Scanner Engine</value>

@@ -93,6 +93,20 @@ namespace TrustQuarantine
             return true;
         }
 
+        // 通过已知哈希值直接添加信任项（用于隔离区中的文件）
+        public static async Task<bool> AddToTrustByHash(string path, string hash)
+        {
+            if (string.IsNullOrWhiteSpace(hash)) return false;
+
+            var currentItems = GetTrustItems();
+            if (currentItems.Any(item => string.Equals(item.Hash, hash, StringComparison.OrdinalIgnoreCase)))
+                return true; // 已存在
+
+            currentItems.Add(new TrustItemModel(path ?? string.Empty, hash));
+            await SaveTrustItemsAsync(currentItems);
+            return true;
+        }
+
         // 获取文件的哈希值
         private static async Task<string> GetFileHashAsync(string filePath)
         {

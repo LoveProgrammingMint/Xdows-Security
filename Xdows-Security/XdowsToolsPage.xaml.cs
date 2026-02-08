@@ -9,10 +9,8 @@ namespace Xdows_Security
         public XdowsToolsPage()
         {
             InitializeComponent();
-            LoadPlugins();
         }
-
-        private void LoadPlugins()
+        private async void Page_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
             try
             {
@@ -31,7 +29,7 @@ namespace Xdows_Security
                             },
                             IconSource = plugin.Icon,
                             IsClosable = false,
-                            Content = plugin.GetView() ?? new TextBlock { Text = "(No View)" }
+                            Content = plugin.GetView() ?? new TextBlock { Text = WinUI3Localizer.Localizer.Get().GetLocalizedString("AllPage_Undefined") }
                         };
                         TabView.TabItems.Add(tab);
                     }

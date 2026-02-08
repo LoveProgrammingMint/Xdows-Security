@@ -22,9 +22,9 @@ namespace Xdows_Local
                 {
                     var fileContent = File.ReadAllBytes(path);
                     var scriptScanResult = ScriptScan.ScanScriptFile(path, fileContent);
-                    if (scriptScanResult.score >= 75)
+                    if (scriptScanResult.score >= 100)
                     {
-                        return ExtraData ? $"Xdows.local.code{scriptScanResult.score} {scriptScanResult.extra}" : $"Xdows.local.code{scriptScanResult.score}";
+                        return ExtraData ? $"Xdows.script.code{scriptScanResult.score} {scriptScanResult.extra}" : $"Xdows.script.code{scriptScanResult.score}";
                     }
                     return string.Empty;
                 }
@@ -66,7 +66,7 @@ namespace Xdows_Local
             }
 
             var score = Heuristic.Evaluate(path, peFile, fileInfo, deep);
-            if (score.score >= 75)
+            if (score.score >= 100)
             {
                 return ExtraData ? $"Xdows.local.code{score.score} {score.extra}" : $"Xdows.local.code{score.score}";
             }

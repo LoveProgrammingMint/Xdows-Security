@@ -63,7 +63,6 @@ namespace Xdows_Local
                 score -= code;
 
                 var resourceTask = CheckResourceSectionForPacking(peFile);
-                var exceptionTask = CheckExceptionHandling(peInfo);
                 var packingTask = CheckPackingSignatures(peFile);
 
                 int tempScore = resourceTask;
@@ -71,13 +70,6 @@ namespace Xdows_Local
                 {
                     score += tempScore;
                     suspiciousData.Add("AbnormalResources");
-                }
-
-                tempScore = exceptionTask;
-                if (tempScore > 0)
-                {
-                    score += tempScore;
-                    suspiciousData.Add("ExceptionHandling");
                 }
 
                 if (packingTask)
@@ -183,15 +175,19 @@ namespace Xdows_Local
                         }
                     }
 
-                    if (ContainsSuspiciousApi(peInfo.ImportsName, ["CallNextHookEx", "SetWindowsHook"]))
+                    if (ContainsSuspiciousApi(peInfo.ImportsName, ["CallNextHook", "SetWindowsHook"]))
                     {
                         suspiciousData.Add("AddHook");
-                        score += 20;
+                        score += 15;
                     }
-                    else if (ContainsSuspiciousApi(peInfo.ImportsName, ["Hook"]))
+                    else
                     {
-                        suspiciousData.Add("LikeAddHook");
-                        score += 10;
+                        tempScore = CountSuspiciousApiOccurrences(peInfo.ImportsName, ["Hook"]);
+                        if (tempScore > 0)
+                        {
+                            suspiciousData.Add("LikeAddHook");
+                            score += tempScore * 2;
+                        }
                     }
                     if (ContainsSuspiciousApi(peInfo.ImportsName, ["_"]))
                     {
@@ -246,9 +242,10 @@ namespace Xdows_Local
                         score -= 15;
                     }
 
-                    if (ContainsSuspiciousApi(peInfo.ImportsName, ["mouse_event", "keydb_event"]))
+                    if (ContainsSuspiciousApi(peInfo.ImportsName, ["mouse_event ", "keybd_event "]))
                     {
                         score += 15;
+                        suspiciousData.Add("InputSimulate");
                     }
 
                     if (ContainsSuspiciousApi(peInfo.ImportsName, ["SetPriorityClass"]))
@@ -280,6 +277,58 @@ namespace Xdows_Local
                     if (ContainsSuspiciousApi(peInfo.ImportsName, ["RegCreateKey", "RegSetValue"]))
                     {
                         score += 5;
+                    }
+                    // 进程注入
+                    if (ContainsSuspiciousApi(peInfo.ImportsName, ["WriteProcessMemory "]) &&
+                        ContainsSuspiciousApi(peInfo.ImportsName, ["CreateRemoteThread "]))
+                    {
+                        score += 15;
+                        suspiciousData.Add("ProcessInjection");
+                    }
+                    else if (ContainsSuspiciousApi(peInfo.ImportsName, ["OpenProcess "]))
+                    {
+                        score += 5;
+                    }
+                    if (ContainsSuspiciousApi(peInfo.ImportsName, ["NtCreateThreadEx ", "ZwCreateThreadEx "]))
+                    {
+                        score += 15;
+                        suspiciousData.Add("NativeThreadInject");
+                    }
+                    if (ContainsSuspiciousApi(peInfo.ImportsName, ["OpenProcessToken "]) &&
+                        ContainsSuspiciousApi(peInfo.ImportsName, ["DuplicateTokenEx "]) &&
+                        ContainsSuspiciousApi(peInfo.ImportsName, ["ImpersonateLoggedOnUser "]))
+                    {
+                        score += 20;
+                        suspiciousData.Add("TokenTheft");
+                    }
+                    if (ContainsSuspiciousApi(peInfo.ImportsName, ["ZwUnmapViewOfSection ", "NtUnmapViewOfSection "]) &&
+                        ContainsSuspiciousApi(peInfo.ImportsName, ["ZwMapViewOfSection ", "NtMapViewOfSection "]))
+                    {
+                        score += 25;
+                        suspiciousData.Add("ProcessHollowing");
+                    }
+                    if (ContainsSuspiciousApi(peInfo.ImportsName, ["CreateProcess "]) &&
+                        ContainsSuspiciousApi(peInfo.ImportsName, ["CREATE_SUSPENDED "]) &&
+                        ContainsSuspiciousApi(peInfo.ImportsName, ["ResumeThread "]))
+                    {
+                        score += 15;
+                        suspiciousData.Add("SuspendedProcessInject");
+                    }
+                    if (ContainsSuspiciousApi(peInfo.ImportsName, ["QueueUserAPC ", "NtQueueApcThread "]))
+                    {
+                        score += 15;
+                        suspiciousData.Add("APCInject");
+                    }
+                    if (ContainsSuspiciousApi(peInfo.ImportsName, ["SetThreadContext "]) &&
+                        ContainsSuspiciousApi(peInfo.ImportsName, ["GetThreadContext "]))
+                    {
+                        score += 15;
+                        suspiciousData.Add("ThreadHijack");
+                    }
+                    if (ContainsSuspiciousApi(peInfo.ImportsName, ["GetAsyncKeyState "]))
+                    {
+                        score += 10;
+                        suspiciousData.Add("KeyloggerPolling");
                     }
                 }
             }
@@ -349,55 +398,6 @@ namespace Xdows_Local
             }
 
             return score;
-        }
-        public static int CheckExceptionHandling(PEInfo info)
-        {
-
-            if (info?.ImportsName == null) return 0;
-
-            int score = 0;
-
-            var exceptionAPIs = new[]
-            {
-                "vectoredexceptionhandler", "unhandledexceptionfilter",
-                "setunhandledexceptionfilter", "addvectoredexceptionhandler",
-                "removevectoredexceptionhandler", "raiseexception",
-                "rtladdvectoredexceptionhandler", "rtlremovevectoredexceptionhandler"
-                 };
-
-            var antiDebugAPIs = new[]
-            {
-                "isdebuggerpresent", "checkremotedebuggerpresent",
-                "debugactiveprocess", "debugactiveprocessstop",
-                "ntqueryinformationprocess", "ntsetinformationthread",
-                "outputdebugstring", "debugbreak"
-            };
-
-            var memoryAPIs = new[]
-            {
-                "virtualprotect", "virtualprotectex", "virtuallock",
-                "virtualunlock", "fluskinstructioncache", "getwriteaccess"
-            };
-
-            foreach (var func in info.ImportsName.Select(f => f.ToLower()))
-            {
-                if (exceptionAPIs.Any(api => func.Contains(api)))
-                {
-                    score += 2;
-                }
-
-                if (antiDebugAPIs.Any(api => func.Contains(api)))
-                {
-                    score += 4;
-                }
-
-                if (memoryAPIs.Any(api => func.Contains(api)))
-                {
-                    score += 3;
-                }
-            }
-
-            return Math.Min(score, 15);
         }
         private static unsafe string[] GetExtStrings(string path)
         {
@@ -637,7 +637,15 @@ namespace Xdows_Local
             }
             return keywords.Any(keyword => apis.Any(api => api.Contains(keyword)));
         }
+        private static int CountSuspiciousApiOccurrences(string[] apis, string[] keywords)
+        {
+            if (apis == null || keywords == null || keywords.Length == 0)
+                return 0;
 
+            return apis.Count(api =>
+                api != null && keywords.Any(keyword =>
+                    keyword != null && api.Contains(keyword)));
+        }
         private static bool ContainsSuspiciousContent(byte[] fileContent, string[] keywords)
         {
             if (fileContent.Length == 0) return false;

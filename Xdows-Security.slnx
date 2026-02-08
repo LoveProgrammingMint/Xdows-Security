@@ -6,8 +6,6 @@
     <Platform Name="x86" />
   </Configurations>
   <Project Path="Helper/Helper.csproj" />
-  <Project Path="PluginFramework/PluginFramework.csproj" />
-  <Project Path="PluginSystem/PluginSystem.csproj" />
   <Project Path="Protection/Protection.csproj" />
   <Project Path="ScanEngine/ScanEngine.csproj" />
   <Project Path="SouXiao_Self-Heuristic/Self-Heuristic.csproj" />

@@ -41,7 +41,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Helper\Helper.csproj" />
-    <ProjectReference Include="..\PluginSystem\PluginSystem.csproj" />
     <ProjectReference Include="..\Protection\Protection.csproj" />
     <ProjectReference Include="..\ScanEngine\ScanEngine.csproj" />
     <ProjectReference Include="..\TrustQuarantine\TrustQuarantine.csproj" />
@@ -99,13 +98,5 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="G:\NuGet\microsoft.windowsappsdk.foundation\1.8.250906002\buildTransitive\..\include\MddBootstrapAutoInitializer.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="PluginPage.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="PluginPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
 </Project>

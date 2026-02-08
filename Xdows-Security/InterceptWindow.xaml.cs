@@ -12,7 +12,6 @@ namespace Xdows_Security
     public sealed partial class InterceptWindow : Window
     {
         private string? _originalFilePath;
-        private string? _virusFilePath;
         private readonly string? _type;
 
         private static readonly Dictionary<string, InterceptWindow> _openWindows = new Dictionary<string, InterceptWindow>();
@@ -45,7 +44,7 @@ namespace Xdows_Security
             manager.MinHeight = 400;
             manager.Width = 700;
             manager.Height = 600;
-
+            _originalFilePath = path;
             // 将窗口添加到静态字典
             _openWindows[key] = this;
             try

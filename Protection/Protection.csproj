@@ -12,6 +12,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="3.1.29" />
     <PackageReference Include="System.Management" Version="10.0.2" />
   </ItemGroup>
 

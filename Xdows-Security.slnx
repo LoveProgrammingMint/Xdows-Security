@@ -9,6 +9,7 @@
   <Project Path="Protection/Protection.csproj" />
   <Project Path="ScanEngine/ScanEngine.csproj" />
   <Project Path="SouXiao_Self-Heuristic/Self-Heuristic.csproj" />
+  <Project Path="Test/Test.csproj" Id="892a960d-4ce9-42e4-98d8-86f162c80030" />
   <Project Path="TrustQuarantine/TrustQuarantine.csproj" />
   <Project Path="Xdows-Local/Xdows-Local.csproj" />
   <Project Path="Xdows-Security/Xdows-Security.csproj">

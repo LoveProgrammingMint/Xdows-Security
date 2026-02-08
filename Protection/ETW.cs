@@ -52,24 +52,7 @@ namespace Protection
                     }
                 }
             }
-            private static bool WaitForFileUnlock(string path, int timeoutMs, int retryIntervalMs)
-            {
-                var stopwatch = Stopwatch.StartNew();
-                while (stopwatch.ElapsedMilliseconds < timeoutMs)
-                {
-                    try
-                    {
-                        using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None);
-                        return true;
-                    }
-                    catch (IOException)
-                    {
-                        Thread.Sleep(retryIntervalMs); // 同步阻塞
-                    }
-                }
-                return false;
-            }
-            public void ProcessMonitoring(MonitoringCallback callback)
+            public static void ProcessMonitoring(MonitoringCallback callback)
             {
                 using var session = new TraceEventSession("Xdows-Security", null);
                 session.EnableKernelProvider(KernelTraceEventParser.Keywords.Process);

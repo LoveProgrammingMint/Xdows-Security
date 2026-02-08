@@ -8,7 +8,7 @@ namespace Xdows_Security.Model
 {
     public sealed class LogModel
     {
-        private readonly ObservableCollection<string> _lines = new();
+        private readonly ObservableCollection<string> _lines = [];
         private readonly DispatcherQueue _dq = DispatcherQueue.GetForCurrentThread();
         public ObservableCollection<string> Lines => _lines;
 
@@ -19,11 +19,11 @@ namespace Xdows_Security.Model
             _dq.TryEnqueue(() =>
             {
                 var q = string.IsNullOrEmpty(raw)
-                    ? Array.Empty<string>()
-                    : raw.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                    ? []
+                    : raw.Split(["\r\n", "\n"], StringSplitOptions.RemoveEmptyEntries);
 
                 if (filters?.Length > 0)
-                    q = q.Where(l => filters.Any(f => l.Contains($"[{f}]"))).ToArray();
+                    q = [.. q.Where(l => filters.Any(f => l.Contains($"[{f}]")))];
 
                 _lines.Clear();
                 foreach (var l in q.TakeLast(MAX_LINES))

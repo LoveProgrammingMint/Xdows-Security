@@ -106,7 +106,7 @@ namespace TrustQuarantine
         // 清空信任区
         public static async Task<bool> ClearTrust()
         {
-            await SaveTrustItemsAsync(new List<TrustItemModel>());
+            await SaveTrustItemsAsync([]);
             return true;
         }
 

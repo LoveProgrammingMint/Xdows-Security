@@ -11,10 +11,10 @@ namespace Xdows_Security
 {
     public sealed partial class InterceptWindow : Window
     {
-        private string? _originalFilePath;
+        private readonly string? _originalFilePath;
         private readonly string? _type;
 
-        private static readonly Dictionary<string, InterceptWindow> _openWindows = new Dictionary<string, InterceptWindow>();
+        private static readonly Dictionary<string, InterceptWindow> _openWindows = [];
 
         public static void ShowOrActivate(bool isSucceed, string path, string type)
         {
@@ -259,7 +259,7 @@ namespace Xdows_Security
 
         private async Task<bool> ShowConfirmationDialog(string title, string message)
         {
-            ContentDialog dialog = new ContentDialog
+            ContentDialog dialog = new()
             {
                 Title = title,
                 Content = message,

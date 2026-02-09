@@ -483,11 +483,11 @@
   <data name="SettingsPage_Protection_Registry.Description" xml:space="preserve">
     <value>当注册表被恶意篡改后将会尝试恢复注册表</value>
   </data>
-  <data name="SettingsPage_Protection_Process_DeepScan.Header" xml:space="preserve">
-    <value>允许深度扫描</value>
+  <data name="SettingsPage_Protection_Process_CompatibilityMode.Header" xml:space="preserve">
+    <value>兼容模式</value>
   </data>
-  <data name="SettingsPage_Protection_Process_DeepScan.Description" xml:space="preserve">
-    <value>在扫描文件时如果文件可疑将会提示使用深度扫描</value>
+  <data name="SettingsPage_Protection_Process_CompatibilityMode.Description" xml:space="preserve">
+    <value>使用传统进程轮询的方式进行防护，占用大但稳定</value>
   </data>
   <data name="SettingsPage_Protection_Files_AllFiles.Header" xml:space="preserve">
     <value>扫描全部文件</value>

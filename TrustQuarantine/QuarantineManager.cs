@@ -113,10 +113,7 @@ namespace TrustQuarantine
 
                 if (File.Exists(targetPath))
                 {
-                    string dir = Path.GetDirectoryName(targetPath) ?? "";
-                    string nameNoExt = Path.GetFileNameWithoutExtension(targetPath);
-                    string ext = Path.GetExtension(targetPath);
-                    targetPath = Path.Combine(dir, $"{nameNoExt}_restored{ext}");
+                    File.Delete(targetPath);
                 }
 
                 byte[] key = Convert.FromBase64String(item.EncryptionKey);

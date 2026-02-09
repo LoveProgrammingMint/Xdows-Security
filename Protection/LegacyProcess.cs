@@ -7,7 +7,7 @@ using static Protection.CallBack;
 
 namespace Protection
 {
-    public class ProcessProtection : IProtectionModel
+    public class LegacyProcessProtection : IProtectionModel
     {
         // 感谢 XiaoWeiSecurity 对开源杀毒软件项目（特别是主动防御）的巨大贡献！！
         private static CancellationTokenSource? _cts = null;

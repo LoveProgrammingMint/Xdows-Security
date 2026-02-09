@@ -168,10 +168,9 @@
                 <ToggleSwitch x:Name="ProcessToggle" Tag="Process" Toggled="RunProtection" />
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
-                        l:Uids.Uid="SettingsPage_Protection_Process_DeepScan"
-                        IsEnabled="False" 
-                        HeaderIcon="{ui:FontIcon Glyph=&#xEC4A;}">
-                        <ToggleSwitch />
+                        l:Uids.Uid="SettingsPage_Protection_Process_CompatibilityMode" 
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE74C;}">
+                        <ToggleSwitch x:Name="Process_CompatibilityMode" Toggled="Toggled_SaveToggleData" Tag="Process_CompatibilityMode" />
                     </controls:SettingsCard>
                 </controls:SettingsExpander.Items>
             </controls:SettingsExpander>

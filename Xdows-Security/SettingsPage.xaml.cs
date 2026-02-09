@@ -184,6 +184,10 @@ namespace Xdows_Security
                 toggle.IsOn = !toggle.IsOn;
             toggle.IsOn = ProtectionStatus.IsRun(runId);
             toggle.Toggled += RunProtection;
+            if (runId == 0)
+            {
+                Process_CompatibilityMode.IsEnabled = !ProtectionStatus.IsRun(0);
+            }
         }
         private void Settings_Feedback_Click(object sender, RoutedEventArgs e)
         {
@@ -237,7 +241,8 @@ namespace Xdows_Security
                  SouXiaoScanToggle,
                  CloudScanToggle,
                  TrayVisibleToggle,
-                 DisabledVerifyToggle
+                 DisabledVerifyToggle,
+                 Process_CompatibilityMode
                };
 
             foreach (var toggle in toggles)
@@ -715,7 +720,7 @@ namespace Xdows_Security
                             textBlock.Visibility = Visibility.Visible;
                         }
                     }
-                    else if (element is SettingsCard || element is SettingsExpander)
+                    else if (element is SettingsCard or SettingsExpander)
                     {
                         bool shouldShow = false;
 
@@ -790,10 +795,10 @@ namespace Xdows_Security
                 DisabledVerifyToggleVerify = false;
                 DisabledVerifyToggle.IsOn = false;
                 var result = await UserConsentVerifier.RequestVerificationAsync(string.Empty);
-                if (result == UserConsentVerificationResult.DeviceNotPresent ||
-                result == UserConsentVerificationResult.DisabledByPolicy ||
-                result == UserConsentVerificationResult.NotConfiguredForUser ||
-                result == UserConsentVerificationResult.Verified)
+                if (result is UserConsentVerificationResult.DeviceNotPresent or
+                UserConsentVerificationResult.DisabledByPolicy or
+                UserConsentVerificationResult.NotConfiguredForUser or
+                UserConsentVerificationResult.Verified)
                 {
                     DisabledVerifyToggle.IsOn = true;
                     Toggled_SaveToggleData(sender, e);

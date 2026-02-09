@@ -102,12 +102,40 @@ namespace Xdows_Security
             });
             // Notifications.ShowNotification("发现威胁", content, path);
         };
-        public static IProtectionModel ProcessProtection { get; } = new ProcessProtection();
+        public static IProtectionModel LegacyProcessProtection { get; } = new LegacyProcessProtection();
         public static IProtectionModel FilesProtection { get; } = new FilesProtection();
         public static IProtectionModel RegistryProtection { get; } = new RegistryProtection();
         public static bool Run(int RunID)
         {
-            IProtectionModel? protectionModel = RunIDToIProtectionModel(RunID);
+            if (RunID != 0)
+            {
+                return RunLegacy(RunID);
+            }
+            if (ApplicationData.Current.LocalSettings.Values.TryGetValue("Process_CompatibilityMode", out object? isCompatibilityMode))
+            {
+                if ((bool)isCompatibilityMode)
+                {
+                    return RunLegacy(RunID);
+                }
+                else
+                {
+                    if (IsRun(RunID))
+                    {
+                        Protection.ETW.ProcessProtection.Stop();
+                    }
+                    else
+                    {
+                        Protection.ETW.ProcessProtection.Run(interceptCallBack);
+                    }
+                    return true;
+                }
+            }
+            Protection.ETW.ProcessProtection.Run(interceptCallBack);
+            return true;
+        }
+        private static bool RunLegacy(int RunID)
+        {
+            IProtectionModel? protectionModel = RunIDToIProtectionModelLegacy(RunID);
             if (protectionModel == null) return false;
             if (protectionModel.IsEnabled())
             {
@@ -122,15 +150,34 @@ namespace Xdows_Security
         }
         public static bool IsRun(int RunID)
         {
-            IProtectionModel? protectionModel = RunIDToIProtectionModel(RunID);
+            if (RunID != 0)
+            {
+                return IsRunLegacy(RunID);
+            }
+            if (ApplicationData.Current.LocalSettings.Values.TryGetValue("Process_CompatibilityMode", out object? isCompatibilityMode))
+            {
+                if ((bool)isCompatibilityMode)
+                {
+                    return IsRunLegacy(RunID);
+                }
+                else
+                {
+                    return Protection.ETW.ProcessProtection.IsRun();
+                }
+            }
+            return Protection.ETW.ProcessProtection.IsRun();
+        }
+        private static bool IsRunLegacy(int RunID)
+        {
+            IProtectionModel? protectionModel = RunIDToIProtectionModelLegacy(RunID);
             if (protectionModel == null) return false;
             return protectionModel.IsEnabled();
         }
-        private static IProtectionModel? RunIDToIProtectionModel(int RunID)
+        private static IProtectionModel? RunIDToIProtectionModelLegacy(int RunID)
         {
             return RunID switch
             {
-                0 => ProcessProtection,
+                0 => LegacyProcessProtection,
                 1 => FilesProtection,
                 4 => RegistryProtection,
                 _ => null

@@ -483,11 +483,11 @@
   <data name="SettingsPage_Protection_Registry.Description" xml:space="preserve">
     <value>Restore registry if maliciously altered</value>
   </data>
-  <data name="SettingsPage_Protection_Process_DeepScan.Header" xml:space="preserve">
-    <value>Allow deep scan</value>
+  <data name="SettingsPage_Protection_Process_CompatibilityMode.Header" xml:space="preserve">
+    <value>Compatibility Mode</value>
   </data>
-  <data name="SettingsPage_Protection_Process_DeepScan.Description" xml:space="preserve">
-    <value>Prompt to perform a deep scan when suspicious files are detected.</value>
+  <data name="SettingsPage_Protection_Process_CompatibilityMode.Description" xml:space="preserve">
+    <value>Protection using traditional process polling is resource-intensive but stable.</value>
   </data>
   <data name="SettingsPage_Protection_Files_AllFiles.Header" xml:space="preserve">
     <value>Scan all files</value>

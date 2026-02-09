@@ -855,15 +855,6 @@ namespace Xdows_Security
                                     {
                                         Result = SouXiaoEngineResult.Result;
                                     }
-
-                                    else
-                                    {
-                                        var SouXiaoRuleEngineResult = ScanEngine.ScanEngine.SouXiaoEngineScan.ScanFileByRuleEngine(file);
-                                        if (SouXiaoEngineResult.IsVirus)
-                                        {
-                                            Result = SouXiaoEngineResult.Result;
-                                        }
-                                    }
                                 }
                             }
                             if (string.IsNullOrEmpty(Result))

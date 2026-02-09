@@ -1,4 +1,6 @@
+using PublicPart;
 using Self_Heuristic;
+using SouXiao;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
@@ -63,15 +65,14 @@ namespace ScanEngine
         }
         public class SouXiaoEngineScan
         {
-            private LiuLiV5Classifier? SouXiaoCore;
             private readonly Boolean IsDebug = true;
+            private readonly SouXiao.EngineEntry SouXiaoCoreV2026 = new();
 
             public bool Initialize()
             {
                 try
                 {
-                    SouXiaoCore = new(Directory.GetCurrentDirectory() + "\\LiuLi.onnx");
-                    return true;
+                    return SouXiaoCoreV2026.Initialize();
                 }
                 catch (Exception)
                 {
@@ -80,28 +81,26 @@ namespace ScanEngine
                 }
             }
 
-            public static (bool IsVirus, string Result) ScanFileByRuleEngine(string path)
-            {
-                return (false, string.Empty);
-            }
-
             public (bool IsVirus, string Result) ScanFile(string path)
             {
                 try
                 {
-                    if (SouXiaoCore == null)
+                    if (SouXiaoCoreV2026 == null)
                     {
                         throw new InvalidOperationException("SouXiaoCore is not initialized.");
                     }
-                    bool scanResult = SouXiaoCore.Predict(path);
-                    if (scanResult)
+                    var scanResult = SouXiaoCoreV2026.Scan(path);
+                    foreach (var item in scanResult)
                     {
-                        return (true, "SouXiao.Heuristic.LIULIv5");
+                        foreach (var item1 in item.Value)
+                        {
+                            if (!(item1 == EngineResult.Safe || item1 == EngineResult.UnSupport))
+                            {
+                                return (true, $"SouXiao.Heuristic.{item.Key}");
+                            }
+                        }
                     }
-                    else
-                    {
-                        return (false, string.Empty);
-                    }
+                    return (false, string.Empty);
                 }
                 catch (Exception)
                 {

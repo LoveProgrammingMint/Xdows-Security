@@ -335,7 +335,7 @@ namespace Xdows_Local
 
             if (deepScan)
             {
-                bool t1Result = false, t2Result = false, t3Result = false, t4Result = false, t5Result = false, t6Result = false;
+                bool t1Result = false, t2Result = false, t3Result = false, t4Result = false, t5Result = false, t6Result = false, t7Result = false;
                 Parallel.Invoke(
                     () => t1Result = ContainsSuspiciousContent(fileContent, [".sys"]),
                     () => t2Result = ContainsSuspiciousContent(fileContent, ["Virtual"]),
@@ -347,7 +347,8 @@ namespace Xdows_Local
                     "avcenter", "avguard", "Sophos", "safedog"
                     ]),
                     () => t5Result = ContainsSuspiciousContent(fileContent, ["DelegateExecute", "fodhelper.exe", "OSDATA", "wow64log.dll"]),
-                    () => t6Result = ContainsSuspiciousContent(fileContent, ["sandboxie", "vmware - tray", "Detonate", "Vmware", "VMWARE", "Sandbox", "SANDBOX"])
+                    () => t6Result = ContainsSuspiciousContent(fileContent, ["sandboxie", "vmware - tray", "Detonate", "Vmware", "VMWARE", "Sandbox", "SANDBOX"]),
+                    () => t7Result = ContainsSuspiciousContent(fileContent, ["PhysicalDrive0"])
                 );
 
                 // 合并结果
@@ -357,6 +358,7 @@ namespace Xdows_Local
                 if (t4Result) { suspiciousData.Add("AVKiller"); score += 20; }
                 if (t5Result) { suspiciousData.Add("BugsExploit"); score += 30; }
                 if (t6Result) { suspiciousData.Add("SandboxBypass"); score += 20; }
+                if (t7Result) { suspiciousData.Add("LikeChangeMBR"); score += 20; }
             }
 
             // 将附加数据拼接到extra变量
@@ -408,7 +410,7 @@ namespace Xdows_Local
                 char* slash = p + path.Length;
                 for (char* c = p + path.Length - 1; c >= p; c--)
                 {
-                    if (*c == '\\' || *c == '/')
+                    if (*c is '\\' or '/')
                     {
                         slash = c;
                     }

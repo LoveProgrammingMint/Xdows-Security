@@ -89,7 +89,7 @@ namespace Xdows_Security
             return true;
         }
 
-        public static InterceptCallBack interceptCallBack = (isSucceed, path, type) =>
+        private static readonly InterceptCallBack interceptCallBack = (isSucceed, path, type) =>
         {
             LogText.AddNewLog(LogLevel.WARN, "Protection", isSucceed
                 ? $"InterceptProcess：{Path.GetFileName(path)}"
@@ -102,86 +102,97 @@ namespace Xdows_Security
             });
             // Notifications.ShowNotification("发现威胁", content, path);
         };
-        public static IProtectionModel LegacyProcessProtection { get; } = new LegacyProcessProtection();
-        public static IProtectionModel FilesProtection { get; } = new FilesProtection();
-        public static IProtectionModel RegistryProtection { get; } = new RegistryProtection();
+        private static readonly IProtectionModel LegacyProcessProtection = new LegacyProcessProtection();
+        private static readonly IProtectionModel LegacyFilesProtection = new LegacyFilesProtection();
+        private static readonly IProtectionModel LegacyRegistryProtection = new LegacyRegistryProtection();
+
+        private static readonly IETWProtectionModel ETWProcessProtection = new ETW.ProcessProtection();
+        private static readonly IETWProtectionModel ETWFilesProtection = new ETW.FilesProtection();
+
         public static bool Run(int RunID)
         {
-            if (RunID != 0)
+            if (RunID == 4)
             {
-                return RunLegacy(RunID);
-            }
-            if (ApplicationData.Current.LocalSettings.Values.TryGetValue("Process_CompatibilityMode", out object? isCompatibilityMode))
-            {
-                if ((bool)isCompatibilityMode)
+                if (LegacyRegistryProtection.IsEnabled())
                 {
-                    return RunLegacy(RunID);
+                    return LegacyRegistryProtection.Enable(interceptCallBack);
                 }
                 else
                 {
-                    if (IsRun(RunID))
-                    {
-                        Protection.ETW.ProcessProtection.Stop();
-                    }
-                    else
-                    {
-                        Protection.ETW.ProcessProtection.Run(interceptCallBack);
-                    }
-                    return true;
+                    return LegacyRegistryProtection.Disable();
                 }
             }
-            Protection.ETW.ProcessProtection.Run(interceptCallBack);
-            return true;
-        }
-        private static bool RunLegacy(int RunID)
-        {
-            IProtectionModel? protectionModel = RunIDToIProtectionModelLegacy(RunID);
-            if (protectionModel == null) return false;
-            if (protectionModel.IsEnabled())
+            IETWProtectionModel? protection = RunID switch
             {
-                LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Disable {protectionModel.Name} ...");
-                return protectionModel.Disable();
+                0 => ETWProcessProtection,
+                1 => ETWFilesProtection,
+                _ => null,
+            };
+            if (protection is null) { return false; }
+            bool isCompatibilityMode = ApplicationData.Current.LocalSettings.Values[protection.Name + "_CompatibilityMode"] as bool? ?? false;
+
+            if (isCompatibilityMode)
+            {
+                IProtectionModel? legacyProtection = RunID switch
+                {
+                    0 => LegacyProcessProtection,
+                    1 => LegacyFilesProtection,
+                    4 => LegacyRegistryProtection,
+                    _ => null,
+                };
+                if (legacyProtection is null) { return false; }
+                if (legacyProtection.IsEnabled())
+                {
+                    return legacyProtection.Disable();
+                }
+                else
+                {
+                    return legacyProtection.Enable(interceptCallBack);
+                }
             }
             else
             {
-                LogText.AddNewLog(LogLevel.INFO, "Protection", $"Try to Enable {protectionModel.Name} ...");
-                return protectionModel.Enable(interceptCallBack);
+
+                if (protection.IsRun())
+                {
+                    return protection.Stop();
+                }
+                else
+                {
+                    return protection.Run(interceptCallBack);
+                }
             }
         }
         public static bool IsRun(int RunID)
         {
-            if (RunID != 0)
+            if (RunID == 4)
             {
-                return IsRunLegacy(RunID);
+                return LegacyRegistryProtection.IsEnabled();
             }
-            if (ApplicationData.Current.LocalSettings.Values.TryGetValue("Process_CompatibilityMode", out object? isCompatibilityMode))
+            IETWProtectionModel? protection = RunID switch
             {
-                if ((bool)isCompatibilityMode)
-                {
-                    return IsRunLegacy(RunID);
-                }
-                else
-                {
-                    return Protection.ETW.ProcessProtection.IsRun();
-                }
-            }
-            return Protection.ETW.ProcessProtection.IsRun();
-        }
-        private static bool IsRunLegacy(int RunID)
-        {
-            IProtectionModel? protectionModel = RunIDToIProtectionModelLegacy(RunID);
-            if (protectionModel == null) return false;
-            return protectionModel.IsEnabled();
-        }
-        private static IProtectionModel? RunIDToIProtectionModelLegacy(int RunID)
-        {
-            return RunID switch
-            {
-                0 => LegacyProcessProtection,
-                1 => FilesProtection,
-                4 => RegistryProtection,
-                _ => null
+                0 => ETWProcessProtection,
+                1 => ETWFilesProtection,
+                _ => null,
             };
+            if (protection is null) { return false; }
+            bool isCompatibilityMode = ApplicationData.Current.LocalSettings.Values[protection.Name + "_CompatibilityMode"] as bool? ?? false;
+            if (isCompatibilityMode)
+            {
+                IProtectionModel? legacyProtection = RunID switch
+                {
+                    0 => LegacyProcessProtection,
+                    1 => LegacyFilesProtection,
+                    4 => LegacyRegistryProtection,
+                    _ => null,
+                };
+                if (legacyProtection is null) { return false; }
+                return legacyProtection.IsEnabled();
+            }
+            else
+            {
+                return protection.IsRun();
+            }
         }
     }
 

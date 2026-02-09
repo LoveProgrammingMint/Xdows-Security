@@ -7,15 +7,15 @@ using static Protection.CallBack;
 
 namespace Protection
 {
-    public class RegistryProtection : IProtectionModel
+    public class LegacyRegistryProtection : IProtectionModel
     {
         private static bool _isEnabled;
         private static Thread? _monitorThread;
         private static readonly Lock _lock = new();
         private static readonly HashSet<string> _whitelist = new(StringComparer.OrdinalIgnoreCase);
         private static InterceptCallBack? _interceptCallBack;
-        private static readonly string _configDirectory;
-        private static readonly string _logFile;
+        private static readonly string _configDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config");
+        private static readonly string _logFile = Path.Combine(_configDirectory, "registry_protection.log");
         public string Name => "RegistryProtection";
         // 关键监控路径
         private static readonly string[] _criticalPaths =
@@ -42,14 +42,6 @@ namespace Protection
             "regsvr32.exe /s",
             "schtasks.exe /create"
         ];
-
-        static RegistryProtection()
-        {
-            _configDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config");
-            _logFile = Path.Combine(_configDirectory, "registry_protection.log");
-            Directory.CreateDirectory(_configDirectory);
-            LoadConfiguration();
-        }
 
         public bool IsEnabled()
         {

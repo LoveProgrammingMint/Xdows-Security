@@ -11,12 +11,15 @@ namespace Protection
     {
         internal static TraceEventSession? monitoringSession;
 
-        public class FilesProtection
+        public class FilesProtection : IETWProtectionModel
         {
             private static readonly Lock lockObj = new();
             private static bool isRunning = false;
+            public const string Name = "Files";
 
-            public static bool Run(InterceptCallBack interceptCallBack)
+            string IETWProtectionModel.Name => Name;
+
+            public bool Run(InterceptCallBack interceptCallBack)
             {
                 lock (lockObj)
                 {
@@ -64,12 +67,12 @@ namespace Protection
                 }
             }
 
-            public static void Stop()
+            public bool Stop()
             {
                 lock (lockObj)
                 {
                     if (!isRunning)
-                        return;
+                        return true;
 
                     try
                     {
@@ -80,10 +83,11 @@ namespace Protection
                         monitoringSession = null;
                         isRunning = false;
                     }
+                    return true;
                 }
             }
 
-            public static bool IsRun()
+            public bool IsRun()
             {
                 lock (lockObj)
                 {
@@ -131,7 +135,7 @@ namespace Protection
                 {
                     TerminateProcessByPath(filePath);
                     _ = QuarantineManager.AddToQuarantine(filePath, fileResult);
-                    interceptCallBack(true, filePath, "Files");
+                    interceptCallBack(true, filePath, Name);
                 }
 
                 string? creatorPath = null;
@@ -161,7 +165,7 @@ namespace Protection
                     }
 
                     _ = QuarantineManager.AddToQuarantine(creatorPath, processResult);
-                    interceptCallBack(true, creatorPath, "Files");
+                    interceptCallBack(true, creatorPath, Name);
                 }
             }
 

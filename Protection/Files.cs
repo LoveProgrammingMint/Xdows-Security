@@ -2,7 +2,7 @@ using TrustQuarantine;
 using static Protection.CallBack;
 namespace Protection
 {
-    public class FilesProtection : IProtectionModel
+    public class LegacyFilesProtection : IProtectionModel
     {
         private static FileSystemWatcher[]? _watchers;
         private static InterceptCallBack? _toastCallBack;

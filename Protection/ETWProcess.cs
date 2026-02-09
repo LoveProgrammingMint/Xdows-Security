@@ -10,14 +10,16 @@ namespace Protection
     public partial class ETW
     {
         // 进程防护模块
-        public class ProcessProtection
+        public class ProcessProtection : IETWProtectionModel
         {
             private static TraceEventSession? monitoringSession;
 
             private static readonly Lock lockObj = new();
             private static bool isRunning = false;
+            public const string Name = "Process";
+            string IETWProtectionModel.Name => Name;
 
-            public static bool Run(InterceptCallBack interceptCallBack)
+            public bool Run(InterceptCallBack interceptCallBack)
             {
                 lock (lockObj)
                 {
@@ -28,13 +30,14 @@ namespace Protection
                     {
                         SouXiaoEngine.Initialize();
 
+                        isRunning = true;
+
                         monitoringSession = new TraceEventSession("Xdows-Security", null);
                         monitoringSession.EnableKernelProvider(KernelTraceEventParser.Keywords.Process);
 
                         var parser = new KernelTraceEventParser(monitoringSession.Source);
                         parser.ProcessStart += (data) => OnNewProcess(data, interceptCallBack);
 
-                        isRunning = true;
                         _ = Task.Run(() =>
                         {
                             try
@@ -60,12 +63,12 @@ namespace Protection
                     }
                 }
             }
-            public static void Stop()
+            public bool Stop()
             {
                 lock (lockObj)
                 {
                     if (!isRunning)
-                        return;
+                        return true;
 
                     try
                     {
@@ -76,9 +79,10 @@ namespace Protection
                         monitoringSession = null;
                         isRunning = false;
                     }
+                    return true;
                 }
             }
-            public static bool IsRun()
+            public bool IsRun()
             {
                 lock (lockObj)
                 {
@@ -105,8 +109,6 @@ namespace Protection
                 if (string.IsNullOrEmpty(path) || TrustManager.IsPathTrusted(path))
                     return;
 
-                Debug.WriteLine($"[ETW] 检测到新进程: {path}");
-
                 var (isVirus, result) = SouXiaoEngine.ScanFile(path);
                 if (!isVirus)
                     return;
@@ -124,7 +126,7 @@ namespace Protection
                 }
 
                 _ = QuarantineManager.AddToQuarantine(path, result);
-                interceptCallBack(success, path, "Process");
+                interceptCallBack(success, path, Name);
             }
         }
     }

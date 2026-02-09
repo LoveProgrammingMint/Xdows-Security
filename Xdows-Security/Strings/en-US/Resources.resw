@@ -489,11 +489,11 @@
   <data name="SettingsPage_Protection_Process_CompatibilityMode.Description" xml:space="preserve">
     <value>Protection using traditional process polling is resource-intensive but stable.</value>
   </data>
-  <data name="SettingsPage_Protection_Files_AllFiles.Header" xml:space="preserve">
-    <value>Scan all files</value>
+  <data name="SettingsPage_Protection_Files_CompatibilityMode.Header" xml:space="preserve">
+    <value>Compatibility Mode</value>
   </data>
-  <data name="SettingsPage_Protection_Files_AllFiles.Description" xml:space="preserve">
-    <value>By default, only high-risk directories are scanned.</value>
+  <data name="SettingsPage_Protection_Files_CompatibilityMode.Description" xml:space="preserve">
+    <value>Protection using traditional files polling is resource-intensive but stable.</value>
   </data>
   <data name="SettingsPage_Protection_Behavior_Remote.Description" xml:space="preserve">
     <value>May impact some remote control software</value>

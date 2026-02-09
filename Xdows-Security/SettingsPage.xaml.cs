@@ -188,6 +188,10 @@ namespace Xdows_Security
             {
                 Process_CompatibilityMode.IsEnabled = !ProtectionStatus.IsRun(0);
             }
+            if (runId == 1)
+            {
+                Files_CompatibilityMode.IsEnabled = !ProtectionStatus.IsRun(1);
+            }
         }
         private void Settings_Feedback_Click(object sender, RoutedEventArgs e)
         {
@@ -242,7 +246,8 @@ namespace Xdows_Security
                  CloudScanToggle,
                  TrayVisibleToggle,
                  DisabledVerifyToggle,
-                 Process_CompatibilityMode
+                 Process_CompatibilityMode,
+                 Files_CompatibilityMode,
                };
 
             foreach (var toggle in toggles)
@@ -525,10 +530,7 @@ namespace Xdows_Security
                 var opacityValue = settings.Values["AppBackgroundImageOpacity"] as double? ?? 30.0;
                 BackgroundImageOpacitySlider.Value = opacityValue;
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"加载背景图片设置失败: {ex.Message}");
-            }
+            catch { }
         }
 
         private void BackdropComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

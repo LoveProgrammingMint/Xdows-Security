@@ -520,7 +520,7 @@
     <value>Save the current system boot sector to a file.</value>
   </data>
   <data name="SettingsPage_Protection_Boot_Save_Button.Content" xml:space="preserve">
-    <value>Save File</value>
+    <value>Save  File</value>
   </data>
   <data name="SettingsPage_Protection_Boot_Open_Button.Content" xml:space="preserve">
     <value>Open File</value>
@@ -1293,5 +1293,11 @@ If you do not accept it, please turn off the engine, or stop using and delete th
   </data>
   <data name="BugReportPage_SettingsButton.Content" xml:space="preserve">
     <value>Settings</value>
+  </data>
+  <data name="SettingsPage_Protection_Boot_Save_Button_Filter_Name" xml:space="preserve">
+    <value>Data File</value>
+  </data>
+  <data name="SettingsPage_Protection_Boot_Save_Buttong_SaveDialog_Title" xml:space="preserve">
+    <value>Save As</value>
   </data>
 </root>

@@ -958,5 +958,29 @@ namespace Xdows_Security
             // 应用新的透明度
             App.MainWindow?.UpdateBackgroundImageOpacity(slider.Value / 100.0);
         }
+
+        private void Boot_Save_Button_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                byte[] mbr = Helper.DiskOperator.ReadBootSector(0);
+                if (mbr.Length == 0) return;
+                var dlg = new CommonSaveFileDialog
+                {
+                    Title = Localizer.Get().GetLocalizedString("SettingsPage_Protection_Boot_Save_Buttong_SaveDialog_Title"),
+                    DefaultFileName = $"Data.bin",
+                    DefaultExtension = "bin",
+                    OverwritePrompt = true,
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                };
+                dlg.Filters.Add(new CommonFileDialogFilter(
+                    Localizer.Get().GetLocalizedString("SettingsPage_Protection_Boot_Save_Button_Filter_Name"), "*.bin"));
+                if (dlg.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    File.WriteAllBytesAsync(dlg.FileName, mbr);
+                }
+            }
+            catch { }
+        }
     }
 }

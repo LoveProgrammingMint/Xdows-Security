@@ -1293,4 +1293,10 @@
   <data name="BugReportPage_SettingsButton.Content" xml:space="preserve">
     <value>设置</value>
   </data>
+  <data name="SettingsPage_Protection_Boot_Save_Button_Filter_Name" xml:space="preserve">
+    <value>数据文件</value>
+  </data>
+  <data name="SettingsPage_Protection_Boot_Save_Buttong_SaveDialog_Title" xml:space="preserve">
+    <value>另存为</value>
+  </data>
 </root>

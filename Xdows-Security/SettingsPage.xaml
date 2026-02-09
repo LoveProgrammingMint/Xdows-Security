@@ -215,9 +215,8 @@
                 <controls:SettingsExpander.Items>
                     <controls:SettingsCard
                         l:Uids.Uid="SettingsPage_Protection_Boot_Save"
-                        HeaderIcon="{ui:FontIcon Glyph=&#xECF0;}"
-                        IsEnabled="False">
-                        <Button l:Uids.Uid="SettingsPage_Protection_Boot_Save_Button" />
+                        HeaderIcon="{ui:FontIcon Glyph=&#xECF0;}">
+                        <Button l:Uids.Uid="SettingsPage_Protection_Boot_Save_Button" Click="Boot_Save_Button_Click"/>
                     </controls:SettingsCard>
                     <controls:SettingsCard
                         l:Uids.Uid="SettingsPage_Protection_Boot_Open"

@@ -7,18 +7,16 @@ using static Protection.CallBack;
 
 namespace Protection
 {
-    public class ETW
+    public partial class ETW
     {
-        public delegate void MonitoringCallback(ProcessTraceData data, InterceptCallBack interceptCallBack);
-
-        private static readonly ScanEngine.ScanEngine.SouXiaoEngineScan SouXiaoEngine = new();
-        private static TraceEventSession? monitoringSession;
-        private static bool isRunning = false;
-        private static readonly object lockObj = new();
-
         // 进程防护模块
         public class ProcessProtection
         {
+            private static TraceEventSession? monitoringSession;
+
+            private static readonly Lock lockObj = new();
+            private static bool isRunning = false;
+
             public static bool Run(InterceptCallBack interceptCallBack)
             {
                 lock (lockObj)
@@ -88,7 +86,7 @@ namespace Protection
                 }
             }
 
-            private static void OnNewProcess(ProcessTraceData data, InterceptCallBack interceptCallBack)
+            private static async void OnNewProcess(ProcessTraceData data, InterceptCallBack interceptCallBack)
             {
                 if (data.ProcessID is 0 or 4)
                     return;

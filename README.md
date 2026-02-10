@@ -41,7 +41,7 @@
    
    2. `.NET Desktop Development`, `WinUI App Development`
     
-   &gt; This project requires `.NET10` framework
+   > This project requires `.NET10` framework
 
    ---
    **Building from Scratch**

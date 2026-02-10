@@ -414,6 +414,8 @@ namespace Xdows_Security
         {
             try
             {
+                // InterceptWindow.ShowOrActivate(true, "This is a file", "Process");// 测试用的捏（By Shiyi）
+
                 MainWindow ??= new MainWindow();
                 MainWindow.Activate();
             }

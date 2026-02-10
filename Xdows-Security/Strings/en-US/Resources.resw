@@ -324,21 +324,6 @@
   <data name="SecurityPage_Details_LocateButton" xml:space="preserve">
     <value>Locate File</value>
   </data>
-  <data name="InterceptWindow_TrustMenu.Text" xml:space="preserve">
-    <value>Add to Trusted</value>
-  </data>
-  <data name="InterceptWindow_Trust_Success_Title" xml:space="preserve">
-    <value>Trusted</value>
-  </data>
-  <data name="InterceptWindow_Trust_Success_Message" xml:space="preserve">
-    <value>The file {0} has been added to trust.</value>
-  </data>
-  <data name="InterceptWindow_Trust_Failed_Title" xml:space="preserve">
-    <value>Trust Failed</value>
-  </data>
-  <data name="InterceptWindow_Trust_Failed_Message" xml:space="preserve">
-    <value>Failed to add file to trust.</value>
-  </data>
   <data name="SecurityPage_LocateFailed_Title" xml:space="preserve">
     <value>Locate Failed</value>
   </data>
@@ -870,93 +855,6 @@ Why not try XIGUA Security?</value>
   <data name="SettingsPage_Appearance_Backdrop_Opacity.Header" xml:space="preserve">
     <value>Opacity</value>
   </data>
-  <data name="InterceptWindow_HeaderTitle" xml:space="preserve">
-    <value>Threat found! Remove now!</value>
-  </data>
-  <data name="InterceptWindow_HeaderSubtitle" xml:space="preserve">
-    <value>Suspicious program intercepted. Please take action.</value>
-  </data>
-  <data name="InterceptWindow_EngineCaption" xml:space="preserve">
-    <value>Scanner Engine</value>
-  </data>
-  <data name="InterceptWindow_EngineName" xml:space="preserve">
-    <value>SouXiao Engine</value>
-  </data>
-  <data name="InterceptWindow_EngineName_Registry" xml:space="preserve">
-    <value>Built-in Rules</value>
-  </data>
-  <data name="InterceptWindow_SecurityAdviceCaption" xml:space="preserve">
-    <value>Security Advice</value>
-  </data>
-  <data name="InterceptWindow_SecurityAdvice" xml:space="preserve">
-    <value>Detected suspicious behavior. Recommended action: delete the file or restore if it is a false positive.</value>
-  </data>
-  <data name="InterceptWindow_ChooseActionText" xml:space="preserve">
-    <value>Please choose an action:</value>
-  </data>
-  <data name="InterceptWindow_ActionButtonText" xml:space="preserve">
-    <value>Perform Action</value>
-  </data>
-  <data name="InterceptWindow_DeleteMenu" xml:space="preserve">
-    <value>Delete file</value>
-  </data>
-  <data name="InterceptWindow_RestoreMenu" xml:space="preserve">
-    <value>Restore file</value>
-  </data>
-  <data name="InterceptWindow_DisableMenu" xml:space="preserve">
-    <value>Disable protection</value>
-  </data>
-  <data name="InterceptWindow_Delete_Success_Title" xml:space="preserve">
-    <value>Deleted</value>
-  </data>
-  <data name="InterceptWindow_Delete_Success_Message" xml:space="preserve">
-    <value>File was successfully deleted.</value>
-  </data>
-  <data name="InterceptWindow_Delete_NoFile_Title" xml:space="preserve">
-    <value>File not found</value>
-  </data>
-  <data name="InterceptWindow_Delete_NoFile_Message" xml:space="preserve">
-    <value>The file to delete was not found.</value>
-  </data>
-  <data name="InterceptWindow_Delete_Failed_Title" xml:space="preserve">
-    <value>Delete failed</value>
-  </data>
-  <data name="InterceptWindow_Delete_Failed_Message" xml:space="preserve">
-    <value>Failed to delete file. Please check permissions and whether the file is in use.</value>
-  </data>
-  <data name="InterceptWindow_Restore_Success_Title" xml:space="preserve">
-    <value>Restored</value>
-  </data>
-  <data name="InterceptWindow_Restore_Success_MESSAGE" xml:space="preserve">
-    <value>File restored successfully.</value>
-  </data>
-  <data name="InterceptWindow_Restore_NoFile_Title" xml:space="preserve">
-    <value>File not found</value>
-  </data>
-  <data name="InterceptWindow_Restore_NoFile_Message" xml:space="preserve">
-    <value>The file to restore was not found.</value>
-  </data>
-  <data name="InterceptWindow_Restore_Failed_Title" xml:space="preserve">
-    <value>Restore failed</value>
-  </data>
-  <data name="InterceptWindow_Restore_Failed_Message" xml:space="preserve">
-    <value>Failed to restore file. Please check permissions.</value>
-  </data>
-  <data name="InterceptWindow_Disable_Confirm_Title" xml:space="preserve">
-    <value>Disable protection</value>
-  </data>
-  <data name="InterceptWindow_Disable_Confirm_Message" xml:space="preserve">
-    <value>Are you sure you want to disable real-time protection? This may reduce system security.</value>
-  </data>
-  <data name="InterceptWindow_Disable_Success_Title" xml:space="preserve">
-    <value>Protection disabled</value>
-  </data>
-  <data name="InterceptWindow_Disable_Success_Message" xml:space="preserve">
-    <value>Real-time protection has been disabled.</value>
-  </data>
-  <data name="InterceptWindow_WindowTitle" xml:space="preserve">
-    <value>Threat detected</value>
-  </data>
   <data name="SettingsPage_Scan_Cloud_Disclaimer_Title" xml:space="preserve">
     <value>Disclaimer</value>
   </data>
@@ -1299,5 +1197,74 @@ If you do not accept it, please turn off the engine, or stop using and delete th
   </data>
   <data name="SettingsPage_Protection_Boot_Save_Buttong_SaveDialog_Title" xml:space="preserve">
     <value>Save As</value>
+  </data>
+  <data name="InterceptWindow_Title.Title" xml:space="preserve">
+    <value>Threat Detected</value>
+  </data>
+  <data name="InterceptWindow_ThreatTitle.Text" xml:space="preserve">
+    <value>Threat detected</value>
+  </data>
+  <data name="InterceptWindow_ThreatSubtitle.Text" xml:space="preserve">
+    <value>Suspicious program intercepted</value>
+  </data>
+  <data name="InterceptWindow_ThreatTypeLabel.Text" xml:space="preserve">
+    <value>Threat Type</value>
+  </data>
+  <data name="InterceptWindow_ThreatType_Default.Text" xml:space="preserve">
+    <value>Trojan</value>
+  </data>
+  <data name="InterceptWindow_ThreatLevelLabel.Text" xml:space="preserve">
+    <value>Threat Level</value>
+  </data>
+  <data name="InterceptWindow_ThreatLevel_High.Text" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="InterceptWindow_DetectionTimeLabel.Text" xml:space="preserve">
+    <value>Detection Time</value>
+  </data>
+  <data name="InterceptWindow_SecurityAdviceLabel.Text" xml:space="preserve">
+    <value>Security Advice</value>
+  </data>
+  <data name="InterceptWindow_SecurityAdviceText.Text" xml:space="preserve">
+    <value>It is recommended to quarantine this file immediately.</value>
+  </data>
+  <data name="InterceptWindow_TrustButton.Content" xml:space="preserve">
+    <value>Restore &amp; Trust</value>
+  </data>
+  <data name="InterceptWindow_TrustOnly.Text" xml:space="preserve">
+    <value>Only Trust</value>
+  </data>
+  <data name="InterceptWindow_RestoreOnly.Text" xml:space="preserve">
+    <value>Only Restore</value>
+  </data>
+  <data name="InterceptWindow_Message_TrustFailed_Title" xml:space="preserve">
+    <value>Trust Failed</value>
+  </data>
+  <data name="InterceptWindow_Message_TrustFailed_Body" xml:space="preserve">
+    <value>Unable to add file to trust.</value>
+  </data>
+  <data name="InterceptWindow_Message_Trusted_Title" xml:space="preserve">
+    <value>Trusted</value>
+  </data>
+  <data name="InterceptWindow_Message_Trusted_Body" xml:space="preserve">
+    <value>File {0} has been added to trust.</value>
+  </data>
+  <data name="InterceptWindow_Message_RestoreFailed_Title" xml:space="preserve">
+    <value>Restore Failed</value>
+  </data>
+  <data name="InterceptWindow_Message_RestoreFailed_Body" xml:space="preserve">
+    <value>Unable to restore file.</value>
+  </data>
+  <data name="InterceptWindow_Message_Restored_Title" xml:space="preserve">
+    <value>Restored</value>
+  </data>
+  <data name="InterceptWindow_Message_Restored_Body" xml:space="preserve">
+    <value>File {0} has been restored.</value>
+  </data>
+  <data name="InterceptWindow_Message_Exists_Title" xml:space="preserve">
+    <value>Exists</value>
+  </data>
+  <data name="InterceptWindow_Message_Exists_Body" xml:space="preserve">
+    <value>Target path already contains a file; cannot restore from quarantine.</value>
   </data>
 </root>

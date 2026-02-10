@@ -324,21 +324,6 @@
   <data name="SecurityPage_Details_LocateButton" xml:space="preserve">
     <value>定位文件</value>
   </data>
-  <data name="InterceptWindow_TrustMenu.Text" xml:space="preserve">
-    <value>添加信任</value>
-  </data>
-  <data name="InterceptWindow_Trust_Success_Title" xml:space="preserve">
-    <value>已信任</value>
-  </data>
-  <data name="InterceptWindow_Trust_Success_Message" xml:space="preserve">
-    <value>文件 {0} 已被加入信任。</value>
-  </data>
-  <data name="InterceptWindow_Trust_Failed_Title" xml:space="preserve">
-    <value>信任失败</value>
-  </data>
-  <data name="InterceptWindow_Trust_Failed_Message" xml:space="preserve">
-    <value>无法将文件加入信任。</value>
-  </data>
   <data name="SecurityPage_LocateFailed_Title" xml:space="preserve">
     <value>定位失败</value>
   </data>
@@ -870,93 +855,6 @@
   <data name="SettingsPage_Appearance_Backdrop_Opacity.Header" xml:space="preserve">
     <value>不透明度</value>
   </data>
-  <data name="InterceptWindow_HeaderTitle" xml:space="preserve">
-    <value>发现威胁，建议立即清除！</value>
-  </data>
-  <data name="InterceptWindow_HeaderSubtitle" xml:space="preserve">
-    <value>已成功拦截可疑程序，请立即处理</value>
-  </data>
-  <data name="InterceptWindow_EngineCaption" xml:space="preserve">
-    <value>扫描引擎</value>
-  </data>
-  <data name="InterceptWindow_EngineName" xml:space="preserve">
-    <value>SouXiao 引擎</value>
-  </data>
-  <data name="InterceptWindow_EngineName_Registry" xml:space="preserve">
-    <value>内置规则</value>
-  </data>
-  <data name="InterceptWindow_SecurityAdviceCaption" xml:space="preserve">
-    <value>安全建议</value>
-  </data>
-  <data name="InterceptWindow_SecurityAdvice" xml:space="preserve">
-    <value>检测到可疑行为。建议操作：删除文件或在误报时恢复。</value>
-  </data>
-  <data name="InterceptWindow_ChooseActionText" xml:space="preserve">
-    <value>请选择处理方式：</value>
-  </data>
-  <data name="InterceptWindow_ActionButtonText" xml:space="preserve">
-    <value>执行操作</value>
-  </data>
-  <data name="InterceptWindow_DeleteMenu" xml:space="preserve">
-    <value>删除文件</value>
-  </data>
-  <data name="InterceptWindow_RestoreMenu" xml:space="preserve">
-    <value>恢复文件</value>
-  </data>
-  <data name="InterceptWindow_DisableMenu" xml:space="preserve">
-    <value>关闭防护</value>
-  </data>
-  <data name="InterceptWindow_Delete_Success_Title" xml:space="preserve">
-    <value>删除成功</value>
-  </data>
-  <data name="InterceptWindow_Delete_Success_Message" xml:space="preserve">
-    <value>文件已成功删除。</value>
-  </data>
-  <data name="InterceptWindow_Delete_NoFile_Title" xml:space="preserve">
-    <value>文件不存在</value>
-  </data>
-  <data name="InterceptWindow_Delete_NoFile_Message" xml:space="preserve">
-    <value>要删除的文件不存在。</value>
-  </data>
-  <data name="InterceptWindow_Delete_Failed_Title" xml:space="preserve">
-    <value>删除失败</value>
-  </data>
-  <data name="InterceptWindow_Delete_Failed_Message" xml:space="preserve">
-    <value>删除文件失败。请检查权限或文件是否被占用。</value>
-  </data>
-  <data name="InterceptWindow_Restore_Success_Title" xml:space="preserve">
-    <value>恢复成功</value>
-  </data>
-  <data name="InterceptWindow_Restore_Success_MESSAGE" xml:space="preserve">
-    <value>文件已成功恢复。</value>
-  </data>
-  <data name="InterceptWindow_Restore_NoFile_Title" xml:space="preserve">
-    <value>文件不存在</value>
-  </data>
-  <data name="InterceptWindow_Restore_NoFile_Message" xml:space="preserve">
-    <value>要恢复的文件不存在。</value>
-  </data>
-  <data name="InterceptWindow_Restore_Failed_Title" xml:space="preserve">
-    <value>恢复失败</value>
-  </data>
-  <data name="InterceptWindow_Restore_Failed_Message" xml:space="preserve">
-    <value>恢复文件时出错。请检查权限。</value>
-  </data>
-  <data name="InterceptWindow_Disable_Confirm_Title" xml:space="preserve">
-    <value>关闭防护</value>
-  </data>
-  <data name="InterceptWindow_Disable_Confirm_Message" xml:space="preserve">
-    <value>确定确认要关闭实时防护吗？这将降低系统安全。</value>
-  </data>
-  <data name="InterceptWindow_Disable_Success_Title" xml:space="preserve">
-    <value>防护已关闭</value>
-  </data>
-  <data name="InterceptWindow_Disable_Success_Message" xml:space="preserve">
-    <value>实时防护已被关闭。</value>
-  </data>
-  <data name="InterceptWindow_WindowTitle" xml:space="preserve">
-    <value>发现威胁</value>
-  </data>
   <data name="SettingsPage_Scan_Cloud_Disclaimer_Title" xml:space="preserve">
     <value>免责申明</value>
   </data>
@@ -1298,5 +1196,74 @@
   </data>
   <data name="SettingsPage_Protection_Boot_Save_Buttong_SaveDialog_Title" xml:space="preserve">
     <value>另存为</value>
+  </data>
+  <data name="InterceptWindow_Title.Title" xml:space="preserve">
+    <value>发现威胁</value>
+  </data>
+  <data name="InterceptWindow_ThreatTitle.Text" xml:space="preserve">
+    <value>检测到安全威胁</value>
+  </data>
+  <data name="InterceptWindow_ThreatSubtitle.Text" xml:space="preserve">
+    <value>已拦截可疑程序，请立即处理</value>
+  </data>
+  <data name="InterceptWindow_ThreatTypeLabel.Text" xml:space="preserve">
+    <value>威胁类型</value>
+  </data>
+  <data name="InterceptWindow_ThreatType_Default.Text" xml:space="preserve">
+    <value>木马程序</value>
+  </data>
+  <data name="InterceptWindow_ThreatLevelLabel.Text" xml:space="preserve">
+    <value>威胁等级</value>
+  </data>
+  <data name="InterceptWindow_ThreatLevel_High.Text" xml:space="preserve">
+    <value>高危</value>
+  </data>
+  <data name="InterceptWindow_DetectionTimeLabel.Text" xml:space="preserve">
+    <value>拦截时间</value>
+  </data>
+  <data name="InterceptWindow_SecurityAdviceLabel.Text" xml:space="preserve">
+    <value>安全建议</value>
+  </data>
+  <data name="InterceptWindow_SecurityAdviceText.Text" xml:space="preserve">
+    <value>建议立即隔离该文件，防止恶意程序继续运行</value>
+  </data>
+  <data name="InterceptWindow_TrustButton.Content" xml:space="preserve">
+    <value>恢复并信任</value>
+  </data>
+  <data name="InterceptWindow_TrustOnly.Text" xml:space="preserve">
+    <value>仅信任此文件</value>
+  </data>
+  <data name="InterceptWindow_RestoreOnly.Text" xml:space="preserve">
+    <value>仅恢复此文件</value>
+  </data>
+  <data name="InterceptWindow_Message_TrustFailed_Title" xml:space="preserve">
+    <value>信任失败</value>
+  </data>
+  <data name="InterceptWindow_Message_TrustFailed_Body" xml:space="preserve">
+    <value>无法将文件加入信任。</value>
+  </data>
+  <data name="InterceptWindow_Message_Trusted_Title" xml:space="preserve">
+    <value>已信任</value>
+  </data>
+  <data name="InterceptWindow_Message_Trusted_Body" xml:space="preserve">
+    <value>文件 {0} 已被加入信任。</value>
+  </data>
+  <data name="InterceptWindow_Message_RestoreFailed_Title" xml:space="preserve">
+    <value>恢复失败</value>
+  </data>
+  <data name="InterceptWindow_Message_RestoreFailed_Body" xml:space="preserve">
+    <value>无法恢复文件。</value>
+  </data>
+  <data name="InterceptWindow_Message_Restored_Title" xml:space="preserve">
+    <value>已恢复</value>
+  </data>
+  <data name="InterceptWindow_Message_Restored_Body" xml:space="preserve">
+    <value>文件 {0} 已恢复。</value>
+  </data>
+  <data name="InterceptWindow_Message_Exists_Title" xml:space="preserve">
+    <value>已存在</value>
+  </data>
+  <data name="InterceptWindow_Message_Exists_Body" xml:space="preserve">
+    <value>目标路径已有文件，无法从隔离恢复。</value>
   </data>
 </root>

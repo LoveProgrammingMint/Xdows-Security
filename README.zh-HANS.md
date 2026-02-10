@@ -87,7 +87,12 @@
       从 ` 0 `开始
 
     编译Libyara 为DLL(动态链接库)
-    运行AIModel/TrainForLiuLiV5
+
+    运行AIModel/TrainForLiuLiV5.py 训练模型
+    
+    模型训练的数据集请找QQ 3327867352获取
+
+    编译并组装全部解决方案
     
     
 

@@ -1,24 +1,24 @@
-&lt;p align="center"&gt;
- &lt;a href="https://github.com/LoveProgrammingMint/Xdows-Security"&gt;
-   &lt;img src=".\Xdows-Security\logo.ico" alt="Logo" width="80" height="80"&gt;
- &lt;/a&gt;
+<p align="center">
+  <a href="https://github.com/LoveProgrammingMint/Xdows-Security-4 ">
+    <img src=".\Xdows-Security\logo.ico" alt="Logo" width="80" height="80">
+  </a>
 
- &lt;h3 align="center"&gt;Xdows Security 4.0&lt;/h3&gt;
- &lt;p align="center"&gt;
-   Check out the next-generation antivirus software built on WinUI3 + C# technology
-   &lt;br /&gt;
-   &lt;a href="https://xty64xty.netlify.app/zh/Xdows-Security-4.1/get-started.html"&gt;Documentation&lt;/a&gt;
-   ·
-   &lt;a href="https://github.com/LoveProgrammingMint/Xdows-Security/issues"&gt;Feedback&lt;/a&gt;
-   ·
-   &lt;a href="https://github.com/LoveProgrammingMint/Xdows-Security/releases"&gt;Download&lt;/a&gt;
-   &lt;br /&gt;
-   &lt;a href="README.md"&gt;English&lt;/a&gt;
-   ·
-   简体中文
- &lt;/p&gt;
+  <h3 align="center">Xdows Security 4.0</h3>
+  <p align="center">
+    Check out the next-generation antivirus software built on WinUI3 + C# technology
+    <br />
+    <a href="https://xty64xty.netlify.app/zh/Xdows-Security-4.1/get-started.html ">Documentation</a>
+    ·
+    <a href="https://github.com/LoveProgrammingMint/Xdows-Security/issues ">Feedback</a>
+    ·
+    <a href="https://github.com/LoveProgrammingMint/Xdows-Security/releases ">Download</a>
+    <br />
+    English
+    ·
+    <a href="README.zh-HANS.md">简体中文</a>
+  </p>
 
-&lt;/p&gt;
+</p>
 
 ### Usage
 

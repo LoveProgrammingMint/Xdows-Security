@@ -42,7 +42,6 @@
     
     2. `.NET` 桌面开发, `WinUI 应用程序开发`
      
-    > [!NOTE]
     > 本项目需要 `.NET10` 框架
 
     ---
@@ -78,7 +77,6 @@
     ```sh
     git clone https://github.com/LoveProgrammingMint/Xdows-Security
     git clone https://github.com/LoveProgrammingMint/SouXiaoAVEngine
-    git clone https://github.com/LoveProgrammingMint/AIModel
     ```
     2. 编译
     
@@ -95,4 +93,4 @@
 
 ### 版权说明
 
-该项目签署了 MIT 授权许可，详情请参阅 [LICENSE](LICENSE.txt)
+该项目签署了 AGPL-3.0 授权许可，详情请参阅 [LICENSE](LICENSE.txt)

@@ -26,7 +26,7 @@ namespace Xdows_Security
             manager.MinWidth = 350;
             manager.MinHeight = 330;
             manager.Width = 400;
-            manager.Height = 478;
+            manager.Height = 486;
             manager.IsMaximizable = false;
             manager.IsMinimizable = true;
             manager.IsResizable = false;

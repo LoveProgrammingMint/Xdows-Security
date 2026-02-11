@@ -38,7 +38,7 @@ namespace Protection
                         );
 
                         var parser = new KernelTraceEventParser(monitoringSession.Source);
-                        parser.FileIOCreate += (data) => _ = OnFileCreate(data, interceptCallBack);
+                        parser.FileIOCreate += (data) => OnFileCreate(data, interceptCallBack);
 
                         isRunning = true;
                         _ = Task.Run(() =>
@@ -95,78 +95,106 @@ namespace Protection
                 }
             }
 
-            private static async Task OnFileCreate(FileIOCreateTraceData data, InterceptCallBack interceptCallBack)
+            private void OnFileCreate(FileIOCreateTraceData data, InterceptCallBack interceptCallBack)
             {
-                if (data.ProcessID is 0 or 4)
-                    return;
-
-                string? filePath = data.FileName;
-                if (string.IsNullOrEmpty(filePath) ||
-                    !Path.Exists(filePath) ||
-                    Path.EndsInDirectorySeparator(filePath) ||
-                    filePath.StartsWith(@"\Device\", StringComparison.OrdinalIgnoreCase) ||
-                    filePath.Length > 32767)
-                    return;
-
-                if (!IsSuspiciousExtension(filePath))
-                    return;
-
-                string? creatorProcessPath = null;
                 try
                 {
-                    using var process = Process.GetProcessById(data.ProcessID);
-                    creatorProcessPath = process.MainModule?.FileName;
-                }
-                catch
-                {
-                    return;
-                }
+                    string? filePath = data.FileName;
+                    if (string.IsNullOrEmpty(filePath) ||
+                        data.ProcessID is 0 or 4 ||
+                        !Path.Exists(filePath) ||
+                        Path.EndsInDirectorySeparator(filePath) ||
+                        data.ProcessID == Environment.ProcessId ||
+                        filePath.Contains(":\\Windows\\") ||
+                        filePath.StartsWith(@"\Device\", StringComparison.OrdinalIgnoreCase) ||
+                        filePath.Length > 32767)
+                        return;
 
-                if (!string.IsNullOrEmpty(creatorProcessPath) && TrustManager.IsPathTrusted(creatorProcessPath))
-                    return;
+                    if (!IsSuspiciousExtension(filePath))
+                        return;
 
-                HandleCreatedFile(filePath, data.ProcessID, interceptCallBack);
-            }
-
-            private static void HandleCreatedFile(string filePath, int creatorProcessId, InterceptCallBack interceptCallBack)
-            {
-                var (isFileVirus, fileResult) = SouXiaoEngine.ScanFile(filePath);
-                if (isFileVirus)
-                {
-                    TerminateProcessByPath(filePath);
-                    _ = QuarantineManager.AddToQuarantine(filePath, fileResult);
-                    interceptCallBack(true, filePath, Name);
-                }
-
-                string? creatorPath = null;
-                try
-                {
-                    using var proc = Process.GetProcessById(creatorProcessId);
-                    creatorPath = proc.MainModule?.FileName;
-                }
-                catch
-                {
-                    return;
-                }
-
-                if (string.IsNullOrEmpty(creatorPath))
-                    return;
-
-                var (isProcessVirus, processResult) = SouXiaoEngine.ScanFile(creatorPath);
-                if (isProcessVirus)
-                {
+                    string? creatorProcessPath = null;
                     try
                     {
-                        using var proc = Process.GetProcessById(creatorProcessId);
-                        proc.Kill();
+                        using var process = Process.GetProcessById(data.ProcessID);
+                        creatorProcessPath = process.MainModule?.FileName;
                     }
                     catch
                     {
+                        return;
                     }
 
-                    _ = QuarantineManager.AddToQuarantine(creatorPath, processResult);
-                    interceptCallBack(true, creatorPath, Name);
+                    if (string.IsNullOrEmpty(creatorProcessPath) || TrustManager.IsPathTrusted(creatorProcessPath))
+                        return;
+
+                    HandleCreatedFile(filePath, data.ProcessID, interceptCallBack);
                 }
+                catch { }
+            }
+            private readonly List<string> TempList = [];
+            private void HandleCreatedFile(string filePath, int creatorProcessId, InterceptCallBack interceptCallBack)
+            {
+                try
+                {
+                    var (isFileVirus, fileResult) = SouXiaoEngine.ScanFile(filePath);
+                    if (isFileVirus)
+                    {
+                        bool isInTempList = TempList.Contains(filePath);
+                        TempList.Add(filePath);
+                        try
+                        {
+                            TerminateProcessByPath(filePath);
+                        }
+                        catch { }
+                        try
+                        {
+                            _ = QuarantineManager.AddToQuarantine(filePath, fileResult);
+                            if (!isInTempList)
+                            {
+                                interceptCallBack(true, filePath, Name);
+                            }
+                        }
+                        catch
+                        {
+                            if (!isInTempList)
+                            {
+                                interceptCallBack(false, filePath, Name);
+                            }
+                        }
+
+                    }
+                }
+                catch { }
+
+                //string? creatorPath = null;
+                //try
+                //{
+                //    using var proc = Process.GetProcessById(creatorProcessId);
+                //    creatorPath = proc.MainModule?.FileName;
+                //}
+                //catch
+                //{
+                //    return;
+                //}
+
+                //if (string.IsNullOrEmpty(creatorPath))
+                //    return;
+
+                //var (isProcessVirus, processResult) = SouXiaoEngine.ScanFile(creatorPath);
+                //if (isProcessVirus)
+                //{
+                //    try
+                //    {
+                //        using var proc = Process.GetProcessById(creatorProcessId);
+                //        proc.Kill();
+                //    }
+                //    catch
+                //    {
+                //    }
+
+                //    _ = QuarantineManager.AddToQuarantine(creatorPath, processResult);
+                //    interceptCallBack(true, creatorPath, Name);
+                //}
             }
 
             private static void TerminateProcessByPath(string filePath)

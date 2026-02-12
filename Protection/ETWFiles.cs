@@ -9,8 +9,6 @@ namespace Protection
 {
     public partial class ETW
     {
-        internal static TraceEventSession? monitoringSession;
-
         public class FilesProtection : IETWProtectionModel
         {
             private static readonly Lock lockObj = new();

@@ -2,19 +2,18 @@
 using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
 using Microsoft.Diagnostics.Tracing.Session;
 using System.Diagnostics;
-using TrustQuarantine;
 using static Protection.CallBack;
 
 namespace Protection
 {
     public partial class ETW
     {
-        // 进程防护模块
-        public class ProcessProtection : IETWProtectionModel
+        public class RegistryProtection : IETWProtectionModel
         {
             private static readonly Lock lockObj = new();
             private static bool isRunning = false;
-            public const string Name = "Process";
+            public const string Name = "Registry";
+
             string IETWProtectionModel.Name => Name;
 
             public bool Run(InterceptCallBack interceptCallBack)
@@ -28,14 +27,15 @@ namespace Protection
                     {
                         SouXiaoEngine.Initialize();
 
-                        isRunning = true;
-
                         monitoringSession = new TraceEventSession("Xdows-Security", null);
-                        monitoringSession.EnableKernelProvider(KernelTraceEventParser.Keywords.Process);
+                        monitoringSession.EnableKernelProvider(
+                            KernelTraceEventParser.Keywords.Registry
+                        );
 
                         var parser = new KernelTraceEventParser(monitoringSession.Source);
-                        parser.ProcessStart += (data) => OnNewProcess(data, interceptCallBack);
+                        parser.RegistryCreate += (data) => OnRegistryChange(data, interceptCallBack);
 
+                        isRunning = true;
                         _ = Task.Run(() =>
                         {
                             try
@@ -61,6 +61,7 @@ namespace Protection
                     }
                 }
             }
+
             public bool Stop()
             {
                 lock (lockObj)
@@ -80,6 +81,7 @@ namespace Protection
                     return true;
                 }
             }
+
             public bool IsRun()
             {
                 lock (lockObj)
@@ -88,43 +90,13 @@ namespace Protection
                 }
             }
 
-            private static async void OnNewProcess(ProcessTraceData data, InterceptCallBack interceptCallBack)
+            private void OnRegistryChange(RegistryTraceData data, InterceptCallBack interceptCallBack)
             {
-                if (data.ProcessID is 0 or 4)
-                    return;
-
-                string? path = null;
                 try
                 {
-                    using var process = Process.GetProcessById(data.ProcessID);
-                    path = process.MainModule?.FileName;
+                    Debug.WriteLine(data.ProcessName);
                 }
-                catch
-                {
-                    return;
-                }
-
-                if (string.IsNullOrEmpty(path) || TrustManager.IsPathTrusted(path))
-                    return;
-
-                var (isVirus, result) = SouXiaoEngine.ScanFile(path);
-                if (!isVirus)
-                    return;
-
-                bool success = false;
-                try
-                {
-                    using var proc = Process.GetProcessById(data.ProcessID);
-                    proc.Kill();
-                    success = true;
-                }
-                catch
-                {
-                    success = false;
-                }
-
-                _ = QuarantineManager.AddToQuarantine(path, result);
-                interceptCallBack(success, path, Name);
+                catch { }
             }
         }
     }

@@ -104,28 +104,17 @@ namespace Xdows_Security
         };
         private static readonly IProtectionModel LegacyProcessProtection = new LegacyProcessProtection();
         private static readonly IProtectionModel LegacyFilesProtection = new LegacyFilesProtection();
-        private static readonly IProtectionModel LegacyRegistryProtection = new LegacyRegistryProtection();
 
         private static readonly IETWProtectionModel ETWProcessProtection = new ETW.ProcessProtection();
         private static readonly IETWProtectionModel ETWFilesProtection = new ETW.FilesProtection();
-
+        private static readonly IETWProtectionModel ETWRegistryProtection = new ETW.RegistryProtection();
         public static bool Run(int RunID)
         {
-            if (RunID == 4)
-            {
-                if (LegacyRegistryProtection.IsEnabled())
-                {
-                    return LegacyRegistryProtection.Enable(interceptCallBack);
-                }
-                else
-                {
-                    return LegacyRegistryProtection.Disable();
-                }
-            }
             IETWProtectionModel? protection = RunID switch
             {
                 0 => ETWProcessProtection,
                 1 => ETWFilesProtection,
+                4 => ETWRegistryProtection,
                 _ => null,
             };
             if (protection is null) { return false; }
@@ -137,7 +126,6 @@ namespace Xdows_Security
                 {
                     0 => LegacyProcessProtection,
                     1 => LegacyFilesProtection,
-                    4 => LegacyRegistryProtection,
                     _ => null,
                 };
                 if (legacyProtection is null) { return false; }
@@ -165,14 +153,11 @@ namespace Xdows_Security
         }
         public static bool IsRun(int RunID)
         {
-            if (RunID == 4)
-            {
-                return LegacyRegistryProtection.IsEnabled();
-            }
             IETWProtectionModel? protection = RunID switch
             {
                 0 => ETWProcessProtection,
                 1 => ETWFilesProtection,
+                4 => ETWRegistryProtection,
                 _ => null,
             };
             if (protection is null) { return false; }
@@ -183,7 +168,6 @@ namespace Xdows_Security
                 {
                     0 => LegacyProcessProtection,
                     1 => LegacyFilesProtection,
-                    4 => LegacyRegistryProtection,
                     _ => null,
                 };
                 if (legacyProtection is null) { return false; }

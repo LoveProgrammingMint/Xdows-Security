@@ -90,41 +90,43 @@ namespace Protection
 
             private static async void OnNewProcess(ProcessTraceData data, InterceptCallBack interceptCallBack)
             {
-                if (data.ProcessID is 0 or 4)
-                    return;
-
-                string? path = null;
                 try
                 {
-                    using var process = Process.GetProcessById(data.ProcessID);
-                    path = process.MainModule?.FileName;
-                }
-                catch
-                {
-                    return;
-                }
+                    if (data.ProcessID is 0 or 4)
+                        return;
 
-                if (string.IsNullOrEmpty(path) || TrustManager.IsPathTrusted(path))
-                    return;
+                    string? path = null;
+                    try
+                    {
+                        using var process = Process.GetProcessById(data.ProcessID);
+                        path = process.MainModule?.FileName;
+                    }
+                    catch
+                    {
+                        return;
+                    }
 
-                var (isVirus, result) = SouXiaoEngine.ScanFile(path);
-                if (!isVirus)
-                    return;
+                    if (string.IsNullOrEmpty(path) || TrustManager.IsPathTrusted(path))
+                        return;
 
-                bool success = false;
-                try
-                {
-                    using var proc = Process.GetProcessById(data.ProcessID);
-                    proc.Kill();
-                    success = true;
+                    var (isVirus, result) = SouXiaoEngine.ScanFile(path);
+                    if (!isVirus)
+                        return;
+
+                    try
+                    {
+                        using var proc = Process.GetProcessById(data.ProcessID);
+                        proc.Kill();
+                        _ = QuarantineManager.AddToQuarantine(path, result);
+                        interceptCallBack(true, path, Name);
+
+                    }
+                    catch
+                    {
+                        interceptCallBack(false, path, Name);
+                    }
                 }
-                catch
-                {
-                    success = false;
-                }
-
-                _ = QuarantineManager.AddToQuarantine(path, result);
-                interceptCallBack(success, path, Name);
+                catch { }
             }
         }
     }

@@ -2,6 +2,7 @@
 using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
 using Microsoft.Diagnostics.Tracing.Session;
 using System.Diagnostics;
+using TrustQuarantine;
 using static Protection.CallBack;
 
 namespace Protection
@@ -33,7 +34,7 @@ namespace Protection
                         );
 
                         var parser = new KernelTraceEventParser(monitoringSession.Source);
-                        parser.RegistryCreate += (data) => OnRegistryChange(data, interceptCallBack);
+                        parser.RegistryCreate += (data) => OnRegistryChanged(data, interceptCallBack);
 
                         isRunning = true;
                         _ = Task.Run(() =>
@@ -90,11 +91,43 @@ namespace Protection
                 }
             }
 
-            private void OnRegistryChange(RegistryTraceData data, InterceptCallBack interceptCallBack)
+            private static async void OnRegistryChanged(RegistryTraceData data, InterceptCallBack interceptCallBack)
             {
                 try
                 {
-                    Debug.WriteLine(data.ProcessName);
+                    if (data.ProcessID is 0 or 4)
+                        return;
+
+                    string? path = null;
+                    try
+                    {
+                        using var process = Process.GetProcessById(data.ProcessID);
+                        path = process.MainModule?.FileName;
+                    }
+                    catch
+                    {
+                        return;
+                    }
+
+                    if (string.IsNullOrEmpty(path) || TrustManager.IsPathTrusted(path))
+                        return;
+
+                    var (isVirus, result) = SouXiaoEngine.ScanFile(path);
+                    if (!isVirus)
+                        return;
+
+                    try
+                    {
+                        using var proc = Process.GetProcessById(data.ProcessID);
+                        proc.Kill();
+                        _ = QuarantineManager.AddToQuarantine(path, result);
+                        interceptCallBack(true, path, Name);
+
+                    }
+                    catch
+                    {
+                        interceptCallBack(false, path, Name);
+                    }
                 }
                 catch { }
             }

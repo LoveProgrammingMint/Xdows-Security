@@ -95,7 +95,7 @@ namespace Protection
             {
                 try
                 {
-                    if (data.ProcessID is 0 or 4)
+                    if (data.ProcessID is 0 or 4 || data.KeyName == string.Empty)
                         return;
 
                     string? path = null;

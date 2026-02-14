@@ -64,9 +64,8 @@ namespace Xdows_Security
                         LoadBackdropSettingAsync,
                         LoadBackgroundImageSettingAsync
                     );
-
-                    // 测试标识 By Shiyi
-                    SettingsPage_Protection_Registry.Header += " (Beta)";
+                    WinUI3Localizer.Localizer.Get().LanguageChanged += (s, e) => UpdateAppText();
+                    UpdateAppText();
                 }
                 catch { }
                 finally
@@ -74,6 +73,11 @@ namespace Xdows_Security
                     IsInitialize = false;
                 }
             });
+        }
+        private void UpdateAppText()
+        {
+            // 测试标识 By Shiyi
+            SettingsPage_Protection_Registry.Header += " (Beta)";
         }
         private Task LoadScanSettingAsync
         {

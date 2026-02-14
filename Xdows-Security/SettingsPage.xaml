@@ -229,6 +229,7 @@
             <controls:SettingsExpander
                 VerticalAlignment="Top"
                 l:Uids.Uid="SettingsPage_Protection_Registry"
+                x:Name="SettingsPage_Protection_Registry"
                 HeaderIcon="{ui:FontIcon Glyph=&#xEA37;}">
                 <ToggleSwitch x:Name="RegistryToggle" Tag="Registry" Toggled="RunProtection"/>
                 <controls:SettingsExpander.Items>

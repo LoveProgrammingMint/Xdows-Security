@@ -64,6 +64,9 @@ namespace Xdows_Security
                         LoadBackdropSettingAsync,
                         LoadBackgroundImageSettingAsync
                     );
+
+                    // 测试标识 By Shiyi
+                    SettingsPage_Protection_Registry.Header += " (Beta)";
                 }
                 catch { }
                 finally

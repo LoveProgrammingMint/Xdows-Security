@@ -95,9 +95,8 @@ namespace Protection
             {
                 try
                 {
-                    if (data.ProcessID is 0 or 4 || data.KeyName == string.Empty)
+                    if (data.ProcessID is 0 or 4 || data.ProcessID == Environment.ProcessId || data.KeyName == string.Empty)
                         return;
-
                     string? path = null;
                     try
                     {
@@ -111,7 +110,24 @@ namespace Protection
 
                     if (string.IsNullOrEmpty(path) || TrustManager.IsPathTrusted(path))
                         return;
+                    string registryScanResult = new Xdows_Local.RegistryScan().Scan(data.KeyName);
+                    if (registryScanResult != string.Empty)
+                    {
+                        try
+                        {
+                            using var proc = Process.GetProcessById(data.ProcessID);
+                            proc.Kill();
+                            _ = QuarantineManager.AddToQuarantine(path, registryScanResult);
+                            interceptCallBack(true, path, Name);
 
+                        }
+                        catch
+                        {
+                            interceptCallBack(false, path, Name);
+                        }
+                        return;
+
+                    }
                     var (isVirus, result) = SouXiaoEngine.ScanFile(path);
                     if (!isVirus)
                         return;

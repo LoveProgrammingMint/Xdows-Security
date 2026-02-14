@@ -1,6 +1,6 @@
 ﻿namespace Xdows_Local
 {
-    internal class RegistryScan
+    public class RegistryScan
     {
         private readonly string[] SuspiciousKeys =
         [
@@ -22,19 +22,19 @@
             "SYSTEM\\CurrentControlSet\\Control\\StorageDevicePolicies",
             "Software\\Classes\\ms-settings\\Shell\\Open\\command" // fodhelper.exe 提权漏洞
         ];
-        public bool Scan(string Key)
+        public string Scan(string Key)
         {
             if (string.IsNullOrWhiteSpace(Key))
-                return false;
+                return string.Empty;
 
             for (int i = 0; i < SuspiciousKeys.Length; i++)
             {
                 if (Key.Contains(SuspiciousKeys[i], StringComparison.OrdinalIgnoreCase))
                 {
-                    return true;
+                    return "Xdows.Local.RegistryScan";
                 }
             }
-            return false;
+            return string.Empty;
         }
     }
 }

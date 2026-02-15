@@ -121,12 +121,10 @@ namespace ScanEngine
             if (!File.Exists(axApiExePath))
                 throw new FileNotFoundException($"AX_API.exe not found at: {axApiExePath}");
 
-            string escapedTargetPath = $"\"{targetFilePath}\"";
-
             var startInfo = new ProcessStartInfo
             {
                 FileName = axApiExePath,
-                Arguments = $"-PE \"{escapedTargetPath}\"",
+                Arguments = $"-PE \"{targetFilePath}\"",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,

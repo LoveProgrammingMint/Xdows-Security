@@ -1,5 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Compatibility.Windows.Storage;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
@@ -88,6 +89,13 @@ namespace Xdows_Security.ViewModel
         [RelayCommand] private void RefreshSysInfo() => LoadData();
         [RelayCommand] private void RefreshStatistics() => LoadStatistics();
         [RelayCommand] private void ClearLog() => _log.Clear();
+        [RelayCommand]
+        private void QuickScan()
+        {
+            var settings = ApplicationData.Current.LocalSettings;
+            settings.Values["AutoStartScanMode"] = "Quick";
+            App.MainWindow?.GoToPage("Security");
+        }
 
         [RelayCommand]
         private async Task ExportLogAsync()

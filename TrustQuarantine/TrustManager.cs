@@ -9,42 +9,45 @@ namespace TrustQuarantine
         WriteIndented = false,
         PropertyNameCaseInsensitive = true
     )]
-    [JsonSerializable(typeof(List<Dictionary<string, string>>))]
+    [JsonSerializable(typeof(List<TrustItemModel>))]
     internal partial class TrustJsonContext : JsonSerializerContext { }
 
     public static class TrustManager
     {
-        private static readonly string TrustDataKey = "TrustData";
+        private static string TrustFolderPath => Path.Combine(ApplicationData.LocalFolder.Path, "Trust");
+        private static string TrustFilePath => Path.Combine(TrustFolderPath, "trust.json");
+
+        private static void EnsureTrustFolderExists()
+        {
+            if (!Directory.Exists(TrustFolderPath))
+            {
+                Directory.CreateDirectory(TrustFolderPath);
+            }
+        }
 
         public static List<TrustItemModel> GetTrustItems()
         {
             var trustItems = new List<TrustItemModel>();
 
-            if (ApplicationData.Current.LocalSettings.Values[TrustDataKey] is string savedDataJson)
-            {
-                try
-                {
-                    var savedData = JsonSerializer.Deserialize(
-                        savedDataJson,
-                        TrustJsonContext.Default.ListDictionaryStringString
-                    );
+            EnsureTrustFolderExists();
+            if (!File.Exists(TrustFilePath))
+                return trustItems;
 
-                    if (savedData != null)
-                    {
-                        foreach (var item in savedData)
-                        {
-                            if (item.TryGetValue("Path", out string? path) &&
-                                item.TryGetValue("Hash", out string? hash))
-                            {
-                                trustItems.Add(new TrustItemModel(path, hash));
-                            }
-                        }
-                    }
-                }
-                catch
+            try
+            {
+                var savedDataJson = File.ReadAllText(TrustFilePath);
+                var savedData = JsonSerializer.Deserialize(
+                    savedDataJson,
+                    TrustJsonContext.Default.ListTrustItemModel
+                );
+
+                if (savedData != null)
                 {
-                    // 忽略解析错误
+                    trustItems.AddRange(savedData);
                 }
+            }
+            catch
+            {
             }
 
             return trustItems;
@@ -138,17 +141,13 @@ namespace TrustQuarantine
         // 保存信任项到本地存储
         private static async Task SaveTrustItemsAsync(List<TrustItemModel> trustItems)
         {
-            var itemsToSave = trustItems.Select(item => new Dictionary<string, string>
-            {
-                { "Path", item.Path },
-                { "Hash", item.Hash }
-            }).ToList();
+            EnsureTrustFolderExists();
             string jsonString = JsonSerializer.Serialize(
-                itemsToSave,
-                TrustJsonContext.Default.ListDictionaryStringString
+                trustItems,
+                TrustJsonContext.Default.ListTrustItemModel
             );
 
-            ApplicationData.Current.LocalSettings.Values[TrustDataKey] = jsonString;
+            await File.WriteAllTextAsync(TrustFilePath, jsonString);
         }
     }
 }

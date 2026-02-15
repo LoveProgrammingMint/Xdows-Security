@@ -792,6 +792,9 @@
   <data name="HomePage_RefreshStatistics.Content" xml:space="preserve">
     <value>刷新统计信息</value>
   </data>
+  <data name="HomePage_QuickScan.Content" xml:space="preserve">
+    <value>快速扫描</value>
+  </data>
   <data name="HomePage_LogsHeader.Text" xml:space="preserve">
     <value>运行日志</value>
   </data>

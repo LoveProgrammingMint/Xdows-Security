@@ -104,6 +104,7 @@ namespace Xdows_Security
             ThreatsFoundText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_ThreatsFound_Format"), 0);
             InitializeCommands();
             InitializeScanItems();
+            Loaded += SecurityPage_Loaded;
         }
 
         private void InitializeCommands()
@@ -387,7 +388,21 @@ namespace Xdows_Security
             });
         }
 
-        private async void OnScanMenuClick(object sender, RoutedEventArgs e)
+        private async void SecurityPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            var settings = ApplicationData.Current.LocalSettings;
+            if (settings.Values.TryGetValue("AutoStartScanMode", out object? raw) && raw is string mode)
+            {
+                settings.Values.Remove("AutoStartScanMode");
+                if (!await EnsureScanEnginesEnabledAsync()) return;
+                if (mode == "Quick")
+                {
+                    await StartScanAsync(Localizer.Get().GetLocalizedString("SecurityPage_ScanMenu_Quick"), ScanMode.Quick);
+                }
+            }
+        }
+
+        private async Task<bool> EnsureScanEnginesEnabledAsync()
         {
             var settings = ApplicationData.Current.LocalSettings;
             bool UseLocalScan = (settings.Values["LocalScan"] as bool?).GetValueOrDefault();
@@ -406,9 +421,15 @@ namespace Xdows_Security
                     RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                     PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 };
-                _ = dialog.ShowAsync();
-                return;
+                await dialog.ShowAsync();
+                return false;
             }
+            return true;
+        }
+
+        private async void OnScanMenuClick(object sender, RoutedEventArgs e)
+        {
+            if (!await EnsureScanEnginesEnabledAsync()) return;
 
             if (sender is not MenuFlyoutItem { Tag: string tag }) return;
             var mode = tag switch

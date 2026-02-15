@@ -792,9 +792,6 @@ Why not try XIGUA Security?</value>
   <data name="HomePage_RefreshStatistics.Content" xml:space="preserve">
     <value>Refresh stats</value>
   </data>
-  <data name="HomePage_QuickScan.Content" xml:space="preserve">
-    <value>Quick scan</value>
-  </data>
   <data name="HomePage_LogsHeader.Text" xml:space="preserve">
     <value>Logs</value>
   </data>

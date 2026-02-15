@@ -1,4 +1,4 @@
-﻿namespace TrustQuarantine
+namespace TrustQuarantine
 {
     public class TrustItemModel
     {

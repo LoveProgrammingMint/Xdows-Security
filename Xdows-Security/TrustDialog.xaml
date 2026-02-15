@@ -8,16 +8,9 @@
                xmlns:local="using:TrustQuarantine">
 
     <StackPanel>
-        <ListView x:Name="TrustListView" SelectionMode="Multiple">
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="local:TrustItemModel">
-                    <StackPanel> 
-                        <TextBlock Text="{x:Bind Path}" VerticalAlignment="Center"/>
-                        <TextBlock Text="{x:Bind Hash}" Opacity="0.75" IsTextSelectionEnabled="True" VerticalAlignment="Center" FontSize="10"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-
+        <ListView x:Name="TrustListView" 
+                  SelectionMode="Multiple"
+                  Margin="0,0,0,12">
             <ListView.ContextFlyout>
                 <MenuFlyout>
                     <MenuFlyoutItem l:Uids.Uid="TrustDialog_DeleteMenuItem" Click="DeleteMenuItem_Click"/>
@@ -26,9 +19,22 @@
                     <MenuFlyoutItem l:Uids.Uid="TrustDialog_ClearMenuItem"  Click="ClearMenuItem_Click"/>
                 </MenuFlyout>
             </ListView.ContextFlyout>
+
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:TrustItemModel">
+                    <StackPanel Spacing="2" Padding="8,6"> 
+                        <TextBlock Text="{x:Bind SourcePath}" TextWrapping="WrapWholeWords"/>
+                        <TextBlock Text="{x:Bind Hash}" 
+                                   FontSize="10" 
+                                   Opacity="0.75" 
+                                   IsTextSelectionEnabled="True" 
+                                   TextWrapping="NoWrap"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
         </ListView>
 
-        <StackPanel Margin="0,24,0,0" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
             <Button l:Uids.Uid="TrustDialog_AddButton"    Click="AddMenuItem_Click"/>
             <Button l:Uids.Uid="TrustDialog_DeleteButton" Click="DeleteMenuItem_Click"/>
             <Button l:Uids.Uid="TrustDialog_ClearButton"  Click="ClearMenuItem_Click"/>

@@ -2,13 +2,7 @@ namespace TrustQuarantine
 {
     public class TrustItemModel
     {
-        public string Path { get; set; }
-        public string Hash { get; set; }
-
-        public TrustItemModel(string path, string hash)
-        {
-            Path = path;
-            Hash = hash;
-        }
+        public string SourcePath { get; set; } = string.Empty;
+        public string Hash { get; set; } = string.Empty;
     }
 }

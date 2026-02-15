@@ -11,41 +11,53 @@ namespace Xdows_Security
 {
     public sealed partial class TrustDialog : ContentDialog
     {
-        private ObservableCollection<TrustItemModel> _trustItems = [];
+        private ObservableCollection<TrustItemModel> _items = [];
+
         public TrustDialog()
         {
             this.InitializeComponent();
-            this.PrimaryButtonText = Localizer.Get().GetLocalizedString("Button_Close");// 为了资源复用
-            _ = InitializeTrustList();
+            this.PrimaryButtonText = Localizer.Get().GetLocalizedString("Button_Close");// 为了资源复用 By Shiyi
+            _ = ReloadAsync();
         }
-        private async Task InitializeTrustList()
+
+        private Task ReloadAsync()
         {
-            var trustItems = TrustManager.GetTrustItems();
-            _trustItems = new ObservableCollection<TrustItemModel>(trustItems);
-            TrustListView.ItemsSource = _trustItems;
+            try
+            {
+                var items = TrustManager.GetTrustItems();
+                if (items != null)
+                {
+                    _items = new ObservableCollection<TrustItemModel>(items);
+                    TrustListView.ItemsSource = _items;
+                }
+            }
+            catch
+            {
+                // 忽略加载错误
+            }
+            return Task.CompletedTask;
         }
+
         private async void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
         {
             var selectedItems = TrustListView.SelectedItems.Cast<TrustItemModel>().ToList();
+            if (selectedItems.Count == 0) return;
 
             foreach (var item in selectedItems)
             {
-                bool success = await TrustManager.RemoveFromTrust(item.Path);
-                if (success)
-                {
-                    _trustItems.Remove(item);
-                }
+                await TrustManager.RemoveFromTrust(item.SourcePath);
+                _items.Remove(item);
             }
-            await InitializeTrustList();
+            
+            await ReloadAsync();
         }
+
         private async void ClearMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            bool success = await TrustManager.ClearTrust();
-            if (success)
-            {
-                await InitializeTrustList();
-            }
+            await TrustManager.ClearTrust();
+            await ReloadAsync();
         }
+
         private async void AddMenuItem_Click(object sender, RoutedEventArgs e)
         {
             using var dlg = new CommonOpenFileDialog
@@ -60,11 +72,8 @@ namespace Xdows_Security
 
                 if (!string.IsNullOrEmpty(filePath))
                 {
-                    bool success = await TrustManager.AddToTrust(filePath);
-                    if (success)
-                    {
-                        await InitializeTrustList();
-                    }
+                    await TrustManager.AddToTrust(filePath);
+                    await ReloadAsync();
                 }
             }
         }

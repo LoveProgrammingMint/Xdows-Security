@@ -9,36 +9,35 @@ namespace TrustQuarantine
         WriteIndented = false,
         PropertyNameCaseInsensitive = true
     )]
-    [JsonSerializable(typeof(List<Dictionary<string, string>>))]
+    [JsonSerializable(typeof(TrustItemModel))]
     internal partial class TrustJsonContext : JsonSerializerContext { }
 
     public static class TrustManager
     {
-        private static readonly string TrustDataKey = "TrustData";
+        private static string TrustFolderPath => Path.Combine(ApplicationData.LocalFolder.Path, "Trust");
+
+        private static void EnsureTrustFolderExists()
+        {
+            if (!Directory.Exists(TrustFolderPath))
+            {
+                Directory.CreateDirectory(TrustFolderPath);
+            }
+        }
 
         public static List<TrustItemModel> GetTrustItems()
         {
             var trustItems = new List<TrustItemModel>();
+            EnsureTrustFolderExists();
 
-            if (ApplicationData.Current.LocalSettings.Values[TrustDataKey] is string savedDataJson)
+            foreach (var file in Directory.GetFiles(TrustFolderPath))
             {
                 try
                 {
-                    var savedData = JsonSerializer.Deserialize(
-                        savedDataJson,
-                        TrustJsonContext.Default.ListDictionaryStringString
-                    );
-
-                    if (savedData != null)
+                    string json = File.ReadAllText(file);
+                    var item = JsonSerializer.Deserialize(json, TrustJsonContext.Default.TrustItemModel);
+                    if (item != null && !string.IsNullOrEmpty(item.SourcePath))
                     {
-                        foreach (var item in savedData)
-                        {
-                            if (item.TryGetValue("Path", out string? path) &&
-                                item.TryGetValue("Hash", out string? hash))
-                            {
-                                trustItems.Add(new TrustItemModel(path, hash));
-                            }
-                        }
+                        trustItems.Add(item);
                     }
                 }
                 catch
@@ -50,105 +49,122 @@ namespace TrustQuarantine
             return trustItems;
         }
 
-        // 添加文件到信任区
-        public static async Task<bool> AddToTrust(string path)
+        public static async Task<bool> AddToTrust(string filePath)
         {
-            if (!File.Exists(path))
+            if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
                 return false;
 
-            string fileHash = await GetFileHashAsync(path);
+            try
+            {
+                string fileHash = await CalculateFileHashAsync(filePath);
 
-            var currentItems = GetTrustItems();
-            if (currentItems.Any(item => item.Hash == fileHash))
-                return true; // 文件已存在
+                var currentItems = GetTrustItems();
+                if (currentItems.Any(item => string.Equals(item.Hash, fileHash, StringComparison.OrdinalIgnoreCase)))
+                    return true; // 文件已存在
 
-            currentItems.Add(new TrustItemModel(path, fileHash));
-            await SaveTrustItemsAsync(currentItems);
-            return true;
+                var item = new TrustItemModel
+                {
+                    SourcePath = filePath,
+                    Hash = fileHash
+                };
+
+                string trustItemFilePath = Path.Combine(TrustFolderPath, $"{fileHash}.json");
+                string json = JsonSerializer.Serialize(item, TrustJsonContext.Default.TrustItemModel);
+                await File.WriteAllTextAsync(trustItemFilePath, json);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
-        // 移除信任项
-        public static async Task<bool> RemoveFromTrust(string path)
+        public static async Task<bool> AddToTrustByHash(string filePath, string fileHash)
+        {
+            if (string.IsNullOrWhiteSpace(fileHash))
+                return false;
+
+            try
+            {
+                var currentItems = GetTrustItems();
+                if (currentItems.Any(item => string.Equals(item.Hash, fileHash, StringComparison.OrdinalIgnoreCase)))
+                    return true; // 已存在
+
+                var item = new TrustItemModel
+                {
+                    SourcePath = filePath ?? string.Empty,
+                    Hash = fileHash
+                };
+
+                string trustItemFilePath = Path.Combine(TrustFolderPath, $"{fileHash}.json");
+                string json = JsonSerializer.Serialize(item, TrustJsonContext.Default.TrustItemModel);
+                await File.WriteAllTextAsync(trustItemFilePath, json);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static async Task<bool> RemoveFromTrust(string filePath)
         {
             var currentItems = GetTrustItems();
-            var itemToRemove = currentItems.FirstOrDefault(item => item.Path == path);
+            var itemToRemove = currentItems.FirstOrDefault(item => item.SourcePath == filePath);
 
             if (itemToRemove == null)
                 return false;
 
-            currentItems.Remove(itemToRemove);
-            await SaveTrustItemsAsync(currentItems);
+            string trustItemFilePath = Path.Combine(TrustFolderPath, $"{itemToRemove.Hash}.json");
+            if (File.Exists(trustItemFilePath))
+            {
+                File.Delete(trustItemFilePath);
+                return true;
+            }
+            return false;
+        }
+
+        public static async Task<bool> ClearTrust()
+        {
+            if (Directory.Exists(TrustFolderPath))
+            {
+                foreach (var file in Directory.GetFiles(TrustFolderPath))
+                {
+                    File.Delete(file);
+                }
+            }
             return true;
         }
 
-        public static bool IsPathTrusted(string path)
+        public static bool IsPathTrusted(string filePath)
         {
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
                 return false;
 
             try
             {
                 using var sha256 = SHA256.Create();
-                using var stream = File.OpenRead(path);
+                using var stream = File.OpenRead(filePath);
                 var hashBytes = sha256.ComputeHash(stream);
-                string hash = Convert.ToHexString(hashBytes).ToLowerInvariant();
+                string hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
 
                 var trustItems = GetTrustItems();
-                return trustItems.Any(item =>
-                    string.Equals(item.Hash, hash, StringComparison.OrdinalIgnoreCase));
+                return trustItems.Any(item => string.Equals(item.Hash, hash, StringComparison.OrdinalIgnoreCase));
             }
             catch
             {
-                return false; // 文件访问失败视为不信任
+                return false;
             }
         }
 
-        // 清空信任区
-        public static async Task<bool> ClearTrust()
-        {
-            await SaveTrustItemsAsync([]);
-            return true;
-        }
-
-        // 通过已知哈希值直接添加信任项
-        public static async Task<bool> AddToTrustByHash(string path, string hash)
-        {
-            if (string.IsNullOrWhiteSpace(hash))
-                return false;
-
-            var currentItems = GetTrustItems();
-            if (currentItems.Any(item =>
-                string.Equals(item.Hash, hash, StringComparison.OrdinalIgnoreCase)))
-                return true; // 已存在
-
-            currentItems.Add(new TrustItemModel(path ?? string.Empty, hash));
-            await SaveTrustItemsAsync(currentItems);
-            return true;
-        }
-
-        // 获取文件的哈希值
-        private static async Task<string> GetFileHashAsync(string filePath)
+        private static async Task<string> CalculateFileHashAsync(string filePath)
         {
             using var sha256 = SHA256.Create();
             using var stream = File.OpenRead(filePath);
             var hashBytes = await sha256.ComputeHashAsync(stream);
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
-        }
-
-        // 保存信任项到本地存储
-        private static async Task SaveTrustItemsAsync(List<TrustItemModel> trustItems)
-        {
-            var itemsToSave = trustItems.Select(item => new Dictionary<string, string>
-            {
-                { "Path", item.Path },
-                { "Hash", item.Hash }
-            }).ToList();
-            string jsonString = JsonSerializer.Serialize(
-                itemsToSave,
-                TrustJsonContext.Default.ListDictionaryStringString
-            );
-
-            ApplicationData.Current.LocalSettings.Values[TrustDataKey] = jsonString;
         }
     }
 }

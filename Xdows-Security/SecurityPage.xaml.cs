@@ -79,7 +79,7 @@ namespace Xdows_Security
     {
         private CancellationTokenSource? _cts;
         private readonly DispatcherQueue _dispatcherQueue;
-        private ObservableCollection<VirusRow>? _currentResults { set; get; }
+        private ObservableCollection<VirusRow>? CurrentResults { set; get; }
         private List<ScanItem>? _scanItems;
         private bool _isPaused = false;
         private int _filesScanned = 0;
@@ -135,7 +135,7 @@ namespace Xdows_Security
                 HandleCommand = _handleCommand
             };
 
-            _currentResults?.Add(row);
+            CurrentResults?.Add(row);
         }
 
         private async Task OnTrustClickInternal(VirusRow? row)
@@ -174,16 +174,16 @@ namespace Xdows_Security
                     };
                     await resultDialog.ShowAsync();
 
-                    if (success && _currentResults != null)
+                    if (success && CurrentResults != null)
                     {
-                        var itemToRemove = _currentResults.FirstOrDefault(r => r.FilePath == row.FilePath && r.VirusName == row.VirusName);
+                        var itemToRemove = CurrentResults.FirstOrDefault(r => r.FilePath == row.FilePath && r.VirusName == row.VirusName);
                         if (itemToRemove != null)
                         {
-                            _currentResults.Remove(itemToRemove);
+                            CurrentResults.Remove(itemToRemove);
                         }
                         _threatsFound--;
                         UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
-                        StatusText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanCompleteFound"), _currentResults?.Count ?? 0);
+                        StatusText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanCompleteFound"), CurrentResults?.Count ?? 0);
                     }
                 }
                 catch (Exception ex)
@@ -203,7 +203,7 @@ namespace Xdows_Security
 
         private async Task OnHandleClickInternal(VirusRow? row)
         {
-            if (_currentResults is null || row is null) return;
+            if (CurrentResults is null || row is null) return;
 
             var dialog = new ContentDialog
             {
@@ -270,14 +270,14 @@ namespace Xdows_Security
 
                     if (handled)
                     {
-                        var itemToRemove = _currentResults.FirstOrDefault(r => r.FilePath == row.FilePath && r.VirusName == row.VirusName);
+                        var itemToRemove = CurrentResults.FirstOrDefault(r => r.FilePath == row.FilePath && r.VirusName == row.VirusName);
                         if (itemToRemove != null)
                         {
-                            _currentResults.Remove(itemToRemove);
+                            CurrentResults.Remove(itemToRemove);
                         }
                         _threatsFound--;
                         UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
-                        StatusText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanCompleteFound"), _currentResults.Count);
+                        StatusText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanCompleteFound"), CurrentResults.Count);
                     }
                 }
                 catch (Exception ex)
@@ -726,11 +726,11 @@ namespace Xdows_Security
                 UpdateScanItemStatus(i, Localizer.Get().GetLocalizedString("SecurityPage_Status_Waiting"), false, 0);
             }
 
-            _currentResults = [];
+            CurrentResults = [];
             _dispatcherQueue.TryEnqueue(() =>
             {
                 ScanProgress.IsIndeterminate = !showScanProgress;
-                VirusList.ItemsSource = _currentResults;
+                VirusList.ItemsSource = CurrentResults;
                 ScanProgress.Value = 0;
                 ScanProgress.Visibility = Visibility.Visible;
                 ProgressPercentText.Text = showScanProgress ? "0%" : String.Empty;
@@ -768,7 +768,6 @@ namespace Xdows_Security
                     var startTime = DateTime.Now;
                     int finished = 0;
                     int currentItemIndex = 0;
-                    // 使用Switch表达式计算标题和详情
                     var (title, detail) = mode switch
                     {
                         ScanMode.Quick => (Localizer.Get().GetLocalizedString("SecurityPage_Area_Quick_Title"), Localizer.Get().GetLocalizedString("SecurityPage_Area_Quick_Detail")),
@@ -779,7 +778,6 @@ namespace Xdows_Security
                         _ => (Localizer.Get().GetLocalizedString("SecurityPage_Area_Quick_Title"), Localizer.Get().GetLocalizedString("SecurityPage_Area_Quick_Detail"))
                     };
 
-                    // 使用Switch表达式计算当前项索引
                     currentItemIndex = mode switch
                     {
                         ScanMode.Quick => 0,
@@ -969,7 +967,7 @@ namespace Xdows_Security
                     {
                         var settings = ApplicationData.Current.LocalSettings;
                         settings.Values["LastScanTime"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                        StatusText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanCompleteFound"), _currentResults?.Count ?? 0);
+                        StatusText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanCompleteFound"), CurrentResults?.Count ?? 0);
                         ScanProgress.Visibility = Visibility.Collapsed;
                         PauseScanButton.Visibility = Visibility.Collapsed;
                         ResumeScanButton.Visibility = Visibility.Collapsed;
@@ -1089,16 +1087,16 @@ namespace Xdows_Security
                     await resultDialog.ShowAsync();
 
                     // 如果添加成功，从列表中移除
-                    if (success && _currentResults != null)
+                    if (success && CurrentResults != null)
                     {
-                        var itemToRemove = _currentResults.FirstOrDefault(r => r.FilePath == row.FilePath && r.VirusName == row.VirusName);
+                        var itemToRemove = CurrentResults.FirstOrDefault(r => r.FilePath == row.FilePath && r.VirusName == row.VirusName);
                         if (itemToRemove != null)
                         {
-                            _currentResults.Remove(itemToRemove);
+                            CurrentResults.Remove(itemToRemove);
                         }
                         _threatsFound--;
                         UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
-                        StatusText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanCompleteFound"), _currentResults?.Count ?? 0);
+                        StatusText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanCompleteFound"), CurrentResults?.Count ?? 0);
                     }
                 }
                 catch (Exception ex)
@@ -1119,7 +1117,7 @@ namespace Xdows_Security
         private async void OnHandleClick(object sender, RoutedEventArgs e)
         {
             if ((sender as MenuFlyoutItem)?.Tag is not VirusRow row ||
-                _currentResults is null) return;
+                CurrentResults is null) return;
 
             var dialog = new ContentDialog
             {
@@ -1191,14 +1189,14 @@ namespace Xdows_Security
                     // 如果处理成功，从列表中移除
                     if (handled)
                     {
-                        var itemToRemove = _currentResults.FirstOrDefault(r => r.FilePath == row.FilePath && r.VirusName == row.VirusName);
+                        var itemToRemove = CurrentResults.FirstOrDefault(r => r.FilePath == row.FilePath && r.VirusName == row.VirusName);
                         if (itemToRemove != null)
                         {
-                            _currentResults.Remove(itemToRemove);
+                            CurrentResults.Remove(itemToRemove);
                         }
                         _threatsFound--;
                         UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
-                        StatusText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanCompleteFound"), _currentResults.Count);
+                        StatusText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanCompleteFound"), CurrentResults.Count);
                     }
                 }
                 catch (Exception ex)

@@ -773,9 +773,9 @@ namespace Xdows_Security
                     {
                         ScanMode.Quick => (Localizer.Get().GetLocalizedString("SecurityPage_Area_Quick_Title"), Localizer.Get().GetLocalizedString("SecurityPage_Area_Quick_Detail")),
                         ScanMode.Full => (Localizer.Get().GetLocalizedString("SecurityPage_Area_Full_Title"), Localizer.Get().GetLocalizedString("SecurityPage_Area_Full_Detail")),
-                        ScanMode.File => (Localizer.Get().GetLocalizedString("SecurityPage_Area_File_Title"), $"{Localizer.Get().GetLocalizedString("SecurityPage_Area_File_Detail")}{userPath}"),
-                        ScanMode.Folder => (Localizer.Get().GetLocalizedString("SecurityPage_Area_Folder_Title"), $"{Localizer.Get().GetLocalizedString("SecurityPage_Area_Folder_Detail")}{userPath}"),
-                        ScanMode.More => (Localizer.Get().GetLocalizedString("SecurityPage_Area_More_Title"), $"{Localizer.Get().GetLocalizedString("SecurityPage_Area_More_Detail")}{customPaths?.Count ?? 0}"),
+                        ScanMode.File => (Localizer.Get().GetLocalizedString("SecurityPage_Area_File_Title"), string.Format(Localizer.Get().GetLocalizedString("SecurityPage_Area_File_Detail"), userPath)),
+                        ScanMode.Folder => (Localizer.Get().GetLocalizedString("SecurityPage_Area_Folder_Title"), string.Format(Localizer.Get().GetLocalizedString("SecurityPage_Area_Folder_Detail"), userPath)),
+                        ScanMode.More => (Localizer.Get().GetLocalizedString("SecurityPage_Area_More_Title"), string.Format(Localizer.Get().GetLocalizedString("SecurityPage_Area_More_Detail"), customPaths?.Count ?? 0)),
                         _ => (Localizer.Get().GetLocalizedString("SecurityPage_Area_Quick_Title"), Localizer.Get().GetLocalizedString("SecurityPage_Area_Quick_Detail"))
                     };
 

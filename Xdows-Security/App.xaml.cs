@@ -1,11 +1,13 @@
 using Compatibility.Windows.Storage;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Hosting;
 using Protection;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
@@ -424,7 +426,7 @@ namespace Xdows_Security
             WindowsPrincipal principal = new(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
-        private async Task InitializeLocalizer()
+        private static async Task InitializeLocalizer()
         {
             string stringsPath = Path.Combine(AppContext.BaseDirectory, "Strings");
 
@@ -444,5 +446,34 @@ namespace Xdows_Security
             : RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "macOS" : "Linux";
 
         public static string OsVersion => Environment.OSVersion.ToString();
+        public static void PlayEntranceAnimation(UIElement uIElement, string kind)
+        {
+            var visual = ElementCompositionPreview.GetElementVisual(uIElement);
+            var compositor = visual.Compositor;
+
+            visual.Opacity = 0;
+            visual.Offset = kind switch
+            {
+                "left" => new Vector3(-40, 0, 0),
+                "right" => new Vector3(40, 0, 0),
+                "up" => new Vector3(0, 40, 0),
+                _ => new Vector3(0, 40, 0),
+            };
+
+            var easing = compositor.CreateCubicBezierEasingFunction(new Vector2(0, 0), new Vector2(0, 1));
+
+            var offsetAnimation = compositor.CreateVector3KeyFrameAnimation();
+            offsetAnimation.Target = "Offset";
+            offsetAnimation.InsertKeyFrame(1.0f, new Vector3(0, 0, 0), easing);
+            offsetAnimation.Duration = TimeSpan.FromMilliseconds(400);
+
+            var opacityAnimation = compositor.CreateScalarKeyFrameAnimation();
+            opacityAnimation.Target = "Opacity";
+            opacityAnimation.InsertKeyFrame(1.0f, 1.0f, easing);
+            opacityAnimation.Duration = TimeSpan.FromMilliseconds(400);
+
+            visual.StartAnimation("Offset", offsetAnimation);
+            visual.StartAnimation("Opacity", opacityAnimation);
+        }
     }
 }

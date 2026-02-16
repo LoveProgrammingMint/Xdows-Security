@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:l="using:WinUI3Localizer"
     mc:Ignorable="d">
-    <StackPanel>
+    <StackPanel x:Name="RootPanel">
         <TitleBar x:Name="TitleBarControl" Height="48" l:Uids.Uid="InterceptWindow_Title"></TitleBar>
         <Border Padding="20,0,20,20">
             <StackPanel>

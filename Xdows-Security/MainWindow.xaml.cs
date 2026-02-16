@@ -72,10 +72,10 @@ namespace Xdows_Security
                         var verifyTask = UserConsentVerifier.RequestVerificationAsync(string.Empty);
                         var result = verifyTask.AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
 
-                        if (result == UserConsentVerificationResult.DeviceNotPresent ||
-                        result == UserConsentVerificationResult.DisabledByPolicy ||
-                        result == UserConsentVerificationResult.NotConfiguredForUser ||
-                        result == UserConsentVerificationResult.Verified)
+                        if (result is UserConsentVerificationResult.DeviceNotPresent or
+                        UserConsentVerificationResult.DisabledByPolicy or
+                        UserConsentVerificationResult.NotConfiguredForUser or
+                        UserConsentVerificationResult.Verified)
                         {
                             this.Close();
                         }
@@ -141,6 +141,7 @@ namespace Xdows_Security
             {
                 manager?.IsVisibleInTray = (bool)trayVisibleToggle;
             }
+            App.PlayEntranceAnimation(navContainer, "up");
         }
         public void UpdateNavTheme(int index)
         {
@@ -175,15 +176,12 @@ namespace Xdows_Security
 
                 var titleBar = window.AppWindow.TitleBar;
                 // 修改的是标题栏按钮 “× ▢ -” 的字体颜色 By XTY64XTY
-                if (titleBar is not null)
+                titleBar?.ButtonForegroundColor = selectedTheme switch
                 {
-                    titleBar.ButtonForegroundColor = selectedTheme switch
-                    {
-                        ElementTheme.Dark => Windows.UI.Color.FromArgb(255, 255, 255, 255),
-                        ElementTheme.Light => Windows.UI.Color.FromArgb(255, 0, 0, 0),
-                        _ => GetSystemTheme() == 0 ? Windows.UI.Color.FromArgb(255, 0, 0, 0) : Windows.UI.Color.FromArgb(255, 255, 255, 255)
-                    };
-                }
+                    ElementTheme.Dark => Windows.UI.Color.FromArgb(255, 255, 255, 255),
+                    ElementTheme.Light => Windows.UI.Color.FromArgb(255, 0, 0, 0),
+                    _ => GetSystemTheme() == 0 ? Windows.UI.Color.FromArgb(255, 0, 0, 0) : Windows.UI.Color.FromArgb(255, 255, 255, 255)
+                };
             }
             var settings = ApplicationData.Current.LocalSettings;
             App.MainWindow?.ApplyBackdrop(settings.Values["AppBackdrop"] as string ?? "Mica", true);
@@ -517,10 +515,10 @@ namespace Xdows_Security
                 var result = verifyTask.AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
                 e.Cancel = true;
 
-                if (result == UserConsentVerificationResult.DeviceNotPresent ||
-                result == UserConsentVerificationResult.DisabledByPolicy ||
-                result == UserConsentVerificationResult.NotConfiguredForUser ||
-                result == UserConsentVerificationResult.Verified)
+                if (result is UserConsentVerificationResult.DeviceNotPresent or
+                UserConsentVerificationResult.DisabledByPolicy or
+                UserConsentVerificationResult.NotConfiguredForUser or
+                UserConsentVerificationResult.Verified)
                 {
                     e.Cancel = false;
                 }

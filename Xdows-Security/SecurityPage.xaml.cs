@@ -634,6 +634,7 @@ namespace Xdows_Security
             }
             return null;
         }
+        private record ScanResult(string EngineName, string? VirusInfo);
 
         private async Task StartScanAsync(string displayName, ScanMode mode, IReadOnlyList<string>? customPaths = null)
         {
@@ -799,6 +800,8 @@ namespace Xdows_Security
                     var tStatusText = Localizer.Get().GetLocalizedString("SecurityPage_Status_Scanning");
                     var pausedTime = TimeSpan.Zero; // 记录总的暂停时间
                     var lastPauseTime = DateTime.MinValue; // 记录上次暂停开始的时间
+                    var czkApiKey = App.GetCzkCloudApiKey();
+
                     foreach (var file in files)
                     {
                         while (_isPaused && !token.IsCancellationRequested)
@@ -834,91 +837,100 @@ namespace Xdows_Security
 
                         try
                         {
-                            string Result = string.Empty;
-
-                            // 检查文件是否在信任区中
                             if (TrustManager.IsPathTrusted(file))
                             {
                                 LogText.AddNewLog(LogLevel.INFO, "Security - Find", "Is Trusted");
                                 _filesSafe++;
                                 continue;
                             }
-
-                            if (UseSouXiaoScan)
+                            var scanTasks = new List<Task<ScanResult>>();
+                            if (UseSouXiaoScan && SouXiaoEngine != null)
                             {
-                                if (SouXiaoEngine != null)
+                                scanTasks.Add(Task.Run(() =>
                                 {
-                                    var SouXiaoEngineResult = SouXiaoEngine.ScanFile(file);
-                                    if (SouXiaoEngineResult.IsVirus)
-                                    {
-                                        Result = SouXiaoEngineResult.Result;
-                                    }
-                                }
+                                    var res = SouXiaoEngine.ScanFile(file);
+                                    return new ScanResult("SouXiao", res.IsVirus ? res.Result : null);
+                                }));
                             }
-                            if (string.IsNullOrEmpty(Result))
+                            if (UseLocalScan)
                             {
-                                if (UseLocalScan)
-                                {
-                                    string localResult = await ScanEngine.ScanEngine.LocalScanAsync(file, DeepScan, ExtraData);
-
-                                    if (!string.IsNullOrEmpty(localResult))
+                                scanTasks.Add(ScanEngine.ScanEngine.LocalScanAsync(file, DeepScan, ExtraData)
+                                    .ContinueWith(t =>
                                     {
-                                        Result = DeepScan ? $"{localResult} with DeepScan" : localResult;
-                                    }
-                                }
+                                        var localResult = t.Result;
+                                        var info = !string.IsNullOrEmpty(localResult)
+                                            ? (DeepScan ? $"{localResult} with DeepScan" : localResult)
+                                            : null;
+                                        return new ScanResult("Local", info);
+                                    }, TaskScheduler.Default));
                             }
-
-                            if (string.IsNullOrEmpty(Result))
+                            if (UseJiSuSafeAX)
                             {
-                                if (UseJiSuSafeAX)
-                                {
-                                    var (statusCode, result) = await ScanEngine.ScanEngine.AXScanFileAsync(file);
-                                    if (!string.IsNullOrEmpty(result) && statusCode == 200)
+                                scanTasks.Add(ScanEngine.ScanEngine.AXScanFileAsync(file)
+                                    .ContinueWith(t =>
                                     {
-                                        Result = $"JiSuSafeAX.{result}";
-                                    }
-                                }
+                                        var (statusCode, result) = t.Result;
+                                        var info = (!string.IsNullOrEmpty(result) && statusCode == 200) ? $"JiSuSafeAX.{result}" : null;
+                                        return new ScanResult("JiSuSafeAX", info);
+                                    }, TaskScheduler.Default));
                             }
-
-                            if (string.IsNullOrEmpty(Result))
+                            if (UseCloudScan)
                             {
-                                if (UseCloudScan)
-                                {
-                                    var (statusCode, result) = await ScanEngine.ScanEngine.CloudScanAsync(file);
-                                    System.Diagnostics.Debug.WriteLine(result);
-                                    if (result == "virus_file")
+                                scanTasks.Add(ScanEngine.ScanEngine.CloudScanAsync(file)
+                                    .ContinueWith(t =>
                                     {
-                                        Result = "MEMZUAC.Cloud.VirusFile";
-                                    }
-                                }
+                                        var (statusCode, result) = t.Result;
+                                        System.Diagnostics.Debug.WriteLine(result);
+                                        var info = (result == "virus_file") ? "MEMZUAC.Cloud.VirusFile" : null;
+                                        return new ScanResult("Cloud", info);
+                                    }, TaskScheduler.Default));
                             }
-                            if (string.IsNullOrEmpty(Result))
+                            if (UseCzkCloudScan)
                             {
-                                if (UseCzkCloudScan)
-                                {
-                                    var (statusCode, result) = await ScanEngine.ScanEngine.CzkCloudScanAsync(file, App.GetCzkCloudApiKey());
-                                    if (result != "safe")
+                                scanTasks.Add(ScanEngine.ScanEngine.CzkCloudScanAsync(file, czkApiKey)
+                                    .ContinueWith(t =>
                                     {
-                                        Result = result ?? string.Empty;
+                                        var (statusCode, result) = t.Result;
+                                        var info = (result != "safe") ? (result ?? string.Empty) : null;
+                                        return new ScanResult("CzkCloud", info);
+                                    }, TaskScheduler.Default));
+                            }
+                            string? finalVirusResult = null;
+                            string? detectedEngine = null;
+
+                            if (scanTasks.Count > 0)
+                            {
+                                var results = await Task.WhenAll(scanTasks);
+                                foreach (var res in results)
+                                {
+                                    if (!string.IsNullOrEmpty(res.VirusInfo))
+                                    {
+                                        finalVirusResult = res.VirusInfo;
+                                        detectedEngine = res.EngineName;
+                                        break;
                                     }
                                 }
                             }
                             Statistics.ScansQuantity += 1;
-                            if (!string.IsNullOrEmpty(Result))
+
+                            if (!string.IsNullOrEmpty(finalVirusResult))
                             {
-                                LogText.AddNewLog(LogLevel.INFO, "Security - Find", Result);
+                                LogText.AddNewLog(LogLevel.INFO, "Security - Find", finalVirusResult);
                                 Statistics.VirusQuantity += 1;
                                 try
                                 {
                                     _dispatcherQueue.TryEnqueue(() =>
                                     {
-                                        AddVirusResult(file, Result);
+                                        AddVirusResult(file, finalVirusResult);
                                         BackToVirusListButton.Visibility = Visibility.Visible;
                                     });
                                     _threatsFound++;
                                     UpdateScanItemStatus(currentItemIndex, Localizer.Get().GetLocalizedString("SecurityPage_Status_FoundThreat"), true, _threatsFound);
                                 }
-                                catch { }
+                                catch (Exception ex)
+                                {
+                                    LogText.AddNewLog(LogLevel.ERROR, "Security - UI Update", ex.Message);
+                                }
                             }
                             else
                             {

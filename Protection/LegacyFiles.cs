@@ -9,8 +9,9 @@ namespace Protection
         private static Thread? _monitorThread;
         private static bool _isMonitoring = false;
         private static ScanEngine.ScanEngine.SouXiaoEngineScan? SouXiaoEngine;
-        public string Name => "FilesProtection";
-        public bool Enable(InterceptCallBack toastCallBack)
+        public const string Name = "Files";
+        string IProtectionModel.Name => Name;
+        public bool Run(InterceptCallBack toastCallBack)
         {
             SouXiaoEngine ??= new ScanEngine.ScanEngine.SouXiaoEngineScan();
             SouXiaoEngine.Initialize();
@@ -31,7 +32,7 @@ namespace Protection
             return true;
         }
 
-        public bool Disable()
+        public bool Stop()
         {
             if (!_isMonitoring)
             {
@@ -58,7 +59,7 @@ namespace Protection
             return true;
         }
 
-        public bool IsEnabled()
+        public bool IsRun()
         {
             try { return _isMonitoring; } catch { return false; }
         }
@@ -135,26 +136,20 @@ namespace Protection
                     return;
                 }
 
-                var (IsVirus, Result) = SouXiaoEngine.ScanFile(e.FullPath);
-                if (IsVirus)
+                var (isVirus, result) = SouXiaoEngine.ScanFile(e.FullPath);
+
+                if (isVirus)
                 {
                     try
                     {
-                        bool success = await QuarantineManager.AddToQuarantine(e.FullPath, Result);
+                        _ = QuarantineManager.AddToQuarantine(e.FullPath, result);
+                        _toastCallBack?.Invoke(true, e.FullPath, Name);
 
-                        _ = Task.Run(() =>
-                        {
-                            _toastCallBack?.Invoke(success, e.FullPath, "Process");
-                        });
                     }
                     catch
                     {
-                        _ = Task.Run(() =>
-                        {
-                            _toastCallBack?.Invoke(false, e.FullPath, "Process");
-                        });
+                        _toastCallBack?.Invoke(false, e.FullPath, Name);
                     }
-
                 }
             }
             catch { }

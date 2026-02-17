@@ -6,7 +6,7 @@ namespace Protection
     {
         public delegate void InterceptCallBack(bool isSucceed, string path, string type);
     }
-    public interface IETWProtectionModel
+    public interface IProtectionModel
     {
         string Name { get; }
         bool Stop() { return false; }

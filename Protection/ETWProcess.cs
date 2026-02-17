@@ -10,12 +10,12 @@ namespace Protection
     public partial class ETW
     {
         // 进程防护模块
-        public class ProcessProtection : IETWProtectionModel
+        public class ProcessProtection : IProtectionModel
         {
             private static readonly Lock lockObj = new();
             private static bool isRunning = false;
             public const string Name = "Process";
-            string IETWProtectionModel.Name => Name;
+            string IProtectionModel.Name => Name;
 
             public bool Run(InterceptCallBack interceptCallBack)
             {

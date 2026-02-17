@@ -9,13 +9,13 @@ namespace Protection
 {
     public partial class ETW
     {
-        public class FilesProtection : IETWProtectionModel
+        public class FilesProtection : IProtectionModel
         {
             private static readonly Lock lockObj = new();
             private static bool isRunning = false;
             public const string Name = "Files";
 
-            string IETWProtectionModel.Name => Name;
+            string IProtectionModel.Name => Name;
 
             public bool Run(InterceptCallBack interceptCallBack)
             {

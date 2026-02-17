@@ -13,8 +13,9 @@ namespace Protection
         private static CancellationTokenSource? _cts = null;
         private static Task? _monitorTask = null;
         private static ScanEngine.ScanEngine.SouXiaoEngineScan? SouXiaoEngine;
-        public string Name => "ProcessProtection";
-        public bool Enable(InterceptCallBack toastCallBack)
+        public const string Name = "Process";
+        string IProtectionModel.Name => Name;
+        public bool Run(InterceptCallBack toastCallBack)
         {
             SouXiaoEngine ??= new ScanEngine.ScanEngine.SouXiaoEngineScan();
             SouXiaoEngine.Initialize();
@@ -23,7 +24,7 @@ namespace Protection
                 return false;
             }
 
-            if (IsEnabled())
+            if (IsRun())
                 return true;
             try
             {
@@ -36,9 +37,9 @@ namespace Protection
                 return false;
             }
         }
-        public bool Disable()
+        public bool Stop()
         {
-            if (!IsEnabled())
+            if (!IsRun())
                 return true;
             try
             {
@@ -64,7 +65,7 @@ namespace Protection
 
             return true;
         }
-        public bool IsEnabled()
+        public bool IsRun()
         {
             return _cts is { IsCancellationRequested: false };
         }
@@ -98,31 +99,22 @@ namespace Protection
                             if (TrustManager.IsPathTrusted(path))
                                 continue;
 
-                            var (IsVirus, Result) = SouXiaoEngine.ScanFile(path);
+                            var (isVirus, result) = SouXiaoEngine.ScanFile(path);
 
-                            if (IsVirus)
+                            if (isVirus)
                             {
-                                bool Succeed = TryKillProcess(pid);
-
                                 try
                                 {
-                                    await QuarantineManager.AddToQuarantine(path, Result);
-                                    //bool quarantineSuccess = await QuarantineManager.AddToQuarantine(path, Result);
-                                    //if (!quarantineSuccess)
-                                    //{
-                                    //    // 隔离失败，仅记录到调试输出
-                                    //    System.Diagnostics.Debug.WriteLine($"ProcessProtection: Failed to quarantine: {path}");
-                                    //}
-                                }
-                                catch //(Exception ex)
-                                {
-                                    //System.Diagnostics.Debug.WriteLine($"ProcessProtection exception: {ex}");
-                                }
+                                    using var proc = Process.GetProcessById(pid);
+                                    proc.Kill();
+                                    _ = QuarantineManager.AddToQuarantine(path, result);
+                                    interceptCallBack(true, path, Name);
 
-                                _ = Task.Run(() =>
+                                }
+                                catch
                                 {
-                                    interceptCallBack(Succeed, path, "Process");
-                                }, token);
+                                    interceptCallBack(false, path, Name);
+                                }
                             }
                         }
 
@@ -142,8 +134,6 @@ namespace Protection
                     break;
                 }
             }
-
-            Debug.WriteLine("Protection Disabled");
         }
 
         private static List<int> GetProcessIdList()
@@ -209,21 +199,5 @@ namespace Protection
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool CloseHandle(IntPtr hObject);
-
-        private static bool TryKillProcess(int pid)
-        {
-            try
-            {
-                using var proc = Process.GetProcessById(pid);
-                proc.Kill();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-
     }
 }

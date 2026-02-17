@@ -9,13 +9,13 @@ namespace Protection
 {
     public partial class ETW
     {
-        public class RegistryProtection : IETWProtectionModel
+        public class RegistryProtection : IProtectionModel
         {
             private static readonly Lock lockObj = new();
             private static bool isRunning = false;
             public const string Name = "Registry";
 
-            string IETWProtectionModel.Name => Name;
+            string IProtectionModel.Name => Name;
 
             public bool Run(InterceptCallBack interceptCallBack)
             {

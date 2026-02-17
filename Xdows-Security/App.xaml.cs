@@ -107,78 +107,52 @@ namespace Xdows_Security
         private static readonly IProtectionModel LegacyProcessProtection = new LegacyProcessProtection();
         private static readonly IProtectionModel LegacyFilesProtection = new LegacyFilesProtection();
 
-        private static readonly IETWProtectionModel ETWProcessProtection = new ETW.ProcessProtection();
-        private static readonly IETWProtectionModel ETWFilesProtection = new ETW.FilesProtection();
-        private static readonly IETWProtectionModel ETWRegistryProtection = new ETW.RegistryProtection();
+        private static readonly IProtectionModel ETWProcessProtection = new ETW.ProcessProtection();
+        private static readonly IProtectionModel ETWFilesProtection = new ETW.FilesProtection();
+        private static readonly IProtectionModel ETWRegistryProtection = new ETW.RegistryProtection();
         public static bool Run(int RunID)
         {
-            IETWProtectionModel? protection = RunID switch
-            {
-                0 => ETWProcessProtection,
-                1 => ETWFilesProtection,
-                4 => ETWRegistryProtection,
-                _ => null,
-            };
-            if (protection is null) { return false; }
-            bool isCompatibilityMode = ApplicationData.Current.LocalSettings.Values[protection.Name + "_CompatibilityMode"] as bool? ?? false;
+            IProtectionModel? protection = RunIdToProtection(RunID);
 
-            if (isCompatibilityMode)
+            if (protection is null) { return false; }
+
+            if (protection.IsRun())
             {
-                IProtectionModel? legacyProtection = RunID switch
-                {
-                    0 => LegacyProcessProtection,
-                    1 => LegacyFilesProtection,
-                    _ => null,
-                };
-                if (legacyProtection is null) { return false; }
-                if (legacyProtection.IsEnabled())
-                {
-                    return legacyProtection.Disable();
-                }
-                else
-                {
-                    return legacyProtection.Enable(interceptCallBack);
-                }
+                return protection.Stop();
             }
             else
             {
-
-                if (protection.IsRun())
-                {
-                    return protection.Stop();
-                }
-                else
-                {
-                    return protection.Run(interceptCallBack);
-                }
+                return protection.Run(interceptCallBack);
             }
         }
         public static bool IsRun(int RunID)
         {
-            IETWProtectionModel? protection = RunID switch
+            return RunIdToProtection(RunID)?.IsRun() ?? false;
+        }
+        private static IProtectionModel? RunIdToProtection(int RunID)
+        {
+            IProtectionModel? protection = RunID switch
             {
                 0 => ETWProcessProtection,
                 1 => ETWFilesProtection,
                 4 => ETWRegistryProtection,
                 _ => null,
             };
-            if (protection is null) { return false; }
+            if (protection is null) { return null; }
+
             bool isCompatibilityMode = ApplicationData.Current.LocalSettings.Values[protection.Name + "_CompatibilityMode"] as bool? ?? false;
+
             if (isCompatibilityMode)
             {
-                IProtectionModel? legacyProtection = RunID switch
+                protection = RunID switch
                 {
                     0 => LegacyProcessProtection,
                     1 => LegacyFilesProtection,
                     _ => null,
                 };
-                if (legacyProtection is null) { return false; }
-                return legacyProtection.IsEnabled();
             }
-            else
-            {
-                return protection.IsRun();
-            }
+
+            return protection;
         }
     }
 

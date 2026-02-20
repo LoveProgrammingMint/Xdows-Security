@@ -394,8 +394,7 @@ namespace Xdows_Security
             bool UseCzkCloudScan = (settings.Values["CzkCloudScan"] as bool?).GetValueOrDefault();
             bool UseCloudScan = (settings.Values["CloudScan"] as bool?).GetValueOrDefault();
             bool UseSouXiaoScan = (settings.Values["SouXiaoScan"] as bool?).GetValueOrDefault();
-            bool UseJiSuSafeAX = (settings.Values["JiSuSafeAX"] as bool?).GetValueOrDefault();
-            if (!UseLocalScan && !UseCzkCloudScan && !UseSouXiaoScan && !UseCloudScan && !UseJiSuSafeAX)
+            if (!UseLocalScan && !UseCzkCloudScan && !UseSouXiaoScan && !UseCloudScan)
             {
                 var dialog = new ContentDialog
                 {
@@ -652,7 +651,6 @@ namespace Xdows_Security
             bool UseCzkCloudScan = settings.Values["CzkCloudScan"] as bool? ?? false;
             bool UseCloudScan = settings.Values["CloudScan"] as bool? ?? false;
             bool UseSouXiaoScan = settings.Values["SouXiaoScan"] as bool? ?? false;
-            bool UseJiSuSafeAX = settings.Values["JiSuSafeAX"] as bool? ?? false;
 
             var SouXiaoEngine = new ScanEngine.ScanEngine.SouXiaoEngineScan();
             if (UseSouXiaoScan)
@@ -693,10 +691,6 @@ namespace Xdows_Security
             if (UseSouXiaoScan)
             {
                 Log += " SouXiaoScan";
-            }
-            if (UseJiSuSafeAX)
-            {
-                Log += " JiSuSafeAX";
             }
             LogText.AddNewLog(LogLevel.INFO, "Security - StartScan", Log);
 
@@ -862,16 +856,6 @@ namespace Xdows_Security
                                             ? (DeepScan ? $"{localResult} with DeepScan" : localResult)
                                             : null;
                                         return new ScanResult("Local", info);
-                                    }, TaskScheduler.Default));
-                            }
-                            if (UseJiSuSafeAX)
-                            {
-                                scanTasks.Add(ScanEngine.ScanEngine.AXScanFileAsync(file)
-                                    .ContinueWith(t =>
-                                    {
-                                        var (statusCode, result) = t.Result;
-                                        var info = (!string.IsNullOrEmpty(result) && statusCode == 200) ? $"JiSuSafeAX.{result}" : null;
-                                        return new ScanResult("JiSuSafeAX", info);
                                     }, TaskScheduler.Default));
                             }
                             if (UseCloudScan)

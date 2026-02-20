@@ -741,18 +741,6 @@
   <data name="SettingsPage_Scan_CzkCloud_Develop.Description" xml:space="preserve">
     <value>天启星图网络科技 是这个扫描引擎的开发者和维护者</value>
   </data>
-  <data name="SettingsPage_Scan_JiSuSafeAX.Header" xml:space="preserve">
-    <value>极速安全 AX 模型</value>
-  </data>
-  <data name="SettingsPage_Scan_JiSuSafeAX.Description" xml:space="preserve">
-    <value>极速安全 AX 模型是基于本地的高性能扫描引擎，提供快速准确的威胁检测</value>
-  </data>
-  <data name="SettingsPage_Scan_JiSuSafeAX_Develop.Header" xml:space="preserve">
-    <value>关于引擎</value>
-  </data>
-  <data name="SettingsPage_Scan_JiSuSafeAX_Develop.Description" xml:space="preserve">
-    <value>极速安全 是这个扫描引擎的开发者和维护者</value>
-  </data>
   <data name="SettingsPage_Scan_Cloud.Header" xml:space="preserve">
     <value>基于云的扫描引擎</value>
   </data>

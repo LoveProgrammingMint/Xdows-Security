@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -12,9 +12,4 @@
     <ProjectReference Include="..\Xdows-Local\Xdows-Local.csproj" />
   </ItemGroup>
 
-	<ItemGroup>
-		<None Update="AX_API\**\*.*">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
 </Project>

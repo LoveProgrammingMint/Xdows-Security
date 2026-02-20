@@ -45,12 +45,6 @@ namespace Xdows_Security
                         CzkCloudScanToggle?.IsEnabled = false;
                     }
 
-                    if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AX_API", "AX_API.exe")))
-                    {
-                        JiSuSafeAXToggle?.IsOn = false;
-                        JiSuSafeAXToggle?.IsEnabled = false;
-                    }
-
                     if (!App.IsRunAsAdmin())
                     {
                         RegistryToggle?.IsEnabled = false;
@@ -248,7 +242,6 @@ namespace Xdows_Security
                  ExtraDataToggle,
                  LocalScanToggle,
                  CzkCloudScanToggle,
-                 JiSuSafeAXToggle,
                  SouXiaoScanToggle,
                  CloudScanToggle,
                  TrayVisibleToggle,

@@ -94,7 +94,6 @@ namespace Xdows_Security
             if (settings.Values.TryGetValue("AppTheme", out object? theme))
             {
                 string themeString = theme as string ?? "";
-                LogText.AddNewLog(LogLevel.DEBUG, "UI Interface", $"{themeString}");
                 if (Enum.TryParse(themeString, out ElementTheme themeValue))
                 {
                     if (this.Content is FrameworkElement rootElement)
@@ -102,7 +101,6 @@ namespace Xdows_Security
                         rootElement.RequestedTheme = themeValue;
                     }
                     UpdateTheme(themeValue);
-                    LogText.AddNewLog(LogLevel.DEBUG, "UI Interface", $"{themeValue}");
                 }
             }
             this.SystemBackdrop = null;

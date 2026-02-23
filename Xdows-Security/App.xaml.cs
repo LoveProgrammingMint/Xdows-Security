@@ -360,7 +360,29 @@ namespace Xdows_Security
         /// </summary>
         protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            await InitializeLocalizer();
+            try
+            {
+                await InitializeLocalizer();
+                InitializeMainWindow();
+            }
+            catch (Exception ex)
+            {
+                LogText.AddNewLog(LogLevel.ERROR, "App", $"Error in OnLaunched: {ex.Message}");
+            }
+        }
+        private void InitializeMainWindow()
+        {
+            try
+            {
+                // InterceptWindow.ShowOrActivate(true, "This is a file", "Process");// 测试用的捏（By Shiyi）
+
+                MainWindow ??= new MainWindow();
+                MainWindow.Activate();
+            }
+            catch (Exception ex)
+            {
+                LogText.AddNewLog(LogLevel.ERROR, "App", $"Error initializing MainWindow: {ex.Message}");
+            }
         }
         // 定义主题属性
         public static ElementTheme Theme { get; set; } = ElementTheme.Default;

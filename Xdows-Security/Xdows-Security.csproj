@@ -40,6 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ICEX\XShark\XShark.csproj" />
     <ProjectReference Include="..\Helper\Helper.csproj" />
     <ProjectReference Include="..\Protection\Protection.csproj" />
     <ProjectReference Include="..\ScanEngine\ScanEngine.csproj" />

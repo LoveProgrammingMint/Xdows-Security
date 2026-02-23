@@ -31,6 +31,8 @@
                         <ComboBoxItem Content="名称" Tag="Name"/>
                         <ComboBoxItem Content="PID" Tag="Id"/>
                         <ComboBoxItem Content="内存" Tag="Memory"/>
+                        <ComboBoxItem Content="线程" Tag="Threads"/>
+                        <ComboBoxItem Content="句柄" Tag="Handles"/>
                     </ComboBox>
                     <TextBox x:Name="SearchBox"
                              Grid.Column="2"
@@ -44,6 +46,17 @@
             </CommandBar.Content>
             <AppBarButton Icon="Refresh" Label="刷新列表" Click="Refresh_Click"/>
             <AppBarButton Icon="Cancel" Label="结束进程" Click="Kill_Click"/>
+            <AppBarButton Label="挂起" Click="Suspend_Click">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE769;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton Label="恢复" Click="Resume_Click">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE768;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+
             <AppBarButton Label="详细信息" Click="ShowProcessDetail_Click">
                 <AppBarButton.Icon>
                     <FontIcon Glyph="&#xE946;"/>
@@ -52,16 +65,20 @@
         </CommandBar>
         <ListView x:Name="ProcessList" Grid.Row="1" SelectionMode="Single" DoubleTapped="ShowProcessDetail_Click">
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="local:ProcessInfo">
+                <DataTemplate x:DataType="local:ProcessInfoEx">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="120"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{x:Bind Name}" FontSize="14"/>
-                        <TextBlock Grid.Column="1" Text="{x:Bind Id}" FontSize="14"/>
-                        <TextBlock Grid.Column="2" Text="{x:Bind Memory}" FontSize="14"/>
+                        <TextBlock Grid.Column="0" Text="{x:Bind Name}" FontSize="14" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="{x:Bind Id}" FontSize="14" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="2" Text="{x:Bind ThreadCount}" FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+                        <TextBlock Grid.Column="3" Text="{x:Bind HandleCount}" FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+                        <TextBlock Grid.Column="4" Text="{x:Bind Memory}" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                         <Grid.ContextFlyout>
                             <MenuFlyout x:Name="ItemMenuFlyout">
                                 <MenuFlyoutItem Text="刷新列表" Click="Refresh_Click">
@@ -75,6 +92,18 @@
                                         <FontIcon Glyph="&#xE946;"/>
                                     </MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
+
+                                <MenuFlyoutItem Text="挂起进程" Click="Suspend_Click">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE769;"/>
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                                <MenuFlyoutItem Text="恢复进程" Click="Resume_Click">
+                                    <MenuFlyoutItem.Icon>
+                                        <FontIcon Glyph="&#xE768;"/>
+                                    </MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                                <MenuFlyoutSeparator/>
                                 <MenuFlyoutItem Text="终止进程" Click="Kill_Click">
                                     <MenuFlyoutItem.Icon>
                                         <FontIcon Glyph="&#xF140;"/>

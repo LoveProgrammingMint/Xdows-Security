@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml.Controls;
 using System.Linq;
+using System.Collections.Generic;
 using Xdows_Security.Services;
 
 namespace Xdows_Security.Views
@@ -14,13 +15,13 @@ namespace Xdows_Security.Views
         {
             try
             {
-                var loader = new PluginLoader();
-                var plugins = loader.LoadPlugins(this).ToList();
-                foreach (var plugin in plugins)
+                PluginLoader loader = new();
+                List<Plugins.IPlugin> plugins = [.. loader.LoadPlugins(this)];
+                foreach (Plugins.IPlugin plugin in plugins)
                 {
                     try
                     {
-                        var tab = new TabViewItem
+                        TabViewItem tab = new()
                         {
                             Header = new TextBlock
                             {

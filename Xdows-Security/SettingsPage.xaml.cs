@@ -69,27 +69,14 @@ namespace Xdows_Security
         }
         private void UpdateAppText()
         {
-            // 测试标识 By Shiyi
             SettingsPage_Protection_Registry.Header += " (Beta)";
         }
+
         private Task LoadScanSettingAsync
         {
             get
             {
-                var tcs = new TaskCompletionSource<object?>();
-                this.DispatcherQueue.TryEnqueue(() =>
-                {
-                    try
-                    {
-                        LoadScanSetting();
-                        tcs.SetResult(null);
-                    }
-                    catch (Exception ex)
-                    {
-                        tcs.SetException(ex);
-                    }
-                });
-                return tcs.Task;
+                return RunOnDispatcher(LoadScanSetting);
             }
         }
 
@@ -97,20 +84,7 @@ namespace Xdows_Security
         {
             get
             {
-                var tcs = new TaskCompletionSource<object?>();
-                this.DispatcherQueue.TryEnqueue(() =>
-                {
-                    try
-                    {
-                        LoadLanguageSetting();
-                        tcs.SetResult(null);
-                    }
-                    catch (Exception ex)
-                    {
-                        tcs.SetException(ex);
-                    }
-                });
-                return tcs.Task;
+                return RunOnDispatcher(LoadLanguageSetting);
             }
         }
 
@@ -118,20 +92,7 @@ namespace Xdows_Security
         {
             get
             {
-                var tcs = new TaskCompletionSource<object?>();
-                this.DispatcherQueue.TryEnqueue(() =>
-                {
-                    try
-                    {
-                        LoadThemeSetting();
-                        tcs.SetResult(null);
-                    }
-                    catch (Exception ex)
-                    {
-                        tcs.SetException(ex);
-                    }
-                });
-                return tcs.Task;
+                return RunOnDispatcher(LoadThemeSetting);
             }
         }
 
@@ -139,20 +100,7 @@ namespace Xdows_Security
         {
             get
             {
-                var tcs = new TaskCompletionSource<object?>();
-                this.DispatcherQueue.TryEnqueue(() =>
-                {
-                    try
-                    {
-                        LoadBackdropSetting();
-                        tcs.SetResult(null);
-                    }
-                    catch (Exception ex)
-                    {
-                        tcs.SetException(ex);
-                    }
-                });
-                return tcs.Task;
+                return RunOnDispatcher(LoadBackdropSetting);
             }
         }
 
@@ -160,21 +108,26 @@ namespace Xdows_Security
         {
             get
             {
-                var tcs = new TaskCompletionSource<object?>();
-                this.DispatcherQueue.TryEnqueue(() =>
-                {
-                    try
-                    {
-                        LoadBackgroundImageSetting();
-                        tcs.SetResult(null);
-                    }
-                    catch (Exception ex)
-                    {
-                        tcs.SetException(ex);
-                    }
-                });
-                return tcs.Task;
+                return RunOnDispatcher(LoadBackgroundImageSetting);
             }
+        }
+
+        private Task RunOnDispatcher(Action action)
+        {
+            TaskCompletionSource<Object?> tcs = new TaskCompletionSource<Object?>();
+            this.DispatcherQueue.TryEnqueue(() =>
+            {
+                try
+                {
+                    action();
+                    tcs.SetResult(null);
+                }
+                catch (Exception ex)
+                {
+                    tcs.SetException(ex);
+                }
+            });
+            return tcs.Task;
         }
 
         private void RunProtectionWithToggle(ToggleSwitch toggle, int runId)

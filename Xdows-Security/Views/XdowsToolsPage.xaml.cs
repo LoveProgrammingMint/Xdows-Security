@@ -2,7 +2,7 @@ using Microsoft.UI.Xaml.Controls;
 using System.Linq;
 using Xdows_Security.Services;
 
-namespace Xdows_Security
+namespace Xdows_Security.Views
 {
     public sealed partial class XdowsToolsPage : Page
     {

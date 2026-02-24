@@ -3,7 +3,7 @@ using Microsoft.UI.Xaml.Controls;
 using System.Linq;
 using Xdows_Security.ViewModel;
 
-namespace Xdows_Security
+namespace Xdows_Security.Views
 {
     public sealed partial class HomePage : Page
     {

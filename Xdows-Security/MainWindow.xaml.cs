@@ -19,6 +19,7 @@ using Windows.UI.WindowManagement;
 using WinRT;
 using WinUI3Localizer;
 using WinUIEx;
+using Xdows_Security.Views;
 
 namespace Xdows_Security
 {

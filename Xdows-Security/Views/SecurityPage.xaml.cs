@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 using TrustQuarantine;
 using WinUI3Localizer;
 
-namespace Xdows_Security
+namespace Xdows_Security.Views
 {
     public enum ScanMode { Quick, Full, File, Folder, More }
     public partial class VirusRow : ObservableObject

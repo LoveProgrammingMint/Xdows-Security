@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.System;
 
-namespace Xdows_Security
+namespace Xdows_Security.Views
 {
     public sealed partial class BugReportPage : Page
     {

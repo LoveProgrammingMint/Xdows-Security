@@ -15,7 +15,7 @@ using TrustQuarantine;
 using Windows.Security.Credentials.UI;
 using WinUI3Localizer;
 
-namespace Xdows_Security
+namespace Xdows_Security.Views
 {
     public sealed partial class SettingsPage : Page
     {

@@ -112,9 +112,9 @@ namespace Xdows_Security
             }
         }
 
-        private Task RunOnDispatcher(Action action)
+        private Task<object?> RunOnDispatcher(Action action)
         {
-            TaskCompletionSource<Object?> tcs = new TaskCompletionSource<Object?>();
+            TaskCompletionSource<Object?> tcs = new();
             this.DispatcherQueue.TryEnqueue(() =>
             {
                 try
@@ -269,17 +269,16 @@ namespace Xdows_Security
             catch { }
         }
 
-        private void ScanIndexModeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ScanIndexModeComboBox_SelectionChanged(Object sender, SelectionChangedEventArgs e)
         {
             if (IsInitialize) return;
-            if (sender is ComboBox combo && combo.SelectedItem is ComboBoxItem item && item.Tag is string tag)
+            if (sender is ComboBox combo && combo.SelectedItem is ComboBoxItem item && item.Tag is String tag)
             {
-                var settings = ApplicationData.Current.LocalSettings;
+                ApplicationDataContainer settings = ApplicationData.Current.LocalSettings;
                 settings.Values["ScanIndexMode"] = tag;
-                // If Parallel mode selected, disable ScanProgress toggle in UI and set setting false
                 try
                 {
-                    var toggle = this.FindName("ScanProgressToggle") as ToggleSwitch;
+                    ToggleSwitch toggle = this.FindName("ScanProgressToggle") as ToggleSwitch ?? new();
                     if (toggle != null)
                     {
                         if (tag == "Parallel")
@@ -300,32 +299,29 @@ namespace Xdows_Security
 
         private async void LoadLanguageSetting()
         {
-            var settings = ApplicationData.Current.LocalSettings;
-
-            if (!settings.Values.TryGetValue("AppLanguage", out object langRaw) ||
-                langRaw is not string savedLanguage)
+            ApplicationDataContainer settings = ApplicationData.Current.LocalSettings;
+            if (!settings.Values.TryGetValue("AppLanguage", out Object langRaw) || langRaw is not String savedLanguage)
             {
                 savedLanguage = "en-US";
             }
 
             foreach (ComboBoxItem item in LanguageComboBox.Items.Cast<ComboBoxItem>())
             {
-                if (item.Tag as string == savedLanguage)
+                if (item.Tag as String == savedLanguage)
                 {
                     LanguageComboBox.SelectedItem = item;
                     break;
                 }
             }
         }
+
         private async void LoadThemeSetting()
         {
-            var settings = ApplicationData.Current.LocalSettings;
-
-            if (!settings.Values.TryGetValue("AppTheme", out object themeRaw) ||
-                themeRaw is not string themeString ||
-                !Enum.TryParse(themeString, out ElementTheme themeValue))
+            ApplicationDataContainer settings = ApplicationData.Current.LocalSettings;
+            ElementTheme themeValue = ElementTheme.Default;
+            if (settings.Values.TryGetValue("AppTheme", out Object themeRaw) && themeRaw is String themeString && Enum.TryParse(themeString, out ElementTheme parsedTheme))
             {
-                themeValue = ElementTheme.Default;
+                themeValue = parsedTheme;
             }
 
             ThemeComboBox.SelectedIndex = themeValue switch
@@ -335,17 +331,16 @@ namespace Xdows_Security
                 _ => 0
             };
 
-            NavComboBox.SelectedIndex =
-                settings.Values.TryGetValue("AppNavTheme", out object raw) && raw is double d ?
-                (int)d : 0;
+            NavComboBox.SelectedIndex = settings.Values.TryGetValue("AppNavTheme", out Object raw) && raw is Double d ? (Int32)d : 0;
         }
-        private async void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+
+        private async void LanguageComboBox_SelectionChanged(Object sender, SelectionChangedEventArgs e)
         {
             if (IsInitialize) return;
             if (LanguageComboBox.SelectedItem is ComboBoxItem selectedItem)
             {
-                var currentLanguage = Localizer.Get().GetCurrentLanguage();
-                if (selectedItem.Tag is not string newLanguage) return;
+                String currentLanguage = Localizer.Get().GetCurrentLanguage();
+                if (selectedItem.Tag is not String newLanguage) return;
                 if (newLanguage != currentLanguage)
                 {
                     ApplicationData.Current.LocalSettings.Values["AppLanguage"] = newLanguage;
@@ -354,7 +349,7 @@ namespace Xdows_Security
             }
         }
 
-        private async void UpdateButtonClick(object sender, RoutedEventArgs e)
+        private async void UpdateButtonClick(Object sender, RoutedEventArgs e)
         {
             try
             {
@@ -362,7 +357,7 @@ namespace Xdows_Security
                 UpdateProgressRing.IsActive = true;
                 UpdateProgressRing.Visibility = Visibility.Visible;
 
-                var update = await Updater.CheckUpdateAsync();
+                UpdateInfo? update = await Updater.CheckUpdateAsync();
                 if (update == null)
                 {
                     UpdateButton.IsEnabled = true;
@@ -372,14 +367,14 @@ namespace Xdows_Security
                     UpdateTeachingTip.IsOpen = !UpdateTeachingTip.IsOpen;
                     return;
                 }
-                var box = new TextBlock
+                TextBlock box = new()
                 {
                     Text = update.Content,
                     IsTextSelectionEnabled = true,
                     TextWrapping = TextWrapping.Wrap,
                     Margin = new Thickness(12),
                 };
-                var scrollViewer = new ScrollViewer
+                ScrollViewer scrollViewer = new()
                 {
                     Content = box,
                     MaxHeight = 320,
@@ -387,7 +382,7 @@ namespace Xdows_Security
                     VerticalScrollBarVisibility = ScrollBarVisibility.Auto
                 };
 
-                var dialog = new ContentDialog
+                ContentDialog dialog = new()
                 {
                     Title = update.Title,
                     Content = scrollViewer,
@@ -398,7 +393,7 @@ namespace Xdows_Security
                     PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
                 };
 
-                var result = await dialog.ShowAsync();
+                ContentDialogResult result = await dialog.ShowAsync();
                 if (result == ContentDialogResult.Primary)
                 {
                     await Windows.System.Launcher.LaunchUriAsync(new Uri(update.DownloadUrl));
@@ -421,11 +416,12 @@ namespace Xdows_Security
             }
         }
 
-        private void UpdateTeachingTipClose(TeachingTip sender, object args)
+        private static void UpdateTeachingTipClose(TeachingTip sender, Object args)
         {
             sender.IsOpen = false;
         }
-        private void ThemeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+
+        private void ThemeComboBox_SelectionChanged(Object sender, SelectionChangedEventArgs e)
         {
             if (IsInitialize || ThemeComboBox.SelectedIndex == -1) return;
 
@@ -437,7 +433,7 @@ namespace Xdows_Security
                 _ => ElementTheme.Default
             };
 
-            var settings = ApplicationData.Current.LocalSettings;
+            ApplicationDataContainer settings = ApplicationData.Current.LocalSettings;
             settings.Values["AppTheme"] = selectedTheme.ToString();
             if (App.MainWindow == null) return;
             if (App.MainWindow.Content is FrameworkElement rootElement)
@@ -447,7 +443,10 @@ namespace Xdows_Security
             MainWindow.UpdateTheme(selectedTheme);
         }
 
-        public void UpdateThemeforLoad(ElementTheme Theme) => MainWindow.UpdateTheme(Theme);
+        public static void UpdateThemeforLoad(ElementTheme Theme)
+        {
+            MainWindow.UpdateTheme(Theme);
+        }
 
         private async void LoadBackdropSetting()
         {

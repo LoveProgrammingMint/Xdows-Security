@@ -417,7 +417,9 @@ namespace Xdows_Security
             }
         }
 
+#pragma warning disable CA1822
         private void UpdateTeachingTipClose(TeachingTip sender, Object args)
+#pragma warning restore CA1822
         {
             sender.IsOpen = false;
         }
@@ -812,19 +814,19 @@ namespace Xdows_Security
             }
         }
 
-        private async void OpenConfigLocationButton_Click(object sender, RoutedEventArgs e)
+        private async void OpenConfigLocationButton_Click(Object sender, RoutedEventArgs e)
         {
             try
             {
-                var path = ApplicationData.LocalFolder.Path;
+                String path = ApplicationData.LocalFolder.Path;
                 await Windows.System.Launcher.LaunchFolderPathAsync(path);
             }
             catch (Exception ex)
             {
-                var errorDialog = new ContentDialog
+                ContentDialog errorDialog = new()
                 {
                     Title = Localizer.Get().GetLocalizedString("SettingsPage_Other_Config_Location_OpenFailed_Title"),
-                    Content = string.Format(Localizer.Get().GetLocalizedString("SettingsPage_Other_Config_Location_OpenFailed_Content"), ex.Message),
+                    Content = String.Format(Localizer.Get().GetLocalizedString("SettingsPage_Other_Config_Location_OpenFailed_Content"), ex.Message),
                     CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                     XamlRoot = this.XamlRoot
                 };
@@ -832,9 +834,9 @@ namespace Xdows_Security
             }
         }
 
-        private async void ResetConfigButton_Click(object sender, RoutedEventArgs e)
+        private async void ResetConfigButton_Click(Object sender, RoutedEventArgs e)
         {
-            var confirmDialog = new ContentDialog
+            ContentDialog confirmDialog = new()
             {
                 Title = Localizer.Get().GetLocalizedString("SettingsPage_Other_Config_Reset_Confirm_Title"),
                 Content = Localizer.Get().GetLocalizedString("SettingsPage_Other_Config_Reset_Confirm_Content"),
@@ -848,7 +850,7 @@ namespace Xdows_Security
             {
                 try
                 {
-                    var path = ApplicationData.LocalFolder.Path;
+                    String path = ApplicationData.LocalFolder.Path;
                     if (Directory.Exists(path))
                     {
                         Directory.Delete(path, true);
@@ -856,10 +858,10 @@ namespace Xdows_Security
                 }
                 catch (Exception ex)
                 {
-                    var errorDialog = new ContentDialog
+                    ContentDialog errorDialog = new()
                     {
                         Title = Localizer.Get().GetLocalizedString("SettingsPage_Other_Config_Reset_DeleteFailed_Title"),
-                        Content = string.Format(Localizer.Get().GetLocalizedString("SettingsPage_Other_Config_Reset_DeleteFailed_Content"), ex.Message),
+                        Content = String.Format(Localizer.Get().GetLocalizedString("SettingsPage_Other_Config_Reset_DeleteFailed_Content"), ex.Message),
                         CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                         XamlRoot = this.XamlRoot
                     };
@@ -869,8 +871,8 @@ namespace Xdows_Security
 
                 try
                 {
-                    var current = Process.GetCurrentProcess().MainModule?.FileName;
-                    if (!string.IsNullOrEmpty(current))
+                    String? current = Process.GetCurrentProcess().MainModule?.FileName;
+                    if (!String.IsNullOrEmpty(current))
                     {
                         Process.Start(new ProcessStartInfo
                         {
@@ -886,28 +888,26 @@ namespace Xdows_Security
             }
         }
 
-        private void BackgroundImageOpacitySlider_ValueChanged(object sender, RoutedEventArgs e)
+        private void BackgroundImageOpacitySlider_ValueChanged(Object sender, RoutedEventArgs e)
         {
             if (IsInitialize || sender is not Slider slider) return;
 
-            // 保存透明度设置
-            var settings = ApplicationData.Current.LocalSettings;
+            ApplicationDataContainer settings = ApplicationData.Current.LocalSettings;
             settings.Values["AppBackgroundImageOpacity"] = slider.Value;
 
-            // 应用新的透明度
             App.MainWindow?.UpdateBackgroundImageOpacity(slider.Value / 100.0);
         }
 
-        private void Boot_Save_Button_Click(object sender, RoutedEventArgs e)
+        private void Boot_Save_Button_Click(Object sender, RoutedEventArgs e)
         {
             try
             {
-                byte[] mbr = Helper.DiskOperator.ReadBootSector(0);
+                Byte[] mbr = Helper.DiskOperator.ReadBootSector(0);
                 if (mbr.Length == 0) return;
-                var dlg = new CommonSaveFileDialog
+                CommonSaveFileDialog dlg = new()
                 {
                     Title = Localizer.Get().GetLocalizedString("SettingsPage_Protection_Boot_Save_Buttong_SaveDialog_Title"),
-                    DefaultFileName = $"Data.bin",
+                    DefaultFileName = "Data.bin",
                     DefaultExtension = "bin",
                     OverwritePrompt = true,
                     InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)

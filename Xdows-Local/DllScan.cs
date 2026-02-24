@@ -1,10 +1,10 @@
-﻿using static Xdows_Local.Core;
+using static Xdows_Local.Core;
 
 namespace Xdows_Local
 {
     public static class DllScan
     {
-        public static bool Scan(PEInfo info)
+        public static Boolean Scan(PEInfo info)
         {
             if (info.ExportsName?
                 .Any(e => e?.IndexOf("Py", StringComparison.OrdinalIgnoreCase) >= 0 ||
@@ -15,6 +15,7 @@ namespace Xdows_Local
             {
                 return false;
             }
+
             return info.ExportsName?
                 .Any(e => e?.IndexOf("Hook", StringComparison.OrdinalIgnoreCase) >= 0 ||
                           e?.IndexOf("Virus", StringComparison.OrdinalIgnoreCase) >= 0 ||

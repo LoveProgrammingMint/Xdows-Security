@@ -332,6 +332,7 @@ namespace Xdows_Security
             };
 
             NavComboBox.SelectedIndex = settings.Values.TryGetValue("AppNavTheme", out Object raw) && raw is Double d ? (Int32)d : 0;
+
         }
 
         private async void LanguageComboBox_SelectionChanged(Object sender, SelectionChangedEventArgs e)
@@ -416,7 +417,7 @@ namespace Xdows_Security
             }
         }
 
-        private static void UpdateTeachingTipClose(TeachingTip sender, Object args)
+        private void UpdateTeachingTipClose(TeachingTip sender, Object args)
         {
             sender.IsOpen = false;
         }
@@ -450,19 +451,17 @@ namespace Xdows_Security
 
         private async void LoadBackdropSetting()
         {
-            var settings = ApplicationData.Current.LocalSettings;
-
-            var savedBackdrop = settings.Values["AppBackdrop"] as string;
+            ApplicationDataContainer settings = ApplicationData.Current.LocalSettings;
+            String savedBackdrop = settings.Values["AppBackdrop"] as String ?? "";
 
             Appearance_Backdrop_Opacity.IsEnabled = !(savedBackdrop == "Solid");
             MicaOption.IsEnabled = MicaController.IsSupported();
             MicaAltOption.IsEnabled = MicaController.IsSupported();
 
-            bool found = false;
-
+            Boolean found = false;
             foreach (ComboBoxItem item in BackdropComboBox.Items.Cast<ComboBoxItem>())
             {
-                if (item.Tag as string == savedBackdrop)
+                if (item.Tag as String == savedBackdrop)
                 {
                     BackdropComboBox.SelectedItem = item;
                     found = true;
@@ -479,26 +478,24 @@ namespace Xdows_Security
         {
             try
             {
-                var settings = ApplicationData.Current.LocalSettings;
-                var backdropType = settings.Values["AppBackdrop"] as string ?? "Solid";
-                var opacityValue = settings.Values["AppBackgroundImageOpacity"] as double? ?? 30.0;
+                ApplicationDataContainer settings = ApplicationData.Current.LocalSettings;
+                String backdropType = settings.Values["AppBackdrop"] as String ?? "Solid";
+                Double opacityValue = settings.Values["AppBackgroundImageOpacity"] as Double? ?? 30.0;
                 BackgroundImageOpacitySlider.Value = opacityValue;
             }
             catch { }
         }
 
-        private void BackdropComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void BackdropComboBox_SelectionChanged(Object sender, SelectionChangedEventArgs e)
         {
             if (IsInitialize) return;
             if (BackdropComboBox.SelectedItem is ComboBoxItem selected)
             {
                 try
                 {
-                    string backdropType = selected.Tag as string ?? ElementTheme.Default.ToString();
-                    var settings = ApplicationData.Current.LocalSettings;
+                    String backdropType = selected.Tag as String ?? ElementTheme.Default.ToString();
+                    ApplicationDataContainer settings = ApplicationData.Current.LocalSettings;
                     settings.Values["AppBackdrop"] = backdropType;
-
-                    // 应用新背景
                     App.MainWindow?.ApplyBackdrop(backdropType, false);
                     Appearance_Backdrop_Opacity.IsEnabled = !(backdropType == "Solid");
                 }
@@ -506,78 +503,80 @@ namespace Xdows_Security
             }
         }
 
-        private void OpacitySlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        private void OpacitySlider_ValueChanged(Object sender, RangeBaseValueChangedEventArgs e)
         {
             if (IsInitialize || sender is not Slider slider) return;
-            var settings = ApplicationData.Current.LocalSettings;
+            ApplicationDataContainer settings = ApplicationData.Current.LocalSettings;
             settings.Values["AppBackdropOpacity"] = slider.Value;
             if (App.MainWindow == null) return;
-            App.MainWindow.ApplyBackdrop(settings.Values["AppBackdrop"] as string ?? "Mica", false);
+            App.MainWindow.ApplyBackdrop(settings.Values["AppBackdrop"] as String ?? "Mica", false);
         }
 
-        private void NavComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void NavComboBox_SelectionChanged(Object sender, SelectionChangedEventArgs e)
         {
             if (IsInitialize) return;
             try
             {
-                int index = NavComboBox.SelectedIndex;
-                var settings = ApplicationData.Current.LocalSettings;
+                Int32 index = NavComboBox.SelectedIndex;
+                ApplicationDataContainer settings = ApplicationData.Current.LocalSettings;
                 settings.Values["AppNavTheme"] = index;
                 App.MainWindow?.UpdateNavTheme(index);
             }
             catch { }
         }
-        private async void Quarantine_ViewButton_Click(object sender, RoutedEventArgs e)
+
+        private async void Quarantine_ViewButton_Click(Object sender, RoutedEventArgs e)
         {
             try
             {
-                var dialog = new QuarantineDialog
+                QuarantineDialog dialog = new()
                 {
                     XamlRoot = this.XamlRoot,
                     RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                 };
-
                 await dialog.ShowAsync();
             }
             catch { }
         }
-        private async void Quarantine_ClearButton_Click(object sender, RoutedEventArgs e)
+
+        private async void Quarantine_ClearButton_Click(Object sender, RoutedEventArgs e)
         {
             _ = QuarantineManager.ClearQuarantine();
         }
-        private async void Trust_ViewButton_Click(object sender, RoutedEventArgs e)
+
+        private async void Trust_ViewButton_Click(Object sender, RoutedEventArgs e)
         {
             try
             {
-                var dialog = new TrustDialog
+                TrustDialog dialog = new()
                 {
                     XamlRoot = this.XamlRoot,
                     RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                 };
-
                 _ = dialog.ShowAsync();
             }
             catch { }
         }
-        private async void Trust_AddButton_Click(object sender, RoutedEventArgs e)
+
+        private async void Trust_AddButton_Click(Object sender, RoutedEventArgs e)
         {
             try
             {
-                using var dlg = new CommonOpenFileDialog
+                using Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog dlg = new()
                 {
                     Title = Localizer.Get().GetLocalizedString("TrustDialog_SelectFile_Title"),
                     IsFolderPicker = false,
                     EnsurePathExists = true,
                 };
-                if (dlg.ShowDialog() == CommonFileDialogResult.Ok)
+                if (dlg.ShowDialog() == Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult.Ok)
                 {
-                    bool success = await TrustManager.AddToTrust(dlg.FileName);
+                    Boolean success = await TrustManager.AddToTrust(dlg.FileName);
                 }
             }
             catch { }
         }
 
-        private void TrayVisibleToggle_Toggled(object sender, RoutedEventArgs e)
+        private void TrayVisibleToggle_Toggled(Object sender, RoutedEventArgs e)
         {
             Toggled_SaveToggleData(sender, e);
             App.MainWindow?.manager?.IsVisibleInTray = TrayVisibleToggle.IsEnabled;
@@ -587,37 +586,34 @@ namespace Xdows_Security
         {
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
-                string searchText = sender.Text.ToLowerInvariant();
-
-                if (string.IsNullOrWhiteSpace(searchText))
+                String searchText = sender.Text.ToLowerInvariant();
+                if (String.IsNullOrWhiteSpace(searchText))
                 {
                     ShowAllSettingsItems();
                     return;
                 }
-
                 FilterSettingsItems(searchText);
             }
         }
 
         private void ShowAllSettingsItems()
         {
-            var scrollViewer = this.Content as ScrollViewer;
+            ScrollViewer? scrollViewer = this.Content as ScrollViewer;
             if (scrollViewer == null) return;
 
-            var stackPanel = scrollViewer.Content as StackPanel;
+            StackPanel? stackPanel = scrollViewer.Content as StackPanel;
             if (stackPanel == null) return;
 
-            foreach (var child in stackPanel.Children)
+            foreach (UIElement child in stackPanel.Children)
             {
                 if (child is AutoSuggestBox) continue;
 
                 if (child is FrameworkElement element)
                 {
                     element.Visibility = Visibility.Visible;
-
                     if (element is SettingsExpander expander)
                     {
-                        foreach (var expanderChild in expander.Items)
+                        foreach (Object expanderChild in expander.Items)
                         {
                             if (expanderChild is SettingsCard card)
                             {
@@ -628,25 +624,24 @@ namespace Xdows_Security
                 }
             }
         }
-        private void FilterSettingsItems(string searchText)
+
+        private void FilterSettingsItems(String searchText)
         {
-            var scrollViewer = this.Content as ScrollViewer;
+            ScrollViewer? scrollViewer = this.Content as ScrollViewer;
             if (scrollViewer == null) return;
 
-            var stackPanel = scrollViewer.Content as StackPanel;
+            StackPanel? stackPanel = scrollViewer.Content as StackPanel;
             if (stackPanel == null) return;
 
-            foreach (var child in stackPanel.Children)
+            foreach (UIElement child in stackPanel.Children)
             {
                 if (child is AutoSuggestBox) continue;
-
                 if (child is FrameworkElement element)
                 {
                     element.Visibility = Visibility.Collapsed;
-
                     if (element is SettingsExpander expander)
                     {
-                        foreach (var expanderChild in expander.Items)
+                        foreach (Object expanderChild in expander.Items)
                         {
                             if (expanderChild is SettingsCard card)
                             {
@@ -657,20 +652,16 @@ namespace Xdows_Security
                 }
             }
 
-            bool currentHeaderMatched = false;
-
-            for (int i = 0; i < stackPanel.Children.Count; i++)
+            Boolean currentHeaderMatched = false;
+            for (Int32 i = 0; i < stackPanel.Children.Count; i++)
             {
-                var child = stackPanel.Children[i];
-
+                UIElement child = stackPanel.Children[i];
                 if (child is AutoSuggestBox) continue;
-
                 if (child is FrameworkElement element)
                 {
                     if (element is TextBlock textBlock)
                     {
                         currentHeaderMatched = IsSettingsItemMatched(textBlock, searchText);
-
                         if (currentHeaderMatched)
                         {
                             textBlock.Visibility = Visibility.Visible;
@@ -678,21 +669,18 @@ namespace Xdows_Security
                     }
                     else if (element is SettingsCard or SettingsExpander)
                     {
-                        bool shouldShow = false;
-
+                        Boolean shouldShow = false;
                         if (IsSettingsItemMatched(element, searchText))
                         {
                             shouldShow = true;
                         }
-
                         if (!shouldShow && currentHeaderMatched)
                         {
                             shouldShow = true;
                         }
-
                         if (element is SettingsExpander expander)
                         {
-                            foreach (var expanderChild in expander.Items)
+                            foreach (Object expanderChild in expander.Items)
                             {
                                 if (expanderChild is SettingsCard card)
                                 {
@@ -704,7 +692,6 @@ namespace Xdows_Security
                                 }
                             }
                         }
-
                         if (shouldShow)
                         {
                             element.Visibility = Visibility.Visible;
@@ -713,16 +700,16 @@ namespace Xdows_Security
                 }
             }
         }
-        private static bool IsSettingsItemMatched(FrameworkElement item, string searchText)
+
+        private static Boolean IsSettingsItemMatched(FrameworkElement item, String searchText)
         {
-            string itemText = GetSettingsItemText(item);
-
-            if (string.IsNullOrEmpty(itemText))
+            String itemText = GetSettingsItemText(item);
+            if (String.IsNullOrEmpty(itemText))
                 return false;
-
             return itemText.Contains(searchText, StringComparison.InvariantCultureIgnoreCase);
         }
-        private static string GetSettingsItemText(FrameworkElement item)
+
+        private static String GetSettingsItemText(FrameworkElement item)
         {
             if (item is TextBlock textBlock)
             {
@@ -730,31 +717,30 @@ namespace Xdows_Security
             }
             else if (item is SettingsCard card)
             {
-                return card.Header?.ToString() ?? string.Empty;
+                return card.Header?.ToString() ?? String.Empty;
             }
             else if (item is SettingsExpander expander)
             {
-                return expander.Header?.ToString() ?? string.Empty;
+                return expander.Header?.ToString() ?? String.Empty;
             }
-
-            return string.Empty;
+            return String.Empty;
         }
-        private bool DisabledVerifyToggleVerify = true;
-        private async void DisabledVerifyToggle_Toggled(object sender, RoutedEventArgs e)
+
+        private Boolean DisabledVerifyToggleVerify = true;
+
+        private async void DisabledVerifyToggle_Toggled(Object sender, RoutedEventArgs e)
         {
-            if (!DisabledVerifyToggleVerify || IsInitialize)
-            {
-                return;
-            }
+            if (!DisabledVerifyToggleVerify || IsInitialize) return;
+
             if (DisabledVerifyToggle.IsOn)
             {
                 DisabledVerifyToggleVerify = false;
                 DisabledVerifyToggle.IsOn = false;
-                var result = await UserConsentVerifier.RequestVerificationAsync(string.Empty);
+                UserConsentVerificationResult result = await UserConsentVerifier.RequestVerificationAsync(String.Empty);
                 if (result is UserConsentVerificationResult.DeviceNotPresent or
-                UserConsentVerificationResult.DisabledByPolicy or
-                UserConsentVerificationResult.NotConfiguredForUser or
-                UserConsentVerificationResult.Verified)
+                    UserConsentVerificationResult.DisabledByPolicy or
+                    UserConsentVerificationResult.NotConfiguredForUser or
+                    UserConsentVerificationResult.Verified)
                 {
                     DisabledVerifyToggle.IsOn = true;
                     Toggled_SaveToggleData(sender, e);
@@ -766,16 +752,17 @@ namespace Xdows_Security
                 Toggled_SaveToggleData(sender, e);
             }
         }
-        private async void SelectBackgroundImageButton_Click(object sender, RoutedEventArgs e)
+
+        private async void SelectBackgroundImageButton_Click(Object sender, RoutedEventArgs e)
         {
-            using var dlg = new Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog
+            using Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog dlg = new()
             {
                 Title = Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_SelectDialog_Title"),
                 Filters =
-                {
-                    new Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogFilter(Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_ImageFiles"), "*.jpg;*.jpeg;*.png;*.bmp;*.gif"),
-                    new Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogFilter(Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_AllFiles"), "*.*")
-                },
+        {
+            new Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogFilter(Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_ImageFiles"), "*.jpg;*.jpeg;*.png;*.bmp;*.gif"),
+            new Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogFilter(Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_AllFiles"), "*.*")
+        },
                 EnsureFileExists = true
             };
 
@@ -783,19 +770,17 @@ namespace Xdows_Security
             {
                 try
                 {
-                    string imagePath = dlg.FileName;
-                    string key = "background_image";
+                    String imagePath = dlg.FileName;
+                    String key = "background_image";
                     await ApplicationData.WriteFileAsync(key, imagePath);
-
-                    // 应用背景图片
                     App.MainWindow?.ApplyBackgroundImageAsync(imagePath);
                 }
                 catch (Exception ex)
                 {
-                    var errorDialog = new ContentDialog
+                    ContentDialog errorDialog = new()
                     {
                         Title = Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_Error_Title"),
-                        Content = string.Format(Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_SelectError_Content"), ex.Message),
+                        Content = String.Format(Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_SelectError_Content"), ex.Message),
                         CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                         XamlRoot = this.XamlRoot
                     };
@@ -804,7 +789,7 @@ namespace Xdows_Security
             }
         }
 
-        private async void ClearBackgroundImageButton_Click(object sender, RoutedEventArgs e)
+        private async void ClearBackgroundImageButton_Click(Object sender, RoutedEventArgs e)
         {
             try
             {
@@ -816,10 +801,10 @@ namespace Xdows_Security
             }
             catch (Exception ex)
             {
-                var errorDialog = new ContentDialog
+                ContentDialog errorDialog = new()
                 {
                     Title = Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_Error_Title"),
-                    Content = string.Format(Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_ClearError_Content"), ex.Message),
+                    Content = String.Format(Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_ClearError_Content"), ex.Message),
                     CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                     XamlRoot = this.XamlRoot
                 };

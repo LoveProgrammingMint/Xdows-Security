@@ -8,18 +8,11 @@ namespace Xdows_Local
 {
     public static class Heuristic
     {
-        private struct Rule
+        private struct Rule(String[][] keywords, Int32 score, String suspiciousData)
         {
-            public String[][] Keywords;
-            public Int32 Score;
-            public String SuspiciousData;
-
-            public Rule(String[][] keywords, Int32 score, String suspiciousData)
-            {
-                Keywords = keywords;
-                Score = score;
-                SuspiciousData = suspiciousData;
-            }
+            public String[][] Keywords = keywords;
+            public Int32 Score = score;
+            public String SuspiciousData = suspiciousData;
         }
 
         private static readonly Rule[] Rules =
@@ -76,7 +69,7 @@ namespace Xdows_Local
         {
             String extra = String.Empty;
             Int32 score = 0;
-            List<String> suspiciousData = new();
+            List<String> suspiciousData = [];
 
             String[] fileExtension = GetExtStrings(path);
 
@@ -284,9 +277,9 @@ namespace Xdows_Local
 
         private static String[] GetExtStrings(String path)
         {
-            if (String.IsNullOrEmpty(path)) return Array.Empty<String>();
+            if (String.IsNullOrEmpty(path)) return [];
 
-            List<String> extensions = new();
+            List<String> extensions = [];
             Int32 lastSlashIndex = path.LastIndexOfAny(['\\', '/']);
             Int32 extStartIndex = path.LastIndexOf('.');
 

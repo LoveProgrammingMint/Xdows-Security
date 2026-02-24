@@ -80,7 +80,7 @@ namespace Xdows_Security
     public class AppInfo
     {
         public static readonly string AppName = "Xdows Security";
-        public static readonly string AppVersion = "4.10-Dev";
+        public static readonly string AppVersion = "4.1.1";
         public static readonly string AppFeedback = "https://github.com/XTY64XTY12345/Xdows-Security/issues/new/choose";
         public static readonly string AppWebsite = "https://xty64xty.netlify.app/";
     }

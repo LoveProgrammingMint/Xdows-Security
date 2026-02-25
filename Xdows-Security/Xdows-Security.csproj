@@ -16,7 +16,7 @@
     <LangVersion>preview</LangVersion>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <PublishAot>True</PublishAot>
-    <PublishTrimmed>False</PublishTrimmed>
+    <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
   <ItemGroup>

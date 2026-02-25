@@ -13,13 +13,9 @@ namespace Xdows_Security
 {
     public static class TCPMessageProtocol
     {
-        private static readonly JsonSerializerOptions CachedJsonOptions = new()
-        {
-            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-        };
         public static byte[] EncodeMessage(Dictionary<string, object> message)
         {
-            string jsonStr = JsonSerializer.Serialize(message, options: CachedJsonOptions);
+            string jsonStr = JsonSerializer.Serialize(message, JsonContext.Default.DictionaryStringObject);
 
             byte[] messageBytes = Encoding.UTF8.GetBytes(jsonStr);
 
@@ -83,7 +79,7 @@ namespace Xdows_Security
                     return null;
                 }
                 string jsonStr = Encoding.UTF8.GetString(messageData);
-                return JsonSerializer.Deserialize<Dictionary<string, object>>(jsonStr, CachedJsonOptions);
+                return JsonSerializer.Deserialize(jsonStr, JsonContext.Default.DictionaryStringObject);
             }
             catch (Exception ex)
             {
@@ -575,7 +571,7 @@ namespace Xdows_Security
                         retryCount = 0;
 
                         // 记录接收到的消息
-                        System.Diagnostics.Debug.WriteLine($"客户端接收到消息: {System.Text.Json.JsonSerializer.Serialize(message)}");
+                        System.Diagnostics.Debug.WriteLine($"客户端接收到消息: {System.Text.Json.JsonSerializer.Serialize(message, JsonContext.Default.DictionaryStringObject)}");
 
                         // 处理心跳包
                         if (message.TryGetValue("type", out var typeObj) && typeObj.ToString() == "pong")

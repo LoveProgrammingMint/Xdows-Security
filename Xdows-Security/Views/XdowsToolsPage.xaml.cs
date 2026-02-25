@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml.Controls;
 using System.Linq;
 using System.Collections.Generic;
 using Xdows_Security.Services;
+using Xdows_Security.PluginsLoader;
 
 namespace Xdows_Security.Views
 {
@@ -16,8 +17,8 @@ namespace Xdows_Security.Views
             try
             {
                 PluginLoader loader = new();
-                List<Plugins.IPlugin> plugins = [.. loader.LoadPlugins(this)];
-                foreach (Plugins.IPlugin plugin in plugins)
+                List<IPlugin> plugins = [.. loader.LoadPlugins(this)];
+                foreach (IPlugin plugin in plugins)
                 {
                     try
                     {

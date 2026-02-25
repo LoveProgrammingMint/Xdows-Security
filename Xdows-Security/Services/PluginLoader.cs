@@ -1,10 +1,11 @@
 using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Xdows_Security.Plugins;
+using Xdows_Security.PluginsLoader;
 
 namespace Xdows_Security.Services
 {
@@ -18,6 +19,8 @@ namespace Xdows_Security.Services
             if (!Directory.Exists(PluginDirectory)) Directory.CreateDirectory(PluginDirectory);
         }
 
+        [RequiresUnreferencedCode("Plugin loading uses reflection which is not compatible with trimming")]
+        [RequiresDynamicCode("Plugin loading uses reflection which requires dynamic code")]
         public IEnumerable<IPlugin> LoadPlugins(object? host = null)
         {
             var list = new List<IPlugin>();

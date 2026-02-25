@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Xdows_Security.PluginsLoader;
 
 namespace Xdows_Security.Plugins
 {

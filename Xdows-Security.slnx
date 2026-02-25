@@ -9,6 +9,7 @@
     <Platform Solution="*|ARM64" Project="x64" />
   </Project>
   <Project Path="../ICEX/ProcessManagerSharp/ProcessManagerSharp.csproj" />
+  <Project Path="../ICEX/XdowsLocalEx/XdowsLocalEx.csproj" />
   <Project Path="../ICEX/XShark/XShark.csproj" />
   <Project Path="../SouXiaoAVEngine/LiuLiAVHeuristic/LiuLiAVHeuristic.csproj" />
   <Project Path="../SouXiaoAVEngine/PublicPart/PublicPart.csproj" />

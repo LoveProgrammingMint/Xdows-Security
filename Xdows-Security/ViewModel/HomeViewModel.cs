@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.WindowsAPICodePack.Dialogs;
+using Microsoft.Windows.Storage.Pickers;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -92,19 +92,28 @@ namespace Xdows_Security.ViewModel
         [RelayCommand]
         private async Task ExportLogAsync()
         {
-            var dlg = new CommonSaveFileDialog
+            try
             {
-                Title = Localizer.Get().GetLocalizedString("HomePage_ExportLog_SaveDialog_Title"),
-                DefaultFileName = $"XdowsSecurity_Log_{DateTime.Now:yyyyMMdd_HHmmss}.log",
-                DefaultExtension = "log",
-                OverwritePrompt = true,
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-            };
-            dlg.Filters.Add(new CommonFileDialogFilter(
-                Localizer.Get().GetLocalizedString("HomePage_ExportLog_Filter_Name"), "*.log"));
-            if (dlg.ShowDialog() == CommonFileDialogResult.Ok)
-                try { _log.Export(dlg.FileName, LogRaw); }
+                var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+                var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd);
+                var picker = new FileSavePicker(windowId)
+                {
+                    SuggestedFileName = $"XdowsSecurity_Log_{DateTime.Now:yyyyMMdd_HHmmss}.log",
+                    DefaultFileExtension = ".log",
+                    SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                    SuggestedFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                };
+
+                PickFileResult file = await picker.PickSaveFileAsync();
+                if (file is null) return;
+
+                try { _log.Export(file.Path, LogRaw); }
                 catch (Exception ex) { Log(3, "ExportLog", ex.Message); }
+            }
+            catch (Exception ex)
+            {
+                Log(3, "ExportLog", ex.Message);
+            }
         }
 
         [RelayCommand]

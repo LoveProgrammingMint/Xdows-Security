@@ -750,22 +750,27 @@ namespace Xdows_Security.Views
 
         private async void SelectBackgroundImageButton_Click(Object sender, RoutedEventArgs e)
         {
-            using Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog dlg = new()
+            try
             {
-                Title = Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_SelectDialog_Title"),
-                Filters =
-        {
-            new Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogFilter(Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_ImageFiles"), "*.jpg;*.jpeg;*.png;*.bmp;*.gif"),
-            new Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogFilter(Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_AllFiles"), "*.*")
-        },
-                EnsureFileExists = true
-            };
+                var picker = new FileOpenPicker(XamlRoot.ContentIslandEnvironment.AppWindowId)
+                {
+                    SuggestedStartLocation = PickerLocationId.PicturesLibrary
+                };
+                picker.FileTypeFilter.Add(".jpg");
+                picker.FileTypeFilter.Add(".jpeg");
+                picker.FileTypeFilter.Add(".png");
+                picker.FileTypeFilter.Add(".bmp");
+                picker.FileTypeFilter.Add(".gif");
 
-            if (dlg.ShowDialog() == Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult.Ok)
-            {
+                PickFileResult file = await picker.PickSingleFileAsync();
+                if (file is null)
+                {
+                    return;
+                }
+
                 try
                 {
-                    String imagePath = dlg.FileName;
+                    String imagePath = file.Path;
                     String key = "background_image";
                     await ApplicationData.WriteFileAsync(key, imagePath);
                     App.MainWindow?.ApplyBackgroundImageAsync(imagePath);
@@ -781,6 +786,17 @@ namespace Xdows_Security.Views
                     };
                     await errorDialog.ShowAsync();
                 }
+            }
+            catch (Exception ex)
+            {
+                ContentDialog errorDialog = new()
+                {
+                    Title = Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_Error_Title"),
+                    Content = String.Format(Localizer.Get().GetLocalizedString("SettingsPage_BackgroundImage_SelectError_Content"), ex.Message),
+                    CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
+                    XamlRoot = this.XamlRoot
+                };
+                await errorDialog.ShowAsync();
             }
         }
 

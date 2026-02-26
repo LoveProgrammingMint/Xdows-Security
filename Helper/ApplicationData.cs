@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using IO = System.IO;
 
 #pragma warning disable CS8601, CS8603, CS8766, CS1998, CS0114, CS8643, CS8613, CS8619, CS8767
@@ -7,6 +8,18 @@ using IO = System.IO;
 namespace Compatibility.Windows.Storage
 {
     #region ApplicationData
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(Dictionary<string, JsonElement>))]
+    [JsonSerializable(typeof(string))]
+    [JsonSerializable(typeof(int))]
+    [JsonSerializable(typeof(long))]
+    [JsonSerializable(typeof(double))]
+    [JsonSerializable(typeof(bool))]
+    [JsonSerializable(typeof(object))]
+    internal partial class AppDataJsonContext : JsonSerializerContext
+    {
+    }
+
     public sealed class ApplicationData
     {
         public static ApplicationData Current { get; } = new ApplicationData();
@@ -163,12 +176,12 @@ namespace Compatibility.Windows.Storage
         }
 
         public ApplicationDataContainerValues Values { get; }
-        private readonly JsonSerializerOptions jsonSerializerOptions = new() { WriteIndented = true };
+        
         internal void Save()
         {
             try
             {
-                var json = JsonSerializer.Serialize(_dict, jsonSerializerOptions);
+                var json = JsonSerializer.Serialize(_dict, AppDataJsonContext.Default.DictionaryStringJsonElement);
                 File.WriteAllText(StorePath, json);
             }
             catch { /* 随它去 */ }
@@ -180,7 +193,7 @@ namespace Compatibility.Windows.Storage
             try
             {
                 var json = File.ReadAllText(StorePath);
-                var tmp = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
+                var tmp = JsonSerializer.Deserialize(json, AppDataJsonContext.Default.DictionaryStringJsonElement);
                 if (tmp != null)
                     foreach (var kv in tmp)
                         _dict[kv.Key] = kv.Value.Clone();   // 隔离引用
@@ -207,8 +220,8 @@ namespace Compatibility.Windows.Storage
             set
             {
                 Dict[key] = value == null
-                    ? JsonSerializer.SerializeToElement(JsonValueKind.Null)
-                    : JsonSerializer.SerializeToElement(value);
+                    ? JsonSerializer.SerializeToElement<object?>(null, AppDataJsonContext.Default.Object)
+                    : JsonSerializer.SerializeToElement(value, value.GetType(), AppDataJsonContext.Default);
                 _owner.Save();
             }
         }
@@ -221,8 +234,8 @@ namespace Compatibility.Windows.Storage
         public void Add(string key, object? value)
         {
             Dict.Add(key, value == null
-                ? JsonSerializer.SerializeToElement(JsonValueKind.Null)
-                : JsonSerializer.SerializeToElement(value));
+                ? JsonSerializer.SerializeToElement<object?>(null, AppDataJsonContext.Default.Object)
+                : JsonSerializer.SerializeToElement(value, value.GetType(), AppDataJsonContext.Default));
             _owner.Save();
         }
 
@@ -254,7 +267,7 @@ namespace Compatibility.Windows.Storage
         #region 显式接口实现
         void ICollection<KeyValuePair<string, object?>>.Add(KeyValuePair<string, object?> item) => Add(item.Key, item.Value);
         bool ICollection<KeyValuePair<string, object?>>.Contains(KeyValuePair<string, object?> item) =>
-            ((ICollection<KeyValuePair<string, JsonElement>>)Dict).Contains(new KeyValuePair<string, JsonElement>(item.Key, JsonSerializer.SerializeToElement(item.Value)));
+            ((ICollection<KeyValuePair<string, JsonElement>>)Dict).Contains(new KeyValuePair<string, JsonElement>(item.Key, item.Value == null ? JsonSerializer.SerializeToElement<object?>(null, AppDataJsonContext.Default.Object) : JsonSerializer.SerializeToElement(item.Value, item.Value.GetType(), AppDataJsonContext.Default)));
         void ICollection<KeyValuePair<string, object?>>.CopyTo(KeyValuePair<string, object?>[] array, int arrayIndex) =>
             Dict.Select(kv => new KeyValuePair<string, object?>(kv.Key, ParseJsonElement(kv.Value)))
                 .ToArray()

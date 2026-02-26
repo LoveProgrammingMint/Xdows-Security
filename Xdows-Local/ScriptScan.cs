@@ -35,26 +35,10 @@ namespace Xdows_Local
             return (score, String.Join(" ", extra));
         }
 
-        private static unsafe String GetExtString(String path)
+        private static String GetExtString(String path)
         {
             if (String.IsNullOrEmpty(path)) return String.Empty;
-
-            fixed (Char* p = path)
-            {
-                Char* dot = null, slash = p;
-                for (Char* c = p + path.Length - 1; c >= p; c--)
-                {
-                    if (*c == '.') { dot = c; break; }
-                    if (*c == '\\' || *c == '/') slash = c;
-                }
-                if (dot == null || dot < slash) return String.Empty;
-
-                Int32 len = (Int32)(p + path.Length - dot);
-                Span<Char> buf = stackalloc Char[len];
-                ReadOnlySpan<Char> src = new(dot, len);
-                src.ToLowerInvariant(buf);
-                return buf.ToString();
-            }
+            return Path.GetExtension(path).ToLowerInvariant();
         }
 
         private static Boolean IsSuspiciousBat(Byte[] fileContent)

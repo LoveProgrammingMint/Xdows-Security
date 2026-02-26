@@ -29,4 +29,22 @@
     <Deploy Solution="*|x64" />
     <Deploy Solution="*|x86" />
   </Project>
+  <Project Path="Xdows.Native.Core/Xdows.Native.Core.vcxproj" Id="0a6a91ae-310e-4333-87a1-d7ed0faff5c5">
+    <Platform Solution="*|ARM64" Project="x64" />
+  </Project>
+  <Project Path="Xdows.Native.PE/Xdows.Native.PE.vcxproj" Id="139e117b-0054-4e5c-ab88-082232ef9293">
+    <Platform Solution="*|ARM64" Project="x64" />
+  </Project>
+  <Project Path="Xdows.Native.Process/Xdows.Native.Process.vcxproj" Id="3c79cb20-b5f6-41cf-a617-4bb00241a35d">
+    <Platform Solution="*|ARM64" Project="x64" />
+  </Project>
+  <Project Path="Xdows.Native.Registry/Xdows.Native.Registry.vcxproj" Id="ad43502f-f1c6-40a7-ad84-a674ac68929b">
+    <Platform Solution="*|ARM64" Project="x64" />
+  </Project>
+  <Project Path="Xdows.Native.Script/Xdows.Native.Script.vcxproj" Id="2af7163c-e8cc-4f3d-b5bd-040c488c3dc9">
+    <Platform Solution="*|ARM64" Project="x64" />
+  </Project>
+  <Project Path="Xdows.Native.Trust/Xdows.Native.Trust.vcxproj" Id="91b0cfc6-d55b-4e50-ad43-eb78d06bb9cc">
+    <Platform Solution="*|ARM64" Project="x64" />
+  </Project>
 </Solution>

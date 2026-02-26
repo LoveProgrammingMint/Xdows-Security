@@ -9,6 +9,8 @@ namespace Protection
 {
     public class LegacyProcessProtection : IProtectionModel
     {
+        // 感谢 XiaoWeiSecurity 对开源杀毒软件项目（特别是主动防御）的巨大贡献！！
+
         private static CancellationTokenSource? _cts = null;
         private static Task? _monitorTask = null;
         private static ScanEngine.ScanEngine.SouXiaoEngineScan? SouXiaoEngine;
@@ -76,8 +78,6 @@ namespace Protection
 
         private static async Task MonitorNewProcessesLoop(InterceptCallBack interceptCallBack, CancellationToken token)
         {
-            Debug.WriteLine("Protection Enabled");
-
             while (!token.IsCancellationRequested)
             {
                 try

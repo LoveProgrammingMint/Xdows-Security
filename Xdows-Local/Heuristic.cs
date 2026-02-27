@@ -63,6 +63,9 @@ namespace Xdows_Local
             new Rule([["GetAsyncKeyState "]], 10, "KeyloggerPolling"),
             new Rule([["ShellExecute"]], 5, String.Empty),
             new Rule([["GetProcessImageFileName"]], 5, String.Empty),
+            new Rule([["RegisterServiceProcess"]], 10, String.Empty), //未公开API，注册为系统服务
+            new Rule([["RunFileDlg"]], -5, String.Empty),//未公开API，但是无害，用于窗口“运行对话框”
+            new Rule([["RtlSetProcessIsCritical"]], 20, String.Empty), //未公开API，设置自身为关键系统进程
         ];
 
         public static (Int32 score, String extra) Evaluate(String path, PeFile peFile, PEInfo peInfo, Boolean deepScan)

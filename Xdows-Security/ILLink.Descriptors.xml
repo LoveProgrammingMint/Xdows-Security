@@ -1,0 +1,73 @@
+<linker>
+  <assembly fullname="Microsoft.WinUI">
+    <type fullname="Microsoft.UI.Xaml.Controls.TextBlock" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ContentControl" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.NavigationViewItem" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.AutoSuggestBox" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.MenuFlyoutItem" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.MenuFlyoutSubItem" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.AppBarButton" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.AppBarToggleButton" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ToggleMenuFlyoutItem" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ToolTip" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.Control" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ContentPresenter" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.TextBox" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.PasswordBox" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.CheckBox" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.RadioButton" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.Button" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.HyperlinkButton" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ToggleSwitch" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.PivotItem" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ToolTipService" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.FontIcon" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ItemsRepeater" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ScrollViewer" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ContentDialog" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ListView" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.Primitives.ToggleButton" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Documents.Run" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Documents.Hyperlink" preserve="all" />
+  </assembly>
+  <assembly fullname="Microsoft.UI.Xaml">
+    <type fullname="Microsoft.UI.Xaml.Controls.TextBlock" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ContentControl" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.NavigationViewItem" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.AutoSuggestBox" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.MenuFlyoutItem" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.MenuFlyoutSubItem" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.AppBarButton" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.AppBarToggleButton" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ToggleMenuFlyoutItem" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ToolTip" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.Control" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ContentPresenter" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.TextBox" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.PasswordBox" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.CheckBox" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.RadioButton" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.Button" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.HyperlinkButton" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ToggleSwitch" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.PivotItem" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ToolTipService" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.FontIcon" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ItemsRepeater" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ScrollViewer" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ContentDialog" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.ListView" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Controls.Primitives.ToggleButton" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Documents.Run" preserve="all" />
+    <type fullname="Microsoft.UI.Xaml.Documents.Hyperlink" preserve="all" />
+  </assembly>
+  <assembly fullname="CommunityToolkit.WinUI.Controls.SettingsControls">
+    <type fullname="CommunityToolkit.WinUI.Controls.SettingsCard" preserve="all" />
+    <type fullname="CommunityToolkit.WinUI.Controls.SettingsExpander" preserve="all" />
+  </assembly>
+  <assembly fullname="CommunityToolkit.WinUI.UI.Controls.Markdown">
+    <type fullname="CommunityToolkit.WinUI.UI.Controls.MarkdownTextBlock" preserve="all" />
+  </assembly>
+</linker>

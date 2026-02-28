@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
@@ -20,10 +20,35 @@
 	<EnableMsixTooling>true</EnableMsixTooling>
 	<IsAotCompatible>true</IsAotCompatible>
 	<CsWinRTAotOptimizerEnable>true</CsWinRTAotOptimizerEnable>
+	<TrimMode>partial</TrimMode>
+    <NoWarn>$(NoWarn);MSB3277;IL2026;IL3050</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="logo.ico" />
+    <TrimmerRootAssembly Include="Xdows-Security" />
+    <TrimmerRootAssembly Include="WinUI3Localizer" />
+	<TrimmerRootAssembly Include="CommunityToolkit.Mvvm" />
+	<TrimmerRootAssembly Include="CommunityToolkit.WinUI" />
+	<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI" />
+	<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Core" />
+	<TrimmerRootAssembly Include="CommunityToolkit.WinUI.Controls.SettingsControls" />
+	<TrimmerRootAssembly Include="CommunityToolkit.WinUI.UI.Controls.Markdown" />
+	<TrimmerRootAssembly Include="Microsoft.Diagnostics.Tracing.TraceEvent" />
+	<TrimmerRootAssembly Include="WinUIEx" />
+	<TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PRIResource Remove="Strings\**\*.resw" />
+    <Content Include="Strings\**\*.resw">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="logo.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -48,10 +73,6 @@
     <ProjectReference Include="..\TrustQuarantine\TrustQuarantine.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Strings\**\*.resw" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
   <PropertyGroup Label="Globals">
     <WebView2EnableCsWinRTProjection>False</WebView2EnableCsWinRTProjection>
     <ApplicationIcon>logo.ico</ApplicationIcon>
@@ -72,15 +93,5 @@
   </PropertyGroup>
   <ItemGroup>
     <PRIResource Remove="Resources\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <PRIResource Update="Strings\en-US\Resources.resw">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </PRIResource>
-  </ItemGroup>
-  <ItemGroup>
-    <PRIResource Update="Strings\zh-HANS\Resources.resw">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </PRIResource>
   </ItemGroup>
 </Project>

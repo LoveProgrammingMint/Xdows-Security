@@ -182,7 +182,7 @@ namespace Xdows_Security
         private static readonly object _lockObj = new();
         private static readonly Channel<LogRow> _writeChannel = Channel.CreateUnbounded<LogRow>();
         private static readonly Timer _throttleTimer;
-        private static bool _pendingEvent;
+        private static bool _isTimerActive;
 
         public static event EventHandler? TextChanged;
         public static string Text
@@ -243,17 +243,21 @@ namespace Xdows_Security
 
         private static void TriggerTextChanged()
         {
-            _pendingEvent = true;
-            _throttleTimer.Change(100, Timeout.Infinite);
+            lock (_lockObj)
+            {
+                if (_isTimerActive) return;
+                _isTimerActive = true;
+                _throttleTimer.Change(100, Timeout.Infinite);
+            }
         }
 
         private static void OnTimerCallback(object? state)
         {
-            if (_pendingEvent)
+            lock (_lockObj)
             {
-                _pendingEvent = false;
-                TextChanged?.Invoke(null, EventArgs.Empty);
+                _isTimerActive = false;
             }
+            TextChanged?.Invoke(null, EventArgs.Empty);
         }
 
         private static async Task WritePumpAsync()

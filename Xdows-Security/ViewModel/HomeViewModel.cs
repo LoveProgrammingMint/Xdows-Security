@@ -36,6 +36,15 @@ namespace Xdows_Security.ViewModel
             LogRaw = LogText.Text;
             SelectedLogFilters = [];
 
+            // 订阅全局日志更新事件
+            LogText.TextChanged += (s, e) =>
+            {
+                App.MainWindow?.DispatcherQueue?.TryEnqueue(() =>
+                {
+                    LogRaw = LogText.Text;
+                });
+            };
+
             InitTimers();
             RefreshPomes();
         }

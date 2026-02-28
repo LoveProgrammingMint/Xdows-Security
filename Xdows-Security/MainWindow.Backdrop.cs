@@ -4,7 +4,6 @@ using Microsoft.UI;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using System;
 using Windows.UI;
@@ -18,7 +17,6 @@ namespace Xdows_Security
         private double _lastOpacity = 100;
         private ISystemBackdropControllerWithTargets? _controller;
         private ICompositionSupportsSystemBackdrop? _target;
-
         private static readonly SystemBackdropConfiguration _config = new()
         {
             IsInputActive = true
@@ -35,7 +33,7 @@ namespace Xdows_Security
             {
                 _ = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(
                     Microsoft.UI.Win32Interop.GetWindowIdFromWindow(
-                        WinRT.Interop.WindowNative.GetWindowHandle(window)
+                         WinRT.Interop.WindowNative.GetWindowHandle(window)
                     )
                 );
 
@@ -107,7 +105,8 @@ namespace Xdows_Security
                     backdropType = "Acrylic";
 
                 RootGrid.Background = new SolidColorBrush(Colors.Transparent);
-                _target = this.As<ICompositionSupportsSystemBackdrop>();
+
+                _target = (ICompositionSupportsSystemBackdrop)(object)this;
 
                 switch (backdropType)
                 {
@@ -121,7 +120,7 @@ namespace Xdows_Security
                     case "MicaAlt":
                         _controller = new MicaController()
                         {
-                            LuminosityOpacity = (float)(opacity / 100 * 0.95),
+                            LuminosityOpacity = (float)(opacity / 100 * 0.85),
                             TintColor = GetBackgroundColor(),
                             Kind = MicaKind.BaseAlt
                         };
@@ -232,8 +231,7 @@ namespace Xdows_Security
 
         public void UpdateBackgroundImageOpacity(double opacity)
         {
-            if (_backgroundImageBrush != null)
-                _backgroundImageBrush.Opacity = opacity;
+            _backgroundImageBrush?.Opacity = opacity;
         }
 
         private void OnThemeChanged(FrameworkElement sender, object args)

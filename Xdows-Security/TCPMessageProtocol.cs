@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Xdows_Security
 {
@@ -53,7 +54,7 @@ namespace Xdows_Security
                 }
                 int messageLength = BitConverter.ToInt32(networkOrderBytes, 0);
 
-                if (messageLength <= 0 || messageLength > 10 * 1024 * 1024)
+                if (messageLength is <= 0 or > (10 * 1024 * 1024))
                 {
                     return null;
                 }

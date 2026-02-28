@@ -1,4 +1,6 @@
-namespace ScanEngine
+using PublicPart;
+
+namespace Helper
 {
     /// <summary>
     /// Wrapper around the SouXiao heuristic engine for file scanning.
@@ -43,7 +45,7 @@ namespace ScanEngine
                 {
                     foreach (var item1 in item.Value)
                     {
-                        if (!(item1 == EngineResult.Safe || item1 == EngineResult.UnSupport))
+                        if (item1 is not (EngineResult.Safe or EngineResult.UnSupport))
                         {
                             return (true, $"SouXiao.Heuristic.{item.Key}");
                         }

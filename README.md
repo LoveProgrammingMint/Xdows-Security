@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/LoveProgrammingMint/Xdows-Security   ">
+  <a href="https://github.com/LoveProgrammingMint/Xdows-Security">
     <img src=".\Xdows-Security\logo.ico" alt="Logo" width="80" height="80">
   </a>
 
@@ -7,7 +7,7 @@
   <p align="center">
     Check out the next-generation antivirus software built with WinUI3 + C#
     <br />
-    <a href="https://docs.xiguastudio.top/zh/Xdows-Security-4.1/get-started.html   ">Documentation</a>
+    <a href="https://docs.xiguastudio.top/en/Xdows-Security-4.1/get-started.html   ">Documentation</a>
     ·
     <a href="https://github.com/LoveProgrammingMint/Xdows-Security/issues">Feedback</a>
     ·

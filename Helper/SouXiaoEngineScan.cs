@@ -2,18 +2,10 @@ using PublicPart;
 
 namespace Helper
 {
-    /// <summary>
-    /// Wrapper around the SouXiao heuristic engine for file scanning.
-    /// </summary>
     public class SouXiaoEngineScan
     {
         private readonly Boolean IsDebug = true;
         private readonly SouXiao.EngineEntry SouXiaoCoreV2026 = new();
-
-        /// <summary>
-        /// Initializes the SouXiao engine. Must be called before <see cref="ScanFile"/>.
-        /// </summary>
-        /// <returns><c>true</c> if initialization succeeded; otherwise <c>false</c>.</returns>
         public bool Initialize()
         {
             try
@@ -26,12 +18,6 @@ namespace Helper
                 return false;
             }
         }
-
-        /// <summary>
-        /// Scans a file using the SouXiao heuristic engine.
-        /// </summary>
-        /// <param name="path">Absolute path to the file to scan.</param>
-        /// <returns>A tuple indicating whether the file is a virus and the detection result name.</returns>
         public (bool IsVirus, string Result) ScanFile(string path)
         {
             try

@@ -35,9 +35,7 @@ namespace Helper
         {
             var client = s_httpClient;
             string hash = await GetFileMD5Async(path);
-            string server = Environment.GetEnvironmentVariable("XDOWS_CLOUD_SERVER") ?? "http://103.118.245.82:5000";
-            string apiKey = Environment.GetEnvironmentVariable("XDOWS_CLOUD_API_KEY") ?? "my_virus_key_2024";
-            string url = $"{server}/scan/md5?key={apiKey}&md5={hash}";
+            string url = $"http://103.118.245.82:5000/scan/md5?key=my_virus_key_2024&md5={hash}";
             try
             {
                 var resp = await client.GetAsync(url);
@@ -92,7 +90,7 @@ namespace Helper
                     {
                         foreach (var item1 in item.Value)
                         {
-                            if (!(item1 == EngineResult.Safe || item1 == EngineResult.UnSupport))
+                            if (item1 is not (EngineResult.Safe or EngineResult.UnSupport))
                             {
                                 return (true, $"SouXiao.Heuristic.{item.Key}");
                             }

@@ -25,7 +25,7 @@ namespace Xdows_Local
         private static (Int32 score, String extra) ScanScriptFileManaged(String filePath, Byte[] fileContent)
         {
             Int32 score = 0;
-            List<String> extra = new();
+            List<String> extra = [];
             String fileExtension = GetExtString(filePath);
 
             if (IsSuspiciousBat(fileContent))
@@ -52,10 +52,26 @@ namespace Xdows_Local
             return (score, String.Join(" ", extra));
         }
 
-        private static String GetExtString(String path)
+        private static unsafe String GetExtString(String path)
         {
             if (String.IsNullOrEmpty(path)) return String.Empty;
-            return Path.GetExtension(path).ToLowerInvariant();
+
+            fixed (Char* p = path)
+            {
+                Char* dot = null, slash = p;
+                for (Char* c = p + path.Length - 1; c >= p; c--)
+                {
+                    if (*c == '.') { dot = c; break; }
+                    if (*c is '\\' or '/') slash = c;
+                }
+                if (dot == null || dot < slash) return String.Empty;
+
+                Int32 len = (Int32)(p + path.Length - dot);
+                Span<Char> buf = stackalloc Char[len];
+                ReadOnlySpan<Char> src = new(dot, len);
+                src.ToLowerInvariant(buf);
+                return buf.ToString();
+            }
         }
 
         private static Boolean IsSuspiciousBat(Byte[] fileContent)
@@ -79,7 +95,7 @@ namespace Xdows_Local
         private static (Int32 score, String extra) CheckShortcutFile(String filePath, Byte[] fileContent)
         {
             Int32 score = 0;
-            List<String> extra = new();
+            List<String> extra = [];
 
             try
             {
@@ -143,7 +159,7 @@ namespace Xdows_Local
         private static (Int32 score, String extra) CheckScriptFile(String extension, Byte[] fileContent)
         {
             Int32 score = 0;
-            List<String> extra = new();
+            List<String> extra = [];
 
             try
             {

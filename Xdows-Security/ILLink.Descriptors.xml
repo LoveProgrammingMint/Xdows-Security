@@ -67,7 +67,4 @@
     <type fullname="CommunityToolkit.WinUI.Controls.SettingsCard" preserve="all" />
     <type fullname="CommunityToolkit.WinUI.Controls.SettingsExpander" preserve="all" />
   </assembly>
-  <assembly fullname="CommunityToolkit.WinUI.UI.Controls.Markdown">
-    <type fullname="CommunityToolkit.WinUI.UI.Controls.MarkdownTextBlock" preserve="all" />
-  </assembly>
 </linker>

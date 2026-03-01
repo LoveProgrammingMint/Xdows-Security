@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
 using System.Net.Sockets;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -32,7 +28,6 @@ namespace Xdows_Security
         public event EventHandler<string>? OnDisconnected;
         public event EventHandler<Dictionary<string, object>>? OnMessageReceived;
         public event EventHandler<string>? OnError;
-        public event EventHandler<FileDownloadCompletedEventArgs>? OnFileDownloadCompleted;
         public FeedbackTCPClient()
         {
             LoadSettings();
@@ -103,7 +98,7 @@ namespace Xdows_Security
             if (string.IsNullOrWhiteSpace(host))
                 throw new ArgumentException("服务器地址不能为空");
 
-            if (port <= 0 || port > 65535)
+            if (port is <= 0 or > 65535)
                 throw new ArgumentException("端口必须在1-65535范围内");
 
             _serverHost = host.Trim();
@@ -277,45 +272,6 @@ namespace Xdows_Security
             };
 
             await SendMessageAsync(fileMessage);
-        }
-        public async Task DownloadFileAsync(string fileId, string downloadUrl, string fileName)
-        {
-            if (string.IsNullOrWhiteSpace(fileId))
-                throw new ArgumentException("文件ID不能为空");
-
-            if (string.IsNullOrWhiteSpace(downloadUrl))
-                throw new ArgumentException("下载URL不能为空");
-
-            if (string.IsNullOrWhiteSpace(fileName))
-                throw new ArgumentException("文件名不能为空");
-
-            // 直接从URL下载文件
-            using var httpClient = new HttpClient();
-            System.Diagnostics.Debug.WriteLine($"开始HTTP请求: {downloadUrl}");
-
-            using var response = await httpClient.GetAsync(downloadUrl);
-            System.Diagnostics.Debug.WriteLine($"HTTP响应状态: {response.StatusCode}");
-
-            response.EnsureSuccessStatusCode();
-
-            // 获取文件内容
-            byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
-            System.Diagnostics.Debug.WriteLine($"下载完成，文件大小: {fileBytes.Length} 字节");
-
-            // 保存文件到下载目录
-            string downloadsFolder = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                "Downloads");
-            Directory.CreateDirectory(downloadsFolder);
-            string filePath = Path.Combine(downloadsFolder, fileName);
-
-            System.Diagnostics.Debug.WriteLine($"保存文件到: {filePath}");
-            File.WriteAllBytes(filePath, fileBytes);
-
-            System.Diagnostics.Debug.WriteLine($"文件已保存到: {filePath}");
-
-            // 触发下载完成事件
-            OnFileDownloadCompleted?.Invoke(this, new FileDownloadCompletedEventArgs(fileId, fileName, filePath));
         }
         public async Task MarkMessageReadAsync(string messageId)
         {

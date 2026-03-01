@@ -12,10 +12,4 @@
     <PackageReference Include="PeNet" Version="6.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="trusted-thumbprints.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

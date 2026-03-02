@@ -151,7 +151,7 @@ namespace Xdows_Security.Views
                 CloseButtonText = Localizer.Get().GetLocalizedString("Button_Cancel"),
                 XamlRoot = this.XamlRoot,
                 RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
-                PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                DefaultButton = ContentDialogButton.Primary
             };
 
             if (await confirmDialog.ShowAsync() == ContentDialogResult.Primary)
@@ -171,7 +171,7 @@ namespace Xdows_Security.Views
                         CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                         XamlRoot = this.XamlRoot,
                         RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
-                        CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                        DefaultButton = ContentDialogButton.Close
                     };
                     await resultDialog.ShowAsync();
 
@@ -196,7 +196,7 @@ namespace Xdows_Security.Views
                         CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                         RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                         XamlRoot = this.XamlRoot,
-                        CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                        DefaultButton = ContentDialogButton.Close
                     }.ShowAsync();
                 }
             }
@@ -214,7 +214,7 @@ namespace Xdows_Security.Views
                 CloseButtonText = Localizer.Get().GetLocalizedString("Button_Cancel"),
                 XamlRoot = this.XamlRoot,
                 RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
-                PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                DefaultButton = ContentDialogButton.Primary
             };
 
             if (await dialog.ShowAsync() == ContentDialogResult.Primary)
@@ -265,7 +265,7 @@ namespace Xdows_Security.Views
                         CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                         XamlRoot = this.XamlRoot,
                         RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
-                        CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                        DefaultButton = ContentDialogButton.Close
                     };
                     await resultDialog.ShowAsync();
 
@@ -290,7 +290,7 @@ namespace Xdows_Security.Views
                         CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                         RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                         XamlRoot = this.XamlRoot,
-                        CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                        DefaultButton = ContentDialogButton.Close
                     }.ShowAsync();
                 }
             }
@@ -404,7 +404,7 @@ namespace Xdows_Security.Views
                     PrimaryButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                     XamlRoot = this.XamlRoot,
                     RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
-                    PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                    DefaultButton = ContentDialogButton.Primary
                 };
                 _ = dialog.ShowAsync();
                 return;
@@ -652,7 +652,7 @@ namespace Xdows_Security.Views
                             PrimaryButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                             XamlRoot = this.XamlRoot,
                             RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
-                            PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                            DefaultButton = ContentDialogButton.Primary
                         };
                         await dialog.ShowAsync();
                     });
@@ -1072,7 +1072,7 @@ namespace Xdows_Security.Views
                     CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                     XamlRoot = this.XamlRoot,
                     RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
-                    CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                    DefaultButton = ContentDialogButton.Close
                 };
                 if (await dialog.ShowAsync() == ContentDialogResult.Primary)
                 {
@@ -1099,7 +1099,7 @@ namespace Xdows_Security.Views
                             CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                             RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                             XamlRoot = this.XamlRoot,
-                            CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                            DefaultButton = ContentDialogButton.Close
                         };
                         await dlg.ShowAsync();
                     }
@@ -1119,7 +1119,7 @@ namespace Xdows_Security.Views
                         CloseButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                         XamlRoot = this.XamlRoot,
                         RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
-                        CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                        DefaultButton = ContentDialogButton.Close
                     };
                     await failDlg.ShowAsync();
                 }

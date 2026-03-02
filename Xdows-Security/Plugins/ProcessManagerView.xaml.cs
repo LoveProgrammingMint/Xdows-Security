@@ -165,7 +165,7 @@ namespace Xdows_Security.Views
                 PrimaryButtonText = "定位文件",
                 SecondaryButtonText = "结束进程",
                 RequestedTheme = (this.XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
-                CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                DefaultButton = ContentDialogButton.Close
             };
 
             var result = await dialog.ShowAsync();
@@ -182,7 +182,7 @@ namespace Xdows_Security.Views
                         CloseButtonText = "确定",
                         RequestedTheme = (this.XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                         XamlRoot = this.XamlRoot,
-                        CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                        DefaultButton = ContentDialogButton.Close
                     }.ShowAsync();
                 }
                 else
@@ -207,7 +207,7 @@ namespace Xdows_Security.Views
                             CloseButtonText = "确定",
                             RequestedTheme = (this.XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                             XamlRoot = this.XamlRoot,
-                            CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                            DefaultButton = ContentDialogButton.Close
                         }.ShowAsync();
                     }
                 }
@@ -260,7 +260,7 @@ namespace Xdows_Security.Views
                 CloseButtonText = "取消",
                 XamlRoot = this.XamlRoot,
                 RequestedTheme = (this.XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
-                PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                DefaultButton = ContentDialogButton.Primary
             };
 
             if (await confirm.ShowAsync() != ContentDialogResult.Primary) return;
@@ -276,7 +276,7 @@ namespace Xdows_Security.Views
                     CloseButtonText = "确定",
                     RequestedTheme = (this.XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                     XamlRoot = this.XamlRoot,
-                    CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                    DefaultButton = ContentDialogButton.Close
                 }.ShowAsync();
             }
             else
@@ -288,7 +288,7 @@ namespace Xdows_Security.Views
                     CloseButtonText = "确定",
                     RequestedTheme = (this.XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
                     XamlRoot = this.XamlRoot,
-                    CloseButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                    DefaultButton = ContentDialogButton.Close
                 }.ShowAsync();
             }
 

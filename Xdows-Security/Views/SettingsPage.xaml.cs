@@ -6,7 +6,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.Windows.Storage.Pickers;
 using System;
-using WinRT.Interop;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -182,7 +181,7 @@ namespace Xdows_Security.Views
                     PrimaryButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                     XamlRoot = this.XamlRoot,
                     RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
-                    PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                    DefaultButton = ContentDialogButton.Primary
                 }.ShowAsync();
             }
             var settings = ApplicationData.Current.LocalSettings;
@@ -392,7 +391,7 @@ namespace Xdows_Security.Views
                     SecondaryButtonText = Localizer.Get().GetLocalizedString("Button_Cancel"),
                     XamlRoot = this.XamlRoot,
                     RequestedTheme = (XamlRoot.Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default,
-                    PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                    DefaultButton = ContentDialogButton.Primary
                 };
 
                 ContentDialogResult result = await dialog.ShowAsync();
@@ -844,7 +843,7 @@ namespace Xdows_Security.Views
                 PrimaryButtonText = Localizer.Get().GetLocalizedString("Button_Confirm"),
                 CloseButtonText = Localizer.Get().GetLocalizedString("Button_Cancel"),
                 XamlRoot = this.XamlRoot,
-                PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"]
+                DefaultButton = ContentDialogButton.Close
             };
 
             if (await confirmDialog.ShowAsync() == ContentDialogResult.Primary)

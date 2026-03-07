@@ -62,7 +62,9 @@ namespace Xdows_Local
             new Rule([["SetThreadContext "], ["GetThreadContext "]], 15, "ThreadHijack"),
             new Rule([["GetAsyncKeyState "]], 10, "KeyloggerPolling"),
             new Rule([["ShellExecute"]], 5, String.Empty),
-            new Rule([["GetProcessImageFileName"]], 5, String.Empty),
+            new Rule([["DeviceIoControl"]], 15, String.Empty),
+            new Rule([["WscGetSecurityProviderHealth", "WscRegisterChanges", "WscUnRegisterChanges"]], 15, String.Empty),
+            new Rule([["GetProcessImageFileName", "NtQueueApcThread"]], 5, String.Empty),
             new Rule([["RegisterServiceProcess"]], 10, String.Empty), //未公开API，注册为系统服务
             new Rule([["RunFileDlg"]], -5, String.Empty),//未公开API，但是无害，用于窗口“运行对话框”
             new Rule([["RtlSetProcessIsCritical"]], 20, String.Empty), //未公开API，设置自身为关键系统进程
@@ -150,6 +152,11 @@ namespace Xdows_Local
                     {
                         score += 5;
                     }
+                    if (ContainsSuspiciousApi(peInfo.ImportsDll, ["rpcrt4.dll", "advapi32.dll"])) // Avast 注册安全中心漏洞
+                    {
+                        score += 5;
+                        suspiciousData.Add("LikeBugsExploit");
+                    }
                 }
 
                 if (peInfo.ImportsName != null)
@@ -219,7 +226,7 @@ namespace Xdows_Local
                         "f-secure", "KvMonXP", "RavMonD", "Mcshield", "ekrn", "kxetray",
                         "avcenter", "avguard", "Sophos", "safedog"
                     ]),
-                    () => t5Result = ContainsSuspiciousContent(fileContent, ["DelegateExecute", "fodhelper.exe", "OSDATA", "wow64log.dll"]),
+                    () => t5Result = ContainsSuspiciousContent(fileContent, ["\\\\.\\ASW", "DelegateExecute", "fodhelper.exe", "OSDATA", "wow64log.dll"]),
                     () => t6Result = ContainsSuspiciousContent(fileContent, ["sandboxie", "vmware - tray", "Detonate", "Vmware", "VMWARE", "Sandbox", "SANDBOX"]),
                     () => t7Result = ContainsSuspiciousContent(fileContent, ["PhysicalDrive0"])
                 );

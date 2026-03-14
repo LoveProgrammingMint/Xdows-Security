@@ -16,19 +16,23 @@ namespace Xdows_Security.Model
 
         public void Reload(string raw, string[]? filters)
         {
-            _dq.TryEnqueue(() =>
+            try
             {
-                var q = string.IsNullOrEmpty(raw)
-                    ? []
-                    : raw.Split(["\r\n", "\n"], StringSplitOptions.RemoveEmptyEntries);
+                _dq.TryEnqueue(() =>
+                {
+                    var q = string.IsNullOrEmpty(raw)
+                        ? []
+                        : raw.Split(["\r\n", "\n"], StringSplitOptions.RemoveEmptyEntries);
 
-                if (filters?.Length > 0)
-                    q = [.. q.Where(l => filters.Any(f => l.Contains($"[{f}]")))];
+                    if (filters?.Length > 0)
+                        q = [.. q.Where(l => filters.Any(f => l.Contains($"[{f}]")))];
 
-                _lines.Clear();
-                foreach (var l in q.TakeLast(MAX_LINES))
-                    _lines.Add(l);
-            });
+                    _lines.Clear();
+                    foreach (var l in q.TakeLast(MAX_LINES))
+                        _lines.Add(l);
+                });
+            }
+            catch { }
         }
 
         public void Push(string line)

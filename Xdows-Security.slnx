@@ -17,6 +17,7 @@
   <Project Path="Helper/Helper.csproj" />
   <Project Path="Protection/Protection.csproj" />
   <Project Path="TrustQuarantine/TrustQuarantine.csproj" />
+  <Project Path="Xdows-Local-Caller/Xdows-Local-Caller.csproj" />
   <Project Path="Xdows-Local/Xdows-Local.csproj" />
   <Project Path="Xdows-Security/Xdows-Security.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />

@@ -691,7 +691,7 @@
     <value>使用内存: </value>
   </data>
   <data name="AllPage_Loading" xml:space="preserve">
-    <value>正在加載...</value>
+    <value>正在加载...</value>
   </data>
   <data name="HomePage_ProtectionStatus.Text" xml:space="preserve">
     <value>防护状态</value>

@@ -284,6 +284,7 @@
                    SelectionChanged="LanguageComboBox_SelectionChanged">
                         <ComboBoxItem Tag="en-US">English</ComboBoxItem>
                         <ComboBoxItem Tag="zh-HANS">简体中文</ComboBoxItem>
+                        <ComboBoxItem Tag="zh-HANT">繁體中文</ComboBoxItem>
                     </ComboBox>
                 </controls:SettingsCard>
                 <controls:SettingsCard

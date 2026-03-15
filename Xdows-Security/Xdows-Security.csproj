@@ -85,4 +85,13 @@
 	<ItemGroup>
 		<PRIResource Remove="Resources\**" />
 	</ItemGroup>
+	<ItemGroup>
+	  <PRIResource Remove="Strings\zh-HANT\Resources.resw" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Update="Strings\zh-HANT\Resources.resw">
+	    <Generator>ReswPlusAdvancedGenerator</Generator>
+	    <LastGenOutput>Resources.generated.cs</LastGenOutput>
+	  </Content>
+	</ItemGroup>
 </Project>

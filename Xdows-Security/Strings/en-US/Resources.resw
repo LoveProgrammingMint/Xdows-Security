@@ -675,7 +675,7 @@ Rain is no glitch; it's light self-filtering.
 If the end is light's riddle, who sets the riddle past the end?
 Why not try XIGUA Security?</value>
   </data>
-  <data name="HomePage_RefreshSystemInfo.Content" xml:space="preserve">
+  <data name="HomePage_RefreshSystemInfo.Text" xml:space="preserve">
     <value>Refresh System Info</value>
   </data>
   <data name="HomePage_SystemInfo.Text" xml:space="preserve">
@@ -753,7 +753,7 @@ Why not try XIGUA Security?</value>
   <data name="MainWindow_Nav_Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
-  <data name="HomePage_CopySystemInfo.Content" xml:space="preserve">
+  <data name="HomePage_CopySystemInfo.Text" xml:space="preserve">
     <value>Copy System Info</value>
   </data>
   <data name="HomePage_RefreshPomes.Content" xml:space="preserve">
@@ -768,19 +768,19 @@ Why not try XIGUA Security?</value>
   <data name="HomePage_TotalThreats.Text" xml:space="preserve">
     <value>Threats Found</value>
   </data>
-  <data name="HomePage_RefreshStatistics.Content" xml:space="preserve">
+  <data name="HomePage_RefreshStatistics.Text" xml:space="preserve">
     <value>Refresh stats</value>
   </data>
   <data name="HomePage_LogsHeader.Text" xml:space="preserve">
     <value>Logs</value>
   </data>
-  <data name="HomePage_ClearLog.Content" xml:space="preserve">
+  <data name="HomePage_ClearLog.Text" xml:space="preserve">
     <value>Clear log</value>
   </data>
-  <data name="HomePage_ExportLog.Content" xml:space="preserve">
+  <data name="HomePage_ExportLog.Text" xml:space="preserve">
     <value>Export log</value>
   </data>
-  <data name="HomePage_LogFilter.Content" xml:space="preserve">
+  <data name="HomePage_LogFilter.Text" xml:space="preserve">
     <value>Filter logs</value>
   </data>
   <data name="HomePage_LogFilter_All.Text" xml:space="preserve">

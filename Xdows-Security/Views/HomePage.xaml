@@ -74,9 +74,12 @@
                             </Grid>
                         </Grid>
                         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft">
-                            <Button l:Uids.Uid="HomePage_RefreshStatistics"
-                                    Command="{x:Bind Vm.RefreshStatisticsCommand}"
-                                    HorizontalAlignment="Left"/>
+                            <Button Command="{x:Bind Vm.RefreshStatisticsCommand}" HorizontalAlignment="Left">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock l:Uids.Uid="HomePage_RefreshStatistics"/>
+                                    <FontIcon Glyph="&#xE72C;" FontSize="16"/>
+                                </StackPanel>
+                            </Button>
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -159,12 +162,18 @@
                             <TextBlock Grid.Column="1" Text="{x:Bind Vm.MemoryUsage, Mode=OneWay}"/>
                         </Grid>
                         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft">
-                            <Button l:Uids.Uid="HomePage_RefreshSystemInfo"
-                                    Command="{x:Bind Vm.RefreshSysInfoCommand}"
-                                    Margin="0,16,0,0" HorizontalAlignment="Left"/>
-                            <Button l:Uids.Uid="HomePage_CopySystemInfo"
-                                    Command="{x:Bind Vm.CopySysInfoCommand}"
-                                    Margin="0,16,0,0" HorizontalAlignment="Left"/>
+                            <Button Command="{x:Bind Vm.RefreshSysInfoCommand}" Margin="0,16,8,0" HorizontalAlignment="Left">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock l:Uids.Uid="HomePage_RefreshSystemInfo"/>
+                                    <FontIcon Glyph="&#xE72C;" FontSize="16"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{x:Bind Vm.CopySysInfoCommand}" Margin="0,16,0,0" HorizontalAlignment="Left">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock l:Uids.Uid="HomePage_CopySystemInfo"/>
+                                    <FontIcon Glyph="&#xE8C8;" FontSize="16"/>
+                                </StackPanel>
+                            </Button>
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -188,12 +197,25 @@
                                            VerticalAlignment="Center"/>
                         </StackPanel>
                         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" Margin="0,8,0,8">
-                            <Button l:Uids.Uid="HomePage_ClearLog"
-                                    Command="{x:Bind Vm.ClearLogCommand}"/>
-                            <Button l:Uids.Uid="HomePage_ExportLog"
-                                    Command="{x:Bind Vm.ExportLogCommand}"/>
-                            <DropDownButton x:Name="LogLevelFilter"
-                                            l:Uids.Uid="HomePage_LogFilter">
+                            <Button Command="{x:Bind Vm.ClearLogCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <FontIcon Glyph="&#xE74D;" FontSize="16"/>
+                                    <TextBlock l:Uids.Uid="HomePage_ClearLog"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{x:Bind Vm.ExportLogCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <FontIcon Glyph="&#xEDE1;" FontSize="16"/>
+                                    <TextBlock l:Uids.Uid="HomePage_ExportLog"/>
+                                </StackPanel>
+                            </Button>
+                            <DropDownButton x:Name="LogLevelFilter">
+                                <DropDownButton.Content>
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                       <FontIcon Glyph="&#xE71C;" FontSize="16"/>
+                                       <TextBlock l:Uids.Uid="HomePage_LogFilter"/>
+                                    </StackPanel>
+                                </DropDownButton.Content>
                                 <DropDownButton.Flyout>
                                     <MenuFlyout>
                                         <ToggleMenuFlyoutItem Tag="All"

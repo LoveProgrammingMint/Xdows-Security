@@ -21,7 +21,8 @@
                 <controls:SettingsCard
                               l:Uids.Uid="SettingsPage_Appearance_Theme"
                               HeaderIcon="{ui:FontIcon Glyph=&#xE790;}"
-                              x:Name="Appearance_Theme">
+                              x:Name="Appearance_Theme"
+                              Margin="0,0,0,4">
                     <ComboBox x:Name="ThemeComboBox" SelectionChanged="ThemeComboBox_SelectionChanged">
                         <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Theme_ComboBox_System" />
                         <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Theme_ComboBox_Light" />
@@ -31,7 +32,8 @@
                 <controls:SettingsExpander
                               l:Uids.Uid="SettingsPage_Appearance_Nav"
                               HeaderIcon="{ui:FontIcon Glyph=&#xE700;}"
-                              x:Name="Appearance_Nav">
+                              x:Name="Appearance_Nav"
+                              Margin="0,0,0,4">
                     <ComboBox x:Name="NavComboBox" SelectionChanged="NavComboBox_SelectionChanged">
                         <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Nav_Left" />
                         <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Nav_Top" />
@@ -47,7 +49,8 @@
                 <controls:SettingsExpander
                    l:Uids.Uid="SettingsPage_Appearance_Backdrop"
                    HeaderIcon="{ui:FontIcon Glyph=&#xEF1F;}"
-                   x:Name="Appearance_Backdrop">
+                   x:Name="Appearance_Backdrop"
+                   Margin="0,0,0,4">
                     <ComboBox x:Name="BackdropComboBox" SelectionChanged="BackdropComboBox_SelectionChanged">
                         <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Backdrop_Solid" Tag="Solid"/>
                         <ComboBoxItem l:Uids.Uid="SettingsPage_Appearance_Backdrop_Mica" Tag="Mica" x:Name="MicaOption"/>
@@ -82,7 +85,8 @@
                 <controls:SettingsExpander
                            l:Uids.Uid="SettingsPage_Scan_IndexMode"
                            HeaderIcon="{ui:FontIcon Glyph=&#xE773;}"
-                           x:Name="Scan_IndexMode">
+                           x:Name="Scan_IndexMode"
+                           Margin="0,0,0,4">
                     <ComboBox x:Name="ScanIndexModeComboBox" SelectionChanged="ScanIndexModeComboBox_SelectionChanged">
                         <ComboBoxItem l:Uids.Uid="SettingsPage_Scan_IndexMode_Parallel" Tag="Parallel" />
                         <ComboBoxItem l:Uids.Uid="SettingsPage_Scan_IndexMode_After" Tag="After" />
@@ -98,7 +102,8 @@
                 </controls:SettingsExpander>
                 <controls:SettingsExpander
                            l:Uids.Uid="SettingsPage_Scan_ScanInside"
-                           HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
+                           HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}"
+                           Margin="0,0,0,4">
                     <ToggleSwitch x:Name="ScanInsideToggle" Tag="ScanInside" Toggled="Toggled_SaveToggleData"  />
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard
@@ -112,7 +117,8 @@
                            VerticalAlignment="Top"
                            l:Uids.Uid="SettingsPage_Scan_SouXiao"
                            HeaderIcon="{ui:FontIcon Glyph=&#xF22C;}"
-                           x:Name="Scan_SouXiao">
+                           x:Name="Scan_SouXiao"
+                           Margin="0,0,0,4">
                     <ToggleSwitch x:Name="SouXiaoScanToggle" Tag="SouXiaoScan" Toggled="Toggled_SaveToggleData"  />
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard
@@ -125,7 +131,8 @@
                            VerticalAlignment="Top"
                            l:Uids.Uid="SettingsPage_Scan_Local"
                            HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}"
-                           x:Name="Scan_Local">
+                           x:Name="Scan_Local"
+                           Margin="0,0,0,4">
                     <ToggleSwitch x:Name="LocalScanToggle" Tag="LocalScan" Toggled="Toggled_SaveToggleData" />
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard
@@ -143,7 +150,8 @@
                 <controls:SettingsExpander
                            VerticalAlignment="Top"
                            l:Uids.Uid="SettingsPage_Scan_Cloud"
-                           HeaderIcon="{ui:FontIcon Glyph=&#xE753;}">
+                           HeaderIcon="{ui:FontIcon Glyph=&#xE753;}"
+                           Margin="0,0,0,4">
                     <ToggleSwitch x:Name="CloudScanToggle" Tag="CloudScan" Toggled="Toggled_SaveToggleData"  />
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard
@@ -156,7 +164,8 @@
                 <controls:SettingsExpander
                            VerticalAlignment="Top"
                            l:Uids.Uid="SettingsPage_Scan_CzkCloud"
-                           HeaderIcon="{ui:FontIcon Glyph=&#xEDE4;}">
+                           HeaderIcon="{ui:FontIcon Glyph=&#xEDE4;}"
+                           Margin="0,0,0,4">
                     <ToggleSwitch x:Name="CzkCloudScanToggle" Tag="CzkCloudScan" Toggled="Toggled_SaveToggleData"  />
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard
@@ -170,7 +179,8 @@
                 <controls:SettingsExpander
                VerticalAlignment="Top"
                l:Uids.Uid="SettingsPage_Protection_Process"
-               HeaderIcon="{ui:FontIcon Glyph=&#xE9D5;}">
+               HeaderIcon="{ui:FontIcon Glyph=&#xE9D5;}"
+               Margin="0,0,0,4">
                     <ToggleSwitch x:Name="ProcessToggle" Tag="Process" Toggled="RunProtection" />
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard
@@ -183,7 +193,8 @@
                 <controls:SettingsExpander
                VerticalAlignment="Top"
                l:Uids.Uid="SettingsPage_Protection_Files"
-               HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}">
+               HeaderIcon="{ui:FontIcon Glyph=&#xE8A5;}"
+               Margin="0,0,0,4">
                     <ToggleSwitch x:Name="FilesToggle" Tag="Files" Toggled="RunProtection"/>
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard
@@ -196,7 +207,8 @@
                 <controls:SettingsExpander
                VerticalAlignment="Top"
                l:Uids.Uid="SettingsPage_Protection_Behavior"
-               HeaderIcon="{ui:FontIcon Glyph=&#xE8FC;}">
+               HeaderIcon="{ui:FontIcon Glyph=&#xE8FC;}"
+               Margin="0,0,0,4">
                     <ToggleSwitch  IsEnabled="False" />
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard
@@ -216,7 +228,8 @@
                 <controls:SettingsExpander
                VerticalAlignment="Top"
                l:Uids.Uid="SettingsPage_Protection_Boot"
-               HeaderIcon="{ui:FontIcon Glyph=&#xEDA2;}">
+               HeaderIcon="{ui:FontIcon Glyph=&#xEDA2;}"
+               Margin="0,0,0,4">
                     <ToggleSwitch Tag="Boot" IsEnabled="False" Toggled="RunProtection"/>
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard
@@ -236,7 +249,8 @@
                VerticalAlignment="Top"
                l:Uids.Uid="SettingsPage_Protection_Registry"
                x:Name="SettingsPage_Protection_Registry"
-               HeaderIcon="{ui:FontIcon Glyph=&#xEA37;}">
+               HeaderIcon="{ui:FontIcon Glyph=&#xEA37;}"
+               Margin="0,0,0,4">
                     <ToggleSwitch x:Name="RegistryToggle" Tag="Registry" Toggled="RunProtection"/>
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard
@@ -257,7 +271,8 @@
                 <controls:SettingsExpander
                VerticalAlignment="Top"
                l:Uids.Uid="SettingsPage_Quarantine"
-               HeaderIcon="{ui:FontIcon Glyph=&#xE8B6;}">
+               HeaderIcon="{ui:FontIcon Glyph=&#xE8B6;}"
+               Margin="0,0,0,4">
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard
                        l:Uids.Uid="SettingsPage_Quarantine_ViewItems"
@@ -274,7 +289,8 @@
                 <controls:SettingsExpander
                VerticalAlignment="Top"
                l:Uids.Uid="SettingsPage_Trust"
-               HeaderIcon="{ui:FontIcon Glyph=&#xE8E5;}">
+               HeaderIcon="{ui:FontIcon Glyph=&#xE8E5;}"
+               Margin="0,0,0,4">
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard
                        l:Uids.Uid="SettingsPage_Trust_ViewItems"
@@ -291,7 +307,8 @@
                 <TextBlock Margin="0,8,0,8" l:Uids.Uid="SettingsPage_Other"/>
                 <controls:SettingsCard 
                     l:Uids.Uid="SettingsPage_Other_Language"
-                    HeaderIcon="{ui:FontIcon Glyph=&#xF2B7;}">
+                    HeaderIcon="{ui:FontIcon Glyph=&#xF2B7;}"
+                    Margin="0,0,0,4">
                     <ComboBox x:Name="LanguageComboBox" 
                    SelectionChanged="LanguageComboBox_SelectionChanged">
                         <ComboBoxItem Tag="en-US">English</ComboBoxItem>
@@ -301,20 +318,23 @@
                 </controls:SettingsCard>
                 <controls:SettingsCard
                            l:Uids.Uid="SettingsPage_Other_Tray"
-                           HeaderIcon="{ui:FontIcon Glyph=&#xE90E;}">
+                           HeaderIcon="{ui:FontIcon Glyph=&#xE90E;}"
+                           Margin="0,0,0,4">
                     <ToggleSwitch x:Name="TrayVisibleToggle" Tag="TrayVisibleToggle" Toggled="TrayVisibleToggle_Toggled" />
                 </controls:SettingsCard>
                 <controls:SettingsCard
                            l:Uids.Uid="SettingsPage_Other_DisabledVerify"
-                           HeaderIcon="{ui:FontIcon Glyph=&#xE72E;}">
+                           HeaderIcon="{ui:FontIcon Glyph=&#xE72E;}"
+                           Margin="0,0,0,4">
                     <ToggleSwitch x:Name="DisabledVerifyToggle" Tag="DisabledVerify" Toggled="DisabledVerifyToggle_Toggled" />
                 </controls:SettingsCard>
-                <controls:SettingsCard l:Uids.Uid="SettingsPage_Other_Feedback" x:Name="SettingsPage_Other_Feedback" HeaderIcon="{ui:FontIcon Glyph=&#xED15;}">
+                <controls:SettingsCard l:Uids.Uid="SettingsPage_Other_Feedback" x:Name="SettingsPage_Other_Feedback" HeaderIcon="{ui:FontIcon Glyph=&#xED15;}" Margin="0,0,0,4">
                     <Button l:Uids.Uid="AllPage_OpenLink" Click="Settings_Feedback_Click"/>
                 </controls:SettingsCard>
                 <controls:SettingsCard 
                    l:Uids.Uid="SettingsPage_Other_CheckUpdate"
-                   HeaderIcon="{ui:FontIcon Glyph=&#xE895;}">
+                   HeaderIcon="{ui:FontIcon Glyph=&#xE895;}"
+                   Margin="0,0,0,4">
                     <Grid>
                         <Button l:Uids.Uid="SettingsPage_Other_CheckUpdate_Button" x:Name="UpdateButton" Click="UpdateButtonClick" Style="{ThemeResource AccentButtonStyle}" />
                         <ProgressRing x:Name="UpdateProgressRing" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" IsActive="False" Visibility="Collapsed" />
@@ -323,7 +343,8 @@
                 <controls:SettingsExpander
                            VerticalAlignment="Top"
                            l:Uids.Uid="SettingsPage_Other_Config"
-                           HeaderIcon="{ui:FontIcon Glyph=&#xF259;}">
+                           HeaderIcon="{ui:FontIcon Glyph=&#xF259;}"
+                           Margin="0,0,0,4">
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard
                        l:Uids.Uid="SettingsPage_Other_Config_Location"
@@ -341,7 +362,8 @@
                            VerticalAlignment="Top"
                            l:Uids.Uid="SettingsPage_Other_About"
                            IsExpanded="True"
-                           HeaderIcon="{ui:FontIcon Glyph=&#xE946;}">
+                           HeaderIcon="{ui:FontIcon Glyph=&#xE946;}"
+                           Margin="0,0,0,4">
                     <controls:SettingsExpander.Items>
                         <controls:SettingsCard l:Uids.Uid="SettingsPage_Other_About_Name" HeaderIcon="{ui:FontIcon Glyph=&#xE8AC;}">
                             <TextBlock x:Name="Settings_About_Name"/>

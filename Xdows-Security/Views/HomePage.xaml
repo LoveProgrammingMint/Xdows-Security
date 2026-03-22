@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:l="using:WinUI3Localizer"
     xmlns:vm="using:Xdows_Security.ViewModel"
+    xmlns:local="using:Xdows_Security"
     mc:Ignorable="d">
 
     <!-- 1. 指定 DataContext -->
@@ -33,13 +34,13 @@
                                Style="{StaticResource BodyTextBlockStyle}"
                                VerticalAlignment="Center"
                                IsTextSelectionEnabled="True"/>
-                    <Button Command="{x:Bind Vm.CopyPomesCommand}"
-                            Height="32" Margin="16,0,0,0">
+                    <local:CopyButton Command="{x:Bind Vm.CopyPomesCommand}"
+                            Height="32" Margin="8,0,0,0" Style="{StaticResource SubtleCopyButtonStyle}">
                         <FontIcon Glyph="&#xE8C8;" FontSize="16"/>
-                    </Button>
-                    <Button Command="{x:Bind Vm.RefreshPomesCommand}"
-                            Height="32" Margin="4,0,0,0">
-                        <FontIcon Glyph="&#xE72C;" FontSize="16"/>
+                    </local:CopyButton>
+                    <Button Command="{x:Bind Vm.RefreshPomesCommand}" Padding="4" Width="30"
+                            Height="32" Style="{StaticResource SubtleButtonStyle}">
+                        <FontIcon Glyph="&#xE72C;" FontSize="14"/>
                     </Button>
                 </StackPanel>
             </StackPanel>

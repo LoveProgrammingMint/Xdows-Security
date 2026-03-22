@@ -94,4 +94,9 @@
 	    <LastGenOutput>Resources.generated.cs</LastGenOutput>
 	  </Content>
 	</ItemGroup>
+	<ItemGroup>
+	  <Page Update="Style\CopyButton.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	</ItemGroup>
 </Project>

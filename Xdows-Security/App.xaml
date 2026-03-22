@@ -8,6 +8,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <!-- WinUI 资源 -->
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <ResourceDictionary Source="/Style/CopyButton.xaml" />
+
             </ResourceDictionary.MergedDictionaries>
 
             <!-- 这里可以添加全局样式 -->

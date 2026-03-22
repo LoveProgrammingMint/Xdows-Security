@@ -17,7 +17,7 @@
                             VerticalAlignment="Top"
                             HorizontalAlignment="Stretch" />
             <StackPanel x:Name="SettingsContentPanel">
-                <TextBlock Margin="0,8,0,8" l:Uids.Uid="SettingsPage_Appearance" x:Name="Appearance_Header"/>
+                <TextBlock Margin="0,4,0,8" l:Uids.Uid="SettingsPage_Appearance" x:Name="Appearance_Header"/>
                 <controls:SettingsCard
                               l:Uids.Uid="SettingsPage_Appearance_Theme"
                               HeaderIcon="{ui:FontIcon Glyph=&#xE790;}"
@@ -81,7 +81,7 @@
                         </controls:SettingsCard>
                     </controls:SettingsExpander.Items>
                 </controls:SettingsExpander>
-                <TextBlock Margin="0,8,0,8" l:Uids.Uid="SettingsPage_Scan" x:Name="Scan_Header"/>
+                <TextBlock Margin="0,4,0,8" l:Uids.Uid="SettingsPage_Scan" x:Name="Scan_Header"/>
                 <controls:SettingsExpander
                            l:Uids.Uid="SettingsPage_Scan_IndexMode"
                            HeaderIcon="{ui:FontIcon Glyph=&#xE773;}"
@@ -175,7 +175,7 @@
                         </controls:SettingsCard>
                     </controls:SettingsExpander.Items>
                 </controls:SettingsExpander>
-                <TextBlock Margin="0,8,0,8" l:Uids.Uid="SettingsPage_Protection" />
+                <TextBlock Margin="0,4,0,8" l:Uids.Uid="SettingsPage_Protection" />
                 <controls:SettingsExpander
                VerticalAlignment="Top"
                l:Uids.Uid="SettingsPage_Protection_Process"
@@ -267,7 +267,7 @@
                         </controls:SettingsCard>
                     </controls:SettingsExpander.Items>
                 </controls:SettingsExpander>
-                <TextBlock Margin="0,8,0,8" l:Uids.Uid="SettingsPage_Quarantine_Trust" />
+                <TextBlock Margin="0,4,0,8" l:Uids.Uid="SettingsPage_Quarantine_Trust" />
                 <controls:SettingsExpander
                VerticalAlignment="Top"
                l:Uids.Uid="SettingsPage_Quarantine"
@@ -304,7 +304,7 @@
                         </controls:SettingsCard>
                     </controls:SettingsExpander.Items>
                 </controls:SettingsExpander>
-                <TextBlock Margin="0,8,0,8" l:Uids.Uid="SettingsPage_Other"/>
+                <TextBlock Margin="0,4,0,8" l:Uids.Uid="SettingsPage_Other"/>
                 <controls:SettingsCard 
                     l:Uids.Uid="SettingsPage_Other_Language"
                     HeaderIcon="{ui:FontIcon Glyph=&#xF2B7;}"

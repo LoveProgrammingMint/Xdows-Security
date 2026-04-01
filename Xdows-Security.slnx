@@ -5,6 +5,11 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Folder Name="/README/">
+    <File Path="README.md" />
+    <File Path="README.zh-HANS.md" />
+    <File Path="README.zh-HANT.md" />
+  </Folder>
   <Project Path="../ICEX/ProcessManager/ProcessManager.vcxproj" Id="cc86d3c6-b0c4-4574-bce3-0789299d1e11">
     <Platform Solution="*|ARM64" Project="x64" />
   </Project>
@@ -14,6 +19,10 @@
   <Project Path="../SouXiaoAVEngine/PublicPart/PublicPart.csproj" />
   <Project Path="../SouXiaoAVEngine/SouRLib/SouRLib.csproj" />
   <Project Path="../SouXiaoAVEngine/SouXiao/SouXiao.csproj" />
+  <Project Path="../Xdows-Model/Xdows-Model-Caller/Xdows-Model-Caller.csproj">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
+  <Project Path="../Xdows-Model/Xdows-Model-Invoker/Xdows-Model-Invoker.csproj" />
   <Project Path="Helper/Helper.csproj" />
   <Project Path="Protection/Protection.csproj" />
   <Project Path="TrustQuarantine/TrustQuarantine.csproj" />

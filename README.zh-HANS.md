@@ -45,6 +45,7 @@
       git clone https://github.com/LoveProgrammingMint/Xdows-Security
       git clone https://github.com/LoveProgrammingMint/SouXiaoAVEngine
       git clone https://github.com/LoveProgrammingMint/ICEX
+      git clone https://github.com/XTY64XTY/Xdows-Model
       ```
 
     2. 生成项目

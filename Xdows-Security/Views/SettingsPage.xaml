@@ -127,6 +127,13 @@
                         </controls:SettingsCard>
                     </controls:SettingsExpander.Items>
                 </controls:SettingsExpander>
+                <controls:SettingsCard
+                   l:Uids.Uid="SettingsPage_Scan_Xdows_Model"
+                   x:Name="SettingsPage_Scan_Xdows_Model"
+                   HeaderIcon="{ui:FontIcon Glyph=&#xEC26;}"
+                   Margin="0,0,0,4">
+                    <ToggleSwitch x:Name="ModelScanToggle" Tag="ModelScan" Toggled="Toggled_SaveToggleData" />
+                </controls:SettingsCard>
                 <controls:SettingsExpander
                            VerticalAlignment="Top"
                            l:Uids.Uid="SettingsPage_Scan_Local"

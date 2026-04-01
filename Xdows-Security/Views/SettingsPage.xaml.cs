@@ -70,6 +70,7 @@ namespace Xdows_Security.Views
         private void UpdateAppText()
         {
             SettingsPage_Protection_Registry.Header += " (Beta)";
+            SettingsPage_Scan_Xdows_Model.Header += " (Beta)";
         }
 
         private Task LoadScanSettingAsync
@@ -202,6 +203,7 @@ namespace Xdows_Security.Views
                 LocalScanToggle,
                 CzkCloudScanToggle,
                 SouXiaoScanToggle,
+                ModelScanToggle,
                 CloudScanToggle,
                 TrayVisibleToggle,
                 DisabledVerifyToggle,

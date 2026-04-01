@@ -222,7 +222,7 @@
   <data name="SecurityPage_SouXiao_InitFailed_Title" xml:space="preserve">
     <value>無法初始化 SouXiaoEngine</value>
   </data>
-  <data name="SecurityPage_SouXiao_InitFailed_Content" xml:space="preserve">
+  <data name="SecurityPage_InitFailed_Content" xml:space="preserve">
     <value>請轉到 設置 - 掃描引擎 取消這個引擎的選中。</value>
   </data>
   <data name="SecurityPage_Status_Cancelled" xml:space="preserve">
@@ -380,6 +380,12 @@
   </data>
   <data name="SettingsPage_Scan_Local.Description" xml:space="preserve">
     <value>本地綜合引擎速度相對較快，但是可能無法及時發現新的威脅</value>
+  </data>
+  <data name="SettingsPage_Scan_Xdows_Model.Header" xml:space="preserve">
+    <value>Xdows Model 本地引擎</value>
+  </data>
+  <data name="SettingsPage_Scan_Xdows_Model.Description" xml:space="preserve">
+    <value>基於機器學習的高精度掃描引擎</value>
   </data>
   <data name="SettingsPage_Scan_Local_DeepScan.Header" xml:space="preserve">
     <value>深度掃描</value>
@@ -1205,5 +1211,8 @@
   </data>
   <data name="SettingsPage_Appearance_Nav_IsPaneToggleButtonInTitleBar.Description" xml:space="preserve">
     <value>將導航按鈕置於標題欄</value>
+  </data>
+  <data name="SecurityPage_Model_InitFailed_Title" xml:space="preserve">
+    <value>無法初始化 Xdows Model</value>
   </data>
 </root>

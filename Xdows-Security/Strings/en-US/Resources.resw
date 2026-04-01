@@ -222,8 +222,8 @@
   <data name="SecurityPage_SouXiao_InitFailed_Title" xml:space="preserve">
     <value>Cannot initialize SouXiaoEngine</value>
   </data>
-  <data name="SecurityPage_SouXiao_InitFailed_Content" xml:space="preserve">
-    <value>Please go to Settings - Scan Engine and uncheck this engine.</value>
+  <data name="SecurityPage_InitFailed_Content" xml:space="preserve">
+    <value>Please go to Settings - Scan and uncheck this engine.</value>
   </data>
   <data name="SecurityPage_Status_Cancelled" xml:space="preserve">
     <value>Selection cancelled</value>
@@ -380,6 +380,12 @@
   </data>
   <data name="SettingsPage_Scan_Local.Description" xml:space="preserve">
     <value>The built-in local engine is fast but may not detect the latest threats promptly.</value>
+  </data>
+  <data name="SettingsPage_Scan_Xdows_Model.Header" xml:space="preserve">
+    <value>Xdows Model Engine</value>
+  </data>
+  <data name="SettingsPage_Scan_Xdows_Model.Description" xml:space="preserve">
+    <value>High-Precision Scanning Engine Based on Machine Learning</value>
   </data>
   <data name="SettingsPage_Scan_Local_DeepScan.Header" xml:space="preserve">
     <value>Deep Scan</value>
@@ -1206,5 +1212,8 @@ If you do not accept it, please turn off the engine, or stop using and delete th
   </data>
   <data name="SettingsPage_Appearance_Nav_IsPaneToggleButtonInTitleBar.Description" xml:space="preserve">
     <value>Place the PaneToggleButton in the TitleBar</value>
+  </data>
+  <data name="SecurityPage_Model_InitFailed_Title" xml:space="preserve">
+    <value>Cannot initialize Xdows Model</value>
   </data>
 </root>

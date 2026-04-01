@@ -46,7 +46,13 @@
 	<ItemGroup>
 		<Manifest Include="$(ApplicationManifest)" />
 	</ItemGroup>
-
+	<ItemGroup>
+		<TrimmerRootAssembly Include="Xdows_Model_Invoker" />
+		<TrimmerRootAssembly Include="Microsoft.ML" />
+		<TrimmerRootAssembly Include="Microsoft.ML.LightGbm" />
+		<DynamicDependency Include="Xdows_Model_Invoker.ModelInput" />
+		<DynamicDependency Include="Xdows_Model_Invoker.ModelOutput" />
+	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.251219" />

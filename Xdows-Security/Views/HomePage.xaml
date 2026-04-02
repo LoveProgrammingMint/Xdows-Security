@@ -6,14 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:l="using:WinUI3Localizer"
-    xmlns:vm="using:Xdows_Security.ViewModel"
     xmlns:local="using:Xdows_Security"
     mc:Ignorable="d">
-
-    <!-- 1. 指定 DataContext -->
-    <Page.DataContext>
-        <vm:HomeViewModel x:Name="Vm"/>
-    </Page.DataContext>
 
     <Grid Margin="64,0,64,0">
         <Grid.RowDefinitions>
@@ -23,22 +17,19 @@
 
         <!-- 头部 -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-            <FontIcon Glyph="{x:Bind Vm.HomePageIcon, Mode=OneWay}"
-                      Margin="16,0,0,0" HorizontalAlignment="Left"
+            <FontIcon x:Name="HomePageIcon" Margin="16,0,0,0" HorizontalAlignment="Left"
                       FontSize="124" FontWeight="Bold"/>
             <StackPanel Margin="24,16,0,0" Orientation="Vertical">
-                <TextBlock Text="{x:Bind Vm.HomePageText, Mode=OneWay}"
-                           Margin="0,12,0,0" FontSize="28" FontWeight="Bold"/>
+                <TextBlock x:Name="HomePageText" Margin="0,12,0,0" FontSize="28" FontWeight="Bold"/>
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                    <TextBlock Text="{x:Bind Vm.PomesLine, Mode=OneWay}"
-                               Style="{StaticResource BodyTextBlockStyle}"
+                    <TextBlock x:Name="PomesLine" Style="{StaticResource BodyTextBlockStyle}"
                                VerticalAlignment="Center"
                                IsTextSelectionEnabled="True"/>
-                    <local:CopyButton Command="{x:Bind Vm.CopyPomesCommand}"
+                    <local:CopyButton Click="CopyPomes_Click"
                             Height="32" Margin="8,0,0,0" Style="{StaticResource SubtleCopyButtonStyle}">
                         <FontIcon Glyph="&#xE8C8;" FontSize="16"/>
                     </local:CopyButton>
-                    <Button Command="{x:Bind Vm.RefreshPomesCommand}" Padding="4" Width="30"
+                    <Button Click="RefreshPomes_Click" Padding="4" Width="30"
                             Height="32" Style="{StaticResource SubtleButtonStyle}">
                         <FontIcon Glyph="&#xE72C;" FontSize="14"/>
                     </Button>
@@ -59,20 +50,20 @@
                             <Grid Grid.Column="0">
                                 <TextBlock l:Uids.Uid="HomePage_TotalScans" FontSize="15" FontWeight="SemiBold"
                                            HorizontalAlignment="Center"/>
-                                <TextBlock Text="{x:Bind Vm.TotalScans, Mode=OneWay}"
+                                <TextBlock x:Name="TotalScans"
                                            FontSize="24" FontWeight="Bold"
                                            HorizontalAlignment="Center" Margin="0,20,0,0"/>
                             </Grid>
                             <Grid Grid.Column="1">
                                 <TextBlock l:Uids.Uid="HomePage_TotalThreats" FontSize="15" FontWeight="SemiBold"
                                            HorizontalAlignment="Center"/>
-                                <TextBlock Text="{x:Bind Vm.TotalThreats, Mode=OneWay}"
+                                <TextBlock x:Name="TotalThreats"
                                            FontSize="24" FontWeight="Bold"
                                            HorizontalAlignment="Center" Margin="0,20,0,0"/>
                             </Grid>
                         </Grid>
                         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft">
-                            <Button Command="{x:Bind Vm.RefreshStatisticsCommand}" HorizontalAlignment="Left">
+                            <Button Click="RefreshStatistics_Click" HorizontalAlignment="Left">
                                 <StackPanel Orientation="Horizontal" Spacing="4">
                                     <TextBlock l:Uids.Uid="HomePage_RefreshStatistics"/>
                                     <FontIcon Glyph="&#xE72C;" FontSize="16"/>
@@ -91,9 +82,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock l:Uids.Uid="HomePage_Protection" Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock Grid.Column="1"
-                                       Text="{x:Bind Vm.ProtectionStatus, Mode=OneWay}"
-                                       Foreground="{x:Bind Vm.ProtectionColor, Mode=OneWay}"/>
+                            <TextBlock x:Name="ProtectionStatus" Grid.Column="1"/>
                         </Grid>
                         <Grid Margin="0,5,0,0">
                             <Grid.ColumnDefinitions>
@@ -101,8 +90,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock l:Uids.Uid="HomePage_LastScan" Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock Grid.Column="1"
-                                       Text="{x:Bind Vm.LastScanTime, Mode=OneWay}"/>
+                            <TextBlock x:Name="LastScanTime" Grid.Column="1"/>
                         </Grid>
                         <Grid Margin="0,5,0,0">
                             <Grid.ColumnDefinitions>
@@ -110,8 +98,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock l:Uids.Uid="HomePage_NumberOfThreats" Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock Grid.Column="1"
-                                       Text="{x:Bind Vm.ThreatCount, Mode=OneWay}"/>
+                            <TextBlock x:Name="ThreatCount" Grid.Column="1"/>
                         </Grid>
                     </StackPanel>
                 </local:InfoCard>
@@ -125,7 +112,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock l:Uids.Uid="HomePage_OSName" Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock Grid.Column="1" Text="{x:Bind Vm.OsName, Mode=OneWay}"/>
+                            <TextBlock x:Name="OsName" Grid.Column="1"/>
                         </Grid>
                         <Grid Margin="0,5,0,0">
                             <Grid.ColumnDefinitions>
@@ -133,7 +120,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock l:Uids.Uid="HomePage_OSVersion"  Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock Grid.Column="1" Text="{x:Bind Vm.OsVersion, Mode=OneWay}"/>
+                            <TextBlock x:Name="OsVersion" Grid.Column="1"/>
                         </Grid>
                         <Grid Margin="0,5,0,0">
                             <Grid.ColumnDefinitions>
@@ -141,16 +128,16 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock l:Uids.Uid="HomePage_OSMemory" Grid.Column="0" Margin="0,0,10,0"/>
-                            <TextBlock Grid.Column="1" Text="{x:Bind Vm.MemoryUsage, Mode=OneWay}"/>
+                            <TextBlock x:Name="MemoryUsage" Grid.Column="1"/>
                         </Grid>
                         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft">
-                            <Button Command="{x:Bind Vm.RefreshSysInfoCommand}" HorizontalAlignment="Left">
+                            <Button Click="RefreshSysInfo_Click" HorizontalAlignment="Left">
                                 <StackPanel Orientation="Horizontal" Spacing="4">
                                     <TextBlock l:Uids.Uid="HomePage_RefreshSystemInfo"/>
                                     <FontIcon Glyph="&#xE72C;" FontSize="16"/>
                                 </StackPanel>
                             </Button>
-                            <Button Command="{x:Bind Vm.CopySysInfoCommand}" HorizontalAlignment="Left">
+                            <Button Click="CopySysInfo_Click" HorizontalAlignment="Left">
                                 <StackPanel Orientation="Horizontal" Spacing="4">
                                     <TextBlock l:Uids.Uid="HomePage_CopySystemInfo"/>
                                     <FontIcon Glyph="&#xE8C8;" FontSize="16"/>
@@ -168,13 +155,13 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,8">
-                            <Button Command="{x:Bind Vm.ClearLogCommand}">
+                            <Button Click="ClearLog_Click">
                                 <StackPanel Orientation="Horizontal" Spacing="4">
                                     <FontIcon Glyph="&#xE74D;" FontSize="16"/>
                                     <TextBlock l:Uids.Uid="HomePage_ClearLog"/>
                                 </StackPanel>
                             </Button>
-                            <Button Command="{x:Bind Vm.ExportLogCommand}">
+                            <Button Click="ExportLog_Click">
                                 <StackPanel Orientation="Horizontal" Spacing="4">
                                     <FontIcon Glyph="&#xEDE1;" FontSize="16"/>
                                     <TextBlock l:Uids.Uid="HomePage_ExportLog"/>
@@ -224,7 +211,7 @@
                         </StackPanel>
 
                         <ScrollViewer Grid.Row="1" Height="216" x:Name="LogScroll">
-                            <ItemsRepeater ItemsSource="{x:Bind Vm.LogLines}">
+                            <ItemsRepeater x:Name="LogRepeater">
                                 <ItemsRepeater.Layout>
                                     <StackLayout Spacing="0"/>
                                 </ItemsRepeater.Layout>

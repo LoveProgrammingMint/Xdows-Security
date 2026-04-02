@@ -3,8 +3,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using IO = System.IO;
 
-#pragma warning disable CS8601, CS8603, CS8766, CS1998, CS0114, CS8643, CS8613, CS8619, CS8767
-
 namespace Compatibility.Windows.Storage
 {
     #region ApplicationData
@@ -176,7 +174,7 @@ namespace Compatibility.Windows.Storage
         }
 
         public ApplicationDataContainerValues Values { get; }
-        
+
         internal void Save()
         {
             try
@@ -184,7 +182,7 @@ namespace Compatibility.Windows.Storage
                 var json = JsonSerializer.Serialize(_dict, AppDataJsonContext.Default.DictionaryStringJsonElement);
                 File.WriteAllText(StorePath, json);
             }
-            catch { /* 随它去 */ }
+            catch { }
         }
 
         private void Load()
@@ -198,7 +196,7 @@ namespace Compatibility.Windows.Storage
                     foreach (var kv in tmp)
                         _dict[kv.Key] = kv.Value.Clone();   // 隔离引用
             }
-            catch { /* 坏了就当没文件 */ }
+            catch { }
         }
     }
     #endregion
@@ -256,7 +254,7 @@ namespace Compatibility.Windows.Storage
         public bool TryGetValue(string key, out object value)
         {
             var r = Dict.TryGetValue(key, out var v);
-            value = r ? ParseJsonElement(v) : new object();
+            value = r ? ParseJsonElement(v) ?? new object() : new object();
             return r;
         }
 

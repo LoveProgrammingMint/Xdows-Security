@@ -1,5 +1,4 @@
 using PublicPart;
-using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text.Json;
 
@@ -15,9 +14,9 @@ namespace Helper
             {
                 try
                 {
-                    /*Xdows_Model_Invoker.ModelInvoker.Initialize();
-                    return true;*/
-                    return File.Exists(Path.GetDirectoryName(Environment.ProcessPath) + "\\Xdows-Model-Caller.exe");
+                    Xdows_Model_Invoker.ModelInvoker.Initialize();
+                    return true;
+                    //return File.Exists(Path.GetDirectoryName(Environment.ProcessPath) + "\\Xdows-Model-Caller.exe");
                 }
                 catch
                 {
@@ -27,41 +26,41 @@ namespace Helper
 
             public static (bool IsVirus, string Result) ScanFile(string path)
             {
-                /*try
+                try
                 {
                     var r = Xdows_Model_Invoker.ModelInvoker.ScanFile(path);
                     if (r.isVirus)
                     {
-                        return (true, $"Xdows.Model.{(int)r.probability}");
-                    }
-                }
-                catch { }
-                return (false, string.Empty);*/
-                try
-                {
-                    using var process = new Process();
-                    process.StartInfo.FileName = Path.GetDirectoryName(Environment.ProcessPath) + "\\Xdows-Model-Caller.exe";
-                    process.StartInfo.Arguments = $"\"{path}\"";
-                    process.StartInfo.RedirectStandardOutput = true;
-                    process.StartInfo.UseShellExecute = false;
-                    process.StartInfo.CreateNoWindow = true;
-
-                    process.Start();
-
-                    string lastLine = string.Empty;
-                    while (!process.StandardOutput.EndOfStream)
-                    {
-                        lastLine = process.StandardOutput.ReadLine() ?? string.Empty;
-                    }
-
-                    process.WaitForExit();
-                    if (lastLine.StartsWith("Virus"))
-                    {
-                        return (true, $"Xdows.Model.{lastLine}");
+                        return (true, $"Xdows.Model.Probability{(int)r.probability}");
                     }
                 }
                 catch { }
                 return (false, string.Empty);
+                //try
+                //{
+                //    using var process = new Process();
+                //    process.StartInfo.FileName = Path.GetDirectoryName(Environment.ProcessPath) + "\\Xdows-Model-Caller.exe";
+                //    process.StartInfo.Arguments = $"\"{path}\"";
+                //    process.StartInfo.RedirectStandardOutput = true;
+                //    process.StartInfo.UseShellExecute = false;
+                //    process.StartInfo.CreateNoWindow = true;
+
+                //    process.Start();
+
+                //    string lastLine = string.Empty;
+                //    while (!process.StandardOutput.EndOfStream)
+                //    {
+                //        lastLine = process.StandardOutput.ReadLine() ?? string.Empty;
+                //    }
+
+                //    process.WaitForExit();
+                //    if (lastLine.StartsWith("Virus"))
+                //    {
+                //        return (true, $"Xdows.Model.{lastLine}");
+                //    }
+                //}
+                //catch { }
+                //return (false, string.Empty);
             }
         }
 

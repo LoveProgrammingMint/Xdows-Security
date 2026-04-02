@@ -733,6 +733,104 @@ namespace Xdows_Security.Views
 
         private record ScanResult(String EngineName, String? VirusInfo);
 
+        // Run configured scan engines against a single file and return the first detection (if any).
+        private async Task<ScanResult> RunScansOnFileAsync(String filePath, Boolean deepScan, Boolean extraData,
+            Boolean useLocalScan, Boolean useCloudScan, Boolean useCzkCloudScan, Boolean useSouXiaoScan, Boolean useModelScan,
+            Helper.ScanEngine.SouXiaoEngineScan? souXiaoEngine, Helper.ScanEngine.ModelEngineScan? modelEngine,
+            String czkApiKey, CancellationToken token)
+        {
+            try
+            {
+                if (TrustManager.IsPathTrusted(filePath))
+                    return new ScanResult(String.Empty, null);
+
+                var scanTasks = new List<Task<ScanResult>>();
+
+                if (useSouXiaoScan && souXiaoEngine != null)
+                {
+                    scanTasks.Add(Task.Run(() =>
+                    {
+                        (Boolean isVirus, String result) = souXiaoEngine.ScanFile(filePath);
+                        return new ScanResult("SouXiao", isVirus ? result : null);
+                    }));
+                }
+
+                if (useModelScan && modelEngine != null)
+                {
+                    scanTasks.Add(Task.Run(() =>
+                    {
+                        (Boolean isVirus, String result) = ScanEngine.ModelEngineScan.ScanFile(filePath);
+                        return new ScanResult("Xdows-Model", isVirus ? result : null);
+                    }));
+                }
+
+                if (useLocalScan)
+                {
+                    scanTasks.Add(Helper.ScanEngine.LocalScanAsync(filePath, deepScan, extraData)
+                        .ContinueWith(t =>
+                        {
+                            String localResult = t.Result;
+                            String? info = !String.IsNullOrEmpty(localResult) ? (deepScan ? $"{localResult} with DeepScan" : localResult) : null;
+                            return new ScanResult("Local", info);
+                        }, TaskScheduler.Default));
+                }
+
+                if (useCloudScan)
+                {
+                    scanTasks.Add(Helper.ScanEngine.CloudScanAsync(filePath)
+                        .ContinueWith(t =>
+                        {
+                            (Int32? statusCode, String? result) = t.Result;
+                            String? info = (result == "virus_file") ? "MEMZUAC.Cloud.VirusFile" : null;
+                            return new ScanResult("Cloud", info);
+                        }, TaskScheduler.Default));
+                }
+
+                if (useCzkCloudScan)
+                {
+                    scanTasks.Add(Helper.ScanEngine.CzkCloudScanAsync(filePath, czkApiKey)
+                        .ContinueWith(t =>
+                        {
+                            (Int32? statusCode, String? result) = t.Result;
+                            String? info = (result != "safe") ? (result ?? String.Empty) : null;
+                            return new ScanResult("CzkCloud", info);
+                        }, TaskScheduler.Default));
+                }
+
+                if (scanTasks.Count == 0)
+                    return new ScanResult(String.Empty, null);
+
+                var allTask = Task.WhenAll(scanTasks);
+                while (!allTask.IsCompleted)
+                {
+                    if (token.IsCancellationRequested) break;
+                    if (_isPaused)
+                    {
+                        await Task.Delay(100, token);
+                        continue;
+                    }
+                    await Task.WhenAny(allTask, Task.Delay(100, token));
+                }
+
+                if (allTask.IsCompleted && !allTask.IsFaulted)
+                {
+                    foreach (var r in allTask.Result)
+                    {
+                        if (!String.IsNullOrEmpty(r.VirusInfo))
+                            return r;
+                    }
+                }
+
+                return new ScanResult(String.Empty, null);
+            }
+            catch (OperationCanceledException) { return new ScanResult(String.Empty, null); }
+            catch (Exception ex)
+            {
+                LogText.AddNewLog(LogText.LogLevel.WARN, "Security - RunScansOnFileFailed", ex.Message);
+                return new ScanResult(String.Empty, null);
+            }
+        }
+
         private async Task ScanZipFileAsync(String zipPath, Boolean scanNested, Boolean deepScan, Boolean extraData, Boolean useLocalScan, Boolean useCloudScan, Boolean useCzkCloudScan, Boolean useSouXiaoScan, Boolean useModelScan, Helper.ScanEngine.SouXiaoEngineScan? souXiaoEngine, Helper.ScanEngine.ModelEngineScan? modelEngine, String czkApiKey, CancellationToken token)
         {
             try
@@ -741,35 +839,19 @@ namespace Xdows_Security.Views
 
                 foreach (var (entryPath, data) in entries)
                 {
-                    // Check for pause at the start of each entry
+                    // respect pause and cancellation
                     while (_isPaused && !token.IsCancellationRequested)
-                    {
                         await Task.Delay(100, token);
-                    }
-
                     if (token.IsCancellationRequested) break;
 
-                    // Check for pause before processing each entry
-                    if (_isPaused)
-                    {
-                        await Task.Delay(100, token);
-                        if (token.IsCancellationRequested) break;
-                    }
-
-                    String displayPath = $"{zipPath}\\{entryPath}";
+                    string displayPath = $"{zipPath}\\{entryPath}";
                     _dispatcherQueue.TryEnqueue(() =>
                     {
                         LogText.AddNewLog(LogText.LogLevel.INFO, "Security - ScanFile", displayPath);
-                        try
-                        {
-                            StatusText.Text = String.Format(Localizer.Get().GetLocalizedString("SecurityPage_Status_Scanning"), displayPath);
-                        }
-                        catch
-                        {
-                        }
+                        try { StatusText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_Status_Scanning"), displayPath); } catch { }
                     });
 
-                    String tempFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                    string tempFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
                     try
                     {
                         await File.WriteAllBytesAsync(tempFile, data, token);
@@ -780,111 +862,17 @@ namespace Xdows_Security.Views
                             continue;
                         }
 
-                        List<Task<ScanResult>> entryScanTasks = [];
-                        if (useSouXiaoScan && souXiaoEngine != null)
-                        {
-                            entryScanTasks.Add(Task.Run(() =>
-                            {
-                                (Boolean isVirus, String result) = souXiaoEngine.ScanFile(tempFile);
-                                return new ScanResult("SouXiao", isVirus ? result : null);
-                            }));
-                        }
-                        if (useModelScan && modelEngine != null)
-                        {
-                            entryScanTasks.Add(Task.Run(() =>
-                            {
-                                (Boolean isVirus, String result) = ScanEngine.ModelEngineScan.ScanFile(tempFile);
-                                return new ScanResult("Xdows-Model", isVirus ? result : null);
-                            }));
-                        }
-                        if (useLocalScan)
-                        {
-                            entryScanTasks.Add(Helper.ScanEngine.LocalScanAsync(tempFile, deepScan, extraData)
-                                .ContinueWith(t =>
-                                {
-                                    String localResult = t.Result;
-                                    String? info = !String.IsNullOrEmpty(localResult)
-                                        ? (deepScan ? $"{localResult} with DeepScan" : localResult)
-                                        : null;
-                                    return new ScanResult("Local", info);
-                                }, TaskScheduler.Default));
-                        }
-                        if (useCloudScan)
-                        {
-                            entryScanTasks.Add(Helper.ScanEngine.CloudScanAsync(tempFile)
-                                .ContinueWith(t =>
-                                {
-                                    (Int32? statusCode, String? result) = t.Result;
-                                    String? info = (result == "virus_file") ? "MEMZUAC.Cloud.VirusFile" : null;
-                                    return new ScanResult("Cloud", info);
-                                }, TaskScheduler.Default));
-                        }
-                        if (useCzkCloudScan)
-                        {
-                            entryScanTasks.Add(Helper.ScanEngine.CzkCloudScanAsync(tempFile, czkApiKey)
-                                .ContinueWith(t =>
-                                {
-                                    (Int32? statusCode, String? result) = t.Result;
-                                    String? info = (result != "safe") ? (result ?? String.Empty) : null;
-                                    return new ScanResult("CzkCloud", info);
-                                }, TaskScheduler.Default));
-                        }
-
-                        String? virusResult = null;
-                        if (entryScanTasks.Count > 0)
-                        {
-                            // Create a task that completes when pause is released
-                            TaskCompletionSource<Object?> pauseTcs = new();
-                            using var pauseCheckTimer = new Timer(_ =>
-                            {
-                                if (!_isPaused)
-                                {
-                                    pauseTcs.TrySetResult(null);
-                                }
-                            }, null, 100, 100);
-
-                            // Wait for all scan tasks to complete, but also check for pause
-                            Task<ScanResult[]> scanTask = Task.WhenAll(entryScanTasks);
-                            while (!scanTask.IsCompleted)
-                            {
-                                // If paused, wait until unpaused
-                                while (_isPaused && !token.IsCancellationRequested)
-                                {
-                                    await Task.Delay(100, token);
-                                }
-
-                                if (token.IsCancellationRequested)
-                                {
-                                    break;
-                                }
-
-                                // Wait a bit for tasks to complete
-                                await Task.WhenAny(scanTask, Task.Delay(100));
-                            }
-
-                            if (scanTask.IsCompleted && !scanTask.IsFaulted)
-                            {
-                                ScanResult[] results = scanTask.Result;
-                                foreach (ScanResult res in results)
-                                {
-                                    if (!String.IsNullOrEmpty(res.VirusInfo))
-                                    {
-                                        virusResult = res.VirusInfo;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-
+                        // Run all configured scans on the extracted entry file
+                        var scanRes = await RunScansOnFileAsync(tempFile, deepScan, extraData, useLocalScan, useCloudScan, useCzkCloudScan, useSouXiaoScan, useModelScan, souXiaoEngine, modelEngine, czkApiKey, token);
+                        string? virusResult = scanRes.VirusInfo;
                         if (!String.IsNullOrEmpty(virusResult))
                         {
                             Statistics.ScansQuantity += 1;
                             Statistics.VirusQuantity += 1;
 
                             if (!_zipFileThreats.ContainsKey(zipPath))
-                            {
-                                _zipFileThreats[zipPath] = [];
-                            }
+                                _zipFileThreats[zipPath] = new List<(string, string)>();
+
                             _zipFileThreats[zipPath].Add((entryPath, virusResult));
 
                             _dispatcherQueue.TryEnqueue(() =>
@@ -892,6 +880,7 @@ namespace Xdows_Security.Views
                                 AddVirusResult($"{zipPath}\\{entryPath}", virusResult);
                                 BackToVirusListButton.Visibility = Visibility.Visible;
                             });
+
                             _threatsFound++;
                             LogText.AddNewLog(LogText.LogLevel.INFO, "Security - Find", $"ZIP Entry: {entryPath} - {virusResult}");
                         }
@@ -900,19 +889,18 @@ namespace Xdows_Security.Views
                             _filesSafe++;
                         }
                     }
+                    catch (OperationCanceledException) { break; }
                     catch (Exception ex)
                     {
                         LogText.AddNewLog(LogText.LogLevel.WARN, "Security - ScanZipEntryFailed", ex.Message);
                     }
                     finally
                     {
-                        if (File.Exists(tempFile))
-                        {
-                            try { File.Delete(tempFile); } catch { }
-                        }
+                        try { if (File.Exists(tempFile)) File.Delete(tempFile); } catch { }
                     }
                 }
             }
+            catch (OperationCanceledException) { }
             catch (Exception ex)
             {
                 LogText.AddNewLog(LogText.LogLevel.WARN, "Security - ScanZipFailed", ex.Message);
@@ -923,30 +911,32 @@ namespace Xdows_Security.Views
         {
             _cts?.Cancel();
             _cts = new CancellationTokenSource();
-            CancellationToken token = _cts.Token;
+            var token = _cts.Token;
             _isPaused = false;
             _zipFileThreats.Clear();
 
-            ApplicationDataContainer settings = ApplicationData.Current.LocalSettings;
-            Boolean showScanProgress = settings.Values["ShowScanProgress"] as Boolean? ?? false;
-            String scanIndexMode = settings.Values["ScanIndexMode"] as String ?? "Parallel";
-            Boolean DeepScan = settings.Values["DeepScan"] as Boolean? ?? false;
-            Boolean ExtraData = settings.Values["ExtraData"] as Boolean? ?? false;
-            Boolean UseLocalScan = settings.Values["LocalScan"] as Boolean? ?? false;
-            Boolean UseCzkCloudScan = settings.Values["CzkCloudScan"] as Boolean? ?? false;
-            Boolean UseCloudScan = settings.Values["CloudScan"] as Boolean? ?? false;
-            Boolean UseSouXiaoScan = settings.Values["SouXiaoScan"] as Boolean? ?? false;
-            Boolean UseModelScan = settings.Values["ModelScan"] as Boolean? ?? false;
+            var settings = ApplicationData.Current.LocalSettings;
+            bool showScanProgress = settings.Values["ShowScanProgress"] as bool? ?? false;
+            string scanIndexMode = settings.Values["ScanIndexMode"] as string ?? "Parallel";
+            bool DeepScan = settings.Values["DeepScan"] as bool? ?? false;
+            bool ExtraData = settings.Values["ExtraData"] as bool? ?? false;
+            bool UseLocalScan = settings.Values["LocalScan"] as bool? ?? false;
+            bool UseCzkCloudScan = settings.Values["CzkCloudScan"] as bool? ?? false;
+            bool UseCloudScan = settings.Values["CloudScan"] as bool? ?? false;
+            bool UseSouXiaoScan = settings.Values["SouXiaoScan"] as bool? ?? false;
+            bool UseModelScan = settings.Values["ModelScan"] as bool? ?? false;
 
-            Helper.ScanEngine.SouXiaoEngineScan SouXiaoEngine = new();
+            Helper.ScanEngine.SouXiaoEngineScan? SouXiaoEngine = null;
             Helper.ScanEngine.ModelEngineScan? ModelEngine = null;
+
             if (UseSouXiaoScan)
             {
+                SouXiaoEngine = new();
                 if (!SouXiaoEngine.Initialize())
                 {
                     _dispatcherQueue.TryEnqueue(async () =>
                     {
-                        ContentDialog dialog = new()
+                        var dialog = new ContentDialog
                         {
                             Title = Localizer.Get().GetLocalizedString("SecurityPage_SouXiao_InitFailed_Title"),
                             Content = Localizer.Get().GetLocalizedString("SecurityPage_InitFailed_Content"),
@@ -960,6 +950,7 @@ namespace Xdows_Security.Views
                     return;
                 }
             }
+
             if (UseModelScan)
             {
                 ModelEngine = new Helper.ScanEngine.ModelEngineScan();
@@ -967,7 +958,7 @@ namespace Xdows_Security.Views
                 {
                     _dispatcherQueue.TryEnqueue(async () =>
                     {
-                        ContentDialog dialog = new()
+                        var dialog = new ContentDialog
                         {
                             Title = Localizer.Get().GetLocalizedString("SecurityPage_Model_InitFailed_Title"),
                             Content = Localizer.Get().GetLocalizedString("SecurityPage_InitFailed_Content"),
@@ -981,35 +972,19 @@ namespace Xdows_Security.Views
                     return;
                 }
             }
-            String Log = "Use";
-            if (UseLocalScan)
-            {
-                Log += " LocalScan";
-                if (DeepScan) { Log += "-DeepScan"; }
-            }
-            if (UseCzkCloudScan)
-            {
-                Log += " CzkCloudScan";
-            }
-            if (UseCloudScan)
-            {
-                Log += " CloudScan";
-            }
-            if (UseSouXiaoScan)
-            {
-                Log += " SouXiaoScan";
-            }
-            if (UseModelScan)
-            {
-                Log += " Xdows-Model";
-            }
-            LogText.AddNewLog(LogText.LogLevel.INFO, "Security - StartScan", Log);
+            var enginesLog = "Use";
+            if (UseLocalScan) enginesLog += DeepScan ? " LocalScan-DeepScan" : " LocalScan";
+            if (UseCzkCloudScan) enginesLog += " CzkCloudScan";
+            if (UseCloudScan) enginesLog += " CloudScan";
+            if (UseSouXiaoScan) enginesLog += " SouXiaoScan";
+            if (UseModelScan) enginesLog += " Xdows-Model";
+            LogText.AddNewLog(LogText.LogLevel.INFO, "Security - StartScan", enginesLog);
 
-            String? userPath = null;
+            string? userPath = null;
             if (mode is ScanMode.File or ScanMode.Folder)
             {
                 userPath = await PickPathAsync(mode);
-                if (String.IsNullOrEmpty(userPath))
+                if (string.IsNullOrEmpty(userPath))
                 {
                     _dispatcherQueue.TryEnqueue(() =>
                     {
@@ -1022,25 +997,21 @@ namespace Xdows_Security.Views
 
             ScanButton.IsEnabled = false;
 
-            _filesScanned = 0;
-            _filesSafe = 0;
-            _threatsFound = 0;
+            _filesScanned = 0; _filesSafe = 0; _threatsFound = 0;
             UpdateScanStats(0, 0, 0);
 
-            for (Int32 i = 0; i < _scanItems!.Count; i++)
-            {
+            for (int i = 0; i < _scanItems!.Count; i++)
                 UpdateScanItemStatus(i, Localizer.Get().GetLocalizedString("SecurityPage_Status_Waiting"), false, 0);
-            }
 
-            CurrentResults = [];
+            CurrentResults = new ObservableCollection<VirusRow>();
             _dispatcherQueue.TryEnqueue(() =>
             {
                 ScanProgress.IsIndeterminate = !showScanProgress;
                 VirusList.ItemsSource = CurrentResults;
                 ScanProgress.Value = 0;
                 ScanProgress.Visibility = Visibility.Visible;
-                ProgressPercentText.Text = showScanProgress ? "0%" : String.Empty;
-                PathText.Text = String.Format(Localizer.Get().GetLocalizedString("SecurityPage_PathText_Format"), displayName);
+                ProgressPercentText.Text = showScanProgress ? "0%" : string.Empty;
+                PathText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_PathText_Format"), displayName);
                 BackToVirusListButton.Visibility = Visibility.Collapsed;
                 PauseScanButton.Visibility = Visibility.Visible;
                 PauseScanButton.IsEnabled = false;
@@ -1049,31 +1020,22 @@ namespace Xdows_Security.Views
                 OnBackList(false);
                 StartRadarAnimation();
             });
-            ScanId += 1;
+
+            ScanId++;
+
             await Task.Run(async () =>
             {
                 try
                 {
-                    List<String> filesList = EnumerateFiles(mode, userPath, customPaths);
-                    Int32 ThisId = ScanId;
-                    Boolean parallelIndex = scanIndexMode == "Parallel";
+                    var filesList = EnumerateFiles(mode, userPath, customPaths);
+                    bool parallelIndex = scanIndexMode == "Parallel";
 
-                    IEnumerable<String> files; // actual enumerable to iterate
-                    Int32 total = 0;
-                    if (parallelIndex)
-                    {
-                        // Use streaming enumeration to start scanning while indexing
-                        files = EnumerateFilesStreaming(mode, userPath, customPaths);
-                        total = 0; // unknown
-                    }
-                    else
-                    {
-                        files = filesList;
-                        total = filesList.Count;
-                    }
+                    IEnumerable<string> files = parallelIndex ? EnumerateFilesStreaming(mode, userPath, customPaths) : filesList;
+                    int total = parallelIndex ? 0 : filesList.Count;
+
                     DateTime startTime = DateTime.Now;
-                    Int32 finished = 0;
-                    Int32 currentItemIndex = mode switch
+                    int finished = 0;
+                    int currentItemIndex = mode switch
                     {
                         ScanMode.Quick => 0,
                         ScanMode.Full => 1,
@@ -1084,35 +1046,29 @@ namespace Xdows_Security.Views
                     };
 
                     UpdateScanItemStatus(currentItemIndex, Localizer.Get().GetLocalizedString("SecurityPage_Status_Scanning"), true);
+                    _dispatcherQueue.TryEnqueue(() => PauseScanButton.IsEnabled = true);
 
-                    _dispatcherQueue.TryEnqueue(() =>
-                    {
-                        PauseScanButton.IsEnabled = true;
-                    });
-                    String tStatusText = Localizer.Get().GetLocalizedString("SecurityPage_Status_Scanning");
-                    TimeSpan pausedTime = TimeSpan.Zero; // 记录总的暂停时间
-                    DateTime lastPauseTime = DateTime.MinValue; // 记录上次暂停开始的时间
-                    String czkApiKey = App.GetCzkCloudApiKey();
-                    Boolean ScanInside = settings.Values["ScanInside"] as Boolean? ?? false;
-                    Boolean ScanInsideNested = settings.Values["ScanInsideNested"] as Boolean? ?? false;
+                    int thisId = ScanId;
 
-                    foreach (String file in files)
+                    string tStatusText = Localizer.Get().GetLocalizedString("SecurityPage_Status_Scanning");
+                    TimeSpan pausedTime = TimeSpan.Zero;
+                    DateTime lastPauseTime = DateTime.MinValue;
+                    string czkApiKey = App.GetCzkCloudApiKey();
+                    bool ScanInside = settings.Values["ScanInside"] as bool? ?? false;
+                    bool ScanInsideNested = settings.Values["ScanInsideNested"] as bool? ?? false;
+
+                    foreach (var file in files)
                     {
                         while (_isPaused && !token.IsCancellationRequested)
                         {
-                            // 如果刚开始暂停，记录暂停开始时间
-                            if (lastPauseTime == DateTime.MinValue)
-                            {
-                                lastPauseTime = DateTime.Now;
-                            }
+                            if (lastPauseTime == DateTime.MinValue) lastPauseTime = DateTime.Now;
                             await Task.Delay(100, token);
                         }
 
-                        // 如果刚刚恢复扫描，计算暂停时间并累加
                         if (lastPauseTime != DateTime.MinValue)
                         {
                             pausedTime += DateTime.Now - lastPauseTime;
-                            lastPauseTime = DateTime.MinValue; // 重置暂停时间
+                            lastPauseTime = DateTime.MinValue;
                         }
 
                         if (token.IsCancellationRequested) break;
@@ -1120,13 +1076,7 @@ namespace Xdows_Security.Views
                         _dispatcherQueue.TryEnqueue(() =>
                         {
                             LogText.AddNewLog(LogText.LogLevel.INFO, "Security - ScanFile", file);
-                            try
-                            {
-                                StatusText.Text = String.Format(tStatusText, file);
-                            }
-                            catch
-                            {
-                            }
+                            try { StatusText.Text = string.Format(tStatusText, file); } catch { }
                         });
 
                         if (ScanInside && ZipScanner.IsZipFile(file))
@@ -1145,103 +1095,26 @@ namespace Xdows_Security.Views
                                 _filesSafe++;
                                 continue;
                             }
-                            List<Task<ScanResult>> scanTasks = [];
-                            if (UseSouXiaoScan && SouXiaoEngine != null)
-                            {
-                                scanTasks.Add(Task.Run(() =>
-                                {
-                                    (Boolean IsVirus, String Result) = SouXiaoEngine.ScanFile(file);
-                                    return new ScanResult("SouXiao", IsVirus ? Result : null);
-                                }));
-                            }
-                            if (UseModelScan)
-                            {
-                                var me = ModelEngine;
-                                if (me != null)
-                                {
-                                    scanTasks.Add(Task.Run(() =>
-                                    {
-                                        (Boolean IsVirus, String Result) = ScanEngine.ModelEngineScan.ScanFile(file);
-                                        return new ScanResult("Xdows-Model", IsVirus ? Result : null);
-                                    }));
-                                }
-                            }
-                            if (UseLocalScan)
-                            {
-                                scanTasks.Add(Helper.ScanEngine.LocalScanAsync(file, DeepScan, ExtraData)
-                                    .ContinueWith(t =>
-                                    {
-                                        String localResult = t.Result;
-                                        String? info = !String.IsNullOrEmpty(localResult)
-                                            ? (DeepScan ? $"{localResult} with DeepScan" : localResult)
-                                            : null;
-                                        return new ScanResult("Local", info);
-                                    }, TaskScheduler.Default));
-                            }
-                            if (UseCloudScan)
-                            {
-                                scanTasks.Add(Helper.ScanEngine.CloudScanAsync(file)
-                                    .ContinueWith(t =>
-                                    {
-                                        (Int32? statusCode, String? result) = t.Result;
-                                        System.Diagnostics.Debug.WriteLine(result);
-                                        String? info = (result == "virus_file") ? "MEMZUAC.Cloud.VirusFile" : null;
-                                        return new ScanResult("Cloud", info);
-                                    }, TaskScheduler.Default));
-                            }
-                            if (UseCzkCloudScan)
-                            {
-                                scanTasks.Add(Helper.ScanEngine.CzkCloudScanAsync(file, czkApiKey)
-                                    .ContinueWith(t =>
-                                    {
-                                        (Int32? statusCode, String? result) = t.Result;
-                                        String? info = (result != "safe") ? (result ?? String.Empty) : null;
-                                        return new ScanResult("CzkCloud", info);
-                                    }, TaskScheduler.Default));
-                            }
-                            String? finalVirusResult = null;
-                            String? detectedEngine = null;
 
-                            if (scanTasks.Count > 0)
-                            {
-                                ScanResult[] results = await Task.WhenAll(scanTasks);
-                                foreach (ScanResult res in results)
-                                {
-                                    if (!String.IsNullOrEmpty(res.VirusInfo))
-                                    {
-                                        finalVirusResult = res.VirusInfo;
-                                        detectedEngine = res.EngineName;
-                                        break;
-                                    }
-                                }
-                            }
+                            var scanRes = await RunScansOnFileAsync(file, DeepScan, ExtraData, UseLocalScan, UseCloudScan, UseCzkCloudScan, UseSouXiaoScan, UseModelScan, SouXiaoEngine, ModelEngine, czkApiKey, token);
                             Statistics.ScansQuantity += 1;
-
-                            if (!String.IsNullOrEmpty(finalVirusResult))
+                            if (!String.IsNullOrEmpty(scanRes.VirusInfo))
                             {
-                                LogText.AddNewLog(LogText.LogLevel.INFO, "Security - Find", finalVirusResult);
+                                LogText.AddNewLog(LogText.LogLevel.INFO, "Security - Find", scanRes.VirusInfo);
                                 Statistics.VirusQuantity += 1;
-                                try
+                                _dispatcherQueue.TryEnqueue(() =>
                                 {
-                                    _dispatcherQueue.TryEnqueue(() =>
-                                    {
-                                        AddVirusResult(file, finalVirusResult);
-                                        BackToVirusListButton.Visibility = Visibility.Visible;
-                                    });
-                                    _threatsFound++;
-                                    UpdateScanItemStatus(currentItemIndex, Localizer.Get().GetLocalizedString("SecurityPage_Status_FoundThreat"), true, _threatsFound);
-                                }
-                                catch (Exception ex)
-                                {
-                                    LogText.AddNewLog(LogText.LogLevel.ERROR, "Security - UI Update", ex.Message);
-                                }
+                                    AddVirusResult(file, scanRes.VirusInfo);
+                                    BackToVirusListButton.Visibility = Visibility.Visible;
+                                });
+                                _threatsFound++;
+                                UpdateScanItemStatus(currentItemIndex, Localizer.Get().GetLocalizedString("SecurityPage_Status_FoundThreat"), true, _threatsFound);
                             }
                             else
                             {
                                 LogText.AddNewLog(LogText.LogLevel.INFO, "Security - Find", "Is Safe");
                                 _filesSafe++;
                             }
-
                         }
                         catch (Exception ex)
                         {
@@ -1250,43 +1123,29 @@ namespace Xdows_Security.Views
 
                         finished++;
                         _filesScanned = finished;
-                        TimeSpan elapsedTime = DateTime.Now - startTime - pausedTime; // 减去暂停时间
-                        Double scanSpeed = finished / elapsedTime.TotalSeconds;
-                        _dispatcherQueue.TryEnqueue(() =>
-                        {
-                            ScanSpeedText.Text = String.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanSpeed_Format"), scanSpeed);
-                        });
+                        TimeSpan elapsedTime = DateTime.Now - startTime - pausedTime;
+                        double scanSpeed = elapsedTime.TotalSeconds > 0 ? finished / elapsedTime.TotalSeconds : 0.0;
+                        _dispatcherQueue.TryEnqueue(() => ScanSpeedText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanSpeed_Format"), scanSpeed));
+
                         if (showScanProgress)
                         {
-                            Double percent = total == 0 ? 100 : (Double)finished / total * 100;
-                            _dispatcherQueue.TryEnqueue(() =>
-                            {
-                                ScanProgress.Value = percent;
-                                ProgressPercentText.Text = $"{percent:F0}%";
-                            });
+                            double percent = total == 0 ? 100 : (double)finished / total * 100;
+                            _dispatcherQueue.TryEnqueue(() => { ScanProgress.Value = percent; ProgressPercentText.Text = $"{percent:F0}%"; });
                         }
-                        try
-                        {
-                            UpdateScanStats(_filesScanned, _filesSafe, _threatsFound);
-                        }
-                        catch { }
-                        if (MainWindow.NowPage != "Security" | ThisId != ScanId)
-                        {
-                            break;
-                        }
+
+                        try { UpdateScanStats(_filesScanned, _filesSafe, _threatsFound); } catch { }
+
+                        if (MainWindow.NowPage != "Security" || thisId != ScanId) break;
                         await Task.Delay(1, token);
                     }
 
                     UpdateScanItemStatus(currentItemIndex, Localizer.Get().GetLocalizedString("SecurityPage_Status_Completed"), false, _threatsFound);
 
-                    // ZIP file threats are kept in _zipFileThreats for manual handling
-                    // They will be removed from the dictionary when user handles them
-
                     _dispatcherQueue.TryEnqueue(() =>
                     {
                         ApplicationDataContainer settingsLocal = ApplicationData.Current.LocalSettings;
                         settingsLocal.Values["LastScanTime"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                        StatusText.Text = String.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanCompleteFound"), CurrentResults?.Count ?? 0);
+                        StatusText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanCompleteFound"), CurrentResults?.Count ?? 0);
                         ScanProgress.Visibility = Visibility.Collapsed;
                         PauseScanButton.Visibility = Visibility.Collapsed;
                         ResumeScanButton.Visibility = Visibility.Collapsed;
@@ -1308,7 +1167,7 @@ namespace Xdows_Security.Views
                     _dispatcherQueue.TryEnqueue(() =>
                     {
                         LogText.AddNewLog(LogText.LogLevel.FATAL, "Security - Failed", ex.Message);
-                        StatusText.Text = String.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanFailed_Format"), ex.Message);
+                        StatusText.Text = string.Format(Localizer.Get().GetLocalizedString("SecurityPage_ScanFailed_Format"), ex.Message);
                         ScanProgress.Visibility = Visibility.Collapsed;
                         PauseScanButton.Visibility = Visibility.Collapsed;
                         ResumeScanButton.Visibility = Visibility.Collapsed;
@@ -1316,6 +1175,7 @@ namespace Xdows_Security.Views
                     });
                 }
             });
+
             ScanButton.IsEnabled = true;
         }
 

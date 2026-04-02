@@ -422,11 +422,9 @@ namespace Xdows_Security.Views
             }
         }
 
-#pragma warning disable CA1822
         private void UpdateTeachingTipClose(TeachingTip sender, Object args)
-#pragma warning restore CA1822
         {
-            sender.IsOpen = false;
+            UpdateTeachingTip.IsOpen = false;
         }
 
         private void ThemeComboBox_SelectionChanged(Object sender, SelectionChangedEventArgs e)

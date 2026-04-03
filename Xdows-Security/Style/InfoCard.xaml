@@ -6,7 +6,7 @@
     <Border BorderThickness="1" 
             BorderBrush="{ThemeResource ControlElevationBorderBrush}"
             Background="{ThemeResource ControlFillColorDefaultBrush}"
-            CornerRadius="8" 
+            CornerRadius="{ThemeResource ControlCornerRadius}" 
             Padding="16">
         <StackPanel Spacing="12">
             <StackPanel Orientation="Horizontal" Spacing="8">

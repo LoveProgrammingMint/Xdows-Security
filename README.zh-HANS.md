@@ -7,7 +7,7 @@
   <p align="center">
     来看看下一代基于 WinUI3 + C# 技术构建的杀毒软件
     <br />
-    <a href="https://docs.xiguastudio.top/zh/Xdows-Security-4.1/get-started.html">文档</a>
+    <a href="https://docs.xiguastudio.top/zh-HANS/Xdows-Security-4.1/get-started.html">文档</a>
     ·
     <a href="https://github.com/LoveProgrammingMint/Xdows-Security/issues">反馈</a>
     ·
